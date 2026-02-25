@@ -96,7 +96,7 @@ export async function GET(req: Request) {
 
     const horseIds = (horsesForStable || []).map((h) => h.id);
 
-    let trainingSessions: Awaited<ReturnType<typeof supabase.from>>["data"] = [];
+    let trainingSessions: Record<string, unknown>[] = [];
     if (horseIds.length > 0) {
       const { data: punches } = await supabase
         .from("training_punches")
@@ -137,7 +137,7 @@ export async function GET(req: Request) {
       .order("incident_date", { ascending: true });
 
     // Competitions in month (via horses)
-    let competitions: Awaited<ReturnType<typeof supabase.from>>["data"] = [];
+    let competitions: Record<string, unknown>[] = [];
     if (horseIds.length > 0) {
       const { data: comps } = await supabase
         .from("competitions")

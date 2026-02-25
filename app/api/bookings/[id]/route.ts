@@ -89,7 +89,8 @@ export async function PATCH(
             .single();
 
           if (rider?.profile_id) {
-            const horseName = (booking as { horses?: { name: string } | null }).horses?.name ?? "your horse";
+            const horses = (booking as { horses?: { name: string } | { name: string }[] | null }).horses;
+            const horseName = (Array.isArray(horses) ? horses[0] : horses)?.name ?? "your horse";
             const dateStr = (booking as { booking_date: string }).booking_date;
             const timeStr = (t: string) => String(t).slice(0, 5);
             const startStr = timeStr((booking as { start_time: string }).start_time);

@@ -29,8 +29,10 @@ export async function GET() {
     }
 
     const mapped = (reports || []).map((r: Record<string, unknown>) => {
-      const horse = r.horses as { id: string; name: string } | null;
-      const rider = r.riders as { id: string; name: string } | null;
+      const horses = r.horses as { id: string; name: string } | { id: string; name: string }[] | null;
+      const riders = r.riders as { id: string; name: string } | { id: string; name: string }[] | null;
+      const horse = Array.isArray(horses) ? horses[0] : horses;
+      const rider = Array.isArray(riders) ? riders[0] : riders;
       return {
         id: r.id,
         incidentDate: r.incident_date,
@@ -142,8 +144,10 @@ export async function POST(req: Request) {
       );
     }
 
-    const horse = (report as { horses?: { id: string; name: string } | null }).horses;
-    const rider = (report as { riders?: { id: string; name: string } | null }).riders;
+    const horses = (report as { horses?: { id: string; name: string } | { id: string; name: string }[] | null }).horses;
+    const riders = (report as { riders?: { id: string; name: string } | { id: string; name: string }[] | null }).riders;
+    const horse = Array.isArray(horses) ? horses[0] : horses;
+    const rider = Array.isArray(riders) ? riders[0] : riders;
 
     return NextResponse.json({
       id: report.id,

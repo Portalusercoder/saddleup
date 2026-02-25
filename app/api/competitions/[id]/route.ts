@@ -58,7 +58,8 @@ export async function PUT(
       );
     }
 
-    const horse = (competition as { horses?: { id: string; name: string } | null }).horses;
+    const horses = (competition as { horses?: { id: string; name: string } | { id: string; name: string }[] | null }).horses;
+    const horse = Array.isArray(horses) ? horses[0] : horses;
     return NextResponse.json({
       id: competition.id,
       eventName: competition.event_name,

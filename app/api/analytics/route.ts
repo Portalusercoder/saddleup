@@ -67,13 +67,18 @@ export async function GET() {
       .eq("stable_id", profile.stable_id)
       .gte("booking_date", eightWeeksAgo.toISOString().slice(0, 10));
 
-    const punchList = (punches || []) as Array<{
+    type PunchRow = {
       punch_type: string;
       duration_minutes: number;
       punch_date: string;
       horse_id: string;
-      horses: { id: string; name: string } | null;
-    }>;
+      horses: { id: string; name: string } | { id: string; name: string }[] | null;
+    };
+    const rawPunches = (punches || []) as unknown as PunchRow[];
+    const punchList = rawPunches.map((p) => ({
+      ...p,
+      horses: Array.isArray(p.horses) ? p.horses[0] ?? null : p.horses,
+    }));
 
     const activePunches = punchList.filter(
       (p) => p.punch_type !== "rest" && p.punch_type !== "medical"
@@ -165,8 +170,14 @@ export async function GET() {
       .not("cost_cents", "is", null);
 
     const horseCostMap = new Map<string, { name: string; costCents: number }>();
-    (healthLogs || []).forEach((h: { horse_id: string; cost_cents: number; horses: { id: string; name: string } | null }) => {
-      const name = h.horses?.name ?? "Unknown";
+    const healthLogList = (healthLogs || []) as Array<{
+      horse_id: string;
+      cost_cents: number;
+      horses: { id: string; name: string } | { id: string; name: string }[] | null;
+    }>;
+    healthLogList.forEach((h) => {
+      const horse = Array.isArray(h.horses) ? h.horses[0] : h.horses;
+      const name = horse?.name ?? "Unknown";
       const curr = horseCostMap.get(h.horse_id);
       const cents = h.cost_cents ?? 0;
       if (curr) {

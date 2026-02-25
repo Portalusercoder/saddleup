@@ -57,7 +57,8 @@ export async function GET() {
     }
 
     const mapped = (punches || []).map((p) => {
-      const horse = (p as { horses?: { id: string; name: string; photo_path: string | null } | null }).horses;
+      const horses = (p as { horses?: { id: string; name: string; photo_path: string | null } | { id: string; name: string; photo_path: string | null }[] | null }).horses;
+      const horse = Array.isArray(horses) ? horses[0] : horses;
       return {
         id: p.id,
         punchType: p.punch_type,

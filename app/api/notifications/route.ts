@@ -52,7 +52,8 @@ export async function GET() {
 
         for (const b of upcoming || []) {
           if (!existingIds.has((b as { id: string }).id)) {
-            const horseName = (b as { horses?: { name: string } | null }).horses?.name ?? "your horse";
+            const horses = (b as { horses?: { name: string } | { name: string }[] | null }).horses;
+            const horseName = (Array.isArray(horses) ? horses[0] : horses)?.name ?? "your horse";
             const startStr = String((b as { start_time: string }).start_time).slice(0, 5);
             const title = "Lesson tomorrow";
             const bodyText = `Reminder: Your lesson with ${horseName} tomorrow at ${startStr}.`;

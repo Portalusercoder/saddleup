@@ -79,8 +79,10 @@ export async function PUT(
       );
     }
 
-    const horse = (report as { horses?: { id: string; name: string } | null }).horses;
-    const rider = (report as { riders?: { id: string; name: string } | null }).riders;
+    const horses = (report as { horses?: { id: string; name: string } | { id: string; name: string }[] | null }).horses;
+    const riders = (report as { riders?: { id: string; name: string } | { id: string; name: string }[] | null }).riders;
+    const horse = Array.isArray(horses) ? horses[0] : horses;
+    const rider = Array.isArray(riders) ? riders[0] : riders;
 
     return NextResponse.json({
       id: report.id,

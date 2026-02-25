@@ -45,7 +45,8 @@ export async function GET() {
     }
 
     const all = (logs || []).map((l) => {
-      const horse = (l as { horses?: { id: string; name: string } | null }).horses;
+      const horses = (l as { horses?: { id: string; name: string } | { id: string; name: string }[] | null }).horses;
+      const horse = Array.isArray(horses) ? horses[0] : horses;
       return {
         id: l.id,
         type: l.log_type,
