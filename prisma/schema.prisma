@@ -1,0 +1,89 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = "file:./dev.db"
+}
+
+// ==================== HORSE ====================
+
+model Horse {
+  id        Int       @id @default(autoincrement())
+  name      String
+  gender    String    // Stallion, Mare, Gelding
+  age       Int?
+  breed     String?
+  owner     String?
+  photoUrl  String?   // URL for horse photo
+
+  // Passport identification
+  color         String?   // coat color
+  markings      String?   // distinctive markings
+  height        Float?    // in cm
+  microchip     String?   // microchip number
+  ueln          String?   // Unique Equine Life Number
+  dateOfBirth   DateTime? // approximate DOB
+
+  // Extended profile (digital passport)
+  temperament   String?   // calm, energetic, sensitive, beginner-safe
+  skillLevel    String?   // beginner, intermediate, advanced
+  trainingStatus String?  // green, schooling, competition-ready
+  ridingSuitability String? // kids, adults, jumping, dressage, trail (comma-separated)
+
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+
+  sessions   Session[]
+  healthLogs HealthLog[]
+}
+
+// ==================== SESSION / TRAINING PUNCH ====================
+// Core differentiator: workload intelligence
+
+model Session {
+  id         Int      @id @default(autoincrement())
+  punchType  String   // training, lesson, free_ride, competition, rest, medical_rest
+  duration   Int      // minutes (0 for rest/medical_rest)
+  intensity  String   // light, medium, hard
+  discipline String   // flatwork, jumping, trail, dressage, etc.
+  rider      String?
+  notes      String?
+
+  horseId    Int
+  horse      Horse    @relation(fields: [horseId], references: [id], onDelete: Cascade)
+
+  createdAt  DateTime @default(now())
+}
+
+// ==================== RIDER / STUDENT ====================
+
+model Rider {
+  id           Int       @id @default(autoincrement())
+  name         String
+  email        String?
+  phone        String?
+  ridingLevel  String?   // beginner, intermediate, advanced
+  notes        String?
+  instructorFeedback String?
+  createdAt    DateTime  @default(now())
+  updatedAt    DateTime  @updatedAt
+}
+
+// ==================== HEALTH & CARE LOG ====================
+
+model HealthLog {
+  id          Int       @id @default(autoincrement())
+  type        String    // vet, vaccination, deworming, farrier, injury
+  date        DateTime
+  description String?
+  cost        Float?
+  nextDue     DateTime? // for vaccinations, deworming, farrier
+  recoveryStatus String? // for injuries: active, recovering, cleared
+
+  horseId     Int
+  horse       Horse     @relation(fields: [horseId], references: [id], onDelete: Cascade)
+
+  createdAt   DateTime  @default(now())
+}

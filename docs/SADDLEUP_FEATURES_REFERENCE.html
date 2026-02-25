@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SaddleUp — Complete Features & Functions Reference</title>
+  <style>
+    * { box-sizing: border-box; }
+    body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; line-height: 1.6; color: #1a1a1a; max-width: 900px; margin: 0 auto; padding: 2rem; }
+    h1 { font-size: 1.75rem; margin-bottom: 0.5rem; border-bottom: 2px solid #333; padding-bottom: 0.5rem; }
+    h2 { font-size: 1.25rem; margin-top: 2rem; margin-bottom: 0.75rem; color: #333; }
+    h3 { font-size: 1.1rem; margin-top: 1.5rem; margin-bottom: 0.5rem; }
+    h4 { font-size: 1rem; margin-top: 1rem; margin-bottom: 0.25rem; }
+    p { margin: 0.5rem 0; }
+    ul, ol { margin: 0.5rem 0; padding-left: 1.5rem; }
+    li { margin: 0.25rem 0; }
+    table { width: 100%; border-collapse: collapse; margin: 0.75rem 0; font-size: 0.9rem; }
+    th, td { border: 1px solid #ddd; padding: 0.5rem 0.75rem; text-align: left; }
+    th { background: #f5f5f5; font-weight: 600; }
+    code { background: #f0f0f0; padding: 0.15rem 0.4rem; border-radius: 3px; font-size: 0.9em; }
+    hr { border: none; border-top: 1px solid #ddd; margin: 1.5rem 0; }
+    .meta { color: #666; font-size: 0.9rem; margin-bottom: 1rem; }
+    @media print {
+      body { padding: 1rem; }
+      h2 { page-break-after: avoid; }
+      table { page-break-inside: avoid; }
+      a { color: #1a1a1a; text-decoration: none; }
+    }
+  </style>
+</head>
+<body>
+<h1>SaddleUp — Complete Features &amp; Functions Reference</h1>
+<p class="meta"><strong>Version:</strong> 1.0 &nbsp;|&nbsp; <strong>Last Updated:</strong> February 2025</p>
+<hr>
+<h2>Table of Contents</h2>
+<ol>
+<li><a href="#1-overview">Overview</a></li>
+<li><a href="#2-user-roles--permissions">User Roles &amp; Permissions</a></li>
+<li><a href="#3-subscription-tiers--limits">Subscription Tiers &amp; Limits</a></li>
+<li><a href="#4-authentication--onboarding">Authentication &amp; Onboarding</a></li>
+<li><a href="#5-pages--routes">Pages &amp; Routes</a></li>
+<li><a href="#6-api-endpoints">API Endpoints</a></li>
+<li><a href="#7-database-schema">Database Schema</a></li>
+<li><a href="#8-core-features">Core Features</a></li>
+<li><a href="#9-premium-features">Premium Features</a></li>
+<li><a href="#10-integrations">Integrations</a></li>
+</ol>
+<hr>
+<h2 id="1-overview">1. Overview</h2>
+<p><strong>SaddleUp</strong> is a multi-tenant web application for horse and stable management. It enables stables to manage horses, riders, lessons, training sessions, health records, competitions, incident reports, and billing—all with role-based access control and subscription tiers.</p>
+<h3>Key Characteristics</h3>
+<ul>
+<li><strong>Multi-tenant:</strong> Each stable is isolated; data is scoped by <code>stable_id</code></li>
+<li><strong>Role-based:</strong> Four roles—Owner, Trainer, Student, Guardian—each with distinct capabilities</li>
+<li><strong>Subscription-based:</strong> Free, Starter, Stable, and Enterprise tiers with different limits and features</li>
+<li><strong>Integrations:</strong> Supabase (auth, database, storage), Stripe (billing), Resend (email), OpenAI (AI workload suggestions)</li>
+</ul>
+<hr>
+<h2 id="2-user-roles--permissions">2. User Roles &amp; Permissions</h2>
+<h3>Role Summary</h3>
+<table>
+<thead><tr><th>Role</th><th>Description</th><th>Primary Capabilities</th></tr></thead>
+<tbody>
+<tr><td><strong>Owner</strong></td><td>Stable administrator</td><td>Full control: billing, workers, ID cards, stable logo, all trainer capabilities</td></tr>
+<tr><td><strong>Trainer</strong></td><td>Instructor/staff</td><td>Horses, riders, bookings, schedule, analytics, matching, incidents, blocked slots</td></tr>
+<tr><td><strong>Student</strong></td><td>Rider</td><td>Own rider profile, assigned horses, own bookings, training history, competitions</td></tr>
+<tr><td><strong>Guardian</strong></td><td>Parent/guardian</td><td>Read-only Parent Portal: children's riders, lessons, training sessions</td></tr>
+</tbody>
+</table>
+<h3>Detailed Permissions by Role</h3>
+<h4>Owner</h4>
+<ul><li>Create and manage stable</li><li>Manage subscription and billing (Stripe)</li><li>Upload stable logo</li><li>Add and manage workers (Enterprise tier)</li><li>Upload ID cards for riders and members</li><li>All Trainer permissions</li></ul>
+<h4>Trainer</h4>
+<ul><li>Add, edit, delete horses</li><li>Add, edit, delete riders</li><li>Create and manage bookings (approve/decline student requests)</li><li>View and manage schedule</li><li>Block time slots</li><li>Access analytics (Starter+)</li><li>Access horse–rider matching (Stable+)</li><li>Create and manage incident reports</li><li>Add members by invite code (student, trainer, guardian)</li><li>Link guardians to riders</li></ul>
+<h4>Student</h4>
+<ul><li>View and update own rider profile</li><li>View assigned horses only</li><li>Request lessons (bookings)</li><li>View own bookings and training history</li><li>View competitions</li></ul>
+<h4>Guardian</h4>
+<ul><li>View children linked to their profile</li><li>View children's upcoming lessons</li><li>View children's recent training sessions</li><li>Read-only access; no editing</li></ul>
+<hr>
+<h2 id="3-subscription-tiers--limits">3. Subscription Tiers &amp; Limits</h2>
+<table>
+<thead><tr><th>Tier</th><th>Horses</th><th>Riders</th><th>Analytics</th><th>Matching</th><th>Price</th></tr></thead>
+<tbody>
+<tr><td><strong>Free</strong></td><td>2</td><td>10</td><td>No</td><td>No</td><td>$0</td></tr>
+<tr><td><strong>Starter</strong></td><td>5</td><td>25</td><td>Yes</td><td>No</td><td>$19.99/mo</td></tr>
+<tr><td><strong>Stable</strong></td><td>50</td><td>200</td><td>Yes</td><td>Yes</td><td>$49.99/mo</td></tr>
+<tr><td><strong>Enterprise</strong></td><td>9999</td><td>9999</td><td>Yes</td><td>Yes</td><td>Contact</td></tr>
+</tbody>
+</table>
+<h3>Feature Differences by Tier</h3>
+<ul>
+<li><strong>Analytics (Starter+):</strong> Workload charts, session stats, cost per horse, total care cost</li>
+<li><strong>Horse–Rider Matching (Stable+):</strong> Compatibility suggestions based on horse suitability and rider level</li>
+<li><strong>Workers (Enterprise only):</strong> Add and manage workers (staff) for the stable</li>
+</ul>
+<hr>
+<h2 id="4-authentication--onboarding">4. Authentication &amp; Onboarding</h2>
+<h3>Auth Flow</h3>
+<ol>
+<li><strong>Sign up:</strong> User signs up via Supabase Auth (email/password)</li>
+<li><strong>Complete signup:</strong> User selects role (owner, trainer, student, guardian) and either: <strong>Owner</strong> creates a new stable, or <strong>Trainer/Student/Guardian</strong> joins via invite code</li>
+<li><strong>Profile creation:</strong> Profile is created with <code>stable_id</code>, <code>role</code>, and optional metadata</li>
+<li><strong>Redirect:</strong> User is redirected to dashboard based on role</li>
+</ol>
+<h3>Invite System</h3>
+<ul>
+<li><strong>Stable invite code:</strong> Unique code per stable; trainers/students/guardians use it to join</li>
+<li><strong>Personal ID:</strong> Each user has a personal code; trainers/owners can add members by entering this code</li>
+</ul>
+<hr>
+<h2 id="5-pages--routes">5. Pages &amp; Routes</h2>
+<h3>Public</h3>
+<p><code>/</code> — Landing page with hero, features, pricing, AuthModal</p>
+<h3>Dashboard (Authenticated, Role-Based)</h3>
+<table>
+<thead><tr><th>Route</th><th>Access</th><th>Description</th></tr></thead>
+<tbody>
+<tr><td><code>/dashboard</code></td><td>All</td><td>Main dashboard; content varies by role</td></tr>
+<tr><td><code>/dashboard/horses</code></td><td>Trainer, Owner</td><td>Horse list</td></tr>
+<tr><td><code>/dashboard/horses/[id]</code></td><td>Trainer, Owner, Student (assigned)</td><td>Horse detail; AI workload suggestions</td></tr>
+<tr><td><code>/dashboard/my-horses</code></td><td>Student</td><td>Assigned horses only</td></tr>
+<tr><td><code>/dashboard/bookings</code></td><td>All</td><td>Bookings (create, approve, decline)</td></tr>
+<tr><td><code>/dashboard/schedule</code></td><td>Trainer, Owner, Student</td><td>Schedule view</td></tr>
+<tr><td><code>/dashboard/analytics</code></td><td>Trainer, Owner (Starter+)</td><td>Analytics dashboard</td></tr>
+<tr><td><code>/dashboard/matching</code></td><td>Trainer, Owner (Stable+)</td><td>Horse–rider matching</td></tr>
+<tr><td><code>/dashboard/incidents</code></td><td>Trainer, Owner</td><td>Incident reports</td></tr>
+<tr><td><code>/dashboard/competitions</code></td><td>All</td><td>Competitions</td></tr>
+<tr><td><code>/dashboard/training-history</code></td><td>Student</td><td>Own training history</td></tr>
+<tr><td><code>/dashboard/guardian</code></td><td>Guardian</td><td>Parent Portal (children, lessons, sessions)</td></tr>
+<tr><td><code>/dashboard/team</code></td><td>Trainer, Owner</td><td>Team overview</td></tr>
+<tr><td><code>/dashboard/team/riders</code></td><td>Trainer, Owner</td><td>Riders list</td></tr>
+<tr><td><code>/dashboard/team/riders/[id]</code></td><td>Trainer, Owner</td><td>Rider detail (includes guardian linking)</td></tr>
+<tr><td><code>/dashboard/team/trainers</code></td><td>Trainer, Owner</td><td>Trainers list</td></tr>
+<tr><td><code>/dashboard/team/workers</code></td><td>Owner (Enterprise)</td><td>Workers management</td></tr>
+<tr><td><code>/dashboard/profile</code></td><td>All</td><td>User profile</td></tr>
+<tr><td><code>/dashboard/settings</code></td><td>Owner</td><td>Billing &amp; plan</td></tr>
+</tbody>
+</table>
+<hr>
+<h2 id="6-api-endpoints">6. API Endpoints</h2>
+<p><em>Full API reference with all methods and endpoints is in the Markdown source. Key groups:</em></p>
+<ul>
+<li><strong>Auth:</strong> complete-signup</li>
+<li><strong>Profile &amp; Me:</strong> profile, upload-avatar, me/rider, me/invite-code</li>
+<li><strong>Stable:</strong> stable, upload-logo</li>
+<li><strong>Horses:</strong> CRUD, upload-photo, sessions, workload-suggestions</li>
+<li><strong>Riders:</strong> CRUD, upload-id-card, sessions</li>
+<li><strong>Members:</strong> list, add-by-id, CRUD, upload-id-card</li>
+<li><strong>Workers:</strong> CRUD (Enterprise)</li>
+<li><strong>Rider–Horse Assignments:</strong> list, create, delete</li>
+<li><strong>Bookings:</strong> CRUD</li>
+<li><strong>Schedule &amp; Blocked Slots:</strong> schedule, blocked-slots CRUD</li>
+<li><strong>Competitions:</strong> CRUD</li>
+<li><strong>Incident Reports:</strong> CRUD</li>
+<li><strong>Guardian Portal:</strong> children, profiles</li>
+<li><strong>Subscription:</strong> status, checkout, portal, change-plan, webhook</li>
+<li><strong>Analytics &amp; Matching:</strong> analytics (Starter+), matching (Stable+)</li>
+<li><strong>Other:</strong> notifications, care-reminders, sessions, health</li>
+</ul>
+<hr>
+<h2 id="7-database-schema">7. Database Schema</h2>
+<h3>Core Tables</h3>
+<p>subscription_plans, stables, profiles, horses, riders, training_punches, bookings, health_logs, competitions, payments, rider_horse_assignments, blocked_slots, notifications, workers, incident_reports, user_invite_codes</p>
+<h3>Enums</h3>
+<p>subscription_tier, user_role, horse_temperament, skill_level, training_status, punch_type, discipline, intensity, health_log_type, booking_status</p>
+<h3>Storage Buckets</h3>
+<p>horse-photos, profile-avatars, stable-logos, id-cards</p>
+<hr>
+<h2 id="8-core-features">8. Core Features</h2>
+<p><strong>Horses:</strong> CRUD, photo upload, health logs with cost tracking, sessions, cost per horse</p>
+<p><strong>Riders:</strong> CRUD, profile/guardian link, ID card, horse assignments</p>
+<p><strong>Bookings:</strong> Student request → trainer approve/decline; statuses: scheduled, pending, declined, completed, cancelled, no_show</p>
+<p><strong>Schedule:</strong> Calendar view, blocked slots</p>
+<p><strong>Training Sessions:</strong> Types (lesson, training, competition, rest, medical), intensity, duration</p>
+<p><strong>Health Logs:</strong> Vet, vaccination, farrier, deworming, injury; cost tracking; care reminders</p>
+<p><strong>Competitions:</strong> CRUD</p>
+<p><strong>Incident Reports:</strong> CRUD; severity (minor, moderate, serious); liability/insurance</p>
+<p><strong>Care Reminders:</strong> Dashboard widget; overdue highlighted</p>
+<p><strong>Workload Alerts:</strong> Horses with >5 sessions, ≥3 hard, or ≥300 min in 7 days</p>
+<p><strong>Notifications:</strong> Booking updates; bell icon in navbar</p>
+<hr>
+<h2 id="9-premium-features">9. Premium Features</h2>
+<p><strong>Analytics (Starter+):</strong> Session stats, workload charts, cost per horse, total care cost</p>
+<p><strong>Horse–Rider Matching (Stable+):</strong> Compatibility based on suitability and rider level</p>
+<p><strong>AI Workload Suggestions (OpenAI):</strong> Horse detail page; requires OPENAI_API_KEY</p>
+<p><strong>Workers (Enterprise):</strong> Staff management</p>
+<p><strong>Parent / Guardian Portal:</strong> Guardians view children's riders, lessons, sessions (read-only)</p>
+<hr>
+<h2 id="10-integrations">10. Integrations</h2>
+<p><strong>Supabase:</strong> Auth, PostgreSQL + RLS, Storage</p>
+<p><strong>Stripe:</strong> Checkout, Customer Portal, Webhooks</p>
+<p><strong>Resend:</strong> Booking emails (via Edge Function)</p>
+<p><strong>OpenAI:</strong> Workload suggestions</p>
+<hr>
+<h2>Appendix: Migration Files</h2>
+<p>00001–00020: Initial schema, RLS, storage buckets, profile_id, assignments, booking policies, invite codes, blocked slots, notifications, workers, ID cards, incident reports, guardian role and RLS.</p>
+<hr>
+<p><em>End of SaddleUp Features Reference. For full detail, see SADDLEUP_FEATURES_REFERENCE.md</em></p>
+</body>
+</html>

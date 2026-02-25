@@ -1,26 +1,235 @@
-@import "tailwindcss";
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* ---------------- Design Tokens (Black Horse minimal) ---------------- */
 
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  --bg-main: #000000;
+  --bg-card: #0a0a0a;
+  --bg-elevated: #111111;
+  --bg-hover: #1a1a1a;
+
+  --border-subtle: rgba(255, 255, 255, 0.08);
+  --border-default: rgba(255, 255, 255, 0.12);
+
+  --text-primary: #ffffff;
+  --text-muted: rgba(255, 255, 255, 0.6);
+  --text-subtle: rgba(255, 255, 255, 0.4);
+
+  --radius: 0;
+  --radius-sm: 2px;
+
+  --background: var(--bg-main);
+  --foreground: var(--text-primary);
 }
 
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
-}
+/* ---------------- Base ---------------- */
 
 body {
   background: var(--background);
   color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: var(--font-inter), system-ui, sans-serif;
+  overflow-x: hidden;
 }
+
+/* ---------------- Typography ---------------- */
+
+h1, h2, h3 {
+  font-family: var(--font-playfair), Georgia, serif;
+}
+
+/* ---------------- Cards ---------------- */
+
+.card {
+  background: var(--bg-card);
+  border: 1px solid var(--border-subtle);
+}
+
+.card-hover:hover {
+  background: var(--bg-hover);
+}
+
+/* ---------------- Buttons ---------------- */
+
+.button-primary {
+  background: #ffffff;
+  color: #000000;
+  border: none;
+  font-weight: 500;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  transition: opacity 0.2s;
+}
+
+.button-primary:hover {
+  opacity: 0.95;
+}
+
+.button-secondary {
+  background: transparent;
+  color: #ffffff;
+  border: 1px solid var(--border-default);
+  transition: background 0.2s;
+}
+
+.button-secondary:hover {
+  background: rgba(255, 255, 255, 0.05);
+}
+
+/* ---------------- Inputs & Forms ---------------- */
+
+input,
+select,
+textarea {
+  background: var(--bg-card);
+  border: 1px solid var(--border-subtle);
+  color: var(--text-primary);
+  font-family: inherit;
+}
+
+input::placeholder,
+textarea::placeholder {
+  color: var(--text-subtle);
+}
+
+input:focus,
+select:focus,
+textarea:focus {
+  outline: none;
+  border-color: rgba(255, 255, 255, 0.3);
+}
+html {
+  scroll-behavior: smooth;
+  -webkit-overflow-scrolling: touch;
+}
+
+/* Parallax - liquidy smooth scrolling */
+.parallax-bg {
+  background-attachment: fixed;
+  background-size: cover;
+  background-position: center;
+}
+
+@media (prefers-reduced-motion: reduce), (hover: none) {
+  .parallax-bg {
+    background-attachment: scroll;
+  }
+}
+
+* {
+  transition: border-color 0.15s ease, background 0.15s ease, opacity 0.15s ease;
+}
+/* ===== Modal Animations ===== */
+
+@keyframes fadeInBackdrop {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes scaleInModal {
+  from {
+    opacity: 0;
+    transform: scale(0.95) translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+}
+
+@keyframes scaleOutModal {
+  from {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+  to {
+    opacity: 0;
+    transform: scale(0.95) translateY(10px);
+  }
+}
+
+.modal-backdrop {
+  animation: fadeInBackdrop 0.2s ease forwards;
+}
+
+.modal-enter {
+  animation: scaleInModal 0.22s ease forwards;
+}
+
+.modal-exit {
+  animation: scaleOutModal 0.18s ease forwards;
+}
+
+/* Responsive modal: scrollable on small screens */
+.modal-responsive {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 100%;
+  padding: 1rem;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+}
+@media (max-width: 640px) {
+  .modal-responsive {
+    align-items: flex-start;
+    padding: 0.75rem;
+  }
+}
+/* ===== Toast Animations ===== */
+
+@keyframes toastIn {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes toastOut {
+  from {
+    opacity: 1;
+    transform: translateY(0);
+  }
+  to {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+}
+
+.toast-enter {
+  animation: toastIn 0.25s ease forwards;
+}
+
+.toast-exit {
+  animation: toastOut 0.2s ease forwards;
+}
+
+/* ===== Hero grain & grid (Black Horse style) ===== */
+
+/* Film grain: SVG noise pattern, tiled */
+.hero-grain {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  opacity: 0.4;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='g'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch' result='noise'/%3E%3CfeColorMatrix in='noise' type='matrix' values='0 0 0 0 0.5 0 0 0 0 0.5 0 0 0 0 0.5 0 0 0 0.5 0'/%3E%3C/filter%3E%3Crect width='100' height='100' filter='url(%23g)'/%3E%3C/svg%3E");
+  background-size: 200px 200px;
+  mix-blend-mode: overlay;
+}
+
+.hero-grid {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  opacity: 0.5;
+  background-image:
+    linear-gradient(rgba(255, 255, 255, 0.05) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255, 255, 255, 0.05) 1px, transparent 1px);
+  background-size: 50px 50px;
+}
+

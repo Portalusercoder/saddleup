@@ -1,0 +1,7 @@
+-- AlterTable
+ALTER TABLE "Horse" ADD COLUMN "color" TEXT;
+ALTER TABLE "Horse" ADD COLUMN "dateOfBirth" DATETIME;
+ALTER TABLE "Horse" ADD COLUMN "height" REAL;
+ALTER TABLE "Horse" ADD COLUMN "markings" TEXT;
+ALTER TABLE "Horse" ADD COLUMN "microchip" TEXT;
+ALTER TABLE "Horse" ADD COLUMN "ueln" TEXT;

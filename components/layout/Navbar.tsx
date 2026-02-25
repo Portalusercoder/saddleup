@@ -1,0 +1,275 @@
+"use client";
+
+import Link from "next/link";
+import { usePathname, useRouter } from "next/navigation";
+import { useState, useEffect, useRef } from "react";
+import { createClient } from "@/lib/supabase/client";
+import { ProfileAvatar } from "@/components/ProfileAvatar";
+import NotificationBell from "@/components/NotificationBell";
+import { useProfile } from "@/components/providers/ProfileProvider";
+
+const navItemsByRole: Record<string, { href: string; label: string }[]> = {
+  guardian: [
+    { href: "/dashboard/guardian", label: "Parent Portal" },
+    { href: "/dashboard/profile", label: "Profile" },
+  ],
+  student: [
+    { href: "/dashboard", label: "Dashboard" },
+    { href: "/dashboard/my-horses", label: "My Horses" },
+    { href: "/dashboard/bookings", label: "My Bookings" },
+    { href: "/dashboard/training-history", label: "Training History" },
+    { href: "/dashboard/competitions", label: "Competitions" },
+    { href: "/dashboard/profile", label: "Profile" },
+  ],
+  trainer: [
+    { href: "/dashboard", label: "Dashboard" },
+    { href: "/dashboard/horses", label: "Horses" },
+    { href: "/dashboard/team", label: "Team Management" },
+    { href: "/dashboard/bookings", label: "Bookings" },
+    { href: "/dashboard/schedule", label: "Schedule" },
+    { href: "/dashboard/analytics", label: "Analytics" },
+    { href: "/dashboard/matching", label: "Matching" },
+    { href: "/dashboard/incidents", label: "Incidents" },
+    { href: "/dashboard/profile", label: "Profile" },
+  ],
+  owner: [
+    { href: "/dashboard", label: "Dashboard" },
+    { href: "/dashboard/horses", label: "Horses" },
+    { href: "/dashboard/team", label: "Team Management" },
+    { href: "/dashboard/bookings", label: "Bookings" },
+    { href: "/dashboard/schedule", label: "Schedule" },
+    { href: "/dashboard/analytics", label: "Analytics" },
+    { href: "/dashboard/matching", label: "Matching" },
+    { href: "/dashboard/incidents", label: "Incidents" },
+    { href: "/dashboard/settings", label: "Billing & Plan" },
+    { href: "/dashboard/profile", label: "Profile" },
+  ],
+};
+
+export default function Navbar() {
+  const pathname = usePathname();
+  const router = useRouter();
+  const [mobileOpen, setMobileOpen] = useState(false);
+  const [profileMenuOpen, setProfileMenuOpen] = useState(false);
+  const profileMenuRef = useRef<HTMLDivElement>(null);
+  const { profile, loading: profileLoading, userId } = useProfile();
+
+  const user = userId ? { id: userId, email: profile?.email } : null;
+  const authChecked = !profileLoading;
+
+  useEffect(() => {
+    const handleClickOutside = (e: MouseEvent) => {
+      if (profileMenuRef.current && !profileMenuRef.current.contains(e.target as Node)) {
+        setProfileMenuOpen(false);
+      }
+    };
+    if (profileMenuOpen) {
+      document.addEventListener("click", handleClickOutside);
+    }
+    return () => document.removeEventListener("click", handleClickOutside);
+  }, [profileMenuOpen]);
+
+  const handleSignOut = async () => {
+    const supabase = createClient();
+    await supabase.auth.signOut();
+    router.push("/");
+    router.refresh();
+  };
+
+  const navItems =
+    profile?.role && navItemsByRole[profile.role]
+      ? navItemsByRole[profile.role]
+      : navItemsByRole.owner;
+
+  const NavLink = ({ item }: { item: (typeof navItems)[0] }) => {
+    const isActive =
+      pathname === item.href || pathname.startsWith(item.href + "/");
+    return (
+      <Link
+        href={item.href}
+        onClick={() => setMobileOpen(false)}
+        className={`block px-4 py-3 text-sm font-medium transition uppercase tracking-wider ${
+          isActive
+            ? "bg-white/10 text-white"
+            : "text-white/60 hover:text-white hover:bg-white/5"
+        }`}
+      >
+        {item.label}
+      </Link>
+    );
+  };
+
+  const isAuthPage = pathname === "/login" || pathname === "/signup";
+  const isHome = pathname === "/";
+
+  return (
+    <div className="relative">
+      <nav
+        className={`h-20 w-full flex items-center justify-between px-4 sm:px-6 md:px-12 lg:px-16 xl:px-20 text-white sticky top-0 z-50 ${
+          isHome ? "" : "bg-black border-b border-white/10"
+        }`}
+      >
+        {/* Left: Logo - same font as hero (Playfair Display) */}
+        <Link href="/" className="flex flex-col leading-tight font-serif">
+          <span
+            className={`font-bold tracking-tight text-[0.9rem] md:text-[1rem] ${
+              isHome ? "text-white/95" : "text-white"
+            }`}
+          >
+            Saddle
+          </span>
+          <span
+            className={`font-bold tracking-tight text-[0.9rem] md:text-[1rem] ${
+              isHome ? "text-white/95" : "text-white"
+            }`}
+          >
+            Up
+          </span>
+        </Link>
+
+        {/* Center: Nav links (home page only; dashboard uses sidebar on md+) */}
+        <div className="flex items-center gap-2">
+          {isHome && !user && (
+            <div className="hidden lg:flex items-center gap-6 xl:gap-8 uppercase text-[0.65rem] md:text-[0.7rem] tracking-[0.2em] font-light text-white/90">
+              <Link href="/#features" className="hover:text-white transition">
+                Features
+              </Link>
+              <Link href="/#pricing" className="hover:text-white transition">
+                Pricing
+              </Link>
+              <Link href="/#about" className="hover:text-white transition">
+                About
+              </Link>
+              <Link href="/#pricing" className="hover:text-white transition">
+                Information
+              </Link>
+              <Link href="/login" className="hover:text-white transition">
+                Contact
+              </Link>
+            </div>
+          )}
+
+          {authChecked && user ? (
+            <div className="flex items-center gap-3 ml-auto">
+              {!isAuthPage && !isHome && <NotificationBell />}
+              <div className="relative" ref={profileMenuRef}>
+              <button
+                onClick={() => setProfileMenuOpen((o) => !o)}
+                className="flex items-center hover:opacity-90 transition rounded-full focus:outline-none focus:ring-2 focus:ring-white/30"
+                aria-expanded={profileMenuOpen}
+                aria-haspopup="true"
+                title="Profile menu"
+              >
+                <ProfileAvatar
+                  avatarUrl={profile?.avatarUrl}
+                  name={profile?.fullName ?? user.email}
+                  size="sm"
+                />
+              </button>
+              {profileMenuOpen && (
+                <div className="absolute right-0 top-full mt-2 py-2 min-w-[160px] border border-white/10 bg-black z-50">
+                  <Link
+                    href="/dashboard/profile"
+                    onClick={() => setProfileMenuOpen(false)}
+                    className="block px-4 py-2.5 text-sm text-white hover:bg-white/10 uppercase tracking-wider"
+                  >
+                    Go to profile
+                  </Link>
+                  {profile?.role === "owner" && (
+                    <Link
+                      href="/dashboard/settings"
+                      onClick={() => setProfileMenuOpen(false)}
+                      className="block px-4 py-2.5 text-sm text-white hover:bg-white/10 uppercase tracking-wider"
+                    >
+                      Settings
+                    </Link>
+                  )}
+                  <button
+                    onClick={() => {
+                      setProfileMenuOpen(false);
+                      handleSignOut();
+                    }}
+                    className="block w-full text-left px-4 py-2.5 text-sm text-white/60 hover:bg-white/10 hover:text-white uppercase tracking-wider"
+                  >
+                    Sign out
+                  </button>
+                </div>
+              )}
+              </div>
+            </div>
+          ) : (
+            !isAuthPage && (
+              <div className="flex items-center gap-4">
+                {!isHome && (
+                  <Link
+                    href="/#pricing"
+                    className="px-3 py-2 text-sm text-white/60 hover:text-white transition hidden sm:block"
+                  >
+                    Pricing
+                  </Link>
+                )}
+                <Link
+                  href="/login"
+                  className={`uppercase tracking-[0.2em] font-light transition text-[0.7rem] ${
+                    isHome ? "text-white/90 hover:text-white" : "text-white/60 hover:text-white"
+                  }`}
+                >
+                  Sign in
+                </Link>
+                <Link
+                  href="/signup"
+                  className={`uppercase tracking-[0.2em] font-light transition text-[0.7rem] ${
+                    isHome
+                      ? "text-white hover:text-white/95"
+                      : "px-4 py-2 bg-white text-black hover:bg-white/90 rounded font-medium"
+                  }`}
+                >
+                  Sign up
+                </Link>
+              </div>
+            )
+          )}
+
+          {user && !isAuthPage && (
+            <button
+              onClick={() => setMobileOpen(!mobileOpen)}
+              className="md:hidden p-2 rounded-lg hover:bg-white/10"
+              aria-label="Menu"
+            >
+              <svg
+                className="w-6 h-6"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                {mobileOpen ? (
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M6 18L18 6M6 6l12 12"
+                  />
+                ) : (
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M4 6h16M4 12h16M4 18h16"
+                  />
+                )}
+              </svg>
+            </button>
+          )}
+        </div>
+      </nav>
+
+      {mobileOpen && user && !isAuthPage && !isHome && (
+        <div className="md:hidden absolute top-20 left-0 right-0 bg-black border-b border-white/10 py-2 px-4 z-40 max-h-[calc(100vh-5rem)] overflow-y-auto">
+          {navItems.map((item) => (
+            <NavLink key={item.href} item={item} />
+          ))}
+        </div>
+      )}
+    </div>
+  );
+}
