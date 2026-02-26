@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import PixelCard from "@/components/ui/PixelCard";
 
 interface SubscriptionData {
   tier: string;
@@ -209,50 +210,60 @@ export default function SubscriptionBilling() {
         <div className="mt-6 pt-6 border-t border-white/10">
           <h3 className="text-sm font-medium text-white mb-3 uppercase tracking-wider">Plans</h3>
           <div className="grid gap-3 sm:grid-cols-2">
-            <div className={`p-4 border ${data.tier === "starter" ? "border-white/30 bg-white/5" : "border-white/10"}`}>
-              <p className="font-medium text-white">Starter — $19.99/mo</p>
-              <p className="text-sm text-white/60 mt-1">5 horses, 25 riders, analytics</p>
-              {data.tier === "free" && (
-                <button
-                  onClick={() => handleCheckout("starter")}
-                  disabled={!!checkoutLoading}
-                  className="mt-3 text-sm text-white/80 hover:text-white underline disabled:opacity-50"
-                >
-                  Upgrade to Starter
-                </button>
-              )}
-              {data.tier === "stable" && (
-                <button
-                  onClick={() => handleChangePlan("starter")}
-                  disabled={!!changePlanLoading}
-                  className="mt-3 text-sm text-white/80 hover:text-white underline disabled:opacity-50"
-                >
-                  Change to Starter
-                </button>
-              )}
-            </div>
-            <div className={`p-4 border ${data.tier === "stable" ? "border-white/30 bg-white/5" : "border-white/10"}`}>
-              <p className="font-medium text-white">Stable — $49.99/mo</p>
-              <p className="text-sm text-white/60 mt-1">50 horses, 200 riders, matching</p>
-              {data.tier === "free" && (
-                <button
-                  onClick={() => handleCheckout("stable")}
-                  disabled={!!checkoutLoading}
-                  className="mt-3 text-sm text-white/80 hover:text-white underline disabled:opacity-50"
-                >
-                  Upgrade to Stable
-                </button>
-              )}
-              {data.tier === "starter" && (
-                <button
-                  onClick={() => handleChangePlan("stable")}
-                  disabled={!!changePlanLoading}
-                  className="mt-3 text-sm text-white/80 hover:text-white underline disabled:opacity-50"
-                >
-                  Change to Stable
-                </button>
-              )}
-            </div>
+            <PixelCard
+              variant="white"
+              className={`!min-h-[140px] ${data.tier === "starter" ? "border-white/30" : ""}`}
+            >
+              <div className="absolute inset-0 p-4 z-10 flex flex-col">
+                <p className="font-medium text-white">Starter — $19.99/mo</p>
+                <p className="text-sm text-white/60 mt-1">5 horses, 25 riders, analytics</p>
+                {data.tier === "free" && (
+                  <button
+                    onClick={() => handleCheckout("starter")}
+                    disabled={!!checkoutLoading}
+                    className="mt-3 text-sm text-white/80 hover:text-white underline disabled:opacity-50 text-left"
+                  >
+                    Upgrade to Starter
+                  </button>
+                )}
+                {data.tier === "stable" && (
+                  <button
+                    onClick={() => handleChangePlan("starter")}
+                    disabled={!!changePlanLoading}
+                    className="mt-3 text-sm text-white/80 hover:text-white underline disabled:opacity-50 text-left"
+                  >
+                    Change to Starter
+                  </button>
+                )}
+              </div>
+            </PixelCard>
+            <PixelCard
+              variant="white"
+              className={`!min-h-[140px] ${data.tier === "stable" ? "border-white/30" : ""}`}
+            >
+              <div className="absolute inset-0 p-4 z-10 flex flex-col">
+                <p className="font-medium text-white">Stable — $49.99/mo</p>
+                <p className="text-sm text-white/60 mt-1">50 horses, 200 riders, matching</p>
+                {data.tier === "free" && (
+                  <button
+                    onClick={() => handleCheckout("stable")}
+                    disabled={!!checkoutLoading}
+                    className="mt-3 text-sm text-white/80 hover:text-white underline disabled:opacity-50 text-left"
+                  >
+                    Upgrade to Stable
+                  </button>
+                )}
+                {data.tier === "starter" && (
+                  <button
+                    onClick={() => handleChangePlan("stable")}
+                    disabled={!!changePlanLoading}
+                    className="mt-3 text-sm text-white/80 hover:text-white underline disabled:opacity-50 text-left"
+                  >
+                    Change to Stable
+                  </button>
+                )}
+              </div>
+            </PixelCard>
           </div>
         </div>
       )}

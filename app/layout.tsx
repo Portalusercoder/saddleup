@@ -30,7 +30,7 @@ export default function RootLayout({
       <body className="bg-black text-white font-sans antialiased">
         <ProfileProvider>
           <Navbar />
-          {children}
+          <div className="pt-20">{children}</div>
         </ProfileProvider>
       </body>
     </html>
