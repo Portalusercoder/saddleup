@@ -6,6 +6,7 @@ Saddle Up supports automated newsletters for stable owners. Subscribers can sign
 
 - **Landing page signup** — Footer form adds subscribers to the global Saddle Up list
 - **Welcome email** — Automatically sent when someone subscribes
+- **Unsubscribe link** — Every email includes a one-click unsubscribe; uses `/api/newsletter/unsubscribe?token=...`
 - **Per-stable newsletters** — Owners add subscribers and send from Dashboard → Newsletter
 - **Campaign history** — Track sent newsletters and recipient counts
 - **Weekly digest** — Vercel Cron sends a digest to global subscribers every Monday 9:00 UTC

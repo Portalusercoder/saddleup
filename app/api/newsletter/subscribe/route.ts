@@ -1,15 +1,22 @@
 import { NextResponse } from "next/server";
+import { randomUUID } from "crypto";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { sendNotificationEmail } from "@/lib/send-notification-email";
 
 const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+const BASE_URL = process.env.NEXT_PUBLIC_APP_URL || "https://saddleup-sand.vercel.app";
 
 const WELCOME_EMAIL_SUBJECT = "You're subscribed to Saddle Up";
-const WELCOME_EMAIL_HTML = `
+
+function welcomeEmailHtml(unsubscribeToken: string) {
+  const unsubUrl = `${BASE_URL}/api/newsletter/unsubscribe?token=${unsubscribeToken}`;
+  return `
 <p>Thanks for subscribing!</p>
 <p>You'll receive news and updates about Saddle Up — modern horse & stable management for riding schools, trainers, and horse owners.</p>
 <p>— The Saddle Up team</p>
+<p style="margin-top:24px;font-size:12px;color:#888"><a href="${unsubUrl}" style="color:#888">Unsubscribe</a> from this list</p>
 `;
+}
 
 export async function POST(req: Request) {
   try {
@@ -29,7 +36,7 @@ export async function POST(req: Request) {
 
     const { data: existing } = await supabase
       .from("newsletter_subscribers")
-      .select("id, unsubscribed_at")
+      .select("id, unsubscribed_at, unsubscribe_token")
       .eq("email", emailTrimmed)
       .is("stable_id", stable_id)
       .maybeSingle();
@@ -45,27 +52,52 @@ export async function POST(req: Request) {
           })
           .eq("id", existing.id);
       }
-    const emailResult = await sendNotificationEmail(emailTrimmed, WELCOME_EMAIL_SUBJECT, WELCOME_EMAIL_HTML);
-    if (!emailResult.ok) {
-      console.error("newsletter welcome email failed:", emailResult.error);
-    }
-    return NextResponse.json({
-      success: true,
-      message: "You're subscribed!",
-      emailSent: emailResult.ok,
-      ...(emailResult.error && { emailError: emailResult.error }),
-    });
+      let token = existing.unsubscribe_token;
+      if (!token) {
+        token = randomUUID();
+        await supabase
+          .from("newsletter_subscribers")
+          .update({ unsubscribe_token: token })
+          .eq("id", existing.id);
+      }
+      const emailResult = await sendNotificationEmail(
+        emailTrimmed,
+        WELCOME_EMAIL_SUBJECT,
+        welcomeEmailHtml(token)
+      );
+      if (!emailResult.ok) {
+        console.error("newsletter welcome email failed:", emailResult.error);
+      }
+      return NextResponse.json({
+        success: true,
+        message: "You're subscribed!",
+        emailSent: emailResult.ok,
+        ...(emailResult.error && { emailError: emailResult.error }),
+      });
     }
 
+    const token = randomUUID();
     const { error } = await supabase.from("newsletter_subscribers").insert({
       email: emailTrimmed,
       full_name: fullName?.trim() || null,
       stable_id,
+      unsubscribe_token: token,
     });
 
     if (error) {
       if (error.code === "23505") {
-        const emailResult = await sendNotificationEmail(emailTrimmed, WELCOME_EMAIL_SUBJECT, WELCOME_EMAIL_HTML);
+        const { data: dup } = await supabase
+          .from("newsletter_subscribers")
+          .select("unsubscribe_token")
+          .eq("email", emailTrimmed)
+          .is("stable_id", stable_id)
+          .single();
+        const t = dup?.unsubscribe_token || randomUUID();
+        const emailResult = await sendNotificationEmail(
+          emailTrimmed,
+          WELCOME_EMAIL_SUBJECT,
+          welcomeEmailHtml(t)
+        );
         return NextResponse.json({
           success: true,
           message: "You're subscribed!",
@@ -79,7 +111,11 @@ export async function POST(req: Request) {
       );
     }
 
-    const emailResult2 = await sendNotificationEmail(emailTrimmed, WELCOME_EMAIL_SUBJECT, WELCOME_EMAIL_HTML);
+    const emailResult2 = await sendNotificationEmail(
+      emailTrimmed,
+      WELCOME_EMAIL_SUBJECT,
+      welcomeEmailHtml(token)
+    );
     if (!emailResult2.ok) {
       console.error("newsletter welcome email failed:", emailResult2.error);
     }

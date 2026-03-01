@@ -1,4 +1,5 @@
 import { NextResponse } from "next/server";
+import { randomUUID } from "crypto";
 import { createClient } from "@/lib/supabase/server";
 
 export async function GET(req: Request) {
@@ -118,6 +119,7 @@ export async function POST(req: Request) {
 
     const { error } = await supabase.from("newsletter_subscribers").insert({
       email,
+      unsubscribe_token: randomUUID(),
       full_name: fullName,
       stable_id: stableId,
     });

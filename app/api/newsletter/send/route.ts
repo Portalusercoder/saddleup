@@ -1,7 +1,16 @@
 import { NextResponse } from "next/server";
+import { randomUUID } from "crypto";
 import { createClient } from "@/lib/supabase/server";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { sendNotificationEmail } from "@/lib/send-notification-email";
+
+const BASE_URL = process.env.NEXT_PUBLIC_APP_URL || "https://saddleup-sand.vercel.app";
+
+function appendUnsubscribeLink(html: string, token: string) {
+  const unsubUrl = `${BASE_URL}/api/newsletter/unsubscribe?token=${token}`;
+  const footer = `<p style="margin-top:24px;font-size:12px;color:#888"><a href="${unsubUrl}" style="color:#888">Unsubscribe</a> from this list</p>`;
+  return html.trim() + footer;
+}
 
 export async function POST(req: Request) {
   try {
@@ -44,7 +53,7 @@ export async function POST(req: Request) {
 
     const { data: subscribers, error: fetchError } = await admin
       .from("newsletter_subscribers")
-      .select("email")
+      .select("email, unsubscribe_token")
       .eq("stable_id", stableId)
       .is("unsubscribed_at", null);
 
@@ -53,11 +62,12 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: "Could not fetch subscribers" }, { status: 500 });
     }
 
-    const emails = (subscribers || [])
-      .map((s) => s.email)
-      .filter((e): e is string => !!e && e.includes("@"));
+    const list = (subscribers || []).filter(
+      (s): s is { email: string; unsubscribe_token: string | null } =>
+        !!s.email && s.email.includes("@")
+    );
 
-    if (emails.length === 0) {
+    if (list.length === 0) {
       return NextResponse.json(
         { error: "No subscribers to send to" },
         { status: 400 }
@@ -67,12 +77,22 @@ export async function POST(req: Request) {
     let sent = 0;
     const failures: string[] = [];
 
-    for (const to of emails) {
-      const result = await sendNotificationEmail(to, subject.trim(), bodyHtml.trim());
+    for (const s of list) {
+      let token = s.unsubscribe_token;
+      if (!token) {
+        token = randomUUID();
+        await admin
+          .from("newsletter_subscribers")
+          .update({ unsubscribe_token: token })
+          .eq("email", s.email)
+          .eq("stable_id", stableId);
+      }
+      const html = appendUnsubscribeLink(bodyHtml.trim(), token);
+      const result = await sendNotificationEmail(s.email, subject.trim(), html);
       if (result.ok) {
         sent++;
       } else {
-        failures.push(to);
+        failures.push(s.email);
       }
     }
 
@@ -86,7 +106,7 @@ export async function POST(req: Request) {
     return NextResponse.json({
       success: true,
       sent,
-      total: emails.length,
+      total: list.length,
       failures: failures.length > 0 ? failures : undefined,
     });
   } catch (err) {
