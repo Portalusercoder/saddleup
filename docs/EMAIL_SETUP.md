@@ -60,10 +60,12 @@ Open `.env` in your project and add (or update):
 ```
 SUPABASE_SERVICE_ROLE_KEY=eyJ...your_service_role_key...
 NEXT_PUBLIC_APP_URL=http://localhost:3000
+RESEND_API_KEY=re_your_resend_key
 ```
 
 - **SUPABASE_SERVICE_ROLE_KEY**: Supabase Dashboard → Settings → API → `service_role` (click to reveal)
 - **NEXT_PUBLIC_APP_URL**: `http://localhost:3000` for dev, your domain for production
+- **RESEND_API_KEY**: Resend API key. Add to **Vercel** env vars for newsletter/welcome emails (bypasses Edge Function). Also add to Supabase secrets for booking emails.
 
 ## 4. Test
 

@@ -11,34 +11,6 @@ const WELCOME_EMAIL_HTML = `
 <p>— The Saddle Up team</p>
 `;
 
-/** GET ?test=1&to=your@email.com — debug email delivery (remove in production) */
-export async function GET(req: Request) {
-  const { searchParams } = new URL(req.url);
-  if (searchParams.get("test") !== "1") {
-    return NextResponse.json({ error: "Use POST to subscribe" }, { status: 405 });
-  }
-  const to = searchParams.get("to");
-  if (!to || !to.includes("@")) {
-    return NextResponse.json(
-      { error: "Add ?test=1&to=your@email.com to test" },
-      { status: 400 }
-    );
-  }
-  const result = await sendNotificationEmail(
-    to,
-    "Saddle Up test email",
-    "<p>If you got this, email is working!</p>"
-  );
-  return NextResponse.json({
-    ok: result.ok,
-    error: result.error,
-    debug: {
-      hasSupabaseUrl: !!process.env.NEXT_PUBLIC_SUPABASE_URL,
-      hasServiceRoleKey: !!process.env.SUPABASE_SERVICE_ROLE_KEY,
-    },
-  });
-}
-
 export async function POST(req: Request) {
   try {
     const body = await req.json();
@@ -72,9 +44,17 @@ export async function POST(req: Request) {
             subscribed_at: new Date().toISOString(),
           })
           .eq("id", existing.id);
-        await sendNotificationEmail(emailTrimmed, WELCOME_EMAIL_SUBJECT, WELCOME_EMAIL_HTML);
       }
-      return NextResponse.json({ success: true, message: "You're subscribed!" });
+    const emailResult = await sendNotificationEmail(emailTrimmed, WELCOME_EMAIL_SUBJECT, WELCOME_EMAIL_HTML);
+    if (!emailResult.ok) {
+      console.error("newsletter welcome email failed:", emailResult.error);
+    }
+    return NextResponse.json({
+      success: true,
+      message: "You're subscribed!",
+      emailSent: emailResult.ok,
+      ...(emailResult.error && { emailError: emailResult.error }),
+    });
     }
 
     const { error } = await supabase.from("newsletter_subscribers").insert({
@@ -85,7 +65,12 @@ export async function POST(req: Request) {
 
     if (error) {
       if (error.code === "23505") {
-        return NextResponse.json({ success: true, message: "You're subscribed!" });
+        const emailResult = await sendNotificationEmail(emailTrimmed, WELCOME_EMAIL_SUBJECT, WELCOME_EMAIL_HTML);
+        return NextResponse.json({
+          success: true,
+          message: "You're subscribed!",
+          emailSent: emailResult.ok,
+        });
       }
       console.error("newsletter subscribe error:", error);
       return NextResponse.json(
@@ -94,9 +79,16 @@ export async function POST(req: Request) {
       );
     }
 
-    await sendNotificationEmail(emailTrimmed, WELCOME_EMAIL_SUBJECT, WELCOME_EMAIL_HTML);
-
-    return NextResponse.json({ success: true, message: "You're subscribed!" });
+    const emailResult2 = await sendNotificationEmail(emailTrimmed, WELCOME_EMAIL_SUBJECT, WELCOME_EMAIL_HTML);
+    if (!emailResult2.ok) {
+      console.error("newsletter welcome email failed:", emailResult2.error);
+    }
+    return NextResponse.json({
+      success: true,
+      message: "You're subscribed!",
+      emailSent: emailResult2.ok,
+      ...(emailResult2.error && { emailError: emailResult2.error }),
+    });
   } catch (err) {
     console.error("newsletter subscribe error:", err);
     return NextResponse.json(

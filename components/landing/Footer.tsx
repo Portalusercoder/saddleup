@@ -29,7 +29,8 @@ function NewsletterSignup() {
     setStatus("loading");
     setMessage("");
     try {
-      const res = await fetch("/api/newsletter/subscribe", {
+      const url = `${typeof window !== "undefined" ? window.location.origin : ""}/api/newsletter/subscribe`;
+      const res = await fetch(url, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ email: email.trim() }),
@@ -37,7 +38,8 @@ function NewsletterSignup() {
       const data = await res.json();
       if (res.ok) {
         setStatus("success");
-        setMessage(data.message || "You're subscribed!");
+        const msg = data.message || "You're subscribed!";
+        setMessage(data.emailSent === false ? `${msg} (Check spam—confirmation email may have failed.)` : msg);
         setEmail("");
       } else {
         setStatus("error");
