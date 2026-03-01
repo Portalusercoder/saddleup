@@ -1,7 +1,15 @@
 import { NextResponse } from "next/server";
 import { createAdminClient } from "@/lib/supabase/admin";
+import { sendNotificationEmail } from "@/lib/send-notification-email";
 
 const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+const WELCOME_EMAIL_SUBJECT = "You're subscribed to Saddle Up";
+const WELCOME_EMAIL_HTML = `
+<p>Thanks for subscribing!</p>
+<p>You'll receive news and updates about Saddle Up — modern horse & stable management for riding schools, trainers, and horse owners.</p>
+<p>— The Saddle Up team</p>
+`;
 
 export async function POST(req: Request) {
   try {
@@ -36,6 +44,7 @@ export async function POST(req: Request) {
             subscribed_at: new Date().toISOString(),
           })
           .eq("id", existing.id);
+        await sendNotificationEmail(emailTrimmed, WELCOME_EMAIL_SUBJECT, WELCOME_EMAIL_HTML);
       }
       return NextResponse.json({ success: true, message: "You're subscribed!" });
     }
@@ -56,6 +65,8 @@ export async function POST(req: Request) {
         { status: 500 }
       );
     }
+
+    await sendNotificationEmail(emailTrimmed, WELCOME_EMAIL_SUBJECT, WELCOME_EMAIL_HTML);
 
     return NextResponse.json({ success: true, message: "You're subscribed!" });
   } catch (err) {

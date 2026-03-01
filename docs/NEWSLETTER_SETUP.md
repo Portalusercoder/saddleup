@@ -5,8 +5,10 @@ Saddle Up supports automated newsletters for stable owners. Subscribers can sign
 ## Features
 
 - **Landing page signup** — Footer form adds subscribers to the global Saddle Up list
+- **Welcome email** — Automatically sent when someone subscribes
 - **Per-stable newsletters** — Owners add subscribers and send from Dashboard → Newsletter
 - **Campaign history** — Track sent newsletters and recipient counts
+- **Weekly digest** — Vercel Cron sends a digest to global subscribers every Monday 9:00 UTC
 - **Resend integration** — Uses the same Resend setup as booking emails (see `EMAIL_SETUP.md`)
 
 ## Database
@@ -21,6 +23,13 @@ supabase db push
 Tables:
 - `newsletter_subscribers` — email, full_name, stable_id (null = global), subscribed_at, unsubscribed_at
 - `newsletter_campaigns` — subject, body_html, recipient_count, sent_at (per stable)
+
+## Automated Emails
+
+| Trigger | Email |
+|---------|-------|
+| **Subscribe** (landing page or dashboard) | Welcome email confirming subscription |
+| **Weekly** (Monday 9:00 UTC) | Digest to global subscribers |
 
 ## Dashboard
 
@@ -38,21 +47,28 @@ Tables:
 | `/api/newsletter/send` | POST | Owner | Send newsletter to your subscribers |
 | `/api/newsletter/campaigns` | GET | Owner/Trainer | List sent campaigns |
 
-## Future: Automated Scheduled Newsletters
+## Automated Scheduled Newsletter (Weekly Digest)
 
-To send a weekly digest automatically, add a Vercel Cron job:
+The weekly digest runs automatically via Vercel Cron every **Monday at 9:00 UTC**. It sends to the global subscriber list (landing page signups).
 
-1. Create `app/api/cron/newsletter-digest/route.ts`
-2. Use `createAdminClient()` to fetch subscribers and send via `sendNotificationEmail`
-3. Add to `vercel.json`:
+### Setup
 
-```json
-{
-  "crons": [{
-    "path": "/api/cron/newsletter-digest",
-    "schedule": "0 9 * * 1"
-  }]
-}
+1. **Add `CRON_SECRET` to Vercel** — Project → Settings → Environment Variables
+   - Generate: `openssl rand -hex 32`
+   - Vercel sends this as `Authorization: Bearer $CRON_SECRET` when invoking the cron
+
+2. **Cron config** — Already in `vercel.json`:
+   ```json
+   {
+     "crons": [{ "path": "/api/cron/newsletter-digest", "schedule": "0 9 * * 1" }]
+   }
+   ```
+
+3. **Customize** — Edit the subject/HTML in `app/api/cron/newsletter-digest/route.ts`
+
+### Manual trigger (testing)
+
+```bash
+curl -H "Authorization: Bearer YOUR_CRON_SECRET" \
+  https://your-app.vercel.app/api/cron/newsletter-digest
 ```
-
-(Sends every Monday at 9:00 UTC.)
