@@ -6,6 +6,7 @@ import { useProfile } from "@/components/providers/ProfileProvider";
 import UpgradePlanModal from "@/components/dashboard/UpgradePlanModal";
 import { IdCardUpload } from "@/components/dashboard/IdCardUpload";
 import LoadingSpinner from "@/components/ui/LoadingSpinner";
+import TableSkeleton from "@/components/ui/TableSkeleton";
 
 interface Rider {
   id: string;
@@ -181,7 +182,7 @@ export default function TeamRidersPage() {
       )}
 
       {loading ? (
-        <p className="text-white/50">Loading riders...</p>
+        <TableSkeleton rows={6} cols={3} />
       ) : filtered.length === 0 ? (
         <p className="text-white/50">
           {search ? "No riders match your search." : "No riders yet. Add one or use Add member by personal ID above."}

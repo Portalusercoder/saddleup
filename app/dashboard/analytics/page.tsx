@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useProfile } from "@/components/providers/ProfileProvider";
+import TableSkeleton from "@/components/ui/TableSkeleton";
 import {
   LineChart,
   Line,
@@ -60,8 +61,11 @@ export default function AnalyticsPage() {
 
   if (loading) {
     return (
-      <div className="flex items-center justify-center min-h-[40vh]">
-        <p className="text-white/50">Loading analytics...</p>
+      <div className="space-y-6">
+        <h1 className="font-serif text-2xl md:text-3xl font-normal text-white">
+          Analytics
+        </h1>
+        <TableSkeleton rows={6} cols={4} />
       </div>
     );
   }

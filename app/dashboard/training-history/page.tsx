@@ -5,6 +5,7 @@ import Link from "next/link";
 import { HorseAvatar } from "@/components/HorseAvatar";
 import { useProfile } from "@/components/providers/ProfileProvider";
 import { useRouter } from "next/navigation";
+import TableSkeleton from "@/components/ui/TableSkeleton";
 
 interface Session {
   id: string;
@@ -84,7 +85,7 @@ export default function TrainingHistoryPage() {
       </p>
 
       {loading ? (
-        <p className="text-white/50">Loading...</p>
+        <TableSkeleton rows={6} cols={4} showBottomBar={false} />
       ) : sortedSessions.length === 0 ? (
         <div className="border border-white/10 p-8 text-center">
           <p className="text-white/60 mb-2">No training sessions yet</p>

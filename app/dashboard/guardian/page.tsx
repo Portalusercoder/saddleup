@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import { HorseAvatar } from "@/components/HorseAvatar";
+import TableSkeleton from "@/components/ui/TableSkeleton";
 
 interface Child {
   id: string;
@@ -99,8 +100,11 @@ export default function GuardianPage() {
 
   if (loading) {
     return (
-      <div className="flex items-center justify-center min-h-[40vh]">
-        <p className="text-white/50">Loading...</p>
+      <div className="space-y-6">
+        <h1 className="font-serif text-3xl md:text-4xl font-normal text-white">
+          Parent Portal
+        </h1>
+        <TableSkeleton rows={6} cols={4} />
       </div>
     );
   }

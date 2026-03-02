@@ -1,11 +1,13 @@
 import { NextResponse } from "next/server";
 import { createAdminClient } from "@/lib/supabase/admin";
+import { logAuthFailure } from "@/lib/security-logger";
 
 export async function GET(req: Request) {
   const { searchParams } = new URL(req.url);
   const token = searchParams.get("token");
 
   if (!token || token.length < 10) {
+    logAuthFailure("Newsletter unsubscribe: invalid or missing token");
     return NextResponse.redirect(
       `${process.env.NEXT_PUBLIC_APP_URL || "https://saddleup-sand.vercel.app"}/newsletter/unsubscribe?error=invalid`
     );

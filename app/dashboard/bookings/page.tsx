@@ -5,6 +5,7 @@ import Link from "next/link";
 import { useProfile } from "@/components/providers/ProfileProvider";
 import { HorseAvatar } from "@/components/HorseAvatar";
 import LoadingSpinner from "@/components/ui/LoadingSpinner";
+import TableSkeleton from "@/components/ui/TableSkeleton";
 
 interface Booking {
   id: string;
@@ -220,7 +221,7 @@ export default function BookingsPage() {
       </div>
 
       {loading ? (
-        <p className="text-white/50">Loading...</p>
+        <TableSkeleton rows={6} cols={4} />
       ) : (
         <>
           {isTrainerOrOwner && pending.length > 0 && (

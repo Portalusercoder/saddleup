@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { randomUUID } from "crypto";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { sendNotificationEmail } from "@/lib/send-notification-email";
+import { logCronInvoked } from "@/lib/security-logger";
 
 // Vercel Cron: runs on schedule (e.g. weekly)
 // Add CRON_SECRET to Vercel env vars; Vercel sends it as Authorization: Bearer $CRON_SECRET
@@ -25,6 +26,7 @@ export async function GET(req: Request) {
   const authHeader = req.headers.get("authorization");
   const expected = process.env.CRON_SECRET;
   if (expected && authHeader !== `Bearer ${expected}`) {
+    logCronInvoked("newsletter-digest", { meta: { unauthorized: true } });
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
@@ -65,6 +67,7 @@ export async function GET(req: Request) {
       if (result.ok) sent++;
     }
 
+    logCronInvoked("newsletter-digest", { sent, total: list.length });
     return NextResponse.json({ sent, total: list.length });
   } catch (err) {
     console.error("newsletter digest error:", err);

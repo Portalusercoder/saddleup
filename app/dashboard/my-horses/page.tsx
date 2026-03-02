@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import { HorseAvatar } from "@/components/HorseAvatar";
+import TableSkeleton from "@/components/ui/TableSkeleton";
 
 interface Session {
   id: number;
@@ -52,7 +53,7 @@ export default function MyHorsesPage() {
       </p>
 
       {loading ? (
-        <p className="text-white/50">Loading...</p>
+        <TableSkeleton rows={6} cols={3} showBottomBar={false} />
       ) : horses.length === 0 ? (
         <div className="border border-white/10 p-8 text-center">
           <p className="text-white/60 mb-2">No horses assigned yet</p>

@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import Link from "next/link";
 import { useProfile } from "@/components/providers/ProfileProvider";
 import LoadingSpinner from "@/components/ui/LoadingSpinner";
+import TableSkeleton from "@/components/ui/TableSkeleton";
 
 interface IncidentReport {
   id: string;
@@ -249,7 +250,7 @@ export default function IncidentsPage() {
       )}
 
       {loading ? (
-        <p className="text-white/50">Loading...</p>
+        <TableSkeleton rows={6} cols={4} />
       ) : reports.length === 0 ? (
         <div className="border border-white/10 p-8 text-center">
           <p className="text-white/60">No incident reports yet.</p>

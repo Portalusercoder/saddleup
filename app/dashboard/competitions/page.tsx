@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { useProfile } from "@/components/providers/ProfileProvider";
 import LoadingSpinner from "@/components/ui/LoadingSpinner";
+import TableSkeleton from "@/components/ui/TableSkeleton";
 
 interface Competition {
   id: string;
@@ -192,7 +193,7 @@ export default function CompetitionsPage() {
       )}
 
       {loading ? (
-        <p className="text-white/50">Loading...</p>
+        <TableSkeleton rows={6} cols={4} />
       ) : (
         <>
           {upcoming.length > 0 && (

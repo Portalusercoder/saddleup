@@ -7,6 +7,7 @@ import { useProfile } from "@/components/providers/ProfileProvider";
 import { HorseAvatar } from "@/components/HorseAvatar";
 import UpgradePlanModal from "@/components/dashboard/UpgradePlanModal";
 import LoadingSpinner from "@/components/ui/LoadingSpinner";
+import TableSkeleton from "@/components/ui/TableSkeleton";
 
 interface Session {
   id: number;
@@ -376,6 +377,10 @@ export default function HorsesPage() {
         </div>
       </div>
 
+      {loading ? (
+        <TableSkeleton rows={6} cols={5} />
+      ) : (
+        <>
       <input
         placeholder="Search horses..."
         value={search}
@@ -398,14 +403,7 @@ export default function HorsesPage() {
             </thead>
 
             <tbody>
-              {loading ? (
-                <tr>
-                  <td colSpan={6} className="text-center py-10 text-white/50">
-                    Loading...
-                  </td>
-                </tr>
-              ) : (
-                filteredHorses.map((horse) => {
+                {filteredHorses.map((horse) => {
                   const workload = calculateWorkload(horse);
 
                   return (
@@ -452,12 +450,13 @@ export default function HorsesPage() {
                       </td>
                     </tr>
                   );
-                })
-              )}
+                })}
             </tbody>
           </table>
         </div>
       </div>
+        </>
+      )}
 
       {/* Add Horse Modal */}
       {showModal && (
