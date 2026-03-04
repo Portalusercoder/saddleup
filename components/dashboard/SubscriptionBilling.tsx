@@ -115,7 +115,7 @@ export default function SubscriptionBilling() {
           <div>
             <p className="font-medium text-white capitalize">{data.tier} Plan</p>
             <p className="text-sm text-white/60 mt-1">
-              {data.usage!.horses} / {data.limits!.horses} horses • {data.usage!.riders} / {data.limits!.riders} riders
+              {data.usage?.horses ?? 0} / {data.limits?.horses ?? 0} horses • {data.usage?.riders ?? 0} / {data.limits?.riders ?? 0} riders
             </p>
           </div>
           {data.tier !== "free" && (
@@ -125,9 +125,14 @@ export default function SubscriptionBilling() {
                 style={{
                   width: `${Math.min(
                     100,
-                    ((data.usage.horses + data.usage.riders) /
-                      (data.limits.horses + data.limits.riders)) *
-                      100
+                    (() => {
+                      const u = data.usage;
+                      const l = data.limits;
+                      if (!u || !l) return 0;
+                      const totalLimit = l.horses + l.riders;
+                      if (totalLimit === 0) return 0;
+                      return ((u.horses + u.riders) / totalLimit) * 100;
+                    })()
                   )}%`,
                 }}
               />
