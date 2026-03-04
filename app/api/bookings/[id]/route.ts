@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
 import { sendNotificationEmail } from "@/lib/send-notification-email";
+import { ensureStableCanMutate } from "@/lib/subscription";
 
 export async function PATCH(
   req: Request,
@@ -20,12 +21,22 @@ export async function PATCH(
 
     const profile = await supabase
       .from("profiles")
-      .select("role")
+      .select("stable_id, role")
       .eq("id", user.id)
       .single();
 
     if (!profile.data) {
       return NextResponse.json({ error: "Profile not found" }, { status: 403 });
+    }
+
+    if (profile.data.stable_id) {
+      const guard = await ensureStableCanMutate(profile.data.stable_id);
+      if (!guard.allowed) {
+        return NextResponse.json(
+          { error: guard.message, code: "TRIAL_EXPIRED" },
+          { status: 403 }
+        );
+      }
     }
 
     const body = await req.json();

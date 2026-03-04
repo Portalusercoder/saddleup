@@ -11,57 +11,96 @@ const formClass = "w-full px-4 py-3 bg-black border border-white/10 text-white p
 const labelClass = "block text-xs uppercase tracking-widest text-white/60 mb-2";
 const btnPrimary = "w-full py-3 bg-white text-black font-medium uppercase tracking-wider text-sm hover:opacity-95 transition";
 
+type Step = "form" | "code";
+
 export default function SignupPage() {
   const router = useRouter();
+  const [step, setStep] = useState<Step>("form");
   const [role, setRole] = useState<Role>("student");
   const [fullName, setFullName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [stableName, setStableName] = useState("");
   const [joinCode, setJoinCode] = useState("");
+  const [code, setCode] = useState("");
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const sendCode = async (e: React.FormEvent) => {
     e.preventDefault();
     setError(null);
     setLoading(true);
-
     try {
       const supabase = createClient();
-      const { data: authData, error: signUpError } = await supabase.auth.signUp({
-        email,
-        password,
-        options: { data: { full_name: fullName } },
+      const { error: otpError } = await supabase.auth.signInWithOtp({
+        email: email.trim(),
+        options: {
+          shouldCreateUser: true,
+          data: {
+            full_name: fullName.trim(),
+            role,
+            signup_flow: true,
+          },
+        },
       });
-
-      if (signUpError) {
-        setError(signUpError.message);
+      if (otpError) {
+        setError(otpError.message);
         setLoading(false);
         return;
       }
+      setStep("code");
+      setError(null);
+    } catch {
+      setError("Something went wrong");
+    } finally {
+      setLoading(false);
+    }
+  };
 
-      if (!authData.user) {
-        setError("Sign up failed");
+  const verifyAndComplete = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!code.trim() || code.trim().length < 8) {
+      setError("Please enter the 8-digit code from your email");
+      return;
+    }
+    setError(null);
+    setLoading(true);
+    try {
+      const supabase = createClient();
+      const { data: verifyData, error: verifyError } = await supabase.auth.verifyOtp({
+        email: email.trim(),
+        token: code.trim(),
+        type: "email",
+      });
+      if (verifyError) {
+        setError(verifyError.message);
         setLoading(false);
         return;
       }
-
+      if (!verifyData.user) {
+        setError("Verification failed");
+        setLoading(false);
+        return;
+      }
+      const { error: updateError } = await supabase.auth.updateUser({ password });
+      if (updateError) {
+        setError(updateError.message);
+        setLoading(false);
+        return;
+      }
       const res = await fetch("/api/auth/complete-signup", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          userId: authData.user.id,
+          userId: verifyData.user.id,
           role,
-          fullName,
-          email,
+          fullName: fullName.trim(),
+          email: email.trim(),
           stableName: role === "owner" ? stableName : undefined,
           joinCode: role !== "owner" ? joinCode : undefined,
         }),
       });
-
       const result = await res.json();
-
       if (!res.ok) {
         if (result.inviteCode) {
           setError(
@@ -73,13 +112,6 @@ export default function SignupPage() {
         setLoading(false);
         return;
       }
-
-      if (!authData.session) {
-        router.push(`/confirm-email?email=${encodeURIComponent(email)}`);
-        router.refresh();
-        return;
-      }
-
       router.push("/dashboard");
       router.refresh();
     } catch {
@@ -89,6 +121,61 @@ export default function SignupPage() {
     }
   };
 
+  if (step === "code") {
+    return (
+      <div className="min-h-screen bg-black flex items-center justify-center p-4 sm:p-6">
+        <div className="w-full max-w-md">
+          <div className="border border-white/10 p-6 sm:p-8 md:p-10">
+            <h1 className="font-serif text-2xl md:text-3xl font-normal text-white mb-2">
+              Check your email
+            </h1>
+            <p className="text-white/60 text-sm mb-6">
+              We sent an 8-digit code to <strong className="text-white">{email}</strong>. Enter it below. You can open your email on any device.
+            </p>
+            <form onSubmit={verifyAndComplete} className="space-y-5">
+              <div>
+                <label htmlFor="code" className={labelClass}>
+                  Verification code
+                </label>
+                <input
+                  id="code"
+                  type="text"
+                  inputMode="numeric"
+                  autoComplete="one-time-code"
+                  value={code}
+                  onChange={(e) => setCode(e.target.value.replace(/\D/g, "").slice(0, 8))}
+                  placeholder="00000000"
+                  maxLength={8}
+                  className={`${formClass} text-center text-lg tracking-[0.4em]`}
+                />
+              </div>
+              {error && <p className="text-white/80 text-sm">{error}</p>}
+              <button
+                type="submit"
+                disabled={loading || code.trim().length !== 8}
+                className={`${btnPrimary} disabled:opacity-50`}
+              >
+                {loading ? "Verifying..." : "Verify and create account"}
+              </button>
+              <button
+                type="button"
+                onClick={() => { setStep("form"); setCode(""); setError(null); }}
+                className="w-full py-3 border border-white/20 text-white/80 text-sm hover:bg-white/5 transition"
+              >
+                Use a different email
+              </button>
+            </form>
+          </div>
+          <p className="mt-6 text-center">
+            <Link href="/" className="text-white/50 hover:text-white/70 text-xs uppercase tracking-wider">
+              ← Back to home
+            </Link>
+          </p>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="min-h-screen bg-black flex items-center justify-center p-4 sm:p-6">
       <div className="w-full max-w-md">
@@ -97,10 +184,10 @@ export default function SignupPage() {
             Create account
           </h1>
           <p className="text-white/60 text-sm mb-8">
-            Choose your role and set up your account
+            We&apos;ll send an 8-digit code to your email to verify it. No links to click — works on any device.
           </p>
 
-          <form onSubmit={handleSubmit} className="space-y-5">
+          <form onSubmit={sendCode} className="space-y-5">
             <div>
               <label className={labelClass}>I am a</label>
               <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
@@ -223,7 +310,7 @@ export default function SignupPage() {
               disabled={loading}
               className={`${btnPrimary} disabled:opacity-50`}
             >
-              {loading ? "Creating account..." : "Create account"}
+              {loading ? "Sending code..." : "Send verification code"}
             </button>
           </form>
 

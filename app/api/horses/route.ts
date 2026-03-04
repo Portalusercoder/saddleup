@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
-import { checkHorseLimit } from "@/lib/subscription";
+import { checkHorseLimit, ensureStableCanMutate } from "@/lib/subscription";
 
 function mapTemperament(value: string | null): string | null {
   if (!value) return null;
@@ -129,6 +129,14 @@ export async function POST(req: Request) {
     if (!profile.data?.stable_id) {
       return NextResponse.json(
         { error: "No stable found. Complete your profile first." },
+        { status: 403 }
+      );
+    }
+
+    const guard = await ensureStableCanMutate(profile.data.stable_id);
+    if (!guard.allowed) {
+      return NextResponse.json(
+        { error: guard.message, code: "TRIAL_EXPIRED" },
         { status: 403 }
       );
     }

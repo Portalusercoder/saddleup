@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
+import { ensureStableCanMutate } from "@/lib/subscription";
 
 export async function GET() {
   try {
@@ -71,6 +72,14 @@ export async function POST(req: Request) {
 
     if (!profile?.stable_id) {
       return NextResponse.json({ error: "No stable found" }, { status: 404 });
+    }
+
+    const guard = await ensureStableCanMutate(profile.stable_id);
+    if (!guard.allowed) {
+      return NextResponse.json(
+        { error: guard.message, code: "TRIAL_EXPIRED" },
+        { status: 403 }
+      );
     }
 
     if (profile.role !== "owner" && profile.role !== "trainer") {

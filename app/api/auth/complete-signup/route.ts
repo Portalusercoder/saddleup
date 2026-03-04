@@ -11,18 +11,22 @@ export async function POST(req: Request) {
     const supabase = await createClient();
     const {
       data: { user: sessionUser },
-      error: authError,
     } = await supabase.auth.getUser();
 
     let user = sessionUser;
 
+    // When email confirmation is required, there is often no session yet. Use admin lookup
+    // so we can create the profile right after sign-up (link works when opened on another device).
     if (!user && userId) {
       const admin = createAdminClient();
-      const { data: authUser } = await admin.auth.admin.getUserById(userId);
+      const { data: authUser, error: adminError } = await admin.auth.admin.getUserById(userId);
+      if (adminError) {
+        console.error("Complete-signup admin getUserById error:", adminError.message);
+      }
       if (authUser?.user) {
         const created = new Date(authUser.user.created_at).getTime();
         const now = Date.now();
-        if (now - created < 600000) {
+        if (now - created < 900000) {
           user = authUser.user;
         }
       }
@@ -30,7 +34,11 @@ export async function POST(req: Request) {
 
     if (!user) {
       return NextResponse.json(
-        { error: "Unauthorized. Please sign up first, then confirm your email if required." },
+        {
+          error: userId
+            ? "We couldn't verify your sign-up. Please confirm your email using the link we sent, then try logging in and complete setup from the dashboard."
+            : "Unauthorized. Please sign up first, then confirm your email if required.",
+        },
         { status: 401 }
       );
     }

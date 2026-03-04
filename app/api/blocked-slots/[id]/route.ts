@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
+import { ensureStableCanMutate } from "@/lib/subscription";
 
 export async function DELETE(
   _req: Request,
@@ -19,11 +20,23 @@ export async function DELETE(
 
     const profile = await supabase
       .from("profiles")
-      .select("role")
+      .select("stable_id, role")
       .eq("id", user.id)
       .single();
 
-    const role = profile.data?.role as string;
+    if (!profile.data?.stable_id) {
+      return NextResponse.json({ error: "No stable found" }, { status: 403 });
+    }
+
+    const guard = await ensureStableCanMutate(profile.data.stable_id);
+    if (!guard.allowed) {
+      return NextResponse.json(
+        { error: guard.message, code: "TRIAL_EXPIRED" },
+        { status: 403 }
+      );
+    }
+
+    const role = profile.data.role as string;
     if (role !== "owner" && role !== "trainer") {
       return NextResponse.json(
         { error: "Only owners and trainers can remove blocked slots" },

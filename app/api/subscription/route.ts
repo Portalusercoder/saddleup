@@ -26,7 +26,9 @@ export async function GET() {
 
     const { data: stable } = await supabase
       .from("stables")
-      .select("id, name, subscription_tier, subscription_plan_id, stripe_customer_id")
+      .select(
+        "id, name, subscription_tier, subscription_plan_id, stripe_customer_id, subscription_status, trial_ends_at, plan_type, grace_period_ends_at"
+      )
       .eq("id", profile.stable_id)
       .single();
 
@@ -42,23 +44,30 @@ export async function GET() {
       supabase.from("riders").select("id", { count: "exact", head: true }).eq("stable_id", stable.id),
     ]);
 
-    return NextResponse.json({
-      tier,
-      planId: stable.subscription_plan_id,
-      limits: {
-        horses: limits.horses,
-        riders: limits.riders,
-        analytics: limits.analytics,
-        matching: limits.matching,
-      },
-      usage: {
-        horses: horseCount ?? 0,
-        riders: riderCount ?? 0,
-      },
-      canAddHorse: (horseCount ?? 0) < limits.horses,
-      canAddRider: (riderCount ?? 0) < limits.riders,
-      hasStripeCustomer: !!stable.stripe_customer_id,
-    });
+      const status = (stable.subscription_status as string) || "trialing";
+
+      return NextResponse.json({
+        tier,
+        planId: stable.subscription_plan_id,
+        status,
+        planType: stable.plan_type,
+        trialEndsAt: stable.trial_ends_at,
+        gracePeriodEndsAt: stable.grace_period_ends_at,
+        readOnly: status === "expired" || status === "suspended",
+        limits: {
+          horses: limits.horses,
+          riders: limits.riders,
+          analytics: limits.analytics,
+          matching: limits.matching,
+        },
+        usage: {
+          horses: horseCount ?? 0,
+          riders: riderCount ?? 0,
+        },
+        canAddHorse: (horseCount ?? 0) < limits.horses,
+        canAddRider: (riderCount ?? 0) < limits.riders,
+        hasStripeCustomer: !!stable.stripe_customer_id,
+      });
   } catch (err) {
     console.error("GET subscription error:", err);
     return NextResponse.json(

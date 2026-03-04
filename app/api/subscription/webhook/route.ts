@@ -47,6 +47,10 @@ export async function POST(req: NextRequest) {
               stripe_subscription_id: session.subscription || null,
               subscription_tier: planId,
               subscription_plan_id: planId,
+              subscription_status: "active",
+              plan_type: planId,
+              trial_ends_at: null,
+              grace_period_ends_at: null,
               updated_at: new Date().toISOString(),
             })
             .eq("id", stableId);
@@ -78,6 +82,8 @@ export async function POST(req: NextRequest) {
               stripe_subscription_id: sub.id,
               subscription_tier: planId,
               subscription_plan_id: planId,
+              subscription_status: "active",
+              plan_type: planId,
               updated_at: new Date().toISOString(),
             })
             .eq("id", stables[0].id);
@@ -88,6 +94,8 @@ export async function POST(req: NextRequest) {
               stripe_subscription_id: null,
               subscription_tier: "free",
               subscription_plan_id: "free",
+              subscription_status: "expired",
+              plan_type: "beta",
               updated_at: new Date().toISOString(),
             })
             .eq("id", stables[0].id);

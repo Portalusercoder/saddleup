@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
 import { sendNotificationEmail } from "@/lib/send-notification-email";
+import { ensureStableCanMutate } from "@/lib/subscription";
 
 const delay = (ms: number) => new Promise((r) => setTimeout(r, ms));
 
@@ -29,6 +30,14 @@ export async function POST(req: Request) {
     const stableId = profile.stable_id;
     if (!stableId) {
       return NextResponse.json({ error: "No stable found" }, { status: 403 });
+    }
+
+    const guard = await ensureStableCanMutate(stableId);
+    if (!guard.allowed) {
+      return NextResponse.json(
+        { error: guard.message, code: "TRIAL_EXPIRED" },
+        { status: 403 }
+      );
     }
 
     const body = await req.json();

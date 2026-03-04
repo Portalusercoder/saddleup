@@ -5,8 +5,8 @@ import PixelCard from "@/components/ui/PixelCard";
 
 interface SubscriptionData {
   tier: string;
-  limits: { horses: number; riders: number };
-  usage: { horses: number; riders: number };
+  limits?: { horses: number; riders: number };
+  usage?: { horses: number; riders: number };
   canAddHorse: boolean;
   canAddRider: boolean;
   hasStripeCustomer: boolean;
@@ -93,11 +93,15 @@ export default function SubscriptionBilling() {
   const btnPrimary = "px-4 py-2.5 bg-white text-black font-medium text-sm uppercase tracking-wider hover:opacity-95 transition disabled:opacity-50";
   const btnSecondary = "px-4 py-2.5 border border-white/10 text-white text-sm uppercase tracking-wider hover:border-white/30 transition disabled:opacity-50";
 
-  if (loading || !data) {
+  const hasUsage = data && data.limits && data.usage;
+
+  if (loading || !hasUsage) {
     return (
       <div className="border border-white/10 p-6">
         <h2 className="font-serif text-lg text-white mb-4">Billing & Plan</h2>
-        <p className="text-white/50">Loading...</p>
+        <p className="text-white/50">
+          {loading ? "Loading..." : "Could not load subscription details."}
+        </p>
       </div>
     );
   }
@@ -111,7 +115,7 @@ export default function SubscriptionBilling() {
           <div>
             <p className="font-medium text-white capitalize">{data.tier} Plan</p>
             <p className="text-sm text-white/60 mt-1">
-              {data.usage.horses} / {data.limits.horses} horses • {data.usage.riders} / {data.limits.riders} riders
+              {data.usage!.horses} / {data.limits!.horses} horses • {data.usage!.riders} / {data.limits!.riders} riders
             </p>
           </div>
           {data.tier !== "free" && (

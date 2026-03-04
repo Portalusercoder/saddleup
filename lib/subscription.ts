@@ -3,6 +3,34 @@ import { SUBSCRIPTION_LIMITS } from "@/lib/constants";
 
 type Tier = keyof typeof SUBSCRIPTION_LIMITS;
 
+type SubscriptionGuardResult = {
+  allowed: boolean;
+  status: string;
+  message?: string;
+};
+
+export async function ensureStableCanMutate(stableId: string): Promise<SubscriptionGuardResult> {
+  const supabase = await createClient();
+
+  const { data: stable } = await supabase
+    .from("stables")
+    .select("subscription_status")
+    .eq("id", stableId)
+    .single();
+
+  const status = (stable?.subscription_status as string) || "trialing";
+
+  if (status === "expired" || status === "suspended") {
+    return {
+      allowed: false,
+      status,
+      message: "Your trial has expired. Please upgrade to continue.",
+    };
+  }
+
+  return { allowed: true, status };
+}
+
 export async function checkHorseLimit(stableId: string): Promise<{
   allowed: boolean;
   current: number;

@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
+import { ensureStableCanMutate } from "@/lib/subscription";
 
 /* ================= GET HEALTH LOGS ================= */
 
@@ -73,6 +74,24 @@ export async function POST(req: Request) {
     }
 
     const body = await req.json();
+
+    const { data: profile } = await supabase
+      .from("profiles")
+      .select("stable_id")
+      .eq("id", user.id)
+      .single();
+
+    if (!profile?.stable_id) {
+      return NextResponse.json({ error: "No stable found" }, { status: 403 });
+    }
+
+    const guard = await ensureStableCanMutate(profile.stable_id);
+    if (!guard.allowed) {
+      return NextResponse.json(
+        { error: guard.message, code: "TRIAL_EXPIRED" },
+        { status: 403 }
+      );
+    }
 
     if (!body.horseId || !body.type) {
       return NextResponse.json(
