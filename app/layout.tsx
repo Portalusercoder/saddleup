@@ -1,6 +1,7 @@
 import "./globals.css"
 import Navbar from "@/components/layout/Navbar"
 import { ProfileProvider } from "@/components/providers/ProfileProvider"
+import { LanguageProvider } from "@/components/providers/LanguageProvider"
 import { Playfair_Display, Inter } from "next/font/google"
 
 const playfair = Playfair_Display({
@@ -28,10 +29,12 @@ export default function RootLayout({
   return (
     <html lang="en" className={`${playfair.variable} ${inter.variable}`}>
       <body className="bg-black text-white font-sans antialiased">
-        <ProfileProvider>
-          <Navbar />
-          <div className="pt-20">{children}</div>
-        </ProfileProvider>
+        <LanguageProvider>
+          <ProfileProvider>
+            <Navbar />
+            <div className="pt-20">{children}</div>
+          </ProfileProvider>
+        </LanguageProvider>
       </body>
     </html>
   )

@@ -2,6 +2,7 @@
 
 import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { useProfile } from "@/components/providers/ProfileProvider";
 import { ProfileAvatar } from "@/components/ProfileAvatar";
 
@@ -215,6 +216,70 @@ export default function ProfilePage() {
           </div>
         </div>
       </div>
+
+      {profile.role === "owner" && (
+        <div className="border border-white/10 p-6 max-w-md border-amber-500/30">
+          <h2 className="font-serif text-lg text-white mb-2">Delete account</h2>
+          <p className="text-white/60 text-sm mb-4">
+            This will schedule your stable and all its data for permanent deletion in 30 days. You can reactivate by signing in before then.
+          </p>
+          <DeleteAccountButton onScheduled={() => setToast("Deletion scheduled. You have been signed out.")} />
+        </div>
+      )}
+    </div>
+  );
+}
+
+function DeleteAccountButton({ onScheduled }: { onScheduled: () => void }) {
+  const router = useRouter();
+  const [loading, setLoading] = useState(false);
+  const [confirm, setConfirm] = useState(false);
+
+  const handleDelete = async () => {
+    if (!confirm) return;
+    setLoading(true);
+    try {
+      const res = await fetch("/api/account/request-deletion", { method: "POST" });
+      if (!res.ok) throw new Error("Failed");
+      onScheduled();
+      const supabase = (await import("@/lib/supabase/client")).createClient();
+      await supabase.auth.signOut();
+      router.push("/login");
+      router.refresh();
+    } catch {
+      setLoading(false);
+    }
+  }
+
+  if (!confirm) {
+    return (
+      <button
+        type="button"
+        onClick={() => setConfirm(true)}
+        className="px-4 py-2.5 border border-amber-500/50 text-amber-200 text-sm uppercase tracking-wider hover:bg-amber-500/10 transition"
+      >
+        Schedule account deletion
+      </button>
+    );
+  }
+  return (
+    <div className="flex flex-wrap gap-3">
+      <button
+        type="button"
+        onClick={handleDelete}
+        disabled={loading}
+        className="px-4 py-2.5 bg-amber-600 text-white text-sm uppercase tracking-wider hover:bg-amber-500 transition disabled:opacity-50"
+      >
+        {loading ? "Scheduling..." : "Yes, schedule deletion"}
+      </button>
+      <button
+        type="button"
+        onClick={() => setConfirm(false)}
+        disabled={loading}
+        className="px-4 py-2.5 border border-white/20 text-white/80 text-sm uppercase tracking-wider hover:bg-white/5 transition"
+      >
+        Cancel
+      </button>
     </div>
   );
 }

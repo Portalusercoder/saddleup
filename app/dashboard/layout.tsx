@@ -3,6 +3,7 @@ import CollapsibleSidebar from "@/components/dashboard/CollapsibleSidebar";
 import TrialBanner from "@/components/dashboard/TrialBanner";
 import TrialCTAModal from "@/components/dashboard/TrialCTAModal";
 import UpgradeCTAModal from "@/components/dashboard/UpgradeCTAModal";
+import DeletionGuard from "@/components/dashboard/DeletionGuard";
 
 export default function DashboardLayout({
   children,
@@ -11,6 +12,7 @@ export default function DashboardLayout({
 }) {
   return (
     <ProfileGuard>
+      <DeletionGuard>
       <TrialCTAModal />
       <UpgradeCTAModal />
       <div className="min-h-screen bg-black text-white">
@@ -22,6 +24,7 @@ export default function DashboardLayout({
           {children}
         </main>
       </div>
+      </DeletionGuard>
     </ProfileGuard>
   );
 }

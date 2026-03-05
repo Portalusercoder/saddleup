@@ -7,6 +7,8 @@ import { createClient } from "@/lib/supabase/client";
 import { ProfileAvatar } from "@/components/ProfileAvatar";
 import NotificationBell from "@/components/NotificationBell";
 import { useProfile } from "@/components/providers/ProfileProvider";
+import { useLanguage } from "@/components/providers/LanguageProvider";
+import LanguageToggle from "@/components/layout/LanguageToggle";
 
 const navItemsByRole: Record<string, { href: string; label: string }[]> = {
   guardian: [
@@ -53,6 +55,7 @@ export default function Navbar() {
   const [profileMenuOpen, setProfileMenuOpen] = useState(false);
   const profileMenuRef = useRef<HTMLDivElement>(null);
   const { profile, loading: profileLoading, userId } = useProfile();
+  const { lang } = useLanguage();
 
   const user = userId ? { id: userId, email: profile?.email } : null;
   const authChecked = !profileLoading;
@@ -116,19 +119,19 @@ export default function Navbar() {
         {isHome && !user && (
           <div className="hidden lg:flex items-center gap-6 xl:gap-8 uppercase text-[0.65rem] md:text-[0.7rem] tracking-[0.2em] font-light text-white/90">
             <Link href="/#features" className="hover:text-white transition">
-              Features
+              {lang === "ar" ? "المزايا" : "Features"}
             </Link>
             <Link href="/#pricing" className="hover:text-white transition">
-              Pricing
+              {lang === "ar" ? "الأسعار" : "Pricing"}
             </Link>
             <Link href="/#about" className="hover:text-white transition">
-              About
+              {lang === "ar" ? "عن المنصة" : "About"}
             </Link>
             <Link href="/#pricing" className="hover:text-white transition">
-              Information
+              {lang === "ar" ? "معلومات" : "Information"}
             </Link>
             <Link href="/login" className="hover:text-white transition">
-              Contact
+              {lang === "ar" ? "تواصل" : "Contact"}
             </Link>
           </div>
         )}
@@ -162,13 +165,22 @@ export default function Navbar() {
                     Go to profile
                   </Link>
                   {profile?.role === "owner" && (
-                    <Link
-                      href="/dashboard/settings"
-                      onClick={() => setProfileMenuOpen(false)}
-                      className="block px-4 py-2.5 text-sm text-white hover:bg-white/10 uppercase tracking-wider"
-                    >
-                      Settings
-                    </Link>
+                    <>
+                      <Link
+                        href="/dashboard/plans"
+                        onClick={() => setProfileMenuOpen(false)}
+                        className="block px-4 py-2.5 text-sm text-white hover:bg-white/10 uppercase tracking-wider"
+                      >
+                        Plans
+                      </Link>
+                      <Link
+                        href="/dashboard/settings"
+                        onClick={() => setProfileMenuOpen(false)}
+                        className="block px-4 py-2.5 text-sm text-white hover:bg-white/10 uppercase tracking-wider"
+                      >
+                        Settings
+                      </Link>
+                    </>
                   )}
                   <button
                     onClick={() => {
@@ -186,17 +198,18 @@ export default function Navbar() {
           ) : (
             !isAuthPage && (
               <div className="flex items-center gap-3">
+                <LanguageToggle />
                 <Link
                   href="/login"
                   className="px-4 py-2.5 border border-white text-white hover:bg-white/10 transition uppercase tracking-[0.2em] text-[0.7rem] font-light"
                 >
-                  Sign in
+                  {lang === "ar" ? "تسجيل الدخول" : "Sign in"}
                 </Link>
                 <Link
                   href="/signup"
                   className="px-4 py-2.5 bg-white text-black font-medium hover:bg-white/95 transition uppercase tracking-[0.2em] text-[0.7rem]"
                 >
-                  Sign up
+                  {lang === "ar" ? "إنشاء حساب" : "Sign up"}
                 </Link>
               </div>
             )

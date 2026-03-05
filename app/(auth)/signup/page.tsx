@@ -11,7 +11,7 @@ const formClass = "w-full px-4 py-3 bg-black border border-white/10 text-white p
 const labelClass = "block text-xs uppercase tracking-widest text-white/60 mb-2";
 const btnPrimary = "w-full py-3 bg-white text-black font-medium uppercase tracking-wider text-sm hover:opacity-95 transition";
 
-type Step = "form" | "code";
+type Step = "form" | "code" | "confirm_join";
 
 export default function SignupPage() {
   const router = useRouter();
@@ -25,6 +25,8 @@ export default function SignupPage() {
   const [code, setCode] = useState("");
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
+  const [stablePreview, setStablePreview] = useState<{ name: string; logoUrl: string | null } | null>(null);
+  const [verifyData, setVerifyData] = useState<{ userId: string } | null>(null);
 
   const sendCode = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -67,7 +69,7 @@ export default function SignupPage() {
     setLoading(true);
     try {
       const supabase = createClient();
-      const { data: verifyData, error: verifyError } = await supabase.auth.verifyOtp({
+      const { data: vData, error: verifyError } = await supabase.auth.verifyOtp({
         email: email.trim(),
         token: code.trim(),
         type: "email",
@@ -77,7 +79,7 @@ export default function SignupPage() {
         setLoading(false);
         return;
       }
-      if (!verifyData.user) {
+      if (!vData.user) {
         setError("Verification failed");
         setLoading(false);
         return;
@@ -88,24 +90,66 @@ export default function SignupPage() {
         setLoading(false);
         return;
       }
+      if (role === "owner") {
+        const res = await fetch("/api/auth/complete-signup", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            userId: vData.user.id,
+            role,
+            fullName: fullName.trim(),
+            email: email.trim(),
+            stableName,
+            joinCode: undefined,
+          }),
+        });
+        const result = await res.json();
+        if (!res.ok) {
+          setError(result.error || "Failed to complete signup");
+          setLoading(false);
+          return;
+        }
+        router.push("/dashboard");
+        router.refresh();
+        return;
+      }
+      const previewRes = await fetch(`/api/stables/preview-by-code?code=${encodeURIComponent(joinCode.trim())}`);
+      const preview = await previewRes.json();
+      if (!previewRes.ok || !preview.name) {
+        setError("Invalid join code. Please check the code and try again.");
+        setLoading(false);
+        return;
+      }
+      setStablePreview({ name: preview.name, logoUrl: preview.logoUrl ?? null });
+      setVerifyData({ userId: vData.user.id });
+      setStep("confirm_join");
+    } catch {
+      setError("Something went wrong");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const confirmJoinStable = async () => {
+    if (!verifyData || !stablePreview) return;
+    setLoading(true);
+    setError(null);
+    try {
       const res = await fetch("/api/auth/complete-signup", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          userId: verifyData.user.id,
+          userId: verifyData.userId,
           role,
           fullName: fullName.trim(),
           email: email.trim(),
-          stableName: role === "owner" ? stableName : undefined,
-          joinCode: role !== "owner" ? joinCode : undefined,
+          joinCode: joinCode.trim(),
         }),
       });
       const result = await res.json();
       if (!res.ok) {
         if (result.inviteCode) {
-          setError(
-            `${result.error} ${result.inviteCode}. Save this ID and share it with your stable owner. Or go to /get-my-id after signing in to retrieve it anytime.`
-          );
+          setError(`${result.error} ${result.inviteCode}. Share this ID with your stable owner.`);
         } else {
           setError(result.error || "Failed to complete signup");
         }
@@ -116,10 +160,71 @@ export default function SignupPage() {
       router.refresh();
     } catch {
       setError("Something went wrong");
-    } finally {
       setLoading(false);
     }
   };
+
+  const declineJoinStable = async () => {
+    const supabase = createClient();
+    await supabase.auth.signOut();
+    router.push("/signup");
+    router.refresh();
+  };
+
+  if (step === "confirm_join" && stablePreview) {
+    return (
+      <div className="min-h-screen bg-black flex items-center justify-center p-4 sm:p-6">
+        <div className="w-full max-w-md">
+          <div className="border border-white/10 p-6 sm:p-8 md:p-10 text-center">
+            <h1 className="font-serif text-2xl md:text-3xl font-normal text-white mb-2">
+              Is this the stable you want to join?
+            </h1>
+            <p className="text-white/60 text-sm mb-6">
+              Confirm before we add you to this stable.
+            </p>
+            <div className="mb-6 flex flex-col items-center gap-4">
+              {stablePreview.logoUrl ? (
+                <img
+                  src={stablePreview.logoUrl}
+                  alt=""
+                  className="w-24 h-24 rounded-lg object-cover border border-white/10"
+                />
+              ) : (
+                <div className="w-24 h-24 rounded-lg bg-white/5 border border-white/10 flex items-center justify-center">
+                  <span className="text-white/40 text-2xl font-serif">{stablePreview.name.charAt(0)}</span>
+                </div>
+              )}
+              <p className="font-medium text-white text-lg">{stablePreview.name}</p>
+            </div>
+            {error && <p className="text-white/80 text-sm mb-4">{error}</p>}
+            <div className="flex flex-col gap-3">
+              <button
+                type="button"
+                onClick={confirmJoinStable}
+                disabled={loading}
+                className={`${btnPrimary} disabled:opacity-50`}
+              >
+                {loading ? "Joining..." : "Yes, join this stable"}
+              </button>
+              <button
+                type="button"
+                onClick={declineJoinStable}
+                disabled={loading}
+                className="w-full py-3 border border-white/20 text-white/80 text-sm hover:bg-white/5 transition"
+              >
+                No, take me back
+              </button>
+            </div>
+          </div>
+          <p className="mt-6 text-center">
+            <Link href="/" className="text-white/50 hover:text-white/70 text-xs uppercase tracking-wider">
+              ← Back to home
+            </Link>
+          </p>
+        </div>
+      </div>
+    );
+  }
 
   if (step === "code") {
     return (

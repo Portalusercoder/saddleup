@@ -25,7 +25,7 @@ export async function GET() {
 
     const { data: stable } = await supabase
       .from("stables")
-      .select("id, name, slug, invite_code, logo_url")
+      .select("id, name, slug, invite_code, logo_url, scheduled_deletion_at")
       .eq("id", profile.stable_id)
       .single();
 
@@ -39,6 +39,7 @@ export async function GET() {
       joinCode: stable.invite_code ?? stable.slug,
       role: profile.role,
       logoUrl: stable.logo_url ?? null,
+      scheduledDeletionAt: stable.scheduled_deletion_at ?? null,
     });
   } catch (err) {
     console.error("GET stable error:", err);
