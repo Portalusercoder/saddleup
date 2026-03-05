@@ -2,7 +2,6 @@ import { NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
 import { SUBSCRIPTION_LIMITS } from "@/lib/constants";
 import { stripe } from "@/lib/stripe";
-import type Stripe from "stripe";
 
 export async function GET() {
   try {
@@ -52,9 +51,9 @@ export async function GET() {
     let cancelAtPeriodEnd = false;
     if (stable.stripe_subscription_id && process.env.STRIPE_SECRET_KEY) {
       try {
-        const sub = (await stripe.subscriptions.retrieve(
+        const sub: any = await stripe.subscriptions.retrieve(
           stable.stripe_subscription_id
-        )) as unknown as Stripe.Subscription;
+        );
         currentPeriodEnd = sub.current_period_end
           ? new Date(sub.current_period_end * 1000).toISOString()
           : null;
