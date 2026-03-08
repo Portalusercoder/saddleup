@@ -6,6 +6,20 @@
   --logoloop-fadeColorAuto: #f3efe8;
 }
 
+/* Dark theme: match section background and use light logos */
+.dark .logoloop {
+  --logoloop-fadeColorAuto: var(--bg-main, #0f0f0f);
+}
+
+.dark .logoloop__node {
+  color: rgba(255, 255, 255, 0.9);
+}
+
+.dark .logoloop__node svg,
+.dark .logoloop__node path {
+  fill: currentColor;
+}
+
 .logoloop--vertical {
   height: 100%;
   display: inline-block;

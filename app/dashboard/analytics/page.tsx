@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useProfile } from "@/components/providers/ProfileProvider";
+import { useTheme } from "@/components/providers/ThemeProvider";
 import TableSkeleton from "@/components/ui/TableSkeleton";
 import {
   LineChart,
@@ -31,9 +32,23 @@ interface AnalyticsData {
 export default function AnalyticsPage() {
   const router = useRouter();
   const { profile } = useProfile();
+  const { theme } = useTheme();
+  const isDark = theme === "dark";
   const [data, setData] = useState<AnalyticsData | null>(null);
   const [loading, setLoading] = useState(true);
   const [locked, setLocked] = useState(false);
+
+  const chart = {
+    grid: isDark ? "rgba(255,255,255,0.1)" : "rgba(0,0,0,0.1)",
+    axis: isDark ? "rgba(255,255,255,0.5)" : "rgba(0,0,0,0.5)",
+    tick: isDark ? "rgba(255,255,255,0.6)" : "rgba(0,0,0,0.7)",
+    tooltipBg: isDark ? "#1a1a1a" : "#f3efe8",
+    tooltipBorder: isDark ? "rgba(255,255,255,0.1)" : "rgba(0,0,0,0.15)",
+    tooltipText: isDark ? "#fff" : "#000",
+    line: isDark ? "rgba(255,255,255,0.9)" : "rgba(0,0,0,0.85)",
+    dot: isDark ? "rgba(255,255,255,0.8)" : "rgba(0,0,0,0.8)",
+    bar: isDark ? "rgba(255,255,255,0.3)" : "rgba(0,0,0,0.6)",
+  };
 
   useEffect(() => {
     if (!profile) return;
@@ -144,28 +159,28 @@ export default function AnalyticsPage() {
         <div className="h-48 sm:h-64 min-h-[12rem]">
           <ResponsiveContainer width="100%" height="100%">
             <LineChart data={data.sessionsByWeek}>
-              <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.1)" />
+              <CartesianGrid strokeDasharray="3 3" stroke={chart.grid} />
               <XAxis
                 dataKey="label"
-                stroke="rgba(255,255,255,0.5)"
-                tick={{ fill: "rgba(255,255,255,0.6)", fontSize: 11 }}
+                stroke={chart.axis}
+                tick={{ fill: chart.tick, fontSize: 11 }}
               />
               <YAxis
-                stroke="rgba(255,255,255,0.5)"
-                tick={{ fill: "rgba(255,255,255,0.6)", fontSize: 11 }}
+                stroke={chart.axis}
+                tick={{ fill: chart.tick, fontSize: 11 }}
               />
               <Tooltip
-                contentStyle={{ backgroundColor: "#000", border: "1px solid rgba(255,255,255,0.1)" }}
-                labelStyle={{ color: "#fff" }}
+                contentStyle={{ backgroundColor: chart.tooltipBg, border: `1px solid ${chart.tooltipBorder}` }}
+                labelStyle={{ color: chart.tooltipText }}
                 formatter={(value: number | undefined) => [value ?? 0, "Minutes"]}
                 labelFormatter={(label) => `Week of ${label}`}
               />
               <Line
                 type="monotone"
                 dataKey="minutes"
-                stroke="rgba(255,255,255,0.9)"
+                stroke={chart.line}
                 strokeWidth={2}
-                dot={{ fill: "rgba(255,255,255,0.8)" }}
+                dot={{ fill: chart.dot }}
               />
             </LineChart>
           </ResponsiveContainer>
@@ -181,20 +196,20 @@ export default function AnalyticsPage() {
           <div className="h-48 sm:h-64 min-h-[12rem]">
             <ResponsiveContainer width="100%" height="100%">
               <BarChart data={data.punchTypeBreakdown} layout="vertical" margin={{ left: 20, right: 20 }}>
-                <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.1)" />
-                <XAxis type="number" stroke="rgba(255,255,255,0.5)" tick={{ fill: "rgba(255,255,255,0.6)", fontSize: 11 }} />
+                <CartesianGrid strokeDasharray="3 3" stroke={chart.grid} />
+                <XAxis type="number" stroke={chart.axis} tick={{ fill: chart.tick, fontSize: 11 }} />
                 <YAxis
                   type="category"
                   dataKey="type"
                   width={80}
-                  stroke="rgba(255,255,255,0.5)"
-                  tick={{ fill: "rgba(255,255,255,0.6)", fontSize: 11 }}
+                  stroke={chart.axis}
+                  tick={{ fill: chart.tick, fontSize: 11 }}
                 />
                 <Tooltip
-                  contentStyle={{ backgroundColor: "#000", border: "1px solid rgba(255,255,255,0.1)" }}
+                  contentStyle={{ backgroundColor: chart.tooltipBg, border: `1px solid ${chart.tooltipBorder}` }}
                   formatter={(value: number | undefined) => [value ?? 0, "Sessions"]}
                 />
-                <Bar dataKey="count" fill="rgba(255,255,255,0.3)" radius={[0, 4, 4, 0]} />
+                <Bar dataKey="count" fill={chart.bar} radius={[0, 4, 4, 0]} />
               </BarChart>
             </ResponsiveContainer>
           </div>
@@ -211,20 +226,20 @@ export default function AnalyticsPage() {
             <div className="h-48 sm:h-64 min-h-[12rem]">
               <ResponsiveContainer width="100%" height="100%">
                 <BarChart data={data.horseWorkload} layout="vertical" margin={{ left: 20, right: 20 }}>
-                  <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.1)" />
-                  <XAxis type="number" stroke="rgba(255,255,255,0.5)" tick={{ fill: "rgba(255,255,255,0.6)", fontSize: 11 }} />
+                  <CartesianGrid strokeDasharray="3 3" stroke={chart.grid} />
+                  <XAxis type="number" stroke={chart.axis} tick={{ fill: chart.tick, fontSize: 11 }} />
                   <YAxis
                     type="category"
                     dataKey="horseName"
                     width={100}
-                    stroke="rgba(255,255,255,0.5)"
-                    tick={{ fill: "rgba(255,255,255,0.6)", fontSize: 11 }}
+                    stroke={chart.axis}
+                    tick={{ fill: chart.tick, fontSize: 11 }}
                   />
                   <Tooltip
-                    contentStyle={{ backgroundColor: "#000", border: "1px solid rgba(255,255,255,0.1)" }}
+                    contentStyle={{ backgroundColor: chart.tooltipBg, border: `1px solid ${chart.tooltipBorder}` }}
                     formatter={(value: number | undefined) => [value ?? 0, "Minutes"]}
                   />
-                  <Bar dataKey="minutes" fill="rgba(255,255,255,0.3)" radius={[0, 4, 4, 0]} />
+                  <Bar dataKey="minutes" fill={chart.bar} radius={[0, 4, 4, 0]} />
                 </BarChart>
               </ResponsiveContainer>
             </div>
@@ -247,25 +262,25 @@ export default function AnalyticsPage() {
                 layout="vertical"
                 margin={{ left: 20, right: 20 }}
               >
-                <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.1)" />
+                <CartesianGrid strokeDasharray="3 3" stroke={chart.grid} />
                 <XAxis
                   type="number"
-                  stroke="rgba(255,255,255,0.5)"
-                  tick={{ fill: "rgba(255,255,255,0.6)", fontSize: 11 }}
+                  stroke={chart.axis}
+                  tick={{ fill: chart.tick, fontSize: 11 }}
                   tickFormatter={(v) => `$${v}`}
                 />
                 <YAxis
                   type="category"
                   dataKey="horseName"
                   width={100}
-                  stroke="rgba(255,255,255,0.5)"
-                  tick={{ fill: "rgba(255,255,255,0.6)", fontSize: 11 }}
+                  stroke={chart.axis}
+                  tick={{ fill: chart.tick, fontSize: 11 }}
                 />
                 <Tooltip
-                  contentStyle={{ backgroundColor: "#000", border: "1px solid rgba(255,255,255,0.1)" }}
+                  contentStyle={{ backgroundColor: chart.tooltipBg, border: `1px solid ${chart.tooltipBorder}` }}
                   formatter={(value: number | undefined) => [`$${Number(value ?? 0).toFixed(2)}`, "Cost"]}
                 />
-                <Bar dataKey="cost" fill="rgba(255,255,255,0.3)" radius={[0, 4, 4, 0]} />
+                <Bar dataKey="cost" fill={chart.bar} radius={[0, 4, 4, 0]} />
               </BarChart>
             </ResponsiveContainer>
           </div>

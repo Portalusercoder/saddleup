@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useProfile } from "@/components/providers/ProfileProvider";
+import ThemeToggle from "@/components/layout/ThemeToggle";
 import { useState, useEffect } from "react";
 
 const iconClass = "w-5 h-5 shrink-0";
@@ -114,6 +115,9 @@ export default function CollapsibleSidebar() {
           );
         })}
       </nav>
+      <div className="shrink-0 px-3 py-3 border-t border-black/10 flex items-center justify-center">
+        <ThemeToggle />
+      </div>
     </aside>
   );
 }

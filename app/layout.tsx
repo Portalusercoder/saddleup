@@ -3,6 +3,7 @@ import Navbar from "@/components/layout/Navbar"
 import PagePadding from "@/components/layout/PagePadding"
 import { ProfileProvider } from "@/components/providers/ProfileProvider"
 import { LanguageProvider } from "@/components/providers/LanguageProvider"
+import { ThemeProvider } from "@/components/providers/ThemeProvider"
 import { Playfair_Display, Inter } from "next/font/google"
 
 const playfair = Playfair_Display({
@@ -28,14 +29,23 @@ export default function RootLayout({
   children: React.ReactNode
 }) {
   return (
-    <html lang="en" className={`${playfair.variable} ${inter.variable}`}>
+    <html lang="en" className={`${playfair.variable} ${inter.variable}`} suppressHydrationWarning>
+      <head>
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `(function(){var t=localStorage.getItem('saddleup_theme');if(t==='dark')document.documentElement.classList.add('dark');else if(t==='light')document.documentElement.classList.remove('dark');})();`,
+          }}
+        />
+      </head>
       <body className="bg-base text-black font-sans antialiased">
-        <LanguageProvider>
-          <ProfileProvider>
-            <Navbar />
-            <PagePadding>{children}</PagePadding>
-          </ProfileProvider>
-        </LanguageProvider>
+        <ThemeProvider>
+          <LanguageProvider>
+            <ProfileProvider>
+              <Navbar />
+              <PagePadding>{children}</PagePadding>
+            </ProfileProvider>
+          </LanguageProvider>
+        </ThemeProvider>
       </body>
     </html>
   )

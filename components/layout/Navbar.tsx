@@ -9,6 +9,7 @@ import NotificationBell from "@/components/NotificationBell";
 import { useProfile } from "@/components/providers/ProfileProvider";
 import { useLanguage } from "@/components/providers/LanguageProvider";
 import LanguageToggle from "@/components/layout/LanguageToggle";
+import ThemeToggle from "@/components/layout/ThemeToggle";
 
 const HERO_SCROLL_THRESHOLD = 0.6; // show solid nav after scrolling 60% of viewport
 
@@ -120,13 +121,16 @@ export default function Navbar() {
   }, [isHome]);
 
   const isOverHero = isHome && !scrolledPastHero;
+  const isDashboard = pathname.startsWith("/dashboard");
 
   if (isAuthPage) return null;
 
   return (
     <div className="relative">
       <nav
-        className={`h-20 w-full flex items-center justify-between px-4 sm:px-6 md:px-12 lg:px-16 xl:px-20 fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
+        className={`h-20 flex items-center justify-between px-4 sm:px-6 md:px-12 lg:px-16 xl:px-20 fixed top-0 z-50 transition-all duration-300 ${
+          isDashboard ? "left-0 right-0 w-full md:left-[5.5rem]" : "left-0 right-0 w-full"
+        } ${
           isOverHero
             ? "bg-transparent text-white"
             : isHome
@@ -134,8 +138,11 @@ export default function Navbar() {
               : "bg-base border-b border-black/10 text-black"
         }`}
       >
-        {/* Left: spacer for balance */}
-        <div className="flex-1" />
+        {/* Left: Language + Theme toggles (starts after sidebar on dashboard) */}
+        <div className="flex-1 flex items-center gap-2 min-w-0">
+          <ThemeToggle variant={isOverHero ? "light" : "dark"} />
+          <LanguageToggle variant={isOverHero ? "light" : "dark"} />
+        </div>
 
         {/* Center: Nav links (home page only) */}
         {isHome && !user && (
@@ -156,7 +163,7 @@ export default function Navbar() {
             <Link href="/#pricing" className={isOverHero ? "hover:text-white transition" : "hover:text-black transition"}>
               {lang === "ar" ? "معلومات" : "Information"}
             </Link>
-            <Link href="/login" className={isOverHero ? "hover:text-white transition" : "hover:text-black transition"}>
+            <Link href="/contact" className={isOverHero ? "hover:text-white transition" : "hover:text-black transition"}>
               {lang === "ar" ? "تواصل" : "Contact"}
             </Link>
           </div>
@@ -224,7 +231,6 @@ export default function Navbar() {
           ) : (
             !isAuthPage && (
               <div className="flex items-center gap-3">
-                <LanguageToggle variant={isOverHero ? "light" : "dark"} />
                 <Link
                   href="/login"
                   className={`px-4 py-2.5 border transition uppercase tracking-[0.2em] text-[0.7rem] font-light ${

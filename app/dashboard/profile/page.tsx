@@ -256,7 +256,7 @@ function DeleteAccountButton({ onScheduled }: { onScheduled: () => void }) {
       <button
         type="button"
         onClick={() => setConfirm(true)}
-        className="px-4 py-2.5 border border-amber-500/50 text-amber-200 text-sm uppercase tracking-wider hover:bg-amber-500/10 transition"
+        className="px-4 py-2.5 border border-black/30 text-black text-sm uppercase tracking-wider hover:bg-black/5 transition"
       >
         Schedule account deletion
       </button>

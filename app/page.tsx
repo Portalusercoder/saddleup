@@ -268,24 +268,31 @@ export default function Home() {
                         </li>
                       ))}
                     </ul>
-                    <button
-                      onClick={() =>
-                        openAuth(plan.id === "free" ? undefined : plan.id)
-                      }
-                      className={`mt-6 w-full py-2.5 font-medium transition uppercase tracking-wider text-sm ${
-                        plan.id === "starter"
-                          ? "bg-accent text-white hover:opacity-95"
-                          : plan.id === "free"
-                            ? "bg-black/10 hover:bg-black/15 border border-black/20 text-black"
-                            : "border border-black/20 hover:bg-black/5 text-black"
-                      }`}
-                    >
-                      {plan.id === "free"
-                        ? "Get started free"
-                        : plan.id === "enterprise"
-                          ? "Contact sales"
+                    {plan.id === "enterprise" ? (
+                      <Link
+                        href="/contact?type=enterprise"
+                        className="mt-6 w-full py-2.5 font-medium transition uppercase tracking-wider text-sm border border-black/20 hover:bg-black/5 text-black block text-center"
+                      >
+                        Contact sales
+                      </Link>
+                    ) : (
+                      <button
+                        onClick={() =>
+                          openAuth(plan.id === "free" ? undefined : plan.id)
+                        }
+                        className={`mt-6 w-full py-2.5 font-medium transition uppercase tracking-wider text-sm ${
+                          plan.id === "starter"
+                            ? "bg-accent text-white hover:opacity-95"
+                            : plan.id === "free"
+                              ? "bg-black/10 hover:bg-black/15 border border-black/20 text-black"
+                              : "border border-black/20 hover:bg-black/5 text-black"
+                        }`}
+                      >
+                        {plan.id === "free"
+                          ? "Get started free"
                           : "Get started"}
-                    </button>
+                      </button>
+                    )}
                   </div>
                 </PixelCard>
                 </ScrollReveal>
@@ -314,9 +321,9 @@ export default function Home() {
       </section>
 
       {/* Tech stack */}
-      <section className="bg-base border-t border-black/10 py-12 overflow-hidden text-black">
+      <section className="bg-base border-t border-black/10 py-12 overflow-hidden text-black dark:border-white/10">
         <ScrollReveal>
-          <p className="text-center text-black/70 text-xs uppercase tracking-[0.3em] mb-8">
+          <p className="text-center text-black/70 dark:text-white/90 text-xs uppercase tracking-[0.3em] mb-8">
             Built with
           </p>
         </ScrollReveal>
@@ -359,7 +366,6 @@ export default function Home() {
             hoverSpeed={0}
             scaleOnHover
             fadeOut
-            fadeOutColor="#f3efe8"
             ariaLabel="Technology stack"
           />
           </div>

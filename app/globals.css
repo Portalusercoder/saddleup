@@ -29,6 +29,117 @@
   --foreground: var(--text-primary);
 }
 
+/* ---------------- Dark theme (old app colors) ---------------- */
+
+html.dark {
+  --bg-main: #0f0f0f;
+  --bg-card: #1a1a1a;
+  --bg-elevated: #242424;
+  --bg-hover: #2a2a2a;
+
+  --border-subtle: rgba(255, 255, 255, 0.08);
+  --border-default: rgba(255, 255, 255, 0.15);
+
+  --text-primary: #ffffff;
+  --text-muted: rgba(255, 255, 255, 0.65);
+  --text-subtle: rgba(255, 255, 255, 0.45);
+
+  --button-primary-bg: #bba591;
+  --button-primary-text: #ffffff;
+  --button-secondary-border: rgba(255, 255, 255, 0.3);
+  --button-secondary-text: #ffffff;
+
+  --background: var(--bg-main);
+  --foreground: var(--text-primary);
+}
+
+/* Dark: override Tailwind classes that use light-theme colors */
+.dark .bg-base,
+.dark .bg-base\/95,
+.dark .bg-\[\#f3efe8\] {
+  background: var(--bg-main) !important;
+}
+
+.dark .text-black,
+.dark .text-black\/60,
+.dark .text-black\/70,
+.dark .text-black\/80,
+.dark .text-black\/90 {
+  color: var(--text-primary) !important;
+}
+
+.dark .text-black\/40,
+.dark .text-black\/50 {
+  color: var(--text-muted) !important;
+}
+
+.dark .border-black\/5,
+.dark .border-black\/10,
+.dark .border-black\/15,
+.dark .border-black\/20,
+.dark .border-black\/30,
+.dark .border-black\/40 {
+  border-color: var(--border-subtle) !important;
+}
+
+.dark .bg-black\/5,
+.dark .hover\:bg-black\/5:hover {
+  background: rgba(255, 255, 255, 0.05) !important;
+}
+
+.dark .bg-black\/10,
+.dark .hover\:bg-black\/10:hover {
+  background: rgba(255, 255, 255, 0.08) !important;
+}
+
+.dark .bg-black\/15 {
+  background: rgba(255, 255, 255, 0.1) !important;
+}
+
+/* Dark: accent button stays visible; use amber/gold in dark mode */
+.dark .bg-accent {
+  background: var(--button-primary-bg) !important;
+}
+
+.dark .text-white {
+  color: var(--button-primary-text) !important;
+}
+
+/* Dark: focus rings */
+.dark input:focus,
+.dark select:focus,
+.dark textarea:focus {
+  border-color: rgba(255, 255, 255, 0.35);
+}
+
+/* Dark: placeholder */
+.dark input::placeholder,
+.dark textarea::placeholder {
+  color: var(--text-subtle);
+}
+
+/* Dark: skeleton */
+.dark .skeleton {
+  background: linear-gradient(
+    90deg,
+    rgba(255, 255, 255, 0.04) 0%,
+    rgba(255, 255, 255, 0.1) 50%,
+    rgba(255, 255, 255, 0.04) 100%
+  );
+}
+
+/* Dark: keep error text visible */
+.dark .text-red-600,
+.dark .text-red-500 {
+  color: #f87171 !important;
+}
+
+/* Dark: amber/warning text */
+.dark .text-amber-700,
+.dark .text-amber-800 {
+  color: #fcd34d !important;
+}
+
 /* ---------------- Base ---------------- */
 
 body {

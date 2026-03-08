@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
+import { useProfile } from "@/components/providers/ProfileProvider";
 
 type SubscriptionInfo = {
   status: string;
@@ -12,10 +13,12 @@ type SubscriptionInfo = {
 };
 
 export default function TrialBanner() {
+  const { profile } = useProfile();
   const [data, setData] = useState<SubscriptionInfo | null>(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
+    if (profile?.role !== "owner") return;
     let cancelled = false;
     const run = async () => {
       try {
@@ -31,9 +34,9 @@ export default function TrialBanner() {
     return () => {
       cancelled = true;
     };
-  }, []);
+  }, [profile?.role]);
 
-  if (loading || !data) return null;
+  if (profile?.role !== "owner" || loading || !data) return null;
 
   const { status, trialEndsAt, readOnly } = data;
 

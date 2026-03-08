@@ -155,11 +155,11 @@ export default function PlansPage() {
           {data.usage?.horses ?? 0} / {data.limits?.horses ?? 0} horses • {data.usage?.riders ?? 0} / {data.limits?.riders ?? 0} riders
         </p>
         {data.cancelAtPeriodEnd && daysLeft !== null && (
-          <p className="mt-3 text-amber-200 text-sm">
+          <p className="mt-3 text-amber-800 text-sm">
             Your plan is cancelled. You still have <strong>{daysLeft} day{daysLeft === 1 ? "" : "s"}</strong> left to use premium.
           </p>
         )}
-        {error && <p className="mt-2 text-amber-400 text-sm">{error}</p>}
+        {error && <p className="mt-2 text-amber-700 text-sm">{error}</p>}
       </div>
 
       {/* Upgrade & Cancel */}
@@ -199,7 +199,7 @@ export default function PlansPage() {
               type="button"
               onClick={handleCancelPlan}
               disabled={cancelLoading}
-              className="px-4 py-2.5 border border-amber-500/50 text-amber-200 text-sm uppercase tracking-wider hover:bg-amber-500/10 transition disabled:opacity-50"
+              className="px-4 py-2.5 border border-black/30 text-black text-sm uppercase tracking-wider hover:bg-black/5 transition disabled:opacity-50"
             >
               {cancelLoading ? "Cancelling..." : "Cancel plan"}
             </button>
