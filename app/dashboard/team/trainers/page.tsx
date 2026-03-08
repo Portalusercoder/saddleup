@@ -41,22 +41,22 @@ export default function TeamTrainersPage() {
 
   return (
     <>
-      <p className="text-white/50 text-sm mb-4">
+      <p className="text-black/50 text-sm mb-4">
         Trainers are added via &quot;Add member by personal ID&quot; above. They can teach lessons and manage riders.
       </p>
 
       {toast && (
-        <div className="px-4 py-2 border border-white/10 text-white text-sm mb-4" role="alert">
+        <div className="px-4 py-2 border border-black/10 text-black text-sm mb-4" role="alert">
           {toast}
         </div>
       )}
 
       {trainers.length === 0 ? (
-        <p className="text-white/50">No trainers yet. Add one using their personal ID above.</p>
+        <p className="text-black/50">No trainers yet. Add one using their personal ID above.</p>
       ) : (
-        <div className="border border-white/10 overflow-hidden">
+        <div className="border border-black/10 overflow-hidden">
           <table className="w-full text-left text-sm">
-            <thead className="border-b border-white/10 text-white/50 text-xs uppercase tracking-widest">
+            <thead className="border-b border-black/10 text-black/50 text-xs uppercase tracking-widest">
               <tr>
                 <th className="px-6 py-4 font-medium">Name</th>
                 <th className="px-6 py-4 font-medium">Email</th>
@@ -65,11 +65,11 @@ export default function TeamTrainersPage() {
             </thead>
             <tbody className="divide-y divide-white/10">
               {trainers.map((m) => (
-                <tr key={m.id} className="hover:bg-white/[0.02]">
-                  <td className="px-6 py-4 font-medium text-white">
+                <tr key={m.id} className="hover:bg-black/[0.02]">
+                  <td className="px-6 py-4 font-medium text-black">
                     {m.full_name || m.email || "—"}
                   </td>
-                  <td className="px-6 py-4 text-white/60">{m.email || "—"}</td>
+                  <td className="px-6 py-4 text-black/60">{m.email || "—"}</td>
                   <td className="px-6 py-4">
                     <div className="flex gap-4 items-center">
                       <IdCardUpload
@@ -99,7 +99,7 @@ export default function TeamTrainersPage() {
                             setToast("Trainer removed");
                             fetchMembers();
                           }}
-                          className="text-white/60 hover:text-white text-sm uppercase tracking-wider"
+                          className="text-black/60 hover:text-black text-sm uppercase tracking-wider"
                         >
                           Remove
                         </button>

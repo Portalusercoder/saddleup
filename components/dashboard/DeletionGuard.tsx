@@ -28,7 +28,7 @@ export default function DeletionGuard({ children }: { children: React.ReactNode 
   if (!checked && pathname !== "/dashboard/reactivate") {
     return (
       <div className="flex items-center justify-center min-h-[40vh]">
-        <p className="text-white/50">Loading...</p>
+        <p className="text-black/50">Loading...</p>
       </div>
     );
   }

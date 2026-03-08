@@ -35,23 +35,23 @@ export default function ShareInviteCode() {
   if (!stable) return null;
 
   return (
-    <div className="border border-white/10 p-6">
-      <h2 className="font-serif text-lg text-white mb-2">Invite trainers & students</h2>
-      <p className="text-white/60 text-sm mb-4">
+    <div className="border border-black/10 p-6">
+      <h2 className="font-serif text-lg text-black mb-2">Invite trainers & students</h2>
+      <p className="text-black/60 text-sm mb-4">
         Share this code so trainers and students can join {stable.name}.
       </p>
       <div className="flex items-center gap-3">
-        <code className="flex-1 px-4 py-3 bg-black border border-white/10 font-mono text-lg text-white">
+        <code className="flex-1 px-4 py-3 bg-base border border-black/10 font-mono text-lg text-black">
           {stable.joinCode}
         </code>
         <button
           onClick={copyCode}
-          className="px-4 py-3 bg-white text-black font-medium text-sm uppercase tracking-wider hover:opacity-95 transition whitespace-nowrap"
+          className="px-4 py-3 bg-accent text-white font-medium text-sm uppercase tracking-wider hover:opacity-95 transition whitespace-nowrap"
         >
           {copied ? "Copied!" : "Copy"}
         </button>
       </div>
-      <p className="text-white/40 text-xs mt-3 uppercase tracking-wider">
+      <p className="text-black/40 text-xs mt-3 uppercase tracking-wider">
         New users sign up at /signup and enter this code when choosing Trainer or Student. If it doesn&apos;t work, they can share their personal ID from /get-my-id and you can add them in &quot;Add member by ID&quot; below.
       </p>
     </div>

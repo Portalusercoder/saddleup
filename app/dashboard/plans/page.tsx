@@ -117,7 +117,7 @@ export default function PlansPage() {
   if (profileLoading || !profile) {
     return (
       <div className="flex items-center justify-center min-h-[40vh]">
-        <p className="text-white/50">Loading...</p>
+        <p className="text-black/50">Loading...</p>
       </div>
     );
   }
@@ -125,8 +125,8 @@ export default function PlansPage() {
   if (!isOwner) {
     return (
       <div className="space-y-6">
-        <h1 className="font-serif text-3xl md:text-4xl font-normal text-white">Plans</h1>
-        <p className="text-white/60">Only the stable owner can view and manage plans.</p>
+        <h1 className="font-serif text-3xl md:text-4xl font-normal text-black">Plans</h1>
+        <p className="text-black/60">Only the stable owner can view and manage plans.</p>
       </div>
     );
   }
@@ -134,8 +134,8 @@ export default function PlansPage() {
   if (loading || !hasUsage) {
     return (
       <div className="space-y-6">
-        <h1 className="font-serif text-3xl md:text-4xl font-normal text-white">Plans</h1>
-        <p className="text-white/50">{loading ? "Loading..." : "Could not load subscription."}</p>
+        <h1 className="font-serif text-3xl md:text-4xl font-normal text-black">Plans</h1>
+        <p className="text-black/50">{loading ? "Loading..." : "Could not load subscription."}</p>
       </div>
     );
   }
@@ -143,15 +143,15 @@ export default function PlansPage() {
   return (
     <div className="space-y-10">
       <div>
-        <h1 className="font-serif text-3xl md:text-4xl font-normal text-white">Plans</h1>
-        <p className="text-white/60 mt-2 text-sm">Current plan, upgrade, or cancel.</p>
+        <h1 className="font-serif text-3xl md:text-4xl font-normal text-black">Plans</h1>
+        <p className="text-black/60 mt-2 text-sm">Current plan, upgrade, or cancel.</p>
       </div>
 
       {/* Current plan */}
-      <div className="border border-white/10 p-6">
-        <h2 className="font-serif text-lg text-white mb-4">Current plan</h2>
-        <p className="font-medium text-white capitalize">{data.tier} Plan</p>
-        <p className="text-sm text-white/60 mt-1">
+      <div className="border border-black/10 p-6">
+        <h2 className="font-serif text-lg text-black mb-4">Current plan</h2>
+        <p className="font-medium text-black capitalize">{data.tier} Plan</p>
+        <p className="text-sm text-black/60 mt-1">
           {data.usage?.horses ?? 0} / {data.limits?.horses ?? 0} horses • {data.usage?.riders ?? 0} / {data.limits?.riders ?? 0} riders
         </p>
         {data.cancelAtPeriodEnd && daysLeft !== null && (
@@ -164,14 +164,14 @@ export default function PlansPage() {
 
       {/* Upgrade & Cancel */}
       {isOwner && (
-        <div className="border border-white/10 p-6 space-y-4">
-          <h2 className="font-serif text-lg text-white mb-4">Upgrade or cancel</h2>
+        <div className="border border-black/10 p-6 space-y-4">
+          <h2 className="font-serif text-lg text-black mb-4">Upgrade or cancel</h2>
           {data.hasStripeCustomer && (
             <button
               type="button"
               onClick={handlePortal}
               disabled={portalLoading}
-              className="px-4 py-2.5 border border-white/10 text-white text-sm uppercase tracking-wider hover:bg-white/5 transition disabled:opacity-50"
+              className="px-4 py-2.5 border border-black/10 text-black text-sm uppercase tracking-wider hover:bg-black/5 transition disabled:opacity-50"
             >
               {portalLoading ? "Opening..." : "Manage billing (Stripe)"}
             </button>
@@ -181,14 +181,14 @@ export default function PlansPage() {
               <button
                 onClick={() => handleCheckout("starter")}
                 disabled={!!checkoutLoading}
-                className="px-4 py-2.5 bg-white text-black font-medium text-sm uppercase tracking-wider hover:bg-white/95 transition disabled:opacity-50"
+                className="px-4 py-2.5 bg-accent text-white font-medium text-sm uppercase tracking-wider hover:opacity-95 transition disabled:opacity-50"
               >
                 {checkoutLoading === "starter" ? "Redirecting..." : "Upgrade to Starter ($19.99/mo)"}
               </button>
               <button
                 onClick={() => handleCheckout("stable")}
                 disabled={!!checkoutLoading}
-                className="px-4 py-2.5 border border-white/20 text-white text-sm uppercase tracking-wider hover:bg-white/5 transition disabled:opacity-50"
+                className="px-4 py-2.5 border border-black/20 text-black text-sm uppercase tracking-wider hover:bg-black/5 transition disabled:opacity-50"
               >
                 {checkoutLoading === "stable" ? "Redirecting..." : "Upgrade to Stable ($49.99/mo)"}
               </button>
@@ -208,7 +208,7 @@ export default function PlansPage() {
             <button
               onClick={() => handleChangePlan("stable")}
               disabled={!!changePlanLoading}
-              className="block px-4 py-2.5 bg-white text-black font-medium text-sm uppercase tracking-wider hover:bg-white/95 transition disabled:opacity-50"
+              className="block px-4 py-2.5 bg-accent text-white font-medium text-sm uppercase tracking-wider hover:opacity-95 transition disabled:opacity-50"
             >
               {changePlanLoading === "stable" ? "Changing..." : "Change to Stable ($49.99/mo)"}
             </button>
@@ -217,7 +217,7 @@ export default function PlansPage() {
             <button
               onClick={() => handleChangePlan("starter")}
               disabled={!!changePlanLoading}
-              className="block px-4 py-2.5 border border-white/20 text-white text-sm uppercase tracking-wider hover:bg-white/5 transition disabled:opacity-50"
+              className="block px-4 py-2.5 border border-black/20 text-black text-sm uppercase tracking-wider hover:bg-black/5 transition disabled:opacity-50"
             >
               {changePlanLoading === "starter" ? "Changing..." : "Change to Starter ($19.99/mo)"}
             </button>
@@ -227,33 +227,33 @@ export default function PlansPage() {
 
       {/* Plan cards */}
       <div className="grid gap-4 sm:grid-cols-2">
-        <PixelCard variant="white" className={`!min-h-[120px] ${data.tier === "starter" ? "border-white/30" : ""}`}>
+        <PixelCard variant="white" className={`!min-h-[120px] ${data.tier === "starter" ? "border-black/30" : ""}`}>
           <div className="absolute inset-0 p-4 z-10 flex flex-col">
-            <p className="font-medium text-white">Starter — $19.99/mo</p>
-            <p className="text-sm text-white/60 mt-1">5 horses, 25 riders, analytics</p>
+            <p className="font-medium text-black">Starter — $19.99/mo</p>
+            <p className="text-sm text-black/60 mt-1">5 horses, 25 riders, analytics</p>
             {data.tier === "free" && (
-              <button onClick={() => handleCheckout("starter")} disabled={!!checkoutLoading} className="mt-3 text-sm text-white/80 hover:text-white underline disabled:opacity-50 text-left">
+              <button onClick={() => handleCheckout("starter")} disabled={!!checkoutLoading} className="mt-3 text-sm text-black/80 hover:text-black underline disabled:opacity-50 text-left">
                 Upgrade to Starter
               </button>
             )}
             {data.tier === "stable" && (
-              <button onClick={() => handleChangePlan("starter")} disabled={!!changePlanLoading} className="mt-3 text-sm text-white/80 hover:text-white underline disabled:opacity-50 text-left">
+              <button onClick={() => handleChangePlan("starter")} disabled={!!changePlanLoading} className="mt-3 text-sm text-black/80 hover:text-black underline disabled:opacity-50 text-left">
                 Change to Starter
               </button>
             )}
           </div>
         </PixelCard>
-        <PixelCard variant="white" className={`!min-h-[120px] ${data.tier === "stable" ? "border-white/30" : ""}`}>
+        <PixelCard variant="white" className={`!min-h-[120px] ${data.tier === "stable" ? "border-black/30" : ""}`}>
           <div className="absolute inset-0 p-4 z-10 flex flex-col">
-            <p className="font-medium text-white">Stable — $49.99/mo</p>
-            <p className="text-sm text-white/60 mt-1">50 horses, 200 riders, matching</p>
+            <p className="font-medium text-black">Stable — $49.99/mo</p>
+            <p className="text-sm text-black/60 mt-1">50 horses, 200 riders, matching</p>
             {data.tier === "free" && (
-              <button onClick={() => handleCheckout("stable")} disabled={!!checkoutLoading} className="mt-3 text-sm text-white/80 hover:text-white underline disabled:opacity-50 text-left">
+              <button onClick={() => handleCheckout("stable")} disabled={!!checkoutLoading} className="mt-3 text-sm text-black/80 hover:text-black underline disabled:opacity-50 text-left">
                 Upgrade to Stable
               </button>
             )}
             {data.tier === "starter" && (
-              <button onClick={() => handleChangePlan("stable")} disabled={!!changePlanLoading} className="mt-3 text-sm text-white/80 hover:text-white underline disabled:opacity-50 text-left">
+              <button onClick={() => handleChangePlan("stable")} disabled={!!changePlanLoading} className="mt-3 text-sm text-black/80 hover:text-black underline disabled:opacity-50 text-left">
                 Change to Stable
               </button>
             )}

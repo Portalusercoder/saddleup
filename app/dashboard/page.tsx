@@ -119,16 +119,16 @@ export default function DashboardPage() {
   if (isGuardian) {
     return (
       <div className="space-y-10">
-        <h1 className="font-serif text-3xl md:text-4xl font-normal text-white">
+        <h1 className="font-serif text-3xl md:text-4xl font-normal text-black">
           Dashboard
         </h1>
-        <div className="border border-white/20 p-6">
-          <p className="text-white/80 mb-4">
+        <div className="border border-black/20 p-6">
+          <p className="text-black/80 mb-4">
             View your children&apos;s lessons and training progress in the Parent Portal.
           </p>
           <Link
             href="/dashboard/guardian"
-            className="inline-block px-4 py-2.5 bg-white text-black font-medium text-sm uppercase tracking-wider hover:opacity-95 transition"
+            className="inline-block px-4 py-2.5 bg-accent text-white font-medium text-sm uppercase tracking-wider hover:opacity-95 transition"
           >
             Open Parent Portal
           </Link>
@@ -139,7 +139,7 @@ export default function DashboardPage() {
 
   return (
     <div className="space-y-10">
-      <h1 className="font-serif text-3xl md:text-4xl font-normal text-white">
+      <h1 className="font-serif text-3xl md:text-4xl font-normal text-black">
         Dashboard
       </h1>
 
@@ -147,14 +147,14 @@ export default function DashboardPage() {
 
       {/* Student: Upcoming lessons */}
       {isStudent && upcomingBookings.length > 0 && (
-        <div className="border border-white/20 p-6">
-          <h2 className="font-serif text-lg text-white mb-2">Upcoming Lessons</h2>
+        <div className="border border-black/20 p-6">
+          <h2 className="font-serif text-lg text-black mb-2">Upcoming Lessons</h2>
           <div className="space-y-2">
             {upcomingBookings.map((b) => (
               <Link
                 key={b.id}
                 href="/dashboard/bookings"
-                className="flex items-center gap-3 border border-white/10 px-4 py-3 hover:border-white/20 transition"
+                className="flex items-center gap-3 border border-black/10 px-4 py-3 hover:border-black/20 transition"
               >
                 {b.horse && (
                   <HorseAvatar
@@ -164,8 +164,8 @@ export default function DashboardPage() {
                   />
                 )}
                 <div>
-                  <span className="font-medium text-white">{b.horse?.name ?? "Lesson"}</span>
-                  <span className="text-white/50 text-sm ml-2">
+                  <span className="font-medium text-black">{b.horse?.name ?? "Lesson"}</span>
+                  <span className="text-black/50 text-sm ml-2">
                     {new Date(b.bookingDate).toLocaleDateString("en-US", {
                       weekday: "short",
                       month: "short",
@@ -182,11 +182,11 @@ export default function DashboardPage() {
 
       {/* Upcoming Care Reminders - trainers/owners only */}
       {!isStudent && careReminders.length > 0 && (
-        <div className="border border-white/20 p-6">
-          <h2 className="font-serif text-lg text-white mb-2 flex items-center gap-2">
+        <div className="border border-black/20 p-6">
+          <h2 className="font-serif text-lg text-black mb-2 flex items-center gap-2">
             <span>📋</span> Upcoming Care Reminders
           </h2>
-          <p className="text-sm text-white/60 mb-4">
+          <p className="text-sm text-black/60 mb-4">
             Vaccinations, farrier, and other care due in the next 30 days.
           </p>
           <ul className="space-y-2">
@@ -194,16 +194,16 @@ export default function DashboardPage() {
               <li key={r.id} className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-1 text-sm">
                 <Link
                   href={`/dashboard/horses/${r.horseId}`}
-                  className="text-white hover:underline flex items-center gap-2 min-w-0"
+                  className="text-black hover:underline flex items-center gap-2 min-w-0"
                 >
                   {r.horseName}
-                  <span className="text-white/50 shrink-0">— {r.typeLabel}</span>
+                  <span className="text-black/50 shrink-0">— {r.typeLabel}</span>
                 </Link>
                 <span
                   className={
                     r.overdue
                       ? "text-amber-400 font-medium"
-                      : "text-white/50"
+                      : "text-black/50"
                   }
                 >
                   {r.overdue ? "Overdue • " : ""}
@@ -220,11 +220,11 @@ export default function DashboardPage() {
 
       {/* Workload Alerts - trainers/owners only */}
       {!isStudent && overworkedHorses.length > 0 && (
-        <div className="border border-white/20 p-6">
-          <h2 className="font-serif text-lg text-white mb-2 flex items-center gap-2">
+        <div className="border border-black/20 p-6">
+          <h2 className="font-serif text-lg text-black mb-2 flex items-center gap-2">
             <span>⚠</span> Horse Workload Alerts
           </h2>
-          <p className="text-sm text-white/60 mb-4">
+          <p className="text-sm text-black/60 mb-4">
             These horses may need a rest day based on recent activity.
           </p>
           <ul className="space-y-2">
@@ -234,11 +234,11 @@ export default function DashboardPage() {
                 <li key={h.id} className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-1 text-sm">
                   <Link
                     href={`/dashboard/horses/${h.id}`}
-                    className="text-white hover:underline"
+                    className="text-black hover:underline"
                   >
                     {h.name}
                   </Link>
-                  <span className="text-white/50 shrink-0">
+                  <span className="text-black/50 shrink-0">
                     {w.sessionsCount} sessions, {w.totalMinutes} min this week
                   </span>
                 </li>
@@ -265,52 +265,52 @@ export default function DashboardPage() {
       </div>
 
       <div className="grid md:grid-cols-2 gap-6">
-        <div className="border border-white/10 p-6">
-          <h2 className="font-serif text-lg text-white mb-4">
+        <div className="border border-black/10 p-6">
+          <h2 className="font-serif text-lg text-black mb-4">
             {isStudent ? "My Recent Sessions" : "Recent Sessions"}
           </h2>
           <div className="space-y-3">
             {sessions.slice(0, 5).map((session) => (
               <div
                 key={session.id}
-                className="flex justify-between items-center border border-white/10 px-4 py-3"
+                className="flex justify-between items-center border border-black/10 px-4 py-3"
               >
                 <div>
-                  <span className="font-medium text-white">{session.horse?.name}</span>
-                  <span className="text-white/50 text-sm ml-2">
+                  <span className="font-medium text-black">{session.horse?.name}</span>
+                  <span className="text-black/50 text-sm ml-2">
                     {PUNCH_LABELS[session.punchType] || session.punchType}
                   </span>
                 </div>
-                <span className="text-white/50 text-sm">
+                <span className="text-black/50 text-sm">
                   {session.duration > 0 ? `${session.duration} min` : "Rest"}
                 </span>
               </div>
             ))}
             {sessions.length === 0 && (
-              <p className="text-white/50 text-sm">No sessions yet</p>
+              <p className="text-black/50 text-sm">No sessions yet</p>
             )}
           </div>
         </div>
 
         {!isStudent && (
-          <div className="border border-white/10 p-6">
-            <h2 className="font-serif text-lg text-white mb-4">Quick Actions</h2>
+          <div className="border border-black/10 p-6">
+            <h2 className="font-serif text-lg text-black mb-4">Quick Actions</h2>
             <div className="space-y-3">
               <Link
                 href="/dashboard/horses?add=1"
-                className="block w-full px-4 py-3 bg-white text-black font-medium text-center text-sm uppercase tracking-wider hover:opacity-95 transition"
+                className="block w-full px-4 py-3 bg-accent text-white font-medium text-center text-sm uppercase tracking-wider hover:opacity-95 transition"
               >
                 + Add Horse
               </Link>
               <Link
                 href="/dashboard/horses"
-                className="block w-full px-4 py-3 border border-white/10 text-white font-medium text-center text-sm uppercase tracking-wider hover:border-white/30 transition"
+                className="block w-full px-4 py-3 border border-black/10 text-black font-medium text-center text-sm uppercase tracking-wider hover:border-black/30 transition"
               >
                 Log Training Session
               </Link>
               <Link
                 href="/dashboard/schedule"
-                className="block w-full px-4 py-3 border border-white/10 text-white font-medium text-center text-sm uppercase tracking-wider hover:border-white/30 transition"
+                className="block w-full px-4 py-3 border border-black/10 text-black font-medium text-center text-sm uppercase tracking-wider hover:border-black/30 transition"
               >
                 View Schedule
               </Link>
@@ -318,24 +318,24 @@ export default function DashboardPage() {
           </div>
         )}
         {isStudent && (
-          <div className="border border-white/10 p-6">
-            <h2 className="font-serif text-lg text-white mb-4">Quick Links</h2>
+          <div className="border border-black/10 p-6">
+            <h2 className="font-serif text-lg text-black mb-4">Quick Links</h2>
             <div className="space-y-3">
               <Link
                 href="/dashboard/my-horses"
-                className="block w-full px-4 py-3 border border-white/10 text-white font-medium text-center text-sm uppercase tracking-wider hover:border-white/30 transition"
+                className="block w-full px-4 py-3 border border-black/10 text-black font-medium text-center text-sm uppercase tracking-wider hover:border-black/30 transition"
               >
                 My Horses
               </Link>
               <Link
                 href="/dashboard/bookings"
-                className="block w-full px-4 py-3 border border-white/10 text-white font-medium text-center text-sm uppercase tracking-wider hover:border-white/30 transition"
+                className="block w-full px-4 py-3 border border-black/10 text-black font-medium text-center text-sm uppercase tracking-wider hover:border-black/30 transition"
               >
                 My Bookings
               </Link>
               <Link
                 href="/dashboard/competitions"
-                className="block w-full px-4 py-3 border border-white/10 text-white font-medium text-center text-sm uppercase tracking-wider hover:border-white/30 transition"
+                className="block w-full px-4 py-3 border border-black/10 text-black font-medium text-center text-sm uppercase tracking-wider hover:border-black/30 transition"
               >
                 Competitions
               </Link>
@@ -349,9 +349,9 @@ export default function DashboardPage() {
 
 function StatCard({ title, value }: { title: string; value: string | number }) {
   return (
-    <div className="border border-white/10 p-6">
-      <p className="text-white/50 text-xs uppercase tracking-widest">{title}</p>
-      <p className="font-serif text-2xl text-white mt-2">{value}</p>
+    <div className="border border-black/10 p-6">
+      <p className="text-black/50 text-xs uppercase tracking-widest">{title}</p>
+      <p className="font-serif text-2xl text-black mt-2">{value}</p>
     </div>
   );
 }

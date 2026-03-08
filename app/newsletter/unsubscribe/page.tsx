@@ -11,7 +11,7 @@ export default async function UnsubscribePage({
   const error = params.error;
 
   return (
-    <div className="min-h-screen bg-black text-white flex flex-col items-center justify-center px-6">
+    <div className="min-h-screen bg-base text-black flex flex-col items-center justify-center px-6">
       <div className="max-w-md w-full text-center">
         {success && (
           <>
@@ -58,7 +58,7 @@ export default async function UnsubscribePage({
         )}
         <Link
           href="/"
-          className="inline-block px-6 py-3 bg-white text-black font-medium hover:bg-white/95 transition uppercase tracking-wider text-sm"
+          className="inline-block px-6 py-3 bg-accent text-white font-medium hover:opacity-95 transition uppercase tracking-wider text-sm"
         >
           Back to home
         </Link>

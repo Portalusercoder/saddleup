@@ -31,12 +31,12 @@ interface Rider {
 }
 
 const formInput =
-  "w-full px-4 py-3 bg-black border border-white/10 text-white placeholder-white/40 focus:border-white/30 focus:outline-none";
-const labelClass = "block text-xs uppercase tracking-widest text-white/50 mb-2";
+  "w-full px-4 py-3 bg-base border border-black/10 text-black placeholder-black/40 focus:border-black/30 focus:outline-none";
+const labelClass = "block text-xs uppercase tracking-widest text-black/50 mb-2";
 const btnPrimary =
-  "px-4 py-2.5 bg-white text-black font-medium text-sm uppercase tracking-wider hover:opacity-95 transition";
+  "px-4 py-2.5 bg-accent text-white font-medium text-sm uppercase tracking-wider hover:opacity-95 transition";
 const btnSecondary =
-  "px-4 py-2.5 border border-white/10 text-white text-sm uppercase tracking-wider hover:border-white/30 transition";
+  "px-4 py-2.5 border border-black/10 text-black text-sm uppercase tracking-wider hover:border-black/30 transition";
 
 const SEVERITY_LABELS: Record<string, string> = {
   minor: "Minor",
@@ -211,10 +211,10 @@ export default function IncidentsPage() {
   if (profile?.role === "student") {
     return (
       <div className="space-y-6">
-        <h1 className="font-serif text-2xl md:text-3xl font-normal text-white">
+        <h1 className="font-serif text-2xl md:text-3xl font-normal text-black">
           Incident Reports
         </h1>
-        <p className="text-white/50">
+        <p className="text-black/50">
           You do not have access to incident reports.
         </p>
       </div>
@@ -225,10 +225,10 @@ export default function IncidentsPage() {
     <div className="space-y-8">
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div>
-          <h1 className="font-serif text-3xl md:text-4xl font-normal text-white">
+          <h1 className="font-serif text-3xl md:text-4xl font-normal text-black">
             Incident Reports
           </h1>
-          <p className="text-white/60 text-sm max-w-xl mt-2">
+          <p className="text-black/60 text-sm max-w-xl mt-2">
             Document incidents for liability and insurance. Include date, horse,
             rider, description, and witnesses.
           </p>
@@ -242,7 +242,7 @@ export default function IncidentsPage() {
 
       {toast && (
         <div
-          className="px-4 py-2 border border-white/10 text-white text-sm"
+          className="px-4 py-2 border border-black/10 text-black text-sm"
           role="alert"
         >
           {toast}
@@ -252,35 +252,35 @@ export default function IncidentsPage() {
       {loading ? (
         <TableSkeleton rows={6} cols={4} />
       ) : reports.length === 0 ? (
-        <div className="border border-white/10 p-8 text-center">
-          <p className="text-white/60">No incident reports yet.</p>
+        <div className="border border-black/10 p-8 text-center">
+          <p className="text-black/60">No incident reports yet.</p>
           {isTrainerOrOwner && horses.length > 0 && (
             <button
               onClick={openAdd}
-              className="mt-4 text-white/60 hover:text-white text-sm uppercase tracking-wider"
+              className="mt-4 text-black/60 hover:text-black text-sm uppercase tracking-wider"
             >
               + Report your first incident
             </button>
           )}
         </div>
       ) : (
-        <div className="border border-white/10 p-6">
+        <div className="border border-black/10 p-6">
           <div className="space-y-3">
             {reports.map((r) => (
               <div
                 key={r.id}
-                className="border border-white/10 px-4 py-4 hover:border-white/20 transition"
+                className="border border-black/10 px-4 py-4 hover:border-black/20 transition"
               >
                 <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-2">
                   <div className="flex-1">
                     <div className="flex flex-wrap items-center gap-2">
-                      <span className="font-medium text-white">
+                      <span className="font-medium text-black">
                         {formatDate(r.incidentDate)}
                       </span>
                       {r.horse && (
                         <Link
                           href={`/dashboard/horses/${r.horse.id}`}
-                          className="text-white/70 hover:text-white text-sm"
+                          className="text-black/70 hover:text-black text-sm"
                         >
                           {r.horse.name}
                         </Link>
@@ -291,18 +291,18 @@ export default function IncidentsPage() {
                             r.severity === "serious"
                               ? "bg-amber-500/20 text-amber-400"
                               : r.severity === "moderate"
-                                ? "bg-white/10 text-white/80"
-                                : "text-white/50"
+                                ? "bg-white/10 text-black/80"
+                                : "text-black/50"
                           }`}
                         >
                           {SEVERITY_LABELS[r.severity] ?? r.severity}
                         </span>
                       )}
                     </div>
-                    <p className="text-white/80 text-sm mt-2 line-clamp-2">
+                    <p className="text-black/80 text-sm mt-2 line-clamp-2">
                       {r.description}
                     </p>
-                    <div className="flex flex-wrap gap-x-4 gap-y-1 mt-2 text-xs text-white/50">
+                    <div className="flex flex-wrap gap-x-4 gap-y-1 mt-2 text-xs text-black/50">
                       {r.riderName && (
                         <span>Rider: {r.riderName}</span>
                       )}
@@ -318,13 +318,13 @@ export default function IncidentsPage() {
                     <div className="flex gap-2 shrink-0">
                       <button
                         onClick={() => openEdit(r)}
-                        className="text-white hover:underline text-sm uppercase tracking-wider"
+                        className="text-black hover:underline text-sm uppercase tracking-wider"
                       >
                         Edit
                       </button>
                       <button
                         onClick={() => handleDelete(r.id)}
-                        className="text-white/60 hover:text-white text-sm uppercase tracking-wider"
+                        className="text-black/60 hover:text-black text-sm uppercase tracking-wider"
                       >
                         Delete
                       </button>
@@ -339,8 +339,8 @@ export default function IncidentsPage() {
 
       {showModal && (
         <div className="fixed inset-0 bg-black/80 flex items-center justify-center z-50 p-4 overflow-y-auto sm:items-center sm:py-8">
-          <div className="bg-black border border-white/10 max-w-lg w-full p-4 sm:p-6 my-4 sm:my-8 max-h-[90vh] overflow-y-auto">
-            <h2 className="font-serif text-xl text-white mb-6">
+          <div className="bg-base border border-black/10 max-w-lg w-full p-4 sm:p-6 my-4 sm:my-8 max-h-[90vh] overflow-y-auto">
+            <h2 className="font-serif text-xl text-black mb-6">
               {editingReport ? "Edit incident report" : "Report incident"}
             </h2>
             <form onSubmit={handleSubmit} className="space-y-4">

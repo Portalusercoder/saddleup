@@ -90,16 +90,16 @@ export default function SubscriptionBilling() {
 
   const isOwner = role === "owner";
 
-  const btnPrimary = "px-4 py-2.5 bg-white text-black font-medium text-sm uppercase tracking-wider hover:opacity-95 transition disabled:opacity-50";
-  const btnSecondary = "px-4 py-2.5 border border-white/10 text-white text-sm uppercase tracking-wider hover:border-white/30 transition disabled:opacity-50";
+  const btnPrimary = "px-4 py-2.5 bg-accent text-black font-medium text-sm uppercase tracking-wider hover:opacity-95 transition disabled:opacity-50";
+  const btnSecondary = "px-4 py-2.5 border border-black/10 text-black text-sm uppercase tracking-wider hover:border-black/30 transition disabled:opacity-50";
 
   const hasUsage = data && data.limits && data.usage;
 
   if (loading || !hasUsage) {
     return (
-      <div className="border border-white/10 p-6">
-        <h2 className="font-serif text-lg text-white mb-4">Billing & Plan</h2>
-        <p className="text-white/50">
+      <div className="border border-black/10 p-6">
+        <h2 className="font-serif text-lg text-black mb-4">Billing & Plan</h2>
+        <p className="text-black/50">
           {loading ? "Loading..." : "Could not load subscription details."}
         </p>
       </div>
@@ -107,19 +107,19 @@ export default function SubscriptionBilling() {
   }
 
   return (
-    <div className="border border-white/10 p-6">
-      <h2 className="font-serif text-lg text-white mb-4">Billing & Plan</h2>
+    <div className="border border-black/10 p-6">
+      <h2 className="font-serif text-lg text-black mb-4">Billing & Plan</h2>
 
       <div className="space-y-4">
         <div className="flex items-center justify-between">
           <div>
-            <p className="font-medium text-white capitalize">{data.tier} Plan</p>
-            <p className="text-sm text-white/60 mt-1">
+            <p className="font-medium text-black capitalize">{data.tier} Plan</p>
+            <p className="text-sm text-black/60 mt-1">
               {data.usage?.horses ?? 0} / {data.limits?.horses ?? 0} horses • {data.usage?.riders ?? 0} / {data.limits?.riders ?? 0} riders
             </p>
           </div>
           {data.tier !== "free" && (
-            <div className="h-2 flex-1 max-w-[120px] mx-4 border border-white/10 overflow-hidden">
+            <div className="h-2 flex-1 max-w-[120px] mx-4 border border-black/10 overflow-hidden">
               <div
                 className="h-full bg-white"
                 style={{
@@ -141,12 +141,12 @@ export default function SubscriptionBilling() {
         </div>
 
         {!data.canAddHorse && (
-          <p className="text-white/80 text-sm">
+          <p className="text-black/80 text-sm">
             Horse limit reached. Upgrade to add more.
           </p>
         )}
         {!data.canAddRider && (
-          <p className="text-white/80 text-sm">
+          <p className="text-black/80 text-sm">
             Rider limit reached. Upgrade to add more.
           </p>
         )}
@@ -209,28 +209,28 @@ export default function SubscriptionBilling() {
         )}
 
         {!isOwner && (
-          <p className="text-sm text-white/60">
+          <p className="text-sm text-black/60">
             Only the stable owner can manage billing and subscriptions.
           </p>
         )}
       </div>
 
       {isOwner && (
-        <div className="mt-6 pt-6 border-t border-white/10">
-          <h3 className="text-sm font-medium text-white mb-3 uppercase tracking-wider">Plans</h3>
+        <div className="mt-6 pt-6 border-t border-black/10">
+          <h3 className="text-sm font-medium text-black mb-3 uppercase tracking-wider">Plans</h3>
           <div className="grid gap-3 sm:grid-cols-2">
             <PixelCard
               variant="white"
-              className={`!min-h-[140px] ${data.tier === "starter" ? "border-white/30" : ""}`}
+              className={`!min-h-[140px] ${data.tier === "starter" ? "border-black/30" : ""}`}
             >
               <div className="absolute inset-0 p-4 z-10 flex flex-col">
-                <p className="font-medium text-white">Starter — $19.99/mo</p>
-                <p className="text-sm text-white/60 mt-1">5 horses, 25 riders, analytics</p>
+                <p className="font-medium text-black">Starter — $19.99/mo</p>
+                <p className="text-sm text-black/60 mt-1">5 horses, 25 riders, analytics</p>
                 {data.tier === "free" && (
                   <button
                     onClick={() => handleCheckout("starter")}
                     disabled={!!checkoutLoading}
-                    className="mt-3 text-sm text-white/80 hover:text-white underline disabled:opacity-50 text-left"
+                    className="mt-3 text-sm text-black/80 hover:text-black underline disabled:opacity-50 text-left"
                   >
                     Upgrade to Starter
                   </button>
@@ -239,7 +239,7 @@ export default function SubscriptionBilling() {
                   <button
                     onClick={() => handleChangePlan("starter")}
                     disabled={!!changePlanLoading}
-                    className="mt-3 text-sm text-white/80 hover:text-white underline disabled:opacity-50 text-left"
+                    className="mt-3 text-sm text-black/80 hover:text-black underline disabled:opacity-50 text-left"
                   >
                     Change to Starter
                   </button>
@@ -248,16 +248,16 @@ export default function SubscriptionBilling() {
             </PixelCard>
             <PixelCard
               variant="white"
-              className={`!min-h-[140px] ${data.tier === "stable" ? "border-white/30" : ""}`}
+              className={`!min-h-[140px] ${data.tier === "stable" ? "border-black/30" : ""}`}
             >
               <div className="absolute inset-0 p-4 z-10 flex flex-col">
-                <p className="font-medium text-white">Stable — $49.99/mo</p>
-                <p className="text-sm text-white/60 mt-1">50 horses, 200 riders, matching</p>
+                <p className="font-medium text-black">Stable — $49.99/mo</p>
+                <p className="text-sm text-black/60 mt-1">50 horses, 200 riders, matching</p>
                 {data.tier === "free" && (
                   <button
                     onClick={() => handleCheckout("stable")}
                     disabled={!!checkoutLoading}
-                    className="mt-3 text-sm text-white/80 hover:text-white underline disabled:opacity-50 text-left"
+                    className="mt-3 text-sm text-black/80 hover:text-black underline disabled:opacity-50 text-left"
                   >
                     Upgrade to Stable
                   </button>
@@ -266,7 +266,7 @@ export default function SubscriptionBilling() {
                   <button
                     onClick={() => handleChangePlan("stable")}
                     disabled={!!changePlanLoading}
-                    className="mt-3 text-sm text-white/80 hover:text-white underline disabled:opacity-50 text-left"
+                    className="mt-3 text-sm text-black/80 hover:text-black underline disabled:opacity-50 text-left"
                   >
                     Change to Stable
                   </button>

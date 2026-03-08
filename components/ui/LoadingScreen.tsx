@@ -23,7 +23,7 @@ export default function LoadingScreen({
     <div
       className={
         fullPage
-          ? "min-h-screen bg-black flex flex-col items-center justify-center"
+          ? "min-h-screen bg-base flex flex-col items-center justify-center text-black"
           : "flex flex-col items-center justify-center py-16"
       }
     >
@@ -34,7 +34,7 @@ export default function LoadingScreen({
           viewBox="0 0 24 24"
           fill="none"
           xmlns="http://www.w3.org/2000/svg"
-          className="text-white/70 animate-spin"
+          className="text-black/70 animate-spin"
           aria-hidden
         >
           <circle
@@ -57,7 +57,7 @@ export default function LoadingScreen({
       </div>
       {message && (
         <p
-          className={`uppercase tracking-[0.25em] text-white/40 font-sans ${
+          className={`uppercase tracking-[0.25em] text-black/40 font-sans ${
             size === "sm" ? "mt-3 text-[0.6rem]" : "mt-6 text-[0.65rem]"
           }`}
         >

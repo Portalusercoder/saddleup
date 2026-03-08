@@ -22,10 +22,10 @@ interface Horse {
   name: string;
 }
 
-const formInput = "w-full px-4 py-3 bg-black border border-white/10 text-white placeholder-white/40 focus:border-white/30 focus:outline-none";
-const labelClass = "block text-xs uppercase tracking-widest text-white/50 mb-2";
-const btnPrimary = "px-4 py-2.5 bg-white text-black font-medium text-sm uppercase tracking-wider hover:opacity-95 transition";
-const btnSecondary = "px-4 py-2.5 border border-white/10 text-white text-sm uppercase tracking-wider hover:border-white/30 transition";
+const formInput = "w-full px-4 py-3 bg-base border border-black/10 text-black placeholder-black/40 focus:border-black/30 focus:outline-none";
+const labelClass = "block text-xs uppercase tracking-widest text-black/50 mb-2";
+const btnPrimary = "px-4 py-2.5 bg-accent text-white font-medium text-sm uppercase tracking-wider hover:opacity-95 transition";
+const btnSecondary = "px-4 py-2.5 border border-black/10 text-black text-sm uppercase tracking-wider hover:border-black/30 transition";
 
 export default function CompetitionsPage() {
   const { profile } = useProfile();
@@ -172,10 +172,10 @@ export default function CompetitionsPage() {
     <div className="space-y-8">
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div>
-          <h1 className="font-serif text-3xl md:text-4xl font-normal text-white">
+          <h1 className="font-serif text-3xl md:text-4xl font-normal text-black">
             Competitions
           </h1>
-          <p className="text-white/60 text-sm max-w-xl mt-2">
+          <p className="text-black/60 text-sm max-w-xl mt-2">
             Upcoming and past competition results for horses in your stable.
           </p>
         </div>
@@ -187,7 +187,7 @@ export default function CompetitionsPage() {
       </div>
 
       {toast && (
-        <div className="px-4 py-2 border border-white/10 text-white text-sm" role="alert">
+        <div className="px-4 py-2 border border-black/10 text-black text-sm" role="alert">
           {toast}
         </div>
       )}
@@ -197,24 +197,24 @@ export default function CompetitionsPage() {
       ) : (
         <>
           {upcoming.length > 0 && (
-            <div className="border border-white/10 p-6">
-              <h2 className="font-serif text-lg text-white mb-4">Upcoming</h2>
+            <div className="border border-black/10 p-6">
+              <h2 className="font-serif text-lg text-black mb-4">Upcoming</h2>
               <div className="space-y-3">
                 {upcoming.map((c) => (
                   <div
                     key={c.id}
-                    className="flex items-center justify-between border border-white/10 px-4 py-3"
+                    className="flex items-center justify-between border border-black/10 px-4 py-3"
                   >
                     <div>
-                      <span className="font-medium text-white">
+                      <span className="font-medium text-black">
                         {c.eventName}
                       </span>
-                      <span className="text-white/50 text-sm ml-2">
+                      <span className="text-black/50 text-sm ml-2">
                         {formatDate(c.eventDate)}
                         {c.location && ` • ${c.location}`}
                       </span>
                       {c.horse && (
-                        <span className="text-white/40 text-xs block">
+                        <span className="text-black/40 text-xs block">
                           Horse: {c.horse.name}
                         </span>
                       )}
@@ -223,13 +223,13 @@ export default function CompetitionsPage() {
                       <div className="flex gap-2">
                         <button
                           onClick={() => openEdit(c)}
-                          className="text-white hover:underline text-sm uppercase tracking-wider"
+                          className="text-black hover:underline text-sm uppercase tracking-wider"
                         >
                           Edit
                         </button>
                         <button
                           onClick={() => handleDelete(c.id)}
-                          className="text-white/60 hover:text-white text-sm uppercase tracking-wider"
+                          className="text-black/60 hover:text-black text-sm uppercase tracking-wider"
                         >
                           Delete
                         </button>
@@ -242,29 +242,29 @@ export default function CompetitionsPage() {
           )}
 
           {past.length > 0 && (
-            <div className="border border-white/10 p-6">
-              <h2 className="font-serif text-lg text-white mb-4">Past Results</h2>
+            <div className="border border-black/10 p-6">
+              <h2 className="font-serif text-lg text-black mb-4">Past Results</h2>
               <div className="space-y-3">
                 {past.map((c) => (
                   <div
                     key={c.id}
-                    className="flex items-center justify-between border border-white/10 px-4 py-3"
+                    className="flex items-center justify-between border border-black/10 px-4 py-3"
                   >
                     <div>
-                      <span className="font-medium text-white">
+                      <span className="font-medium text-black">
                         {c.eventName}
                       </span>
-                      <span className="text-white/50 text-sm ml-2">
+                      <span className="text-black/50 text-sm ml-2">
                         {formatDate(c.eventDate)}
                         {c.location && ` • ${c.location}`}
                       </span>
                       {c.horse && (
-                        <span className="text-white/40 text-xs block">
+                        <span className="text-black/40 text-xs block">
                           Horse: {c.horse.name}
                         </span>
                       )}
                       {c.result && (
-                        <span className="text-white/60 text-xs block mt-1">
+                        <span className="text-black/60 text-xs block mt-1">
                           Result: {c.result}
                         </span>
                       )}
@@ -273,13 +273,13 @@ export default function CompetitionsPage() {
                       <div className="flex gap-2">
                         <button
                           onClick={() => openEdit(c)}
-                          className="text-white hover:underline text-sm uppercase tracking-wider"
+                          className="text-black hover:underline text-sm uppercase tracking-wider"
                         >
                           Edit
                         </button>
                         <button
                           onClick={() => handleDelete(c.id)}
-                          className="text-white/60 hover:text-white text-sm uppercase tracking-wider"
+                          className="text-black/60 hover:text-black text-sm uppercase tracking-wider"
                         >
                           Delete
                         </button>
@@ -292,12 +292,12 @@ export default function CompetitionsPage() {
           )}
 
           {upcoming.length === 0 && past.length === 0 && (
-            <div className="border border-white/10 p-8 text-center">
-              <p className="text-white/60">No competitions recorded yet.</p>
+            <div className="border border-black/10 p-8 text-center">
+              <p className="text-black/60">No competitions recorded yet.</p>
               {isTrainerOrOwner && horses.length > 0 && (
                 <button
                   onClick={openAdd}
-                  className="mt-4 text-white/60 hover:text-white text-sm uppercase tracking-wider"
+                  className="mt-4 text-black/60 hover:text-black text-sm uppercase tracking-wider"
                 >
                   + Add your first competition
                 </button>
@@ -309,8 +309,8 @@ export default function CompetitionsPage() {
 
       {showModal && (
         <div className="fixed inset-0 bg-black/80 flex items-center justify-center z-50 p-4 overflow-y-auto sm:items-center">
-          <div className="bg-black border border-white/10 max-w-md w-full p-4 sm:p-6 max-h-[90vh] overflow-y-auto">
-            <h2 className="font-serif text-xl text-white mb-6">
+          <div className="bg-base border border-black/10 max-w-md w-full p-4 sm:p-6 max-h-[90vh] overflow-y-auto">
+            <h2 className="font-serif text-xl text-black mb-6">
               {editingCompetition ? "Edit competition" : "Add competition"}
             </h2>
             <form onSubmit={handleSubmit} className="space-y-4">

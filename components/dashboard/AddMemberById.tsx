@@ -48,15 +48,15 @@ export default function AddMemberById({ onSuccess }: { onSuccess?: () => void })
   };
 
   const formInput =
-    "w-full px-4 py-3 bg-black border border-white/10 text-white placeholder-white/40 focus:border-white/30 focus:outline-none";
-  const labelClass = "block text-xs uppercase tracking-widest text-white/50 mb-2";
+    "w-full px-4 py-3 bg-base border border-black/10 text-black placeholder-black/40 focus:border-black/30 focus:outline-none";
+  const labelClass = "block text-xs uppercase tracking-widest text-black/50 mb-2";
 
   return (
-    <div className="border border-white/10 p-6">
-      <h2 className="font-serif text-lg text-white mb-2">Add member by personal ID</h2>
-      <p className="text-white/60 text-sm mb-4">
+    <div className="border border-black/10 p-6">
+      <h2 className="font-serif text-lg text-black mb-2">Add member by personal ID</h2>
+      <p className="text-black/60 text-sm mb-4">
         If the join code didn&apos;t work, ask the person for their personal ID. They can get it at{" "}
-        <a href="/get-my-id" className="text-white hover:underline">/get-my-id</a> after signing up.
+        <a href="/get-my-id" className="text-black hover:underline">/get-my-id</a> after signing up.
       </p>
       <form onSubmit={handleSubmit} className="space-y-4">
         <div>
@@ -85,7 +85,7 @@ export default function AddMemberById({ onSuccess }: { onSuccess?: () => void })
         {message && (
           <p
             className={`text-sm ${
-              message.type === "success" ? "text-white/80" : "text-red-400"
+              message.type === "success" ? "text-black/80" : "text-red-400"
             }`}
           >
             {message.text}
@@ -94,7 +94,7 @@ export default function AddMemberById({ onSuccess }: { onSuccess?: () => void })
         <button
           type="submit"
           disabled={loading}
-          className="px-4 py-2.5 bg-white text-black font-medium text-sm uppercase tracking-wider hover:opacity-95 transition disabled:opacity-50"
+          className="px-4 py-2.5 bg-accent text-white font-medium text-sm uppercase tracking-wider hover:opacity-95 transition disabled:opacity-50"
         >
           {loading ? "Adding..." : "Add member"}
         </button>

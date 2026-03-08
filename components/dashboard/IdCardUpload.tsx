@@ -64,7 +64,7 @@ export function IdCardUpload(props: Props) {
             href={displayUrl}
             target="_blank"
             rel="noopener noreferrer"
-            className="text-white hover:underline text-sm uppercase tracking-wider"
+            className="text-black hover:underline text-sm uppercase tracking-wider"
           >
             View ID card
           </a>
@@ -72,7 +72,7 @@ export function IdCardUpload(props: Props) {
             <button
               onClick={() => inputRef.current?.click()}
               disabled={uploading}
-              className="text-white/60 hover:text-white text-sm uppercase tracking-wider disabled:opacity-50"
+              className="text-black/60 hover:text-black text-sm uppercase tracking-wider disabled:opacity-50"
             >
               {uploading ? "Uploading..." : "Replace"}
             </button>
@@ -82,7 +82,7 @@ export function IdCardUpload(props: Props) {
         <button
           onClick={() => inputRef.current?.click()}
           disabled={uploading}
-          className="px-4 py-2.5 border border-white/10 text-white text-sm uppercase tracking-wider hover:border-white/30 transition disabled:opacity-50"
+          className="px-4 py-2.5 border border-black/10 text-black text-sm uppercase tracking-wider hover:border-black/30 transition disabled:opacity-50"
         >
           {uploading ? "Uploading..." : "Upload ID card"}
         </button>

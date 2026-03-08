@@ -24,7 +24,7 @@ export default function Footer({
   onGetStarted?: () => void;
 }) {
   return (
-    <footer className="relative bg-black text-white overflow-hidden border-t border-white/[0.06]">
+    <footer className="relative bg-base text-black overflow-hidden border-t border-black/[0.06]">
       {/* Very subtle white grid overlay */}
       <div
         className="absolute inset-0 opacity-[0.02] pointer-events-none"
@@ -40,21 +40,21 @@ export default function Footer({
       <div className="relative max-w-4xl mx-auto py-16 sm:py-20 px-6 text-center">
         {/* Logo + Brand */}
         <div className="flex flex-col items-center mb-10">
-          <div className="w-12 h-12 rounded-full border border-white/20 flex items-center justify-center mb-3">
-            <span className="font-serif text-xl font-bold text-white">S</span>
+          <div className="w-12 h-12 rounded-full border border-black/20 flex items-center justify-center mb-3">
+            <span className="font-serif text-xl font-bold text-black">S</span>
           </div>
-          <p className="text-sm uppercase tracking-[0.3em] text-white/90 font-medium">
+          <p className="text-sm uppercase tracking-[0.3em] text-black/90 font-medium">
             Saddle Up
           </p>
         </div>
 
         {/* Heading + CTA */}
-        <h2 className="font-serif text-2xl sm:text-3xl md:text-4xl font-normal text-white mb-6 max-w-xl mx-auto">
+        <h2 className="font-serif text-2xl sm:text-3xl md:text-4xl font-normal mb-6 max-w-xl mx-auto">
           Ready to manage your stable?
         </h2>
         <button
           onClick={onGetStarted}
-          className="inline-flex items-center gap-2 px-6 py-3 bg-white text-black font-medium rounded-full hover:bg-white/95 transition uppercase tracking-wider text-sm"
+          className="inline-flex items-center gap-2 px-6 py-3 bg-accent text-white font-medium rounded-full hover:opacity-95 transition uppercase tracking-wider text-sm"
         >
           Get Started
         </button>
@@ -74,7 +74,7 @@ export default function Footer({
               )}
               <Link
                 href={link.href}
-                className="text-sm text-white/70 hover:text-white transition uppercase tracking-wider"
+                className="text-sm text-black/70 hover:text-black transition uppercase tracking-wider"
               >
                 {link.label}
               </Link>
@@ -91,7 +91,7 @@ export default function Footer({
               target="_blank"
               rel="noreferrer noopener"
               aria-label={label}
-              className="text-white/50 hover:text-white/80 transition"
+              className="text-black/50 hover:text-black/80 transition"
             >
               <Icon className="w-5 h-5" />
             </a>

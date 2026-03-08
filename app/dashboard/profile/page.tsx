@@ -6,10 +6,10 @@ import { useRouter } from "next/navigation";
 import { useProfile } from "@/components/providers/ProfileProvider";
 import { ProfileAvatar } from "@/components/ProfileAvatar";
 
-const formInput = "w-full px-4 py-3 bg-black border border-white/10 text-white placeholder-white/40 focus:border-white/30 focus:outline-none";
-const labelClass = "block text-xs uppercase tracking-widest text-white/50 mb-2";
-const btnPrimary = "px-4 py-2.5 bg-white text-black font-medium text-sm uppercase tracking-wider hover:opacity-95 transition";
-const btnSecondary = "px-4 py-2.5 border border-white/10 text-white text-sm uppercase tracking-wider hover:border-white/30 transition";
+const formInput = "w-full px-4 py-3 bg-base border border-black/10 text-black placeholder-black/40 focus:border-black/30 focus:outline-none";
+const labelClass = "block text-xs uppercase tracking-widest text-black/50 mb-2";
+const btnPrimary = "px-4 py-2.5 bg-accent text-white font-medium text-sm uppercase tracking-wider hover:opacity-95 transition";
+const btnSecondary = "px-4 py-2.5 border border-black/10 text-black text-sm uppercase tracking-wider hover:border-black/30 transition";
 
 export default function ProfilePage() {
   const { profile, loading: profileLoading, refetch } = useProfile();
@@ -89,7 +89,7 @@ export default function ProfilePage() {
   if (loading) {
     return (
       <div className="flex items-center justify-center min-h-[40vh]">
-        <p className="text-white/50">Loading...</p>
+        <p className="text-black/50">Loading...</p>
       </div>
     );
   }
@@ -97,10 +97,10 @@ export default function ProfilePage() {
   if (!profile) {
     return (
       <div className="space-y-4">
-        <Link href="/dashboard" className="text-white/60 hover:text-white text-sm uppercase tracking-wider">
+        <Link href="/dashboard" className="text-black/60 hover:text-black text-sm uppercase tracking-wider">
           ← Back to Dashboard
         </Link>
-        <p className="text-white/50">Profile not found.</p>
+        <p className="text-black/50">Profile not found.</p>
       </div>
     );
   }
@@ -108,22 +108,22 @@ export default function ProfilePage() {
   return (
     <div className="space-y-10">
       <div>
-        <Link href="/dashboard" className="text-white/60 hover:text-white text-sm uppercase tracking-wider">
+        <Link href="/dashboard" className="text-black/60 hover:text-black text-sm uppercase tracking-wider">
           ← Back to Dashboard
         </Link>
       </div>
 
-      <h1 className="font-serif text-3xl md:text-4xl font-normal text-white">
+      <h1 className="font-serif text-3xl md:text-4xl font-normal text-black">
         Profile
       </h1>
 
       {toast && (
-        <div className="px-4 py-2 border border-white/10 text-white text-sm">
+        <div className="px-4 py-2 border border-black/10 text-black text-sm">
           {toast}
         </div>
       )}
 
-      <div className="border border-white/10 p-6 max-w-md">
+      <div className="border border-black/10 p-6 max-w-md">
         <div className="flex items-start gap-6">
           <div className="flex flex-col items-center gap-3">
             <ProfileAvatar
@@ -160,14 +160,14 @@ export default function ProfilePage() {
             </div>
             <div>
               <label className={labelClass}>Email</label>
-              <p className="text-white/60 text-sm py-2">{profile.email ?? "—"}</p>
-              <p className="text-white/40 text-xs uppercase tracking-wider">
+              <p className="text-black/60 text-sm py-2">{profile.email ?? "—"}</p>
+              <p className="text-black/40 text-xs uppercase tracking-wider">
                 Email is managed by your account and cannot be changed here.
               </p>
             </div>
             <div>
               <label className={labelClass}>Role</label>
-              <p className="text-white/60 text-sm py-2 capitalize">{profile.role}</p>
+              <p className="text-black/60 text-sm py-2 capitalize">{profile.role}</p>
             </div>
             {idCardUrl && (
               <div>
@@ -176,7 +176,7 @@ export default function ProfilePage() {
                   href={idCardUrl}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="text-white hover:underline text-sm uppercase tracking-wider"
+                  className="text-black hover:underline text-sm uppercase tracking-wider"
                 >
                   View ID card
                 </a>
@@ -185,11 +185,11 @@ export default function ProfilePage() {
             {inviteCode && (
               <div>
                 <label className={labelClass}>Your personal ID</label>
-                <p className="text-white/50 text-xs mb-2">
+                <p className="text-black/50 text-xs mb-2">
                   Share this with your stable owner if the join code didn&apos;t work.
                 </p>
                 <div className="flex items-center gap-2">
-                  <code className="flex-1 px-3 py-2 bg-black border border-white/10 font-mono text-sm text-white">
+                  <code className="flex-1 px-3 py-2 bg-base border border-black/10 font-mono text-sm text-black">
                     {inviteCode}
                   </code>
                   <button
@@ -218,9 +218,9 @@ export default function ProfilePage() {
       </div>
 
       {profile.role === "owner" && (
-        <div className="border border-white/10 p-6 max-w-md border-amber-500/30">
-          <h2 className="font-serif text-lg text-white mb-2">Delete account</h2>
-          <p className="text-white/60 text-sm mb-4">
+        <div className="border border-black/10 p-6 max-w-md border-amber-500/30">
+          <h2 className="font-serif text-lg text-black mb-2">Delete account</h2>
+          <p className="text-black/60 text-sm mb-4">
             This will schedule your stable and all its data for permanent deletion in 30 days. You can reactivate by signing in before then.
           </p>
           <DeleteAccountButton onScheduled={() => setToast("Deletion scheduled. You have been signed out.")} />
@@ -268,7 +268,7 @@ function DeleteAccountButton({ onScheduled }: { onScheduled: () => void }) {
         type="button"
         onClick={handleDelete}
         disabled={loading}
-        className="px-4 py-2.5 bg-amber-600 text-white text-sm uppercase tracking-wider hover:bg-amber-500 transition disabled:opacity-50"
+        className="px-4 py-2.5 bg-amber-600 text-black text-sm uppercase tracking-wider hover:bg-amber-500 transition disabled:opacity-50"
       >
         {loading ? "Scheduling..." : "Yes, schedule deletion"}
       </button>
@@ -276,7 +276,7 @@ function DeleteAccountButton({ onScheduled }: { onScheduled: () => void }) {
         type="button"
         onClick={() => setConfirm(false)}
         disabled={loading}
-        className="px-4 py-2.5 border border-white/20 text-white/80 text-sm uppercase tracking-wider hover:bg-white/5 transition"
+        className="px-4 py-2.5 border border-black/20 text-black/80 text-sm uppercase tracking-wider hover:bg-black/5 transition"
       >
         Cancel
       </button>

@@ -21,7 +21,7 @@ export default function SettingsPage() {
   if (loading || !profile || profile.role !== "owner") {
     return (
       <div className="flex items-center justify-center min-h-[40vh]">
-        <p className="text-white/50">Loading...</p>
+        <p className="text-black/50">Loading...</p>
       </div>
     );
   }
@@ -29,8 +29,8 @@ export default function SettingsPage() {
   return (
     <div className="space-y-10">
       <div>
-        <h1 className="font-serif text-3xl md:text-4xl font-normal text-white">Settings</h1>
-        <p className="text-white/60 mt-2 text-sm">
+        <h1 className="font-serif text-3xl md:text-4xl font-normal text-black">Settings</h1>
+        <p className="text-black/60 mt-2 text-sm">
           Add members by ID, monthly report, and stable logo.
         </p>
       </div>

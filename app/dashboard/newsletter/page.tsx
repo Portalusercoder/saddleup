@@ -21,7 +21,7 @@ export default function NewsletterRedirectPage() {
   if (loading || !profile) {
     return (
       <div className="space-y-6">
-        <h1 className="font-serif text-3xl md:text-4xl font-normal text-white">
+        <h1 className="font-serif text-3xl md:text-4xl font-normal text-black">
           Notices
         </h1>
         <TableSkeleton rows={6} cols={4} />

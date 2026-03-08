@@ -36,8 +36,8 @@ export default function Home() {
         planId={selectedPlan}
       />
 
-      {/* Hero - FASTRACK-style: bold headline, two CTAs at bottom, Playfair + Inter */}
-      <section className="relative min-h-screen flex flex-col overflow-hidden">
+      {/* Hero - extends under nav so transparent nav shows hero, not body bg */}
+      <section className="relative min-h-screen flex flex-col overflow-hidden -mt-20 pt-20">
         {/* Background image */}
         <div
           className="absolute inset-0 bg-cover bg-center bg-no-repeat parallax-bg"
@@ -151,7 +151,7 @@ export default function Home() {
       {/* Features */}
       <section
         id="features"
-        className="bg-black py-12 sm:py-20 px-4 sm:px-6"
+        className="bg-base text-black py-12 sm:py-20 px-4 sm:px-6"
       >
         <div className="max-w-6xl mx-auto">
           <ScrollReveal>
@@ -203,13 +203,13 @@ export default function Home() {
       {/* About */}
       <section
         id="about"
-        className="border-y border-white/10 py-20 px-6"
+        className="bg-base border-y border-black/10 py-20 px-6 text-black"
       >
         <ScrollReveal className="max-w-3xl mx-auto text-center">
-          <h2 className="font-serif text-3xl md:text-4xl font-normal text-white mb-6">
+          <h2 className="font-serif text-3xl md:text-4xl font-normal mb-6">
             One place for everything
           </h2>
-          <p className="text-white/60 text-lg leading-relaxed">
+          <p className="text-black/60 text-lg leading-relaxed">
             Saddle Up brings together horse profiles, rider management, training
             logs, and health records. No more scattered spreadsheets or
             WhatsApp threads. Built for stables that take their craft seriously.
@@ -220,14 +220,14 @@ export default function Home() {
       {/* Pricing */}
       <section
         id="pricing"
-        className="bg-black py-12 sm:py-20 px-4 sm:px-6"
+        className="bg-base text-black py-12 sm:py-20 px-4 sm:px-6"
       >
         <div className="max-w-6xl mx-auto">
           <ScrollReveal>
-            <h2 className="font-serif text-3xl md:text-4xl font-normal text-white mb-4">
+            <h2 className="font-serif text-3xl md:text-4xl font-normal mb-4">
               Simple pricing
             </h2>
-            <p className="text-white/60 mb-12 max-w-xl">
+            <p className="text-black/60 mb-12 max-w-xl">
               Start free, upgrade as you grow. No hidden fees.
             </p>
           </ScrollReveal>
@@ -238,11 +238,11 @@ export default function Home() {
                   key={plan.id}
                   variant="white"
                   className={`flex flex-col ${
-                    plan.id === "starter" ? "border-white/30" : ""
+                    plan.id === "starter" ? "border-black/30" : ""
                   }`}
                 >
                   <div className="absolute inset-0 p-6 flex flex-col z-10">
-                    <h3 className="font-serif text-lg text-white uppercase tracking-wider">
+                    <h3 className="font-serif text-lg text-black uppercase tracking-wider">
                       {plan.name}
                     </h3>
                     <div className="mt-2">
@@ -252,8 +252,8 @@ export default function Home() {
                         <span className="text-xl font-semibold">Contact us</span>
                       ) : (
                         <>
-                          <span className="text-2xl font-bold text-white">${plan.price}</span>
-                          <span className="text-white/60 text-sm">/mo</span>
+                          <span className="text-2xl font-bold text-black">${plan.price}</span>
+                          <span className="text-black/60 text-sm">/mo</span>
                         </>
                       )}
                     </div>
@@ -261,9 +261,9 @@ export default function Home() {
                       {plan.features.map((f) => (
                         <li
                           key={f}
-                          className="text-sm text-white/60 flex items-center gap-2"
+                          className="text-sm text-black/60 flex items-center gap-2"
                         >
-                          <span className="text-white/60">✓</span>
+                          <span className="text-black/60">✓</span>
                           {f}
                         </li>
                       ))}
@@ -274,10 +274,10 @@ export default function Home() {
                       }
                       className={`mt-6 w-full py-2.5 font-medium transition uppercase tracking-wider text-sm ${
                         plan.id === "starter"
-                          ? "bg-white text-black hover:bg-white/95"
+                          ? "bg-accent text-white hover:opacity-95"
                           : plan.id === "free"
-                            ? "bg-white/10 hover:bg-white/15 border border-white/20"
-                            : "border border-white/20 hover:bg-white/5"
+                            ? "bg-black/10 hover:bg-black/15 border border-black/20 text-black"
+                            : "border border-black/20 hover:bg-black/5 text-black"
                       }`}
                     >
                       {plan.id === "free"
@@ -295,18 +295,18 @@ export default function Home() {
       </section>
 
       {/* CTA */}
-      <section className="border-t border-white/10 py-20 px-6">
+      <section className="bg-base border-t border-black/10 py-20 px-6 text-black">
         <ScrollReveal className="max-w-3xl mx-auto text-center">
-          <h2 className="font-serif text-3xl md:text-4xl font-normal text-white mb-4">
+          <h2 className="font-serif text-3xl md:text-4xl font-normal mb-4">
             Ready to saddle up?
           </h2>
-          <p className="text-white/60 mb-8">
+          <p className="text-black/60 mb-8">
             Start managing your horses, riders, and training in one place. Free
             for 2 horses and 10 riders.
           </p>
           <button
             onClick={() => openAuth()}
-            className="px-8 py-3 bg-white text-black font-medium hover:bg-white/95 transition uppercase tracking-wider"
+            className="px-8 py-3 bg-accent text-white font-medium hover:opacity-95 transition uppercase tracking-wider"
           >
             Get Started
           </button>
@@ -314,9 +314,9 @@ export default function Home() {
       </section>
 
       {/* Tech stack */}
-      <section className="border-t border-white/10 py-12 overflow-hidden">
+      <section className="bg-base border-t border-black/10 py-12 overflow-hidden text-black">
         <ScrollReveal>
-          <p className="text-center text-white/40 text-xs uppercase tracking-[0.3em] mb-8">
+          <p className="text-center text-black/70 text-xs uppercase tracking-[0.3em] mb-8">
             Built with
           </p>
         </ScrollReveal>
@@ -359,7 +359,7 @@ export default function Home() {
             hoverSpeed={0}
             scaleOnHover
             fadeOut
-            fadeOutColor="#000000"
+            fadeOutColor="#f3efe8"
             ariaLabel="Technology stack"
           />
           </div>
@@ -381,11 +381,11 @@ function FeatureCard({
   description: string;
 }) {
   return (
-    <div className="border border-white/10 p-6 hover:border-white/20 transition">
-      <h3 className="font-serif text-lg text-white uppercase tracking-wider">
+    <div className="border border-black/10 p-6 hover:border-black/20 transition">
+      <h3 className="font-serif text-lg text-black uppercase tracking-wider">
         {title}
       </h3>
-      <p className="text-white/60 text-sm mt-2 leading-relaxed">{description}</p>
+      <p className="text-black/60 text-sm mt-2 leading-relaxed">{description}</p>
     </div>
   );
 }

@@ -32,9 +32,9 @@ export default function TableSkeleton({
         </div>
       )}
 
-      <div className="border border-white/10 overflow-hidden rounded">
+      <div className="border border-black/10 overflow-hidden rounded">
         <table className="w-full text-left text-sm">
-          <thead className="border-b border-white/10">
+          <thead className="border-b border-black/10">
             <tr>
               {Array.from({ length: cols }).map((_, i) => (
                 <th key={i} className="px-6 py-4">

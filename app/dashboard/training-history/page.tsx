@@ -77,24 +77,24 @@ export default function TrainingHistoryPage() {
 
   return (
     <div className="space-y-8">
-      <h1 className="font-serif text-3xl md:text-4xl font-normal text-white">
+      <h1 className="font-serif text-3xl md:text-4xl font-normal text-black">
         Training History
       </h1>
-      <p className="text-white/60 text-sm max-w-xl">
+      <p className="text-black/60 text-sm max-w-xl">
         Sessions logged by your trainer for horses you&apos;re assigned to.
       </p>
 
       {loading ? (
         <TableSkeleton rows={6} cols={4} showBottomBar={false} />
       ) : sortedSessions.length === 0 ? (
-        <div className="border border-white/10 p-8 text-center">
-          <p className="text-white/60 mb-2">No training sessions yet</p>
-          <p className="text-white/40 text-sm">
+        <div className="border border-black/10 p-8 text-center">
+          <p className="text-black/60 mb-2">No training sessions yet</p>
+          <p className="text-black/40 text-sm">
             When your trainer logs sessions for your horses, they&apos;ll appear here.
           </p>
           <Link
             href="/dashboard/my-horses"
-            className="inline-block mt-4 text-white/60 hover:text-white text-sm uppercase tracking-wider"
+            className="inline-block mt-4 text-black/60 hover:text-black text-sm uppercase tracking-wider"
           >
             View My Horses →
           </Link>
@@ -105,7 +105,7 @@ export default function TrainingHistoryPage() {
             <Link
               key={s.id}
               href={`/dashboard/horses/${s.horse.id}`}
-              className="block border border-white/10 p-4 hover:border-white/20 transition"
+              className="block border border-black/10 p-4 hover:border-black/20 transition"
             >
               <div className="flex items-center gap-4">
                 <HorseAvatar
@@ -114,15 +114,15 @@ export default function TrainingHistoryPage() {
                   size="md"
                 />
                 <div className="flex-1 min-w-0">
-                  <p className="font-medium text-white">{s.horse.name}</p>
-                  <p className="text-white/60 text-sm mt-0.5">
+                  <p className="font-medium text-black">{s.horse.name}</p>
+                  <p className="text-black/60 text-sm mt-0.5">
                     {PUNCH_LABELS[s.punchType] || s.punchType}
                     {s.duration > 0 && ` • ${s.duration} min`}
                     {s.rider && ` • ${s.rider}`}
                     {s.discipline && ` • ${s.discipline}`}
                   </p>
                 </div>
-                <span className="text-white/50 text-sm whitespace-nowrap">
+                <span className="text-black/50 text-sm whitespace-nowrap">
                   {formatDate(s.createdAt)}
                 </span>
               </div>

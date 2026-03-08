@@ -345,19 +345,19 @@ export default function HorsesPage() {
     (horse.name ?? "").toLowerCase().includes(search.toLowerCase())
   );
 
-  const formInput = "w-full px-4 py-3 bg-black border border-white/10 text-white placeholder-white/40 focus:border-white/30 focus:outline-none";
-  const btnPrimary = "px-4 py-2.5 bg-white text-black font-medium text-sm uppercase tracking-wider hover:opacity-95 transition";
-  const btnSecondary = "px-4 py-2.5 border border-white/10 text-white text-sm uppercase tracking-wider hover:border-white/30 transition";
+  const formInput = "w-full px-4 py-3 bg-base border border-black/10 text-black placeholder-black/40 focus:border-black/30 focus:outline-none";
+  const btnPrimary = "px-4 py-2.5 bg-accent text-white font-medium text-sm uppercase tracking-wider hover:opacity-95 transition";
+  const btnSecondary = "px-4 py-2.5 border border-black/10 text-black text-sm uppercase tracking-wider hover:border-black/30 transition";
 
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between flex-wrap gap-2">
-        <h1 className="font-serif text-2xl md:text-3xl font-normal text-white">Horses</h1>
+        <h1 className="font-serif text-2xl md:text-3xl font-normal text-black">Horses</h1>
         <div className="flex items-center gap-2">
           {subscription && !subscription.canAddHorse && (
             <Link
               href="/dashboard/settings"
-              className="text-white/60 hover:text-white text-xs uppercase tracking-wider"
+              className="text-black/60 hover:text-black text-xs uppercase tracking-wider"
             >
               Upgrade to add more →
             </Link>
@@ -385,13 +385,13 @@ export default function HorsesPage() {
         placeholder="Search horses..."
         value={search}
         onChange={(e) => setSearch(e.target.value)}
-        className="w-full px-4 py-3 bg-black border border-white/10 text-white placeholder-white/40 focus:border-white/30 focus:outline-none"
+        className="w-full px-4 py-3 bg-base border border-black/10 text-black placeholder-black/40 focus:border-black/30 focus:outline-none"
       />
 
-      <div className="border border-white/10 overflow-hidden">
+      <div className="border border-black/10 overflow-hidden">
         <div className="overflow-x-auto">
           <table className="w-full text-sm">
-            <thead className="border-b border-white/10 text-white/50 text-xs uppercase tracking-widest">
+            <thead className="border-b border-black/10 text-black/50 text-xs uppercase tracking-widest">
               <tr>
                 <th className="px-6 py-4 text-left">Name</th>
                 <th className="px-6 py-4 text-left">Gender</th>
@@ -407,7 +407,7 @@ export default function HorsesPage() {
                   const workload = calculateWorkload(horse);
 
                   return (
-                    <tr key={horse.id} className="border-t border-white/10 hover:bg-white/[0.02]">
+                    <tr key={horse.id} className="border-t border-black/10 hover:bg-black/[0.02]">
                       <td className="px-6 py-4">
                         <div className="flex items-center gap-3">
                           <HorseAvatar
@@ -417,33 +417,33 @@ export default function HorsesPage() {
                           />
                           <Link
                             href={`/dashboard/horses/${horse.id}`}
-                            className="font-medium text-white hover:underline"
+                            className="font-medium text-black hover:underline"
                           >
                             {horse.name}
                           </Link>
                           {workload.warning && (
-                            <span className="text-xs border border-white/30 text-white/80 px-2 py-0.5 uppercase tracking-wider">
+                            <span className="text-xs border border-black/30 text-black/80 px-2 py-0.5 uppercase tracking-wider">
                               Overworked
                             </span>
                           )}
                         </div>
                       </td>
-                      <td className="px-6 py-4 text-white/80">{horse.gender}</td>
-                      <td className="px-6 py-4 text-white/80">{horse.age ?? "—"}</td>
-                      <td className="px-6 py-4 text-white/50">
+                      <td className="px-6 py-4 text-black/80">{horse.gender}</td>
+                      <td className="px-6 py-4 text-black/80">{horse.age ?? "—"}</td>
+                      <td className="px-6 py-4 text-black/50">
                         {horse.skillLevel || "—"}
                       </td>
-                      <td className="px-6 py-4 text-white/80">{horse.owner ?? "—"}</td>
+                      <td className="px-6 py-4 text-black/80">{horse.owner ?? "—"}</td>
                       <td className="px-6 py-4 text-right space-x-3">
                         <button
                           onClick={() => openSessionModal(horse)}
-                          className="text-white hover:underline text-sm uppercase tracking-wider"
+                          className="text-black hover:underline text-sm uppercase tracking-wider"
                         >
                           Log Session
                         </button>
                         <button
                           onClick={() => deleteHorse(horse.id)}
-                          className="text-white/60 hover:text-white hover:underline text-sm uppercase tracking-wider"
+                          className="text-black/60 hover:text-black hover:underline text-sm uppercase tracking-wider"
                         >
                           Delete
                         </button>
@@ -465,10 +465,10 @@ export default function HorsesPage() {
           onClick={() => setShowModal(false)}
         >
           <div
-            className="bg-black border border-white/10 p-4 sm:p-6 w-full max-w-lg max-h-[90vh] overflow-y-auto modal-enter my-auto"
+            className="bg-base border border-black/10 p-4 sm:p-6 w-full max-w-lg max-h-[90vh] overflow-y-auto modal-enter my-auto"
             onClick={(e) => e.stopPropagation()}
           >
-            <h2 className="font-serif text-xl text-white mb-6">Add Horse</h2>
+            <h2 className="font-serif text-xl text-black mb-6">Add Horse</h2>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <input
                 name="name"
@@ -554,7 +554,7 @@ export default function HorsesPage() {
                 className={formInput}
               />
               <div className="sm:col-span-2">
-                <label className="text-xs text-white/50 uppercase tracking-widest block mb-2">
+                <label className="text-xs text-black/50 uppercase tracking-widest block mb-2">
                   Profile picture
                 </label>
                 <div className="flex items-center gap-4">
@@ -574,7 +574,7 @@ export default function HorsesPage() {
                     <button
                       type="button"
                       onClick={() => photoInputRef.current?.click()}
-                      className="block px-4 py-2.5 border border-white/10 text-white text-sm uppercase tracking-wider hover:border-white/30 transition"
+                      className="block px-4 py-2.5 border border-black/10 text-black text-sm uppercase tracking-wider hover:border-black/30 transition"
                     >
                       Upload photo
                     </button>
@@ -665,10 +665,10 @@ export default function HorsesPage() {
           onClick={() => setShowSessionModal(false)}
         >
           <div
-            className="bg-black border border-white/10 p-4 sm:p-6 w-full max-w-md max-h-[90vh] overflow-y-auto modal-enter my-auto"
+            className="bg-base border border-black/10 p-4 sm:p-6 w-full max-w-md max-h-[90vh] overflow-y-auto modal-enter my-auto"
             onClick={(e) => e.stopPropagation()}
           >
-            <h2 className="font-serif text-xl text-white mb-2 flex items-center gap-2">
+            <h2 className="font-serif text-xl text-black mb-2 flex items-center gap-2">
               <HorseAvatar
                 photoUrl={selectedHorse.photoUrl}
                 name={selectedHorse.name}
@@ -676,12 +676,12 @@ export default function HorsesPage() {
               />
               Log Session — {selectedHorse.name}
             </h2>
-            <p className="text-sm text-white/60 mb-4">
+            <p className="text-sm text-black/60 mb-4">
               One-tap training punch for workload intelligence
             </p>
             <div className="space-y-4">
               <div>
-                <label className="text-xs text-white/50 uppercase tracking-widest block mb-2">
+                <label className="text-xs text-black/50 uppercase tracking-widest block mb-2">
                   Session Type
                 </label>
                 <select
@@ -701,7 +701,7 @@ export default function HorsesPage() {
                 sessionForm.punchType !== "medical_rest" && (
                   <>
                     <div>
-                      <label className="text-xs text-white/50 uppercase tracking-widest block mb-2">
+                      <label className="text-xs text-black/50 uppercase tracking-widest block mb-2">
                         Duration (min)
                       </label>
                       <input
@@ -715,7 +715,7 @@ export default function HorsesPage() {
                       />
                     </div>
                     <div>
-                      <label className="text-xs text-white/50 uppercase tracking-widest block mb-2">
+                      <label className="text-xs text-black/50 uppercase tracking-widest block mb-2">
                         Intensity
                       </label>
                       <select
@@ -730,7 +730,7 @@ export default function HorsesPage() {
                       </select>
                     </div>
                     <div>
-                      <label className="text-xs text-white/50 uppercase tracking-widest block mb-2">
+                      <label className="text-xs text-black/50 uppercase tracking-widest block mb-2">
                         Discipline
                       </label>
                       <select
@@ -748,7 +748,7 @@ export default function HorsesPage() {
                   </>
                 )}
               <div>
-                <label className="text-xs text-white/50 uppercase tracking-widest block mb-2">
+                <label className="text-xs text-black/50 uppercase tracking-widest block mb-2">
                   Rider
                 </label>
                 <select
@@ -801,10 +801,10 @@ export default function HorsesPage() {
       )}
 
       {toast && (
-        <div className="fixed bottom-4 left-4 right-4 sm:left-auto sm:right-6 sm:bottom-6 sm:w-auto bg-black px-4 sm:px-5 py-3 border border-white/10 flex gap-4 items-center">
-          <span className="text-white text-sm">{toast}</span>
+        <div className="fixed bottom-4 left-4 right-4 sm:left-auto sm:right-6 sm:bottom-6 sm:w-auto bg-base px-4 sm:px-5 py-3 border border-black/10 flex gap-4 items-center">
+          <span className="text-black text-sm">{toast}</span>
           {lastDeleted.current && (
-            <button onClick={undoDelete} className="text-white text-sm uppercase tracking-wider hover:underline">
+            <button onClick={undoDelete} className="text-black text-sm uppercase tracking-wider hover:underline">
               Undo
             </button>
           )}

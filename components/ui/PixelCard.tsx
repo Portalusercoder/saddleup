@@ -149,10 +149,10 @@ const VARIANTS = {
     noFocus: true,
   },
   white: {
-    activeColor: "#f8fafc",
+    activeColor: "#f3efe8",
     gap: 6,
     speed: 35,
-    colors: "#f8fafc,#e2e8f0,#94a3b8",
+    colors: "#e8e2d9,#d4cbc0,#b8ab9a",
     noFocus: false,
   },
 } as const;

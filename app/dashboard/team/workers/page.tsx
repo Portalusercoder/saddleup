@@ -13,10 +13,10 @@ interface Worker {
   notes: string | null;
 }
 
-const formInput = "w-full px-4 py-3 bg-black border border-white/10 text-white placeholder-white/40 focus:border-white/30 focus:outline-none";
-const labelClass = "block text-xs uppercase tracking-widest text-white/50 mb-2";
-const btnPrimary = "px-4 py-2.5 bg-white text-black font-medium text-sm uppercase tracking-wider hover:opacity-95 transition";
-const btnSecondary = "px-4 py-2.5 border border-white/10 text-white text-sm uppercase tracking-wider hover:border-white/30 transition";
+const formInput = "w-full px-4 py-3 bg-base border border-black/10 text-black placeholder-black/40 focus:border-black/30 focus:outline-none";
+const labelClass = "block text-xs uppercase tracking-widest text-black/50 mb-2";
+const btnPrimary = "px-4 py-2.5 bg-accent text-white font-medium text-sm uppercase tracking-wider hover:opacity-95 transition";
+const btnSecondary = "px-4 py-2.5 border border-black/10 text-black text-sm uppercase tracking-wider hover:border-black/30 transition";
 
 export default function TeamWorkersPage() {
   const [workers, setWorkers] = useState<Worker[]>([]);
@@ -41,13 +41,13 @@ export default function TeamWorkersPage() {
 
   if (profile?.role !== "owner") {
     return (
-      <p className="text-white/50">Only stable owners can manage workers.</p>
+      <p className="text-black/50">Only stable owners can manage workers.</p>
     );
   }
 
   return (
     <>
-      <p className="text-white/50 text-sm mb-4">
+      <p className="text-black/50 text-sm mb-4">
         Track staff without accounts. Add names and custom roles (e.g. Groom, Farrier, Vet).
       </p>
 
@@ -63,15 +63,15 @@ export default function TeamWorkersPage() {
       </button>
 
       {toast && (
-        <div className="px-4 py-2 border border-white/10 text-white text-sm mt-4" role="alert">
+        <div className="px-4 py-2 border border-black/10 text-black text-sm mt-4" role="alert">
           {toast}
         </div>
       )}
 
       {workers.length > 0 && (
-        <div className="mt-6 border border-white/10 overflow-hidden">
+        <div className="mt-6 border border-black/10 overflow-hidden">
           <table className="w-full text-left text-sm">
-            <thead className="border-b border-white/10 text-white/50 text-xs uppercase tracking-widest">
+            <thead className="border-b border-black/10 text-black/50 text-xs uppercase tracking-widest">
               <tr>
                 <th className="px-6 py-4 font-medium">Name</th>
                 <th className="px-6 py-4 font-medium">Role</th>
@@ -81,10 +81,10 @@ export default function TeamWorkersPage() {
             </thead>
             <tbody className="divide-y divide-white/10">
               {workers.map((w) => (
-                <tr key={w.id} className="hover:bg-white/[0.02]">
-                  <td className="px-6 py-4 font-medium text-white">{w.name}</td>
-                  <td className="px-6 py-4 text-white/60">{w.role}</td>
-                  <td className="px-6 py-4 text-white/60">{w.email || w.phone || "—"}</td>
+                <tr key={w.id} className="hover:bg-black/[0.02]">
+                  <td className="px-6 py-4 font-medium text-black">{w.name}</td>
+                  <td className="px-6 py-4 text-black/60">{w.role}</td>
+                  <td className="px-6 py-4 text-black/60">{w.email || w.phone || "—"}</td>
                   <td className="px-6 py-4">
                     <div className="flex gap-3">
                       <button
@@ -99,7 +99,7 @@ export default function TeamWorkersPage() {
                           });
                           setShowModal(true);
                         }}
-                        className="text-white hover:underline text-sm uppercase tracking-wider"
+                        className="text-black hover:underline text-sm uppercase tracking-wider"
                       >
                         Edit
                       </button>
@@ -115,7 +115,7 @@ export default function TeamWorkersPage() {
                           setToast("Worker removed");
                           fetchWorkers();
                         }}
-                        className="text-white/60 hover:text-white text-sm uppercase tracking-wider"
+                        className="text-black/60 hover:text-black text-sm uppercase tracking-wider"
                       >
                         Delete
                       </button>
@@ -130,8 +130,8 @@ export default function TeamWorkersPage() {
 
       {showModal && (
         <div className="fixed inset-0 bg-black/80 flex items-center justify-center z-50 p-4 overflow-y-auto sm:items-center">
-          <div className="bg-black border border-white/10 max-w-md w-full p-4 sm:p-6 max-h-[90vh] overflow-y-auto">
-            <h2 className="font-serif text-xl text-white mb-6">
+          <div className="bg-base border border-black/10 max-w-md w-full p-4 sm:p-6 max-h-[90vh] overflow-y-auto">
+            <h2 className="font-serif text-xl text-black mb-6">
               {editingWorker ? "Edit worker" : "Add worker"}
             </h2>
             <form

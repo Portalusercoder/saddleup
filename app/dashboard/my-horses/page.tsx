@@ -42,12 +42,12 @@ export default function MyHorsesPage() {
 
   return (
     <div className="space-y-8">
-      <h1 className="font-serif text-3xl md:text-4xl font-normal text-white">
+      <h1 className="font-serif text-3xl md:text-4xl font-normal text-black">
         My Horses
       </h1>
-      <p className="text-white/60 text-sm max-w-xl">
+      <p className="text-black/60 text-sm max-w-xl">
         Horses assigned to you by your trainer.{" "}
-        <Link href="/dashboard/training-history" className="text-white/80 hover:text-white underline">
+        <Link href="/dashboard/training-history" className="text-black/80 hover:text-black underline">
           View training history
         </Link>
       </p>
@@ -55,9 +55,9 @@ export default function MyHorsesPage() {
       {loading ? (
         <TableSkeleton rows={6} cols={3} showBottomBar={false} />
       ) : horses.length === 0 ? (
-        <div className="border border-white/10 p-8 text-center">
-          <p className="text-white/60 mb-2">No horses assigned yet</p>
-          <p className="text-white/40 text-sm">
+        <div className="border border-black/10 p-8 text-center">
+          <p className="text-black/60 mb-2">No horses assigned yet</p>
+          <p className="text-black/40 text-sm">
             Ask your trainer to assign horses to your rider profile.
           </p>
         </div>
@@ -67,7 +67,7 @@ export default function MyHorsesPage() {
             <Link
               key={horse.id}
               href={`/dashboard/horses/${horse.id}`}
-              className="block border border-white/10 p-6 hover:border-white/20 transition"
+              className="block border border-black/10 p-6 hover:border-black/20 transition"
             >
               <div className="flex items-start gap-4">
                 <HorseAvatar
@@ -76,15 +76,15 @@ export default function MyHorsesPage() {
                   size="lg"
                 />
                 <div className="flex-1 min-w-0">
-                  <h2 className="font-serif text-lg text-white">{horse.name}</h2>
-                  <p className="text-white/60 text-sm mt-1">
+                  <h2 className="font-serif text-lg text-black">{horse.name}</h2>
+                  <p className="text-black/60 text-sm mt-1">
                     {horse.breed || horse.gender} {horse.age ? `• ${horse.age}y` : ""}
                   </p>
-                  <p className="text-white/50 text-xs mt-2 uppercase tracking-wider">
+                  <p className="text-black/50 text-xs mt-2 uppercase tracking-wider">
                     {horse.skillLevel || "—"} • {horse.temperament || "—"}
                   </p>
                   {horse.ridingSuitability && (
-                    <p className="text-white/40 text-xs mt-1">
+                    <p className="text-black/40 text-xs mt-1">
                       Suitability: {horse.ridingSuitability}
                     </p>
                   )}

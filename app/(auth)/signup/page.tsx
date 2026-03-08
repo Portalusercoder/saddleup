@@ -7,9 +7,9 @@ import { createClient } from "@/lib/supabase/client";
 
 type Role = "owner" | "trainer" | "student" | "guardian";
 
-const formClass = "w-full px-4 py-3 bg-black border border-white/10 text-white placeholder-white/40 focus:border-white/30 focus:outline-none";
-const labelClass = "block text-xs uppercase tracking-widest text-white/60 mb-2";
-const btnPrimary = "w-full py-3 bg-white text-black font-medium uppercase tracking-wider text-sm hover:opacity-95 transition";
+const formClass = "w-full px-4 py-3 bg-base border border-black/10 text-black placeholder-black/40 focus:border-black/30 focus:outline-none";
+const labelClass = "block text-xs uppercase tracking-widest text-black/60 mb-2";
+const btnPrimary = "w-full py-3 bg-accent text-white font-medium uppercase tracking-wider text-sm hover:opacity-95 transition";
 
 type Step = "form" | "code" | "confirm_join";
 
@@ -173,13 +173,13 @@ export default function SignupPage() {
 
   if (step === "confirm_join" && stablePreview) {
     return (
-      <div className="min-h-screen bg-black flex items-center justify-center p-4 sm:p-6">
+      <div className="min-h-screen bg-base flex text-black items-center justify-center p-4 sm:p-6">
         <div className="w-full max-w-md">
-          <div className="border border-white/10 p-6 sm:p-8 md:p-10 text-center">
-            <h1 className="font-serif text-2xl md:text-3xl font-normal text-white mb-2">
+          <div className="border border-black/10 p-6 sm:p-8 md:p-10 text-center">
+            <h1 className="font-serif text-2xl md:text-3xl font-normal text-black mb-2">
               Is this the stable you want to join?
             </h1>
-            <p className="text-white/60 text-sm mb-6">
+            <p className="text-black/60 text-sm mb-6">
               Confirm before we add you to this stable.
             </p>
             <div className="mb-6 flex flex-col items-center gap-4">
@@ -187,16 +187,16 @@ export default function SignupPage() {
                 <img
                   src={stablePreview.logoUrl}
                   alt=""
-                  className="w-24 h-24 rounded-lg object-cover border border-white/10"
+                  className="w-24 h-24 rounded-lg object-cover border border-black/10"
                 />
               ) : (
-                <div className="w-24 h-24 rounded-lg bg-white/5 border border-white/10 flex items-center justify-center">
-                  <span className="text-white/40 text-2xl font-serif">{stablePreview.name.charAt(0)}</span>
+                <div className="w-24 h-24 rounded-lg bg-black/5 border border-black/10 flex items-center justify-center">
+                  <span className="text-black/40 text-2xl font-serif">{stablePreview.name.charAt(0)}</span>
                 </div>
               )}
-              <p className="font-medium text-white text-lg">{stablePreview.name}</p>
+              <p className="font-medium text-black text-lg">{stablePreview.name}</p>
             </div>
-            {error && <p className="text-white/80 text-sm mb-4">{error}</p>}
+            {error && <p className="text-red-600 text-sm mb-4">{error}</p>}
             <div className="flex flex-col gap-3">
               <button
                 type="button"
@@ -210,14 +210,14 @@ export default function SignupPage() {
                 type="button"
                 onClick={declineJoinStable}
                 disabled={loading}
-                className="w-full py-3 border border-white/20 text-white/80 text-sm hover:bg-white/5 transition"
+                className="w-full py-3 border border-black/20 text-red-600 text-sm hover:bg-black/5 transition"
               >
                 No, take me back
               </button>
             </div>
           </div>
           <p className="mt-6 text-center">
-            <Link href="/" className="text-white/50 hover:text-white/70 text-xs uppercase tracking-wider">
+            <Link href="/" className="text-black/50 hover:text-black/70 text-xs uppercase tracking-wider">
               ← Back to home
             </Link>
           </p>
@@ -228,14 +228,14 @@ export default function SignupPage() {
 
   if (step === "code") {
     return (
-      <div className="min-h-screen bg-black flex items-center justify-center p-4 sm:p-6">
+      <div className="min-h-screen bg-base flex text-black items-center justify-center p-4 sm:p-6">
         <div className="w-full max-w-md">
-          <div className="border border-white/10 p-6 sm:p-8 md:p-10">
-            <h1 className="font-serif text-2xl md:text-3xl font-normal text-white mb-2">
+          <div className="border border-black/10 p-6 sm:p-8 md:p-10">
+            <h1 className="font-serif text-2xl md:text-3xl font-normal text-black mb-2">
               Check your email
             </h1>
-            <p className="text-white/60 text-sm mb-6">
-              We sent an 8-digit code to <strong className="text-white">{email}</strong>. Enter it below. You can open your email on any device.
+            <p className="text-black/60 text-sm mb-6">
+              We sent an 8-digit code to <strong className="text-black">{email}</strong>. Enter it below. You can open your email on any device.
             </p>
             <form onSubmit={verifyAndComplete} className="space-y-5">
               <div>
@@ -254,7 +254,7 @@ export default function SignupPage() {
                   className={`${formClass} text-center text-lg tracking-[0.4em]`}
                 />
               </div>
-              {error && <p className="text-white/80 text-sm">{error}</p>}
+              {error && <p className="text-red-600 text-sm">{error}</p>}
               <button
                 type="submit"
                 disabled={loading || code.trim().length !== 8}
@@ -265,14 +265,14 @@ export default function SignupPage() {
               <button
                 type="button"
                 onClick={() => { setStep("form"); setCode(""); setError(null); }}
-                className="w-full py-3 border border-white/20 text-white/80 text-sm hover:bg-white/5 transition"
+                className="w-full py-3 border border-black/20 text-red-600 text-sm hover:bg-black/5 transition"
               >
                 Use a different email
               </button>
             </form>
           </div>
           <p className="mt-6 text-center">
-            <Link href="/" className="text-white/50 hover:text-white/70 text-xs uppercase tracking-wider">
+            <Link href="/" className="text-black/50 hover:text-black/70 text-xs uppercase tracking-wider">
               ← Back to home
             </Link>
           </p>
@@ -282,13 +282,13 @@ export default function SignupPage() {
   }
 
   return (
-    <div className="min-h-screen bg-black flex items-center justify-center p-4 sm:p-6">
+    <div className="min-h-screen bg-base flex text-black items-center justify-center p-4 sm:p-6">
       <div className="w-full max-w-md">
-        <div className="border border-white/10 p-6 sm:p-8 md:p-10">
-          <h1 className="font-serif text-2xl md:text-3xl font-normal text-white mb-2">
+        <div className="border border-black/10 p-6 sm:p-8 md:p-10">
+          <h1 className="font-serif text-2xl md:text-3xl font-normal text-black mb-2">
             Create account
           </h1>
-          <p className="text-white/60 text-sm mb-8">
+          <p className="text-black/60 text-sm mb-8">
             We&apos;ll send an 8-digit code to your email to verify it. No links to click — works on any device.
           </p>
 
@@ -301,17 +301,17 @@ export default function SignupPage() {
                     key={r}
                     type="button"
                     onClick={() => setRole(r)}
-                    className={`py-2.5 px-3 text-sm font-medium uppercase tracking-wider transition ${
+                    className={`min-h-[44px] flex items-center justify-center p-4 px-6 text-sm font-medium uppercase tracking-wider transition ${
                       role === r
-                        ? "bg-white text-black"
-                        : "bg-black text-white/60 hover:text-white border border-white/10"
+                        ? "bg-accent text-white"
+                        : "bg-base text-black/60 hover:text-black border border-black/10"
                     }`}
                   >
                     {r}
                   </button>
                 ))}
               </div>
-              <p className="text-white/40 text-xs mt-2 uppercase tracking-wider">
+              <p className="text-black/40 text-xs mt-2 uppercase tracking-wider">
                 {role === "owner" && "Create and manage your stable"}
                 {role === "trainer" && "Teach lessons, log training"}
                 {role === "student" && "Take lessons, track progress"}
@@ -379,7 +379,7 @@ export default function SignupPage() {
                   className={formClass}
                   placeholder="My Riding School"
                 />
-                <p className="text-white/40 text-xs mt-2 uppercase tracking-wider">
+                <p className="text-black/40 text-xs mt-2 uppercase tracking-wider">
                   A unique 8-character join code will be generated for your stable. Share it with trainers and students.
                 </p>
               </div>
@@ -399,15 +399,15 @@ export default function SignupPage() {
                   className={formClass}
                   placeholder="ABC12XYZ"
                 />
-                <p className="text-white/40 text-xs mt-2 uppercase tracking-wider">
+                <p className="text-black/40 text-xs mt-2 uppercase tracking-wider">
                   Ask your stable owner for the 8-character code. If it doesn&apos;t work, get your personal ID at{" "}
-                  <Link href="/get-my-id" className="text-white hover:underline">/get-my-id</Link> and share it with them.
+                  <Link href="/get-my-id" className="text-black font-medium hover:underline">/get-my-id</Link> and share it with them.
                 </p>
               </div>
             )}
 
             {error && (
-              <p className="text-white/80 text-sm">{error}</p>
+              <p className="text-red-600 text-sm">{error}</p>
             )}
 
             <button
@@ -419,16 +419,16 @@ export default function SignupPage() {
             </button>
           </form>
 
-          <p className="mt-8 text-center text-white/60 text-sm">
+          <p className="mt-8 text-center text-black/60 text-sm">
             Already have an account?{" "}
-            <Link href="/login" className="text-white hover:underline">
+            <Link href="/login" className="text-black font-medium hover:underline">
               Sign in
             </Link>
           </p>
         </div>
 
         <p className="mt-6 text-center">
-          <Link href="/" className="text-white/50 hover:text-white/70 text-xs uppercase tracking-wider">
+          <Link href="/" className="text-black/50 hover:text-black/70 text-xs uppercase tracking-wider">
             ← Back to home
           </Link>
         </p>

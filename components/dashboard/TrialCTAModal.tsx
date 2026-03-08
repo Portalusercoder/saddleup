@@ -53,13 +53,13 @@ export default function TrialCTAModal() {
           initial={{ opacity: 0, scale: 0.95 }}
           animate={{ opacity: 1, scale: 1 }}
           transition={{ duration: 0.35, ease: [0.25, 0.46, 0.45, 0.94] }}
-          className="pointer-events-auto relative w-full max-w-2xl overflow-hidden rounded-none border border-white/15 bg-black shadow-2xl cursor-default"
+          className="pointer-events-auto relative w-full max-w-2xl overflow-hidden rounded-none border border-black/15 bg-base shadow-2xl cursor-default"
           onClick={(e) => e.stopPropagation()}
         >
           <button
             type="button"
             onClick={handleClose}
-            className="absolute top-4 right-4 z-10 p-2 text-white/60 hover:text-white transition"
+            className="absolute top-4 right-4 z-10 p-2 text-black/60 hover:text-black transition"
             aria-label="Close"
           >
             <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -79,24 +79,24 @@ export default function TrialCTAModal() {
               />
             </div>
             {/* Right: copy */}
-            <div className="flex flex-col justify-center p-8 md:p-10 text-white">
-              <h2 id="trial-cta-title" className="font-serif text-2xl md:text-3xl font-normal text-white">
+            <div className="flex flex-col justify-center p-8 md:p-10 text-black">
+              <h2 id="trial-cta-title" className="font-serif text-2xl md:text-3xl font-normal">
                 Starting a free trial
               </h2>
-              <p className="mt-3 text-sm text-white/70 leading-relaxed">
+              <p className="mt-3 text-sm text-black/70 leading-relaxed">
                 You’re all set. Manage your stable, horses, and riders in one place. Your trial includes 2 horses and 10 riders — upgrade anytime when you’re ready for more.
               </p>
               <div className="mt-6 flex flex-col sm:flex-row gap-3">
                 <button
                   type="button"
                   onClick={handleClose}
-                  className="w-full sm:w-auto px-6 py-3 bg-white text-black font-medium text-sm uppercase tracking-wider hover:bg-white/95 transition"
+                  className="w-full sm:w-auto px-6 py-3 bg-accent text-white font-medium text-sm uppercase tracking-wider hover:opacity-95 transition"
                 >
                   Get started
                 </button>
                 <a
                   href="/dashboard/settings"
-                  className="w-full sm:w-auto px-6 py-3 border border-white/25 text-white text-sm uppercase tracking-wider hover:bg-white/5 transition text-center"
+                  className="w-full sm:w-auto px-6 py-3 border border-black/25 text-black text-sm uppercase tracking-wider hover:bg-black/5 transition text-center"
                 >
                   View plans
                 </a>

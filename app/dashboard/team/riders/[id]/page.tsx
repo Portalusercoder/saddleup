@@ -96,7 +96,7 @@ export default function RiderDetailPage() {
   if (loading) {
     return (
       <div className="flex items-center justify-center min-h-[40vh]">
-        <p className="text-white/50">Loading...</p>
+        <p className="text-black/50">Loading...</p>
       </div>
     );
   }
@@ -104,10 +104,10 @@ export default function RiderDetailPage() {
   if (!rider) {
     return (
       <div className="space-y-4">
-        <Link href="/dashboard/team/riders" className="text-white/60 hover:text-white text-sm uppercase tracking-wider">
+        <Link href="/dashboard/team/riders" className="text-black/60 hover:text-black text-sm uppercase tracking-wider">
           ← Back to Riders
         </Link>
-        <p className="text-white/50">Rider not found.</p>
+        <p className="text-black/50">Rider not found.</p>
       </div>
     );
   }
@@ -116,15 +116,15 @@ export default function RiderDetailPage() {
     <div className="space-y-8">
       <Link
         href="/dashboard/team/riders"
-        className="text-white/60 hover:text-white text-sm uppercase tracking-wider"
+        className="text-black/60 hover:text-black text-sm uppercase tracking-wider"
       >
         ← Back to Riders
       </Link>
 
-      <div className="border border-white/10 p-6 flex flex-wrap items-center justify-between gap-4">
+      <div className="border border-black/10 p-6 flex flex-wrap items-center justify-between gap-4">
         <div>
-          <h1 className="font-serif text-2xl md:text-3xl font-normal text-white">{rider.name}</h1>
-          <p className="text-white/60 mt-1 text-sm">
+          <h1 className="font-serif text-2xl md:text-3xl font-normal text-black">{rider.name}</h1>
+          <p className="text-black/60 mt-1 text-sm">
             {rider.level || "—"} • {rider.email || rider.phone || "No contact"}
           </p>
         </div>
@@ -145,16 +145,16 @@ export default function RiderDetailPage() {
 
       <div className="grid md:grid-cols-2 gap-6">
         {(role === "owner" || role === "trainer") && guardians.length > 0 && (
-          <div className="border border-white/10 p-6">
-            <h2 className="font-serif text-lg text-white mb-4">Parent / Guardian</h2>
-            <p className="text-white/50 text-sm mb-4">
+          <div className="border border-black/10 p-6">
+            <h2 className="font-serif text-lg text-black mb-4">Parent / Guardian</h2>
+            <p className="text-black/50 text-sm mb-4">
               Link a guardian so they can view this rider&apos;s lessons and progress in the Parent Portal.
             </p>
             <div className="flex flex-wrap items-center gap-3">
               <select
                 value={guardianId}
                 onChange={(e) => setGuardianId(e.target.value)}
-                className="px-4 py-2.5 bg-black border border-white/10 text-white focus:border-white/30 focus:outline-none min-w-[200px]"
+                className="px-4 py-2.5 bg-base border border-black/10 text-black focus:border-black/30 focus:outline-none min-w-[200px]"
               >
                 <option value="">No guardian linked</option>
                 {guardians.map((g) => (
@@ -181,7 +181,7 @@ export default function RiderDetailPage() {
                   }
                 }}
                 disabled={guardianSaving}
-                className="px-4 py-2.5 bg-white text-black font-medium text-sm uppercase tracking-wider hover:opacity-95 disabled:opacity-50 flex items-center justify-center gap-2"
+                className="px-4 py-2.5 bg-accent text-white font-medium text-sm uppercase tracking-wider hover:opacity-95 disabled:opacity-50 flex items-center justify-center gap-2"
               >
                 {guardianSaving ? (
                   <>
@@ -196,60 +196,60 @@ export default function RiderDetailPage() {
           </div>
         )}
 
-        <div className="border border-white/10 p-6">
-          <h2 className="font-serif text-lg text-white mb-4">Profile</h2>
+        <div className="border border-black/10 p-6">
+          <h2 className="font-serif text-lg text-black mb-4">Profile</h2>
           <dl className="space-y-4 text-sm">
             <div>
-              <dt className="text-white/50 text-xs uppercase tracking-widest">Email</dt>
-              <dd className="text-white mt-1">{rider.email || "—"}</dd>
+              <dt className="text-black/50 text-xs uppercase tracking-widest">Email</dt>
+              <dd className="text-black mt-1">{rider.email || "—"}</dd>
             </div>
             <div>
-              <dt className="text-white/50 text-xs uppercase tracking-widest">Phone</dt>
-              <dd className="text-white mt-1">{rider.phone || "—"}</dd>
+              <dt className="text-black/50 text-xs uppercase tracking-widest">Phone</dt>
+              <dd className="text-black mt-1">{rider.phone || "—"}</dd>
             </div>
             <div>
-              <dt className="text-white/50 text-xs uppercase tracking-widest">Level</dt>
-              <dd className="text-white mt-1 capitalize">{rider.level || "—"}</dd>
+              <dt className="text-black/50 text-xs uppercase tracking-widest">Level</dt>
+              <dd className="text-black mt-1 capitalize">{rider.level || "—"}</dd>
             </div>
             <div>
-              <dt className="text-white/50 text-xs uppercase tracking-widest">Goals</dt>
-              <dd className="text-white mt-1">{rider.goals || "—"}</dd>
+              <dt className="text-black/50 text-xs uppercase tracking-widest">Goals</dt>
+              <dd className="text-black mt-1">{rider.goals || "—"}</dd>
             </div>
             <div>
-              <dt className="text-white/50 text-xs uppercase tracking-widest">Notes</dt>
-              <dd className="text-white mt-1">{rider.notes || "—"}</dd>
+              <dt className="text-black/50 text-xs uppercase tracking-widest">Notes</dt>
+              <dd className="text-black mt-1">{rider.notes || "—"}</dd>
             </div>
           </dl>
         </div>
 
-        <div className="border border-white/10 p-6">
-          <h2 className="font-serif text-lg text-white mb-4">Instructor feedback</h2>
-          <p className="text-white/70 text-sm whitespace-pre-wrap">
+        <div className="border border-black/10 p-6">
+          <h2 className="font-serif text-lg text-black mb-4">Instructor feedback</h2>
+          <p className="text-black/70 text-sm whitespace-pre-wrap">
             {rider.instructor_feedback || "No feedback yet."}
           </p>
         </div>
       </div>
 
       {(role === "owner" || role === "trainer") && (
-        <div className="border border-white/10 p-6">
-          <h2 className="font-serif text-lg text-white mb-4">Assigned Horses</h2>
-          <p className="text-white/50 text-sm mb-4">
+        <div className="border border-black/10 p-6">
+          <h2 className="font-serif text-lg text-black mb-4">Assigned Horses</h2>
+          <p className="text-black/50 text-sm mb-4">
             Assign horses this rider can book lessons with. Students see these in &quot;My Horses&quot;.
           </p>
           <div className="space-y-2 mb-4">
             {assignments.map((a) => (
               <div
                 key={a.id}
-                className="flex items-center justify-between border border-white/10 px-4 py-3"
+                className="flex items-center justify-between border border-black/10 px-4 py-3"
               >
                 <Link
                   href={`/dashboard/horses/${a.horse_id}`}
-                  className="font-medium text-white hover:underline"
+                  className="font-medium text-black hover:underline"
                 >
                   {a.horses?.name ?? "—"}
                 </Link>
                 {a.suitability_notes && (
-                  <span className="text-white/50 text-sm">{a.suitability_notes}</span>
+                  <span className="text-black/50 text-sm">{a.suitability_notes}</span>
                 )}
                 <button
                   onClick={async () => {
@@ -257,7 +257,7 @@ export default function RiderDetailPage() {
                     await fetch(`/api/rider-horse-assignments/${a.id}`, { method: "DELETE" });
                     setAssignments((prev) => prev.filter((x) => x.id !== a.id));
                   }}
-                  className="text-white/60 hover:text-white text-xs uppercase tracking-wider"
+                  className="text-black/60 hover:text-black text-xs uppercase tracking-wider"
                 >
                   Remove
                 </button>
@@ -266,20 +266,20 @@ export default function RiderDetailPage() {
           </div>
           <button
             onClick={() => setShowAssign(true)}
-            className="px-4 py-2.5 bg-white text-black font-medium text-sm uppercase tracking-wider hover:opacity-95 transition"
+            className="px-4 py-2.5 bg-accent text-white font-medium text-sm uppercase tracking-wider hover:opacity-95 transition"
           >
             + Assign Horse
           </button>
         </div>
       )}
 
-      <div className="border border-white/10 p-6">
-        <h2 className="font-serif text-lg text-white mb-4">Activity timeline</h2>
-        <p className="text-white/50 text-sm mb-4">
+      <div className="border border-black/10 p-6">
+        <h2 className="font-serif text-lg text-black mb-4">Activity timeline</h2>
+        <p className="text-black/50 text-sm mb-4">
           Training sessions and lessons logged with this rider.
         </p>
         {sessions.length === 0 ? (
-          <p className="text-white/50 text-sm">
+          <p className="text-black/50 text-sm">
             No sessions yet. Log a session from the Horses page and select this rider.
           </p>
         ) : (
@@ -287,27 +287,27 @@ export default function RiderDetailPage() {
             {sessions.map((s) => (
               <div
                 key={s.id}
-                className="flex items-center justify-between border border-white/10 px-4 py-3"
+                className="flex items-center justify-between border border-black/10 px-4 py-3"
               >
                 <div>
-                  <span className="font-medium text-white">
+                  <span className="font-medium text-black">
                     {PUNCH_LABELS[s.punchType] || s.punchType}
                   </span>
                   {s.horse && (
                     <Link
                       href={`/dashboard/horses/${s.horse.id}`}
-                      className="text-white/60 hover:text-white text-sm ml-2"
+                      className="text-black/60 hover:text-black text-sm ml-2"
                     >
                       {s.horse.name}
                     </Link>
                   )}
-                  <span className="text-white/50 text-sm block mt-0.5">
+                  <span className="text-black/50 text-sm block mt-0.5">
                     {s.duration > 0 ? `${s.duration} min` : "Rest"}
                     {s.discipline && ` • ${s.discipline}`}
                     {s.intensity && ` • ${s.intensity}`}
                   </span>
                 </div>
-                <span className="text-white/50 text-sm whitespace-nowrap">
+                <span className="text-black/50 text-sm whitespace-nowrap">
                   {new Date(s.punchDate || s.createdAt).toLocaleDateString("en-US", {
                     weekday: "short",
                     month: "short",
@@ -327,17 +327,17 @@ export default function RiderDetailPage() {
           onClick={() => setShowAssign(false)}
         >
           <div
-            className="bg-black border border-white/10 p-4 sm:p-6 w-full max-w-md max-h-[90vh] overflow-y-auto my-auto"
+            className="bg-base border border-black/10 p-4 sm:p-6 w-full max-w-md max-h-[90vh] overflow-y-auto my-auto"
             onClick={(e) => e.stopPropagation()}
           >
-            <h2 className="font-serif text-xl text-white mb-4">Assign Horse</h2>
+            <h2 className="font-serif text-xl text-black mb-4">Assign Horse</h2>
             <div className="space-y-4">
               <div>
-                <label className="text-xs text-white/50 uppercase tracking-widest block mb-2">Horse</label>
+                <label className="text-xs text-black/50 uppercase tracking-widest block mb-2">Horse</label>
                 <select
                   value={assignHorseId}
                   onChange={(e) => setAssignHorseId(e.target.value)}
-                  className="w-full px-4 py-3 bg-black border border-white/10 text-white focus:border-white/30 focus:outline-none"
+                  className="w-full px-4 py-3 bg-base border border-black/10 text-black focus:border-black/30 focus:outline-none"
                 >
                   <option value="">Select horse</option>
                   {horses
@@ -348,12 +348,12 @@ export default function RiderDetailPage() {
                 </select>
               </div>
               <div>
-                <label className="text-xs text-white/50 uppercase tracking-widest block mb-2">Suitability notes (optional)</label>
+                <label className="text-xs text-black/50 uppercase tracking-widest block mb-2">Suitability notes (optional)</label>
                 <textarea
                   value={assignNotes}
                   onChange={(e) => setAssignNotes(e.target.value)}
                   rows={2}
-                  className="w-full px-4 py-3 bg-black border border-white/10 text-white placeholder-white/40 focus:border-white/30 focus:outline-none resize-none"
+                  className="w-full px-4 py-3 bg-base border border-black/10 text-black placeholder-black/40 focus:border-black/30 focus:outline-none resize-none"
                   placeholder="e.g. Best for flatwork, needs experienced rider"
                 />
               </div>
@@ -361,7 +361,7 @@ export default function RiderDetailPage() {
             <div className="flex gap-3 mt-6">
               <button
                 onClick={() => setShowAssign(false)}
-                className="flex-1 py-2.5 border border-white/10 text-white text-sm uppercase tracking-wider hover:border-white/30 transition"
+                className="flex-1 py-2.5 border border-black/10 text-black text-sm uppercase tracking-wider hover:border-black/30 transition"
               >
                 Cancel
               </button>
@@ -403,7 +403,7 @@ export default function RiderDetailPage() {
                   }
                 }}
                 disabled={assignLoading}
-                className="flex-1 py-2.5 bg-white text-black font-medium text-sm uppercase tracking-wider hover:opacity-95 transition disabled:opacity-60 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+                className="flex-1 py-2.5 bg-accent text-white font-medium text-sm uppercase tracking-wider hover:opacity-95 transition disabled:opacity-60 disabled:cursor-not-allowed flex items-center justify-center gap-2"
               >
                 {assignLoading ? (
                   <>

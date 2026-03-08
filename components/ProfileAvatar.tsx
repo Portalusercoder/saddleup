@@ -32,7 +32,7 @@ export function ProfileAvatar({
 
   return (
     <div
-      className={`flex-shrink-0 rounded-full overflow-hidden bg-white/10 flex items-center justify-center font-medium text-white/90 ${sizeClass} ${className}`}
+      className={`flex-shrink-0 rounded-full overflow-hidden bg-black/10 flex items-center justify-center font-medium text-black/90 ${sizeClass} ${className}`}
       title={name ?? "Profile"}
     >
       {avatarUrl ? (

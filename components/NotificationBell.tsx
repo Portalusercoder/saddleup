@@ -52,10 +52,10 @@ export default function NotificationBell() {
     <div className="relative" ref={ref}>
       <button
         onClick={() => setOpen((o) => !o)}
-        className="relative p-2 rounded-lg hover:bg-white/10 transition"
+        className="relative p-2 rounded-lg hover:bg-black/10 transition"
         aria-label="Notifications"
       >
-        <svg className="w-5 h-5 text-white/80" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <svg className="w-5 h-5 text-black/80" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path
             strokeLinecap="round"
             strokeLinejoin="round"
@@ -64,27 +64,27 @@ export default function NotificationBell() {
           />
         </svg>
         {unreadCount > 0 && (
-          <span className="absolute -top-0.5 -right-0.5 flex h-4 w-4 items-center justify-center rounded-full bg-white text-black text-[10px] font-medium">
+          <span className="absolute -top-0.5 -right-0.5 flex h-4 w-4 items-center justify-center rounded-full bg-accent text-white text-[10px] font-medium">
             {unreadCount > 9 ? "9+" : unreadCount}
           </span>
         )}
       </button>
       {open && (
-        <div className="absolute right-0 top-full mt-2 w-80 max-h-96 overflow-y-auto border border-white/10 bg-black z-50">
-          <div className="p-3 border-b border-white/10">
-            <h3 className="text-sm font-medium text-white uppercase tracking-wider">Notifications</h3>
+        <div className="absolute right-0 top-full mt-2 w-80 max-h-96 overflow-y-auto border border-black/10 bg-base z-50">
+          <div className="p-3 border-b border-black/10">
+            <h3 className="text-sm font-medium text-black uppercase tracking-wider">Notifications</h3>
           </div>
           {notifications.length === 0 ? (
-            <p className="p-4 text-white/50 text-sm">No notifications</p>
+            <p className="p-4 text-black/50 text-sm">No notifications</p>
           ) : (
-            <div className="divide-y divide-white/5">
+            <div className="divide-y divide-black/5">
               {notifications.slice(0, 10).map((n) => (
                 <div
                   key={n.id}
-                  className={`p-4 hover:bg-white/5 ${!n.readAt ? "bg-white/5" : ""}`}
+                  className={`p-4 hover:bg-black/5 ${!n.readAt ? "bg-black/5" : ""}`}
                 >
-                  <p className="text-sm font-medium text-white">{n.title}</p>
-                  {n.body && <p className="text-xs text-white/60 mt-1">{n.body}</p>}
+                  <p className="text-sm font-medium text-black">{n.title}</p>
+                  {n.body && <p className="text-xs text-black/60 mt-1">{n.body}</p>}
                   <div className="flex items-center gap-2 mt-2">
                     {n.bookingId && (
                       <Link
@@ -93,7 +93,7 @@ export default function NotificationBell() {
                           markRead(n.id);
                           setOpen(false);
                         }}
-                        className="text-xs text-white/50 hover:text-white uppercase tracking-wider"
+                        className="text-xs text-black/50 hover:text-black uppercase tracking-wider"
                       >
                         View bookings
                       </Link>
@@ -101,7 +101,7 @@ export default function NotificationBell() {
                     {!n.readAt && (
                       <button
                         onClick={() => markRead(n.id)}
-                        className="text-xs text-white/40 hover:text-white"
+                        className="text-xs text-black/40 hover:text-black"
                       >
                         Mark read
                       </button>

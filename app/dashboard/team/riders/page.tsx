@@ -20,10 +20,10 @@ interface Rider {
   id_card_url?: string | null;
 }
 
-const formInput = "w-full px-4 py-3 bg-black border border-white/10 text-white placeholder-white/40 focus:border-white/30 focus:outline-none";
-const labelClass = "block text-xs uppercase tracking-widest text-white/50 mb-2";
-const btnPrimary = "px-4 py-2.5 bg-white text-black font-medium text-sm uppercase tracking-wider hover:opacity-95 transition";
-const btnSecondary = "px-4 py-2.5 border border-white/10 text-white text-sm uppercase tracking-wider hover:border-white/30 transition";
+const formInput = "w-full px-4 py-3 bg-base border border-black/10 text-black placeholder-black/40 focus:border-black/30 focus:outline-none";
+const labelClass = "block text-xs uppercase tracking-widest text-black/50 mb-2";
+const btnPrimary = "px-4 py-2.5 bg-accent text-white font-medium text-sm uppercase tracking-wider hover:opacity-95 transition";
+const btnSecondary = "px-4 py-2.5 border border-black/10 text-black text-sm uppercase tracking-wider hover:border-black/30 transition";
 
 export default function TeamRidersPage() {
   const [riders, setRiders] = useState<Rider[]>([]);
@@ -156,7 +156,7 @@ export default function TeamRidersPage() {
         {subscription && !subscription.canAddRider && (
           <Link
             href="/dashboard/settings"
-            className="text-white/60 hover:text-white text-xs uppercase tracking-wider"
+            className="text-black/60 hover:text-black text-xs uppercase tracking-wider"
           >
             Upgrade to add more riders →
           </Link>
@@ -167,7 +167,7 @@ export default function TeamRidersPage() {
             placeholder="Search riders..."
             value={search}
             onChange={(e) => setSearch(e.target.value)}
-            className="px-4 py-2.5 bg-black border border-white/10 text-white placeholder-white/40 focus:border-white/30 focus:outline-none text-sm"
+            className="px-4 py-2.5 bg-base border border-black/10 text-black placeholder-black/40 focus:border-black/30 focus:outline-none text-sm"
           />
           <button onClick={openAdd} className={btnPrimary}>
             Add rider
@@ -176,7 +176,7 @@ export default function TeamRidersPage() {
       </div>
 
       {toast && (
-        <div className="px-4 py-2 border border-white/10 text-white text-sm mb-4" role="alert">
+        <div className="px-4 py-2 border border-black/10 text-black text-sm mb-4" role="alert">
           {toast}
         </div>
       )}
@@ -184,13 +184,13 @@ export default function TeamRidersPage() {
       {loading ? (
         <TableSkeleton rows={6} cols={3} />
       ) : filtered.length === 0 ? (
-        <p className="text-white/50">
+        <p className="text-black/50">
           {search ? "No riders match your search." : "No riders yet. Add one or use Add member by personal ID above."}
         </p>
       ) : (
-        <div className="border border-white/10 overflow-hidden">
+        <div className="border border-black/10 overflow-hidden">
           <table className="w-full text-left text-sm">
-            <thead className="border-b border-white/10 text-white/50 text-xs uppercase tracking-widest">
+            <thead className="border-b border-black/10 text-black/50 text-xs uppercase tracking-widest">
               <tr>
                 <th className="px-6 py-4 font-medium">Name</th>
                 <th className="px-6 py-4 font-medium">Email</th>
@@ -200,17 +200,17 @@ export default function TeamRidersPage() {
             </thead>
             <tbody className="divide-y divide-white/10">
               {filtered.map((r) => (
-                <tr key={r.id} className="hover:bg-white/[0.02]">
+                <tr key={r.id} className="hover:bg-black/[0.02]">
                   <td className="px-6 py-4">
                     <Link
                       href={`${ridersBaseUrl}/${r.id}`}
-                      className="text-white font-medium hover:underline"
+                      className="text-black font-medium hover:underline"
                     >
                       {r.name}
                     </Link>
                   </td>
-                  <td className="px-6 py-4 text-white/60">{r.email || "—"}</td>
-                  <td className="px-6 py-4 text-white/60 capitalize">{r.level || "—"}</td>
+                  <td className="px-6 py-4 text-black/60">{r.email || "—"}</td>
+                  <td className="px-6 py-4 text-black/60 capitalize">{r.level || "—"}</td>
                   <td className="px-6 py-4">
                     <div className="flex gap-3 items-center">
                       <IdCardUpload
@@ -222,13 +222,13 @@ export default function TeamRidersPage() {
                       />
                       <button
                         onClick={() => openEdit(r)}
-                        className="text-white hover:underline text-sm uppercase tracking-wider"
+                        className="text-black hover:underline text-sm uppercase tracking-wider"
                       >
                         Edit
                       </button>
                       <button
                         onClick={() => handleDelete(r.id)}
-                        className="text-white/60 hover:text-white hover:underline text-sm uppercase tracking-wider"
+                        className="text-black/60 hover:text-black hover:underline text-sm uppercase tracking-wider"
                       >
                         Delete
                       </button>
@@ -243,8 +243,8 @@ export default function TeamRidersPage() {
 
       {showModal && (
         <div className="fixed inset-0 bg-black/80 flex items-center justify-center z-50 p-4 overflow-y-auto sm:items-center">
-          <div className="bg-black border border-white/10 max-w-md w-full p-4 sm:p-6 max-h-[90vh] overflow-y-auto">
-            <h2 className="font-serif text-xl text-white mb-6">
+          <div className="bg-base border border-black/10 max-w-md w-full p-4 sm:p-6 max-h-[90vh] overflow-y-auto">
+            <h2 className="font-serif text-xl text-black mb-6">
               {editingRider ? "Edit rider" : "Add rider"}
             </h2>
             <form onSubmit={handleSubmit} className="space-y-4">

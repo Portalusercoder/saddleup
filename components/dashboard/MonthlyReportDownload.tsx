@@ -44,20 +44,20 @@ export default function MonthlyReportDownload() {
   const years = Array.from(Array(5), (_, i) => now.getFullYear() - i);
 
   return (
-    <div className="border border-white/10 p-6">
-      <h2 className="font-serif text-lg text-white mb-2">Monthly Report</h2>
-      <p className="text-white/60 text-sm mb-4">
+    <div className="border border-black/10 p-6">
+      <h2 className="font-serif text-lg text-black mb-2">Monthly Report</h2>
+      <p className="text-black/60 text-sm mb-4">
         Download a PDF report for any month including classes, new members, riders, training sessions, horses, incidents, and competitions.
       </p>
       <div className="flex flex-wrap items-center gap-4">
         <div>
-          <label className="block text-xs uppercase tracking-widest text-white/50 mb-1">
+          <label className="block text-xs uppercase tracking-widest text-black/50 mb-1">
             Month
           </label>
           <select
             value={month}
             onChange={(e) => setMonth(parseInt(e.target.value, 10))}
-            className="w-full sm:w-auto px-4 py-2.5 bg-black border border-white/10 text-white focus:border-white/30 focus:outline-none"
+            className="w-full sm:w-auto px-4 py-2.5 bg-base border border-black/10 text-black focus:border-black/30 focus:outline-none"
           >
             {MONTHS.map((m, i) => (
               <option key={m} value={i + 1}>
@@ -67,13 +67,13 @@ export default function MonthlyReportDownload() {
           </select>
         </div>
         <div>
-          <label className="block text-xs uppercase tracking-widest text-white/50 mb-1">
+          <label className="block text-xs uppercase tracking-widest text-black/50 mb-1">
             Year
           </label>
           <select
             value={year}
             onChange={(e) => setYear(parseInt(e.target.value, 10))}
-            className="w-full sm:w-auto px-4 py-2.5 bg-black border border-white/10 text-white focus:border-white/30 focus:outline-none"
+            className="w-full sm:w-auto px-4 py-2.5 bg-base border border-black/10 text-black focus:border-black/30 focus:outline-none"
           >
             {years.map((y) => (
               <option key={y} value={y}>
@@ -86,7 +86,7 @@ export default function MonthlyReportDownload() {
           <button
             onClick={handleDownload}
             disabled={loading}
-            className="px-4 py-2.5 bg-white text-black font-medium text-sm uppercase tracking-wider hover:opacity-95 transition disabled:opacity-50 disabled:cursor-not-allowed"
+            className="px-4 py-2.5 bg-accent text-white font-medium text-sm uppercase tracking-wider hover:opacity-95 transition disabled:opacity-50 disabled:cursor-not-allowed"
           >
             {loading ? "Generating…" : "Download PDF"}
           </button>

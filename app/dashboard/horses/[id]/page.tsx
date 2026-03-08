@@ -302,7 +302,7 @@ export default function HorseDetailPage() {
   if (loading) {
     return (
       <div className="flex items-center justify-center min-h-[40vh]">
-        <p className="text-white/50">Loading...</p>
+        <p className="text-black/50">Loading...</p>
       </div>
     );
   }
@@ -312,33 +312,33 @@ export default function HorseDetailPage() {
       <div className="space-y-4">
         <Link
           href="/dashboard/horses"
-          className="text-white/60 hover:text-white text-sm uppercase tracking-wider"
+          className="text-black/60 hover:text-black text-sm uppercase tracking-wider"
         >
           ← Back to Horses
         </Link>
-        <p className="text-white/50">Horse not found.</p>
+        <p className="text-black/50">Horse not found.</p>
       </div>
     );
   }
 
   const workload = calculateWorkload();
 
-  const btnPrimary = "px-4 py-2.5 bg-white text-black font-medium text-sm uppercase tracking-wider hover:opacity-95 transition flex items-center gap-2";
-  const btnSecondary = "px-4 py-2.5 border border-white/10 text-white text-sm uppercase tracking-wider hover:border-white/30 transition";
+  const btnPrimary = "px-4 py-2.5 bg-accent text-white font-medium text-sm uppercase tracking-wider hover:opacity-95 transition flex items-center gap-2";
+  const btnSecondary = "px-4 py-2.5 border border-black/10 text-black text-sm uppercase tracking-wider hover:border-black/30 transition";
 
-  const formInput = "w-full px-4 py-3 bg-black border border-white/10 text-white placeholder-white/40 focus:border-white/30 focus:outline-none";
+  const formInput = "w-full px-4 py-3 bg-base border border-black/10 text-black placeholder-black/40 focus:border-black/30 focus:outline-none";
 
   return (
     <div className="space-y-6">
       {toast && (
-        <div className="px-4 py-2 border border-white/10 text-white text-sm">
+        <div className="px-4 py-2 border border-black/10 text-black text-sm">
           {toast}
         </div>
       )}
       <div className="flex items-center justify-between flex-wrap gap-3">
         <Link
           href={role === "student" ? "/dashboard/my-horses" : "/dashboard/horses"}
-          className="text-white/60 hover:text-white text-sm uppercase tracking-wider"
+          className="text-black/60 hover:text-black text-sm uppercase tracking-wider"
         >
           ← Back to {role === "student" ? "My Horses" : "Horses"}
         </Link>
@@ -380,17 +380,17 @@ export default function HorseDetailPage() {
       <div className="max-w-4xl mx-auto">
         <div className="bg-white border border-black/20 overflow-hidden">
           {/* Passport Header */}
-          <div className="bg-black text-white px-6 py-4 border-b border-white/20">
+          <div className="bg-base text-black px-6 py-4 border-b border-black/20">
             <div className="flex items-center justify-between">
               <div>
                 <h1 className="text-xl font-medium tracking-wider uppercase">
                   Horse Passport
                 </h1>
-                <p className="text-white/70 text-xs mt-1">
+                <p className="text-black/70 text-xs mt-1">
                   Digital identification document • Saddle Up
                 </p>
               </div>
-              <div className="text-right text-xs text-white/70">
+              <div className="text-right text-xs text-black/70">
                 <p>Passport ID: {typeof horse.id === "string" ? horse.id.slice(0, 8).toUpperCase() : String(horse.id).padStart(6, "0")}</p>
                 {horse.ueln && <p>UELN: {horse.ueln}</p>}
               </div>
@@ -543,7 +543,7 @@ export default function HorseDetailPage() {
                           }
                         }}
                         disabled={aiLoading}
-                        className="px-4 py-2 bg-black text-white text-sm font-medium uppercase tracking-wider hover:bg-black/90 disabled:opacity-50 transition"
+                        className="px-4 py-2 bg-accent text-white text-sm font-medium uppercase tracking-wider hover:opacity-90 disabled:opacity-50 transition"
                       >
                         {aiLoading ? "Generating..." : "Generate suggestions"}
                       </button>
@@ -586,7 +586,7 @@ export default function HorseDetailPage() {
                   {role !== "student" && (
                     <button
                       onClick={() => setShowHealthModal(true)}
-                      className="mb-4 px-4 py-2.5 bg-black text-white text-sm font-medium uppercase tracking-wider hover:opacity-90 transition"
+                      className="mb-4 px-4 py-2.5 bg-accent text-white text-sm font-medium uppercase tracking-wider hover:opacity-90 transition"
                     >
                       + Add health record
                     </button>
@@ -682,10 +682,10 @@ export default function HorseDetailPage() {
           onClick={() => setShowEditModal(false)}
         >
           <div
-            className="bg-black border border-white/10 p-4 sm:p-6 w-full max-w-lg max-h-[90vh] overflow-y-auto modal-enter my-auto"
+            className="bg-base border border-black/10 p-4 sm:p-6 w-full max-w-lg max-h-[90vh] overflow-y-auto modal-enter my-auto"
             onClick={(e) => e.stopPropagation()}
           >
-            <h2 className="font-serif text-xl text-white mb-6">Edit Horse</h2>
+            <h2 className="font-serif text-xl text-black mb-6">Edit Horse</h2>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <input name="name" placeholder="Name *" value={editForm.name} onChange={handleEditChange} className={`sm:col-span-2 ${formInput}`} />
               <select name="gender" value={editForm.gender} onChange={handleEditChange} className={formInput}>
@@ -703,12 +703,12 @@ export default function HorseDetailPage() {
               <input name="ueln" placeholder="UELN" value={editForm.ueln} onChange={handleEditChange} className={formInput} />
               <input name="dateOfBirth" type="date" placeholder="Date of birth" value={editForm.dateOfBirth} onChange={handleEditChange} className={formInput} />
               <div className="sm:col-span-2">
-                <label className="text-xs text-white/50 uppercase tracking-widest block mb-2">Profile picture</label>
+                <label className="text-xs text-black/50 uppercase tracking-widest block mb-2">Profile picture</label>
                 <div className="flex items-center gap-4">
                   <HorseAvatar photoUrl={editForm.photoUrl || null} name={editForm.name || "Horse"} size="lg" />
                   <div className="flex-1 space-y-2">
                     <input type="file" ref={photoInputRef} accept="image/jpeg,image/png,image/webp" onChange={handleEditPhotoUpload} className="hidden" />
-                    <button type="button" onClick={() => photoInputRef.current?.click()} className="block px-4 py-2.5 border border-white/10 text-white text-sm uppercase tracking-wider hover:border-white/30 transition">
+                    <button type="button" onClick={() => photoInputRef.current?.click()} className="block px-4 py-2.5 border border-black/10 text-black text-sm uppercase tracking-wider hover:border-black/30 transition">
                       Upload photo
                     </button>
                     <input name="photoUrl" placeholder="Or paste image URL" value={editForm.photoUrl} onChange={handleEditChange} className={`w-full ${formInput} text-sm`} />
@@ -740,10 +740,10 @@ export default function HorseDetailPage() {
               </select>
             </div>
             <div className="flex gap-3 mt-6">
-              <button onClick={() => setShowEditModal(false)} className="flex-1 py-2.5 border border-white/10 text-white text-sm uppercase tracking-wider hover:border-white/30 transition">
+              <button onClick={() => setShowEditModal(false)} className="flex-1 py-2.5 border border-black/10 text-black text-sm uppercase tracking-wider hover:border-black/30 transition">
                 Cancel
               </button>
-              <button onClick={saveHorse} className="flex-1 py-2.5 bg-white text-black font-medium text-sm uppercase tracking-wider hover:opacity-95 transition">
+              <button onClick={saveHorse} className="flex-1 py-2.5 bg-accent text-white font-medium text-sm uppercase tracking-wider hover:opacity-95 transition">
                 Save changes
               </button>
             </div>
@@ -758,21 +758,21 @@ export default function HorseDetailPage() {
           onClick={() => setShowHealthModal(false)}
         >
           <div
-            className="bg-black border border-white/10 p-4 sm:p-6 w-full max-w-md max-h-[90vh] overflow-y-auto modal-enter my-auto"
+            className="bg-base border border-black/10 p-4 sm:p-6 w-full max-w-md max-h-[90vh] overflow-y-auto modal-enter my-auto"
             onClick={(e) => e.stopPropagation()}
           >
-            <h2 className="font-serif text-xl text-white mb-6">
+            <h2 className="font-serif text-xl text-black mb-6">
               Add health record
             </h2>
             <div className="space-y-4">
               <div>
-                <label className="text-xs text-white/50 uppercase tracking-widest block mb-2">Type</label>
+                <label className="text-xs text-black/50 uppercase tracking-widest block mb-2">Type</label>
                 <select
                   value={healthForm.type}
                   onChange={(e) =>
                     setHealthForm({ ...healthForm, type: e.target.value })
                   }
-                  className="w-full px-4 py-3 bg-black border border-white/10 text-white focus:border-white/30 focus:outline-none"
+                  className="w-full px-4 py-3 bg-base border border-black/10 text-black focus:border-black/30 focus:outline-none"
                 >
                   {Object.entries(HEALTH_LABELS).map(([v, l]) => (
                     <option key={v} value={v}>
@@ -782,14 +782,14 @@ export default function HorseDetailPage() {
                 </select>
               </div>
               <div>
-                <label className="text-xs text-white/50 uppercase tracking-widest block mb-2">Date</label>
+                <label className="text-xs text-black/50 uppercase tracking-widest block mb-2">Date</label>
                 <input
                   type="date"
                   value={healthForm.date}
                   onChange={(e) =>
                     setHealthForm({ ...healthForm, date: e.target.value })
                   }
-                  className="w-full px-4 py-3 bg-black border border-white/10 text-white focus:border-white/30 focus:outline-none"
+                  className="w-full px-4 py-3 bg-base border border-black/10 text-black focus:border-black/30 focus:outline-none"
                 />
               </div>
               <textarea
@@ -799,7 +799,7 @@ export default function HorseDetailPage() {
                   setHealthForm({ ...healthForm, description: e.target.value })
                 }
                 rows={2}
-                className="w-full px-4 py-3 bg-black border border-white/10 text-white placeholder-white/40 focus:border-white/30 focus:outline-none resize-none"
+                className="w-full px-4 py-3 bg-base border border-black/10 text-black placeholder-black/40 focus:border-black/30 focus:outline-none resize-none"
               />
               <input
                 type="number"
@@ -808,10 +808,10 @@ export default function HorseDetailPage() {
                 onChange={(e) =>
                   setHealthForm({ ...healthForm, cost: e.target.value })
                 }
-                className="w-full px-4 py-3 bg-black border border-white/10 text-white placeholder-white/40 focus:border-white/30 focus:outline-none"
+                className="w-full px-4 py-3 bg-base border border-black/10 text-black placeholder-black/40 focus:border-black/30 focus:outline-none"
               />
               <div>
-                <label className="text-xs text-white/50 uppercase tracking-widest block mb-2">
+                <label className="text-xs text-black/50 uppercase tracking-widest block mb-2">
                   Next due (vaccinations, farrier)
                 </label>
                 <input
@@ -820,7 +820,7 @@ export default function HorseDetailPage() {
                   onChange={(e) =>
                     setHealthForm({ ...healthForm, nextDue: e.target.value })
                   }
-                  className="w-full px-4 py-3 bg-black border border-white/10 text-white focus:border-white/30 focus:outline-none"
+                  className="w-full px-4 py-3 bg-base border border-black/10 text-black focus:border-black/30 focus:outline-none"
                 />
               </div>
               {healthForm.type === "injury" && (
@@ -829,7 +829,7 @@ export default function HorseDetailPage() {
                   onChange={(e) =>
                     setHealthForm({ ...healthForm, recoveryStatus: e.target.value })
                   }
-                  className="w-full px-4 py-3 bg-black border border-white/10 text-white focus:border-white/30 focus:outline-none"
+                  className="w-full px-4 py-3 bg-base border border-black/10 text-black focus:border-black/30 focus:outline-none"
                 >
                   <option value="">Recovery status</option>
                   <option value="active">Active injury</option>
@@ -841,14 +841,14 @@ export default function HorseDetailPage() {
             <div className="flex gap-3 mt-6">
               <button
                 onClick={() => setShowHealthModal(false)}
-                className="flex-1 py-2.5 border border-white/10 text-white text-sm uppercase tracking-wider hover:border-white/30 transition"
+                className="flex-1 py-2.5 border border-black/10 text-black text-sm uppercase tracking-wider hover:border-black/30 transition"
               >
                 Cancel
               </button>
               <button
                 onClick={addHealthLog}
                 disabled={healthLogLoading}
-                className="flex-1 py-2.5 bg-white text-black font-medium text-sm uppercase tracking-wider hover:opacity-95 transition disabled:opacity-60 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+                className="flex-1 py-2.5 bg-accent text-white font-medium text-sm uppercase tracking-wider hover:opacity-95 transition disabled:opacity-60 disabled:cursor-not-allowed flex items-center justify-center gap-2"
               >
                 {healthLogLoading ? (
                   <>

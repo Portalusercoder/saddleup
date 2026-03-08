@@ -67,22 +67,22 @@ export default function CollapsibleSidebar() {
 
   return (
     <aside
-      className={`h-full bg-black border-r border-white/10 flex flex-col transition-[width] duration-300 ease-out overflow-hidden ${
+      className={`h-full bg-base border-r border-black/10 flex flex-col transition-[width] duration-300 ease-out overflow-hidden ${
         isHovered ? "w-56" : "w-[4.25rem]"
       }`}
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
     >
       {stable && (
-        <div className="shrink-0 px-3 py-4 border-b border-white/10 flex items-center gap-3">
+        <div className="shrink-0 h-20 px-3 border-b border-black/10 flex items-center gap-3">
           {stable.logoUrl ? (
-            <img src={stable.logoUrl} alt="" className="w-10 h-10 rounded object-cover border border-white/10 shrink-0" />
+            <img src={stable.logoUrl} alt="" className="w-10 h-10 rounded object-cover border border-black/10 shrink-0" />
           ) : (
-            <div className="w-10 h-10 rounded bg-white/5 border border-white/10 flex items-center justify-center shrink-0">
-              <span className="text-white/50 text-sm font-serif">{stable.name.charAt(0)}</span>
+            <div className="w-10 h-10 rounded bg-black/5 border border-black/10 flex items-center justify-center shrink-0">
+              <span className="text-black/50 text-sm font-serif">{stable.name.charAt(0)}</span>
             </div>
           )}
-          <span className={`text-sm font-medium text-white truncate transition-all duration-300 ${isHovered ? "opacity-100 max-w-[8rem]" : "opacity-0 max-w-0 overflow-hidden"}`}>
+          <span className={`text-sm font-medium text-black truncate transition-all duration-300 ${isHovered ? "opacity-100 max-w-[8rem]" : "opacity-0 max-w-0 overflow-hidden"}`}>
             {stable.name}
           </span>
         </div>
@@ -96,8 +96,8 @@ export default function CollapsibleSidebar() {
               href={item.href}
               className={`group flex items-center rounded-lg px-3 py-2.5 transition-all ${
                 isActive
-                  ? "bg-white/10 text-white"
-                  : "text-white/60 hover:bg-white/5 hover:text-white"
+                  ? "bg-black/10 text-black"
+                  : "text-black/60 hover:bg-black/5 hover:text-black"
               }`}
             >
               <span className="shrink-0 flex items-center justify-center">

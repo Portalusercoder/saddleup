@@ -62,14 +62,14 @@ export default function TrialBanner() {
     <div
       className={`mb-6 border px-4 py-3 text-sm flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 ${
         tone === "warning"
-          ? "border-amber-500/50 bg-amber-500/10 text-amber-100"
-          : "border-white/15 bg-white/5 text-white/90"
+          ? "border-amber-600/70 bg-amber-50 text-amber-900"
+          : "border-black/15 bg-black/5 text-black/90"
       }`}
     >
       <p>{message}</p>
       <Link
         href="/dashboard/settings"
-        className="inline-flex items-center justify-center px-4 py-2 bg-white text-black text-xs font-semibold uppercase tracking-[0.18em] hover:bg-white/90 transition"
+        className="inline-flex items-center justify-center px-4 py-2 bg-accent text-white text-xs font-semibold uppercase tracking-[0.18em] hover:opacity-90 transition"
       >
         Upgrade to continue
       </Link>

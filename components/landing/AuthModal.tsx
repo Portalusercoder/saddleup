@@ -19,14 +19,14 @@ export default function AuthModal({ isOpen, onClose, planId }: AuthModalProps) {
       onClick={onClose}
     >
       <div
-        className="bg-black border border-white/10 p-6 sm:p-8 w-full max-w-md max-h-[90vh] overflow-y-auto my-auto"
+        className="bg-base border border-black/10 p-6 sm:p-8 w-full max-w-md max-h-[90vh] overflow-y-auto my-auto"
         onClick={(e) => e.stopPropagation()}
       >
         <div className="flex justify-between items-start mb-6">
-          <h2 className="font-serif text-xl text-white">Get started with Saddle Up</h2>
+          <h2 className="font-serif text-xl text-black">Get started with Saddle Up</h2>
           <button
             onClick={onClose}
-            className="text-white/60 hover:text-white p-1 -m-1"
+            className="text-black/60 hover:text-black p-1 -m-1"
             aria-label="Close"
           >
             <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -35,7 +35,7 @@ export default function AuthModal({ isOpen, onClose, planId }: AuthModalProps) {
           </button>
         </div>
 
-        <p className="text-white/60 text-sm mb-6">
+        <p className="text-black/60 text-sm mb-6">
           {planId
             ? "Create an account or sign in to subscribe to this plan."
             : "Create an account or sign in to get started."}
@@ -44,19 +44,19 @@ export default function AuthModal({ isOpen, onClose, planId }: AuthModalProps) {
         <div className="space-y-3">
           <Link
             href={signupUrl}
-            className="block w-full py-3 px-4 bg-white text-black font-medium text-center text-sm uppercase tracking-wider hover:opacity-95 transition"
+            className="block w-full py-3 px-4 bg-accent text-white font-medium text-center text-sm uppercase tracking-wider hover:opacity-95 transition"
           >
             Sign up
           </Link>
           <Link
             href="/login"
-            className="block w-full py-3 px-4 border border-white/10 text-white font-medium text-center text-sm uppercase tracking-wider hover:border-white/30 transition"
+            className="block w-full py-3 px-4 border border-black/10 text-black font-medium text-center text-sm uppercase tracking-wider hover:border-black/30 transition"
           >
             Sign in
           </Link>
         </div>
 
-        <p className="text-white/40 text-xs mt-6 text-center uppercase tracking-wider">
+        <p className="text-black/40 text-xs mt-6 text-center uppercase tracking-wider">
           Free plan includes 2 horses and 10 riders. Upgrade anytime.
         </p>
       </div>

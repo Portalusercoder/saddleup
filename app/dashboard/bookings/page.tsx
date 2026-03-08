@@ -201,16 +201,16 @@ export default function BookingsPage() {
   const declined = bookings.filter((b) => b.status === "declined");
 
   const formInput =
-    "w-full px-4 py-3 bg-black border border-white/10 text-white placeholder-white/40 focus:border-white/30 focus:outline-none";
+    "w-full px-4 py-3 bg-base border border-black/10 text-black placeholder-black/40 focus:border-black/30 focus:outline-none";
   const btnPrimary =
-    "px-4 py-2.5 bg-white text-black font-medium text-sm uppercase tracking-wider hover:opacity-95 transition";
+    "px-4 py-2.5 bg-accent text-white font-medium text-sm uppercase tracking-wider hover:opacity-95 transition";
   const btnSecondary =
-    "px-4 py-2.5 border border-white/10 text-white text-sm uppercase tracking-wider hover:border-white/30 transition";
+    "px-4 py-2.5 border border-black/10 text-black text-sm uppercase tracking-wider hover:border-black/30 transition";
 
   return (
     <div className="space-y-8">
       <div className="flex items-center justify-between flex-wrap gap-4">
-        <h1 className="font-serif text-3xl md:text-4xl font-normal text-white">
+        <h1 className="font-serif text-3xl md:text-4xl font-normal text-black">
           {isStudent ? "My Bookings" : "Bookings"}
         </h1>
         {isStudent && horses.length > 0 && (
@@ -225,18 +225,18 @@ export default function BookingsPage() {
       ) : (
         <>
           {isTrainerOrOwner && pending.length > 0 && (
-            <div className="border border-white/20 p-6">
-              <h2 className="font-serif text-lg text-white mb-2">
+            <div className="border border-black/20 p-6">
+              <h2 className="font-serif text-lg text-black mb-2">
                 Pending Requests
               </h2>
-              <p className="text-white/50 text-sm mb-4">
+              <p className="text-black/50 text-sm mb-4">
                 Approve or decline lesson requests from students.
               </p>
               <div className="space-y-3">
                 {pending.map((b) => (
                   <div
                     key={b.id}
-                    className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 border border-white/10 px-4 py-3"
+                    className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 border border-black/10 px-4 py-3"
                   >
                     <div className="flex items-center gap-4">
                       <HorseAvatar
@@ -245,14 +245,14 @@ export default function BookingsPage() {
                         size="sm"
                       />
                       <div>
-                        <span className="font-medium text-white">
+                        <span className="font-medium text-black">
                           {b.horse?.name ?? "—"}
                         </span>
-                        <span className="text-white/50 text-sm ml-2">
+                        <span className="text-black/50 text-sm ml-2">
                           {formatDate(b.bookingDate)} • {formatTime(b.startTime)}–{formatTime(b.endTime)}
                         </span>
                         {b.rider && (
-                          <span className="text-white/40 text-xs block">
+                          <span className="text-black/40 text-xs block">
                             {b.rider.name}
                           </span>
                         )}
@@ -261,7 +261,7 @@ export default function BookingsPage() {
                     <div className="flex gap-2 shrink-0">
                       <button
                         onClick={() => handleApprove(b)}
-                        className="px-3 py-1.5 bg-white text-black text-xs font-medium uppercase tracking-wider hover:opacity-95"
+                        className="px-3 py-1.5 bg-accent text-white text-xs font-medium uppercase tracking-wider hover:opacity-95"
                       >
                         Approve
                       </button>
@@ -270,7 +270,7 @@ export default function BookingsPage() {
                           setShowDeclineModal(b);
                           setDeclineNotes("");
                         }}
-                        className="px-3 py-1.5 border border-white/30 text-white/80 text-xs uppercase tracking-wider hover:border-white/50"
+                        className="px-3 py-1.5 border border-black/30 text-black/80 text-xs uppercase tracking-wider hover:border-black/50"
                       >
                         Decline
                       </button>
@@ -282,15 +282,15 @@ export default function BookingsPage() {
           )}
 
           {(upcoming.length > 0 || (isStudent && myUpcomingPending.length > 0)) && (
-            <div className="border border-white/10 p-6">
-              <h2 className="font-serif text-lg text-white mb-4">
+            <div className="border border-black/10 p-6">
+              <h2 className="font-serif text-lg text-black mb-4">
                 {isStudent ? "My Lessons" : "Upcoming Lessons"}
               </h2>
               <div className="space-y-3">
                 {(isStudent ? [...myUpcomingPending, ...upcoming] : upcoming).map((b) => (
                   <div
                     key={b.id}
-                    className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 border border-white/10 px-4 py-3"
+                    className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 border border-black/10 px-4 py-3"
                   >
                     <div className="flex items-center gap-4">
                       <HorseAvatar
@@ -299,19 +299,19 @@ export default function BookingsPage() {
                         size="sm"
                       />
                       <div>
-                        <span className="font-medium text-white">
+                        <span className="font-medium text-black">
                           {b.horse?.name ?? "—"}
                         </span>
-                        <span className="text-white/50 text-sm ml-2">
+                        <span className="text-black/50 text-sm ml-2">
                           {formatDate(b.bookingDate)} • {formatTime(b.startTime)}–{formatTime(b.endTime)}
                         </span>
                         {b.status === "pending" && (
-                          <span className="text-white/60 text-xs block">
+                          <span className="text-black/60 text-xs block">
                             Pending approval
                           </span>
                         )}
                         {b.trainer?.fullName && (
-                          <span className="text-white/40 text-xs block">
+                          <span className="text-black/40 text-xs block">
                             Trainer: {b.trainer.fullName}
                           </span>
                         )}
@@ -320,7 +320,7 @@ export default function BookingsPage() {
                     {isStudent && b.status === "scheduled" && (
                       <button
                         onClick={() => handleCancel(b.id)}
-                        className="text-white/60 hover:text-white text-xs uppercase tracking-wider"
+                        className="text-black/60 hover:text-black text-xs uppercase tracking-wider"
                       >
                         Cancel
                       </button>
@@ -332,15 +332,15 @@ export default function BookingsPage() {
           )}
 
           {isStudent && declined.length > 0 && (
-            <div className="border border-white/10 p-6">
-              <h2 className="font-serif text-lg text-white mb-4">
+            <div className="border border-black/10 p-6">
+              <h2 className="font-serif text-lg text-black mb-4">
                 Declined Requests
               </h2>
               <div className="space-y-3">
                 {declined.map((b) => (
                   <div
                     key={b.id}
-                    className="flex items-center justify-between border border-white/10 px-4 py-3 opacity-75"
+                    className="flex items-center justify-between border border-black/10 px-4 py-3 opacity-75"
                   >
                     <div className="flex items-center gap-4">
                       <HorseAvatar
@@ -349,20 +349,20 @@ export default function BookingsPage() {
                         size="sm"
                       />
                       <div>
-                        <span className="font-medium text-white">
+                        <span className="font-medium text-black">
                           {b.horse?.name ?? "—"}
                         </span>
-                        <span className="text-white/50 text-sm ml-2">
+                        <span className="text-black/50 text-sm ml-2">
                           {formatDate(b.bookingDate)} • {formatTime(b.startTime)}–{formatTime(b.endTime)}
                         </span>
                         {b.declinedNotes && (
-                          <span className="text-white/60 text-xs block mt-1">
+                          <span className="text-black/60 text-xs block mt-1">
                             Reason: {b.declinedNotes}
                           </span>
                         )}
                       </div>
                     </div>
-                    <span className="text-white/50 text-xs uppercase">Declined</span>
+                    <span className="text-black/50 text-xs uppercase">Declined</span>
                   </div>
                 ))}
               </div>
@@ -370,15 +370,15 @@ export default function BookingsPage() {
           )}
 
           {past.length > 0 && (
-            <div className="border border-white/10 p-6">
-              <h2 className="font-serif text-lg text-white mb-4">
+            <div className="border border-black/10 p-6">
+              <h2 className="font-serif text-lg text-black mb-4">
                 Past Sessions
               </h2>
               <div className="space-y-3">
                 {past.slice(0, 10).map((b) => (
                   <div
                     key={b.id}
-                    className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 border border-white/10 px-4 py-3"
+                    className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 border border-black/10 px-4 py-3"
                   >
                     <div className="flex items-center gap-4">
                       <HorseAvatar
@@ -387,10 +387,10 @@ export default function BookingsPage() {
                         size="sm"
                       />
                       <div>
-                        <span className="font-medium text-white">
+                        <span className="font-medium text-black">
                           {b.horse?.name ?? "—"}
                         </span>
-                        <span className="text-white/50 text-sm ml-2">
+                        <span className="text-black/50 text-sm ml-2">
                           {formatDate(b.bookingDate)}
                         </span>
                       </div>
@@ -402,8 +402,8 @@ export default function BookingsPage() {
           )}
 
           {upcoming.length === 0 && past.length === 0 && cancelled.length === 0 && declined.length === 0 && pending.length === 0 && (
-            <div className="border border-white/10 p-8 text-center">
-              <p className="text-white/60">
+            <div className="border border-black/10 p-8 text-center">
+              <p className="text-black/60">
                 {isStudent
                   ? "No bookings yet. Request a lesson to get started."
                   : "No bookings in this stable yet."}
@@ -419,15 +419,15 @@ export default function BookingsPage() {
           onClick={() => setShowCreate(false)}
         >
           <div
-            className="bg-black border border-white/10 p-4 sm:p-6 w-full max-w-md max-h-[90vh] overflow-y-auto my-auto"
+            className="bg-base border border-black/10 p-4 sm:p-6 w-full max-w-md max-h-[90vh] overflow-y-auto my-auto"
             onClick={(e) => e.stopPropagation()}
           >
-            <h2 className="font-serif text-xl text-white mb-4">
+            <h2 className="font-serif text-xl text-black mb-4">
               Request a Lesson
             </h2>
             <div className="space-y-4">
               <div>
-                <label className="text-xs text-white/50 uppercase tracking-widest block mb-2">
+                <label className="text-xs text-black/50 uppercase tracking-widest block mb-2">
                   Horse
                 </label>
                 <select
@@ -446,7 +446,7 @@ export default function BookingsPage() {
                 </select>
               </div>
               <div>
-                <label className="text-xs text-white/50 uppercase tracking-widest block mb-2">
+                <label className="text-xs text-black/50 uppercase tracking-widest block mb-2">
                   Date
                 </label>
                 <input
@@ -460,7 +460,7 @@ export default function BookingsPage() {
               </div>
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <label className="text-xs text-white/50 uppercase tracking-widest block mb-2">
+                  <label className="text-xs text-black/50 uppercase tracking-widest block mb-2">
                     Start
                   </label>
                   <input
@@ -473,7 +473,7 @@ export default function BookingsPage() {
                   />
                 </div>
                 <div>
-                  <label className="text-xs text-white/50 uppercase tracking-widest block mb-2">
+                  <label className="text-xs text-black/50 uppercase tracking-widest block mb-2">
                     End
                   </label>
                   <input
@@ -487,7 +487,7 @@ export default function BookingsPage() {
                 </div>
               </div>
               <div>
-                <label className="text-xs text-white/50 uppercase tracking-widest block mb-2">
+                <label className="text-xs text-black/50 uppercase tracking-widest block mb-2">
                   Notes (optional)
                 </label>
                 <textarea
@@ -532,15 +532,15 @@ export default function BookingsPage() {
           onClick={() => setShowDeclineModal(null)}
         >
           <div
-            className="bg-black border border-white/10 p-4 sm:p-6 w-full max-w-md max-h-[90vh] overflow-y-auto my-auto"
+            className="bg-base border border-black/10 p-4 sm:p-6 w-full max-w-md max-h-[90vh] overflow-y-auto my-auto"
             onClick={(e) => e.stopPropagation()}
           >
-            <h2 className="font-serif text-xl text-white mb-2">Decline Request</h2>
-            <p className="text-white/60 text-sm mb-4">
+            <h2 className="font-serif text-xl text-black mb-2">Decline Request</h2>
+            <p className="text-black/60 text-sm mb-4">
               {showDeclineModal.horse?.name} • {formatDate(showDeclineModal.bookingDate)} • {formatTime(showDeclineModal.startTime)}
             </p>
             <div className="mb-4">
-              <label className="text-xs text-white/50 uppercase tracking-widest block mb-2">
+              <label className="text-xs text-black/50 uppercase tracking-widest block mb-2">
                 Reason (optional) — shown to the student
               </label>
               <textarea

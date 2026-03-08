@@ -101,7 +101,7 @@ export default function GuardianPage() {
   if (loading) {
     return (
       <div className="space-y-6">
-        <h1 className="font-serif text-3xl md:text-4xl font-normal text-white">
+        <h1 className="font-serif text-3xl md:text-4xl font-normal text-black">
           Parent Portal
         </h1>
         <TableSkeleton rows={6} cols={4} />
@@ -112,45 +112,45 @@ export default function GuardianPage() {
   return (
     <div className="space-y-10">
       <div>
-        <h1 className="font-serif text-3xl md:text-4xl font-normal text-white">
+        <h1 className="font-serif text-3xl md:text-4xl font-normal text-black">
           Parent Portal
         </h1>
-        <p className="text-white/60 text-sm max-w-xl mt-2">
+        <p className="text-black/60 text-sm max-w-xl mt-2">
           View your children&apos;s lessons and training progress. Read-only access.
         </p>
       </div>
 
       {children.length === 0 ? (
-        <div className="border border-white/10 p-8 text-center">
-          <p className="text-white/60 mb-2">No children linked yet</p>
-          <p className="text-white/40 text-sm">
+        <div className="border border-black/10 p-8 text-center">
+          <p className="text-black/60 mb-2">No children linked yet</p>
+          <p className="text-black/40 text-sm">
             Ask your stable to link your account to your child&apos;s rider profile.
           </p>
         </div>
       ) : (
         <>
-          <div className="border border-white/10 p-6">
-            <h2 className="font-serif text-lg text-white mb-4">My Children</h2>
+          <div className="border border-black/10 p-6">
+            <h2 className="font-serif text-lg text-black mb-4">My Children</h2>
             <div className="grid gap-4 sm:grid-cols-2">
               {children.map((child) => (
                 <div
                   key={child.id}
-                  className="border border-white/10 p-4"
+                  className="border border-black/10 p-4"
                 >
-                  <h3 className="font-medium text-white">{child.name}</h3>
-                  <p className="text-white/50 text-sm mt-1">
+                  <h3 className="font-medium text-black">{child.name}</h3>
+                  <p className="text-black/50 text-sm mt-1">
                     {child.level || "—"} • {child.email || child.phone || "No contact"}
                   </p>
                   {sessionsByRider[child.id]?.length > 0 && (
                     <div className="mt-3">
-                      <p className="text-white/40 text-xs uppercase tracking-wider mb-2">
+                      <p className="text-black/40 text-xs uppercase tracking-wider mb-2">
                         Recent sessions
                       </p>
                       <ul className="space-y-1">
                         {sessionsByRider[child.id].map((s) => (
                           <li
                             key={s.id}
-                            className="text-sm text-white/70"
+                            className="text-sm text-black/70"
                           >
                             {formatDate(s.punchDate)} • {PUNCH_LABELS[s.punchType] || s.punchType}{" "}
                             {s.duration > 0 && `(${s.duration} min)`}{" "}
@@ -166,8 +166,8 @@ export default function GuardianPage() {
           </div>
 
           {upcomingBookings.length > 0 && (
-            <div className="border border-white/10 p-6">
-              <h2 className="font-serif text-lg text-white mb-4">
+            <div className="border border-black/10 p-6">
+              <h2 className="font-serif text-lg text-black mb-4">
                 Upcoming Lessons
               </h2>
               <div className="space-y-3">
@@ -180,7 +180,7 @@ export default function GuardianPage() {
                   .map((b) => (
                     <div
                       key={b.id}
-                      className="flex items-center gap-4 border border-white/10 px-4 py-3"
+                      className="flex items-center gap-4 border border-black/10 px-4 py-3"
                     >
                       {b.horse && (
                         <HorseAvatar
@@ -190,20 +190,20 @@ export default function GuardianPage() {
                         />
                       )}
                       <div>
-                        <span className="font-medium text-white">
+                        <span className="font-medium text-black">
                           {b.horse?.name ?? "Lesson"}
                         </span>
-                        <span className="text-white/50 text-sm ml-2">
+                        <span className="text-black/50 text-sm ml-2">
                           {formatDate(b.bookingDate)} •{" "}
                           {formatTime(b.startTime)}–{formatTime(b.endTime)}
                         </span>
                         {b.rider && (
-                          <span className="text-white/40 text-xs block">
+                          <span className="text-black/40 text-xs block">
                             {b.rider.name}
                           </span>
                         )}
                         {b.status === "pending" && (
-                          <span className="text-white/60 text-xs block">
+                          <span className="text-black/60 text-xs block">
                             Pending approval
                           </span>
                         )}

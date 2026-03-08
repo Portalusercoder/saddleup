@@ -43,13 +43,13 @@ export default function StableLogoUpload() {
   };
 
   return (
-    <div className="border border-white/10 p-6">
-      <h2 className="font-serif text-lg text-white mb-2">Stable logo</h2>
-      <p className="text-white/60 text-sm mb-4">
+    <div className="border border-black/10 p-6">
+      <h2 className="font-serif text-lg text-black mb-2">Stable logo</h2>
+      <p className="text-black/60 text-sm mb-4">
         Upload your stable&apos;s logo for use on your stable materials.
       </p>
       <div className="flex items-center gap-6">
-        <div className="w-24 h-24 border border-white/10 bg-black flex items-center justify-center overflow-hidden shrink-0">
+        <div className="w-24 h-24 border border-black/10 bg-base flex items-center justify-center overflow-hidden shrink-0">
           {logoUrl ? (
             <img
               src={logoUrl}
@@ -57,7 +57,7 @@ export default function StableLogoUpload() {
               className="w-full h-full object-contain"
             />
           ) : (
-            <span className="text-white/30 text-xs">No logo</span>
+            <span className="text-black/30 text-xs">No logo</span>
           )}
         </div>
         <div>
@@ -71,15 +71,15 @@ export default function StableLogoUpload() {
           <button
             onClick={() => inputRef.current?.click()}
             disabled={uploading}
-            className="px-4 py-2.5 bg-white text-black font-medium text-sm uppercase tracking-wider hover:opacity-95 transition disabled:opacity-50"
+            className="px-4 py-2.5 bg-accent text-white font-medium text-sm uppercase tracking-wider hover:opacity-95 transition disabled:opacity-50"
           >
             {uploading ? "Uploading..." : logoUrl ? "Change logo" : "Upload logo"}
           </button>
-          <p className="text-white/40 text-xs mt-2">JPEG, PNG or WebP. Max 1MB.</p>
+          <p className="text-black/40 text-xs mt-2">JPEG, PNG or WebP. Max 1MB.</p>
         </div>
       </div>
       {toast && (
-        <p className={`mt-3 text-sm ${toast.includes("failed") ? "text-amber-400" : "text-white/60"}`}>
+        <p className={`mt-3 text-sm ${toast.includes("failed") ? "text-amber-600" : "text-black/60"}`}>
           {toast}
         </p>
       )}

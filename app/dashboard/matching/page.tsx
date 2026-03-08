@@ -45,12 +45,12 @@ interface MatchingData {
   horseSuggestions: HorseSuggestion[];
 }
 
-const btnPrimary = "px-4 py-2.5 bg-white text-black font-medium text-sm uppercase tracking-wider hover:opacity-95 transition";
+const btnPrimary = "px-4 py-2.5 bg-accent text-white font-medium text-sm uppercase tracking-wider hover:opacity-95 transition";
 
 function ScoreBadge({ score, label }: { score: number; label: string }) {
   const color =
-    score >= 80 ? "border-white/30 text-white" :
-    score >= 60 ? "border-white/20 text-white/80" :
+    score >= 80 ? "border-black/30 text-black" :
+    score >= 60 ? "border-black/20 text-black/80" :
     score >= 40 ? "border-amber-500/50 text-amber-400" :
     "border-red-500/30 text-red-400";
   return (
@@ -95,7 +95,7 @@ export default function MatchingPage() {
   if (loading) {
     return (
       <div className="space-y-6">
-        <h1 className="font-serif text-2xl md:text-3xl font-normal text-white">
+        <h1 className="font-serif text-2xl md:text-3xl font-normal text-black">
           Horse–rider matching
         </h1>
         <TableSkeleton rows={6} cols={4} />
@@ -106,11 +106,11 @@ export default function MatchingPage() {
   if (locked) {
     return (
       <div className="space-y-6">
-        <h1 className="font-serif text-2xl md:text-3xl font-normal text-white">
+        <h1 className="font-serif text-2xl md:text-3xl font-normal text-black">
           Horse–rider matching
         </h1>
-        <div className="border border-white/10 p-8 text-center">
-          <p className="text-white/70 mb-4">
+        <div className="border border-black/10 p-8 text-center">
+          <p className="text-black/70 mb-4">
             Upgrade to Stable or Enterprise to get horse–rider compatibility suggestions.
           </p>
           <Link href="/dashboard/settings" className={btnPrimary}>
@@ -124,30 +124,30 @@ export default function MatchingPage() {
   if (!data) {
     return (
       <div className="space-y-6">
-        <h1 className="font-serif text-2xl md:text-3xl font-normal text-white">
+        <h1 className="font-serif text-2xl md:text-3xl font-normal text-black">
           Horse–rider matching
         </h1>
-        <p className="text-white/50">Failed to load matching.</p>
+        <p className="text-black/50">Failed to load matching.</p>
       </div>
     );
   }
 
   return (
     <div className="space-y-8">
-      <h1 className="font-serif text-2xl md:text-3xl font-normal text-white">
+      <h1 className="font-serif text-2xl md:text-3xl font-normal text-black">
         Horse–rider matching
       </h1>
-      <p className="text-white/60 text-sm max-w-xl">
+      <p className="text-black/60 text-sm max-w-xl">
         Compatibility suggestions based on rider level, horse temperament, and skill level. Assign horses from the rider detail page.
       </p>
 
-      <nav className="flex gap-2 border-b border-white/10 pb-2">
+      <nav className="flex gap-2 border-b border-black/10 pb-2">
         <button
           onClick={() => setActiveTab("riders")}
           className={`px-4 py-2 text-sm font-medium uppercase tracking-wider transition ${
             activeTab === "riders"
-              ? "text-white border-b-2 border-white -mb-[10px] pb-2"
-              : "text-white/50 hover:text-white"
+              ? "text-black border-b-2 border-black -mb-[10px] pb-2"
+              : "text-black/50 hover:text-black"
           }`}
         >
           By rider
@@ -156,8 +156,8 @@ export default function MatchingPage() {
           onClick={() => setActiveTab("horses")}
           className={`px-4 py-2 text-sm font-medium uppercase tracking-wider transition ${
             activeTab === "horses"
-              ? "text-white border-b-2 border-white -mb-[10px] pb-2"
-              : "text-white/50 hover:text-white"
+              ? "text-black border-b-2 border-black -mb-[10px] pb-2"
+              : "text-black/50 hover:text-black"
           }`}
         >
           By horse
@@ -166,31 +166,31 @@ export default function MatchingPage() {
 
       {activeTab === "riders" && (
         <div className="space-y-6">
-          <h2 className="font-serif text-lg text-white">Suggested horses for each rider</h2>
+          <h2 className="font-serif text-lg text-black">Suggested horses for each rider</h2>
           {data.riderSuggestions.length === 0 ? (
-            <p className="text-white/50">Add riders and horses to see suggestions.</p>
+            <p className="text-black/50">Add riders and horses to see suggestions.</p>
           ) : (
             <div className="space-y-4">
               {data.riderSuggestions.map((r) => (
-                <div key={r.riderId} className="border border-white/10 p-6">
+                <div key={r.riderId} className="border border-black/10 p-6">
                   <div className="flex items-center justify-between mb-4">
                     <Link
                       href={`/dashboard/team/riders/${r.riderId}`}
-                      className="font-serif text-lg text-white hover:underline"
+                      className="font-serif text-lg text-black hover:underline"
                     >
                       {r.riderName}
                     </Link>
-                    <span className="text-white/50 text-sm capitalize">{r.riderLevel || "—"}</span>
+                    <span className="text-black/50 text-sm capitalize">{r.riderLevel || "—"}</span>
                   </div>
                   {r.assigned.length > 0 && (
                     <div className="mb-4">
-                      <p className="text-white/50 text-xs uppercase tracking-widest mb-2">Assigned</p>
+                      <p className="text-black/50 text-xs uppercase tracking-widest mb-2">Assigned</p>
                       <div className="flex flex-wrap gap-2">
                         {r.assigned.map((a) => (
                           <Link
                             key={a.horseId}
                             href={`/dashboard/horses/${a.horseId}`}
-                            className="px-3 py-1.5 border border-white/20 text-white/80 text-sm hover:border-white/40"
+                            className="px-3 py-1.5 border border-black/20 text-black/80 text-sm hover:border-black/40"
                           >
                             {a.horseName}
                           </Link>
@@ -200,22 +200,22 @@ export default function MatchingPage() {
                   )}
                   {r.suggested.length > 0 ? (
                     <div>
-                      <p className="text-white/50 text-xs uppercase tracking-widest mb-2">Suggested</p>
+                      <p className="text-black/50 text-xs uppercase tracking-widest mb-2">Suggested</p>
                       <div className="space-y-2">
                         {r.suggested.map((s) => (
                           <div
                             key={s.horseId}
-                            className="flex items-center justify-between border border-white/10 px-4 py-3"
+                            className="flex items-center justify-between border border-black/10 px-4 py-3"
                           >
                             <Link
                               href={`/dashboard/horses/${s.horseId}`}
-                              className="font-medium text-white hover:underline"
+                              className="font-medium text-black hover:underline"
                             >
                               {s.horseName}
                             </Link>
                             <div className="flex items-center gap-3">
                               <ScoreBadge score={s.score} label={s.label} />
-                              <span className="text-white/50 text-xs max-w-[200px] truncate" title={s.reason}>
+                              <span className="text-black/50 text-xs max-w-[200px] truncate" title={s.reason}>
                                 {s.reason}
                               </span>
                             </div>
@@ -224,7 +224,7 @@ export default function MatchingPage() {
                       </div>
                     </div>
                   ) : (
-                    <p className="text-white/50 text-sm">All horses are already assigned to this rider.</p>
+                    <p className="text-black/50 text-sm">All horses are already assigned to this rider.</p>
                   )}
                 </div>
               ))}
@@ -235,33 +235,33 @@ export default function MatchingPage() {
 
       {activeTab === "horses" && (
         <div className="space-y-6">
-          <h2 className="font-serif text-lg text-white">Suggested riders for each horse</h2>
+          <h2 className="font-serif text-lg text-black">Suggested riders for each horse</h2>
           {data.horseSuggestions.length === 0 ? (
-            <p className="text-white/50">Add horses and riders to see suggestions.</p>
+            <p className="text-black/50">Add horses and riders to see suggestions.</p>
           ) : (
             <div className="space-y-4">
               {data.horseSuggestions.map((h) => (
-                <div key={h.horseId} className="border border-white/10 p-6">
+                <div key={h.horseId} className="border border-black/10 p-6">
                   <div className="flex items-center justify-between mb-4">
                     <Link
                       href={`/dashboard/horses/${h.horseId}`}
-                      className="font-serif text-lg text-white hover:underline"
+                      className="font-serif text-lg text-black hover:underline"
                     >
                       {h.horseName}
                     </Link>
-                    <span className="text-white/50 text-sm">
+                    <span className="text-black/50 text-sm">
                       {[h.horseTemperament, h.horseSkillLevel].filter(Boolean).join(" • ") || "—"}
                     </span>
                   </div>
                   {h.assigned.length > 0 && (
                     <div className="mb-4">
-                      <p className="text-white/50 text-xs uppercase tracking-widest mb-2">Assigned to</p>
+                      <p className="text-black/50 text-xs uppercase tracking-widest mb-2">Assigned to</p>
                       <div className="flex flex-wrap gap-2">
                         {h.assigned.map((a) => (
                           <Link
                             key={a.riderId}
                             href={`/dashboard/team/riders/${a.riderId}`}
-                            className="px-3 py-1.5 border border-white/20 text-white/80 text-sm hover:border-white/40"
+                            className="px-3 py-1.5 border border-black/20 text-black/80 text-sm hover:border-black/40"
                           >
                             {a.riderName}
                           </Link>
@@ -271,23 +271,23 @@ export default function MatchingPage() {
                   )}
                   {h.suggested.length > 0 ? (
                     <div>
-                      <p className="text-white/50 text-xs uppercase tracking-widest mb-2">Suggested riders</p>
+                      <p className="text-black/50 text-xs uppercase tracking-widest mb-2">Suggested riders</p>
                       <div className="space-y-2">
                         {h.suggested.map((s) => (
                           <div
                             key={s.riderId}
-                            className="flex items-center justify-between border border-white/10 px-4 py-3"
+                            className="flex items-center justify-between border border-black/10 px-4 py-3"
                           >
                             <Link
                               href={`/dashboard/team/riders/${s.riderId}`}
-                              className="font-medium text-white hover:underline"
+                              className="font-medium text-black hover:underline"
                             >
                               {s.riderName}
                             </Link>
                             <div className="flex items-center gap-3">
-                              <span className="text-white/50 text-xs capitalize">{s.riderLevel || "—"}</span>
+                              <span className="text-black/50 text-xs capitalize">{s.riderLevel || "—"}</span>
                               <ScoreBadge score={s.score} label={s.label} />
-                              <span className="text-white/50 text-xs max-w-[200px] truncate" title={s.reason}>
+                              <span className="text-black/50 text-xs max-w-[200px] truncate" title={s.reason}>
                                 {s.reason}
                               </span>
                             </div>
@@ -296,7 +296,7 @@ export default function MatchingPage() {
                       </div>
                     </div>
                   ) : (
-                    <p className="text-white/50 text-sm">All riders are already assigned to this horse.</p>
+                    <p className="text-black/50 text-sm">All riders are already assigned to this horse.</p>
                   )}
                 </div>
               ))}

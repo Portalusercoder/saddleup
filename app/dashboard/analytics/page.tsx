@@ -62,7 +62,7 @@ export default function AnalyticsPage() {
   if (loading) {
     return (
       <div className="space-y-6">
-        <h1 className="font-serif text-2xl md:text-3xl font-normal text-white">
+        <h1 className="font-serif text-2xl md:text-3xl font-normal text-black">
           Analytics
         </h1>
         <TableSkeleton rows={6} cols={4} />
@@ -73,16 +73,16 @@ export default function AnalyticsPage() {
   if (locked) {
     return (
       <div className="space-y-6">
-        <h1 className="font-serif text-2xl md:text-3xl font-normal text-white">
+        <h1 className="font-serif text-2xl md:text-3xl font-normal text-black">
           Analytics
         </h1>
-        <div className="border border-white/10 p-8 text-center">
-          <p className="text-white/70 mb-4">
+        <div className="border border-black/10 p-8 text-center">
+          <p className="text-black/70 mb-4">
             Upgrade to Starter or higher to access workload analytics and insights.
           </p>
           <Link
             href="/dashboard/settings"
-            className="inline-block px-4 py-2.5 bg-white text-black font-medium text-sm uppercase tracking-wider hover:opacity-95 transition"
+            className="inline-block px-4 py-2.5 bg-accent text-white font-medium text-sm uppercase tracking-wider hover:opacity-95 transition"
           >
             Upgrade plan
           </Link>
@@ -94,51 +94,51 @@ export default function AnalyticsPage() {
   if (!data) {
     return (
       <div className="space-y-6">
-        <h1 className="font-serif text-2xl md:text-3xl font-normal text-white">
+        <h1 className="font-serif text-2xl md:text-3xl font-normal text-black">
           Analytics
         </h1>
-        <p className="text-white/50">Failed to load analytics.</p>
+        <p className="text-black/50">Failed to load analytics.</p>
       </div>
     );
   }
 
   return (
     <div className="space-y-10">
-      <h1 className="font-serif text-2xl md:text-3xl font-normal text-white">
+      <h1 className="font-serif text-2xl md:text-3xl font-normal text-black">
         Analytics
       </h1>
-      <p className="text-white/60 text-sm max-w-xl">
+      <p className="text-black/60 text-sm max-w-xl">
         Workload trends, session breakdown, and top horses. Data from the last 8 weeks.
       </p>
 
       <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-3 sm:gap-4">
-        <div className="border border-white/10 p-4">
-          <p className="text-white/50 text-xs uppercase tracking-widest">Total sessions</p>
-          <p className="text-2xl font-serif text-white mt-1">{data.totalSessions}</p>
+        <div className="border border-black/10 p-4">
+          <p className="text-black/50 text-xs uppercase tracking-widest">Total sessions</p>
+          <p className="text-2xl font-serif text-black mt-1">{data.totalSessions}</p>
         </div>
-        <div className="border border-white/10 p-4">
-          <p className="text-white/50 text-xs uppercase tracking-widest">Total minutes</p>
-          <p className="text-2xl font-serif text-white mt-1">{data.totalMinutes}</p>
+        <div className="border border-black/10 p-4">
+          <p className="text-black/50 text-xs uppercase tracking-widest">Total minutes</p>
+          <p className="text-2xl font-serif text-black mt-1">{data.totalMinutes}</p>
         </div>
-        <div className="border border-white/10 p-4">
-          <p className="text-white/50 text-xs uppercase tracking-widest">Total care cost</p>
-          <p className="text-2xl font-serif text-white mt-1">
+        <div className="border border-black/10 p-4">
+          <p className="text-black/50 text-xs uppercase tracking-widest">Total care cost</p>
+          <p className="text-2xl font-serif text-black mt-1">
             ${(data.totalCareCost ?? 0).toFixed(2)}
           </p>
         </div>
-        <div className="border border-white/10 p-4">
-          <p className="text-white/50 text-xs uppercase tracking-widest">Upcoming lessons</p>
-          <p className="text-2xl font-serif text-white mt-1">{data.bookingsCount.upcoming}</p>
+        <div className="border border-black/10 p-4">
+          <p className="text-black/50 text-xs uppercase tracking-widest">Upcoming lessons</p>
+          <p className="text-2xl font-serif text-black mt-1">{data.bookingsCount.upcoming}</p>
         </div>
-        <div className="border border-white/10 p-4">
-          <p className="text-white/50 text-xs uppercase tracking-widest">Completed lessons</p>
-          <p className="text-2xl font-serif text-white mt-1">{data.bookingsCount.completed}</p>
+        <div className="border border-black/10 p-4">
+          <p className="text-black/50 text-xs uppercase tracking-widest">Completed lessons</p>
+          <p className="text-2xl font-serif text-black mt-1">{data.bookingsCount.completed}</p>
         </div>
       </div>
 
-      <div className="border border-white/10 p-6">
-        <h2 className="font-serif text-lg text-white mb-4">Workload by week</h2>
-        <p className="text-white/50 text-sm mb-4">
+      <div className="border border-black/10 p-6">
+        <h2 className="font-serif text-lg text-black mb-4">Workload by week</h2>
+        <p className="text-black/50 text-sm mb-4">
           Training minutes logged per week (excluding rest days).
         </p>
         <div className="h-48 sm:h-64 min-h-[12rem]">
@@ -173,9 +173,9 @@ export default function AnalyticsPage() {
       </div>
 
       <div className="grid md:grid-cols-2 gap-6">
-        <div className="border border-white/10 p-6">
-          <h2 className="font-serif text-lg text-white mb-4">Session types</h2>
-          <p className="text-white/50 text-sm mb-4">
+        <div className="border border-black/10 p-6">
+          <h2 className="font-serif text-lg text-black mb-4">Session types</h2>
+          <p className="text-black/50 text-sm mb-4">
             Breakdown by punch type (lessons, training, competition, etc.).
           </p>
           <div className="h-48 sm:h-64 min-h-[12rem]">
@@ -200,13 +200,13 @@ export default function AnalyticsPage() {
           </div>
         </div>
 
-        <div className="border border-white/10 p-6">
-          <h2 className="font-serif text-lg text-white mb-4">Top horses by workload</h2>
-          <p className="text-white/50 text-sm mb-4">
+        <div className="border border-black/10 p-6">
+          <h2 className="font-serif text-lg text-black mb-4">Top horses by workload</h2>
+          <p className="text-black/50 text-sm mb-4">
             Most active horses in the last 4 weeks.
           </p>
           {data.horseWorkload.length === 0 ? (
-            <p className="text-white/50 text-sm">No training data yet.</p>
+            <p className="text-black/50 text-sm">No training data yet.</p>
           ) : (
             <div className="h-48 sm:h-64 min-h-[12rem]">
               <ResponsiveContainer width="100%" height="100%">
@@ -232,13 +232,13 @@ export default function AnalyticsPage() {
         </div>
       </div>
 
-      <div className="border border-white/10 p-6">
-        <h2 className="font-serif text-lg text-white mb-4">Cost per horse</h2>
-        <p className="text-white/50 text-sm mb-4">
+      <div className="border border-black/10 p-6">
+        <h2 className="font-serif text-lg text-black mb-4">Cost per horse</h2>
+        <p className="text-black/50 text-sm mb-4">
           Total care costs (vet, farrier, vaccinations, etc.) from health records.
         </p>
         {(data.horseCosts ?? []).length === 0 ? (
-          <p className="text-white/50 text-sm">No health costs logged yet.</p>
+          <p className="text-black/50 text-sm">No health costs logged yet.</p>
         ) : (
           <div className="h-48 sm:h-64 min-h-[12rem]">
             <ResponsiveContainer width="100%" height="100%">

@@ -39,13 +39,13 @@ export default function TeamLayout({
 
   return (
     <div className="space-y-6">
-      <h1 className="font-serif text-2xl md:text-3xl font-normal text-white">
+      <h1 className="font-serif text-2xl md:text-3xl font-normal text-black">
         Team Management
       </h1>
 
       <AddMemberById onSuccess={refetchTeam} />
 
-      <nav className="flex gap-2 border-b border-white/10 pb-2">
+      <nav className="flex gap-2 border-b border-black/10 pb-2">
         {visibleSubNav.map((item) => {
           const isActive =
             pathname === item.href || pathname.startsWith(item.href + "/");
@@ -55,8 +55,8 @@ export default function TeamLayout({
               href={item.href}
               className={`px-4 py-2 text-sm font-medium uppercase tracking-wider transition ${
                 isActive
-                  ? "text-white border-b-2 border-white -mb-[10px] pb-2"
-                  : "text-white/50 hover:text-white"
+                  ? "text-black border-b-2 border-black -mb-[10px] pb-2"
+                  : "text-black/50 hover:text-black"
               }`}
             >
               {item.label}

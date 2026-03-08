@@ -98,7 +98,7 @@ export default function NoticesPage() {
   if (loading || !profile || profile.role !== "owner") {
     return (
       <div className="space-y-6">
-        <h1 className="font-serif text-3xl md:text-4xl font-normal text-white">
+        <h1 className="font-serif text-3xl md:text-4xl font-normal text-black">
           Notices
         </h1>
         <TableSkeleton rows={6} cols={4} />
@@ -119,10 +119,10 @@ export default function NoticesPage() {
   return (
     <div className="space-y-10">
       <div>
-        <h1 className="font-serif text-3xl md:text-4xl font-normal text-white">
+        <h1 className="font-serif text-3xl md:text-4xl font-normal text-black">
           Notice emails
         </h1>
-        <p className="text-white/60 mt-2 text-sm">
+        <p className="text-black/60 mt-2 text-sm">
           Send holiday closures, schedule changes, or other updates to students (riders), trainers, and guardians. Owner only.
         </p>
       </div>
@@ -133,47 +133,47 @@ export default function NoticesPage() {
         <>
           {/* Audience sections */}
           <section>
-            <h2 className="font-serif text-xl text-white mb-4">Who receives notices</h2>
+            <h2 className="font-serif text-xl text-black mb-4">Who receives notices</h2>
             <div className="grid gap-4 sm:grid-cols-3">
-              <div className="border border-white/10 p-4">
+              <div className="border border-black/10 p-4">
                 <label className="flex items-center gap-3 cursor-pointer">
                   <input
                     type="checkbox"
                     checked={sendToStudents}
                     onChange={(e) => setSendToStudents(e.target.checked)}
-                    className="w-4 h-4 rounded border-white/30 bg-black text-white focus:ring-white/50"
+                    className="w-4 h-4 rounded border-black/30 bg-base text-black focus:ring-black/50"
                   />
-                  <span className="font-medium text-white">Students (riders)</span>
+                  <span className="font-medium text-black">Students (riders)</span>
                 </label>
-                <p className="mt-2 text-white/50 text-sm">
+                <p className="mt-2 text-black/50 text-sm">
                   {recipients?.students.count ?? 0} rider{recipients?.students.count !== 1 ? "s" : ""} with email
                 </p>
               </div>
-              <div className="border border-white/10 p-4">
+              <div className="border border-black/10 p-4">
                 <label className="flex items-center gap-3 cursor-pointer">
                   <input
                     type="checkbox"
                     checked={sendToTrainers}
                     onChange={(e) => setSendToTrainers(e.target.checked)}
-                    className="w-4 h-4 rounded border-white/30 bg-black text-white focus:ring-white/50"
+                    className="w-4 h-4 rounded border-black/30 bg-base text-black focus:ring-black/50"
                   />
-                  <span className="font-medium text-white">Trainers</span>
+                  <span className="font-medium text-black">Trainers</span>
                 </label>
-                <p className="mt-2 text-white/50 text-sm">
+                <p className="mt-2 text-black/50 text-sm">
                   {recipients?.trainers.count ?? 0} trainer{recipients?.trainers.count !== 1 ? "s" : ""} with email
                 </p>
               </div>
-              <div className="border border-white/10 p-4">
+              <div className="border border-black/10 p-4">
                 <label className="flex items-center gap-3 cursor-pointer">
                   <input
                     type="checkbox"
                     checked={sendToGuardians}
                     onChange={(e) => setSendToGuardians(e.target.checked)}
-                    className="w-4 h-4 rounded border-white/30 bg-black text-white focus:ring-white/50"
+                    className="w-4 h-4 rounded border-black/30 bg-base text-black focus:ring-black/50"
                   />
-                  <span className="font-medium text-white">Guardians</span>
+                  <span className="font-medium text-black">Guardians</span>
                 </label>
-                <p className="mt-2 text-white/50 text-sm">
+                <p className="mt-2 text-black/50 text-sm">
                   {recipients?.guardians.count ?? 0} guardian{recipients?.guardians.count !== 1 ? "s" : ""} with email
                 </p>
               </div>
@@ -182,30 +182,30 @@ export default function NoticesPage() {
 
           {/* Send notice */}
           <section>
-            <h2 className="font-serif text-xl text-white mb-4">Send a notice</h2>
+            <h2 className="font-serif text-xl text-black mb-4">Send a notice</h2>
             <form onSubmit={handleSend} className="space-y-4 max-w-2xl">
               <div>
-                <label className="block text-sm text-white/60 mb-1">Subject</label>
+                <label className="block text-sm text-black/60 mb-1">Subject</label>
                 <input
                   type="text"
                   value={sendSubject}
                   onChange={(e) => setSendSubject(e.target.value)}
                   placeholder="e.g. Stable closed Dec 24–26"
                   required
-                  className="w-full px-4 py-2.5 bg-white/5 border border-white/20 text-white placeholder:text-white/40 text-sm focus:outline-none focus:border-white/40"
+                  className="w-full px-4 py-2.5 bg-black/5 border border-black/20 text-black placeholder:text-black/40 text-sm focus:outline-none focus:border-black/40"
                 />
               </div>
               <div>
-                <label className="block text-sm text-white/60 mb-1">Content (HTML)</label>
+                <label className="block text-sm text-black/60 mb-1">Content (HTML)</label>
                 <textarea
                   value={sendBody}
                   onChange={(e) => setSendBody(e.target.value)}
                   placeholder="<p>Hello, we'll be closed over the holidays...</p>"
                   required
                   rows={8}
-                  className="w-full px-4 py-2.5 bg-white/5 border border-white/20 text-white placeholder:text-white/40 text-sm focus:outline-none focus:border-white/40 font-mono"
+                  className="w-full px-4 py-2.5 bg-black/5 border border-black/20 text-black placeholder:text-black/40 text-sm focus:outline-none focus:border-black/40 font-mono"
                 />
-                <p className="text-white/40 text-xs mt-1">
+                <p className="text-black/40 text-xs mt-1">
                   Use HTML. Example: &lt;p&gt;Hello!&lt;/p&gt;
                 </p>
               </div>
@@ -216,7 +216,7 @@ export default function NoticesPage() {
                   (!sendToStudents && !sendToTrainers && !sendToGuardians) ||
                   uniqueCount === 0
                 }
-                className="px-6 py-2.5 bg-white text-black font-medium hover:bg-white/95 transition disabled:opacity-50 disabled:cursor-not-allowed"
+                className="px-6 py-2.5 bg-accent text-white font-medium hover:opacity-95 transition disabled:opacity-50 disabled:cursor-not-allowed"
               >
                 {sendStatus === "loading"
                   ? "Sending..."
@@ -224,12 +224,12 @@ export default function NoticesPage() {
               </button>
             </form>
             {sendMessage && (
-              <p className={`text-sm mt-4 ${sendStatus === "success" ? "text-white/80" : "text-red-400"}`}>
+              <p className={`text-sm mt-4 ${sendStatus === "success" ? "text-black/80" : "text-red-400"}`}>
                 {sendMessage}
               </p>
             )}
             {hasOverlap && (
-              <p className="text-white/40 text-xs mt-1">
+              <p className="text-black/40 text-xs mt-1">
                 Duplicate emails across groups are sent only once.
               </p>
             )}
@@ -237,25 +237,25 @@ export default function NoticesPage() {
 
           {/* Sent notices history */}
           <section>
-            <h2 className="font-serif text-xl text-white mb-4">Sent notices</h2>
+            <h2 className="font-serif text-xl text-black mb-4">Sent notices</h2>
             {campaigns.length === 0 ? (
-              <p className="text-white/50 text-sm">No notices sent yet.</p>
+              <p className="text-black/50 text-sm">No notices sent yet.</p>
             ) : (
-              <div className="border border-white/10 overflow-hidden">
+              <div className="border border-black/10 overflow-hidden">
                 <table className="w-full text-sm">
                   <thead>
-                    <tr className="border-b border-white/10">
-                      <th className="text-left px-4 py-3 text-white/60 font-medium">Subject</th>
-                      <th className="text-left px-4 py-3 text-white/60 font-medium">Recipients</th>
-                      <th className="text-left px-4 py-3 text-white/60 font-medium">Sent</th>
+                    <tr className="border-b border-black/10">
+                      <th className="text-left px-4 py-3 text-black/60 font-medium">Subject</th>
+                      <th className="text-left px-4 py-3 text-black/60 font-medium">Recipients</th>
+                      <th className="text-left px-4 py-3 text-black/60 font-medium">Sent</th>
                     </tr>
                   </thead>
                   <tbody>
                     {campaigns.map((c) => (
-                      <tr key={c.id} className="border-b border-white/5">
-                        <td className="px-4 py-3 text-white">{c.subject}</td>
-                        <td className="px-4 py-3 text-white/60">{c.recipient_count}</td>
-                        <td className="px-4 py-3 text-white/50 text-xs">
+                      <tr key={c.id} className="border-b border-black/5">
+                        <td className="px-4 py-3 text-black">{c.subject}</td>
+                        <td className="px-4 py-3 text-black/60">{c.recipient_count}</td>
+                        <td className="px-4 py-3 text-black/50 text-xs">
                           {new Date(c.sent_at).toLocaleString()}
                         </td>
                       </tr>
