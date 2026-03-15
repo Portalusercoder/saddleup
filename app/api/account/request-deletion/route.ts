@@ -1,12 +1,22 @@
 import { NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
 import { createAdminClient } from "@/lib/supabase/admin";
+import { checkRateLimit, getClientIp } from "@/lib/rate-limit";
 
 const DELAY_DAYS = 30;
 
 /** Owner only: schedule stable (and account) for deletion in 30 days. User can reactivate before then. */
-export async function POST() {
+export async function POST(req: Request) {
   try {
+    const ip = getClientIp(req);
+    const limit = checkRateLimit(`request-deletion:${ip}`, 5, 60_000);
+    if (!limit.allowed) {
+      return NextResponse.json(
+        { error: "Too many requests. Try again in a minute." },
+        { status: 429, headers: { "Retry-After": "60" } }
+      );
+    }
+
     const supabase = await createClient();
     const {
       data: { user },

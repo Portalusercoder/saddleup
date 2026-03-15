@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { createClient } from "@/lib/supabase/server";
+import { auditLog } from "@/lib/audit-log";
 import { ensureStableCanMutate } from "@/lib/subscription";
 
 export async function DELETE(
@@ -94,6 +95,15 @@ export async function DELETE(
         { status: 500 }
       );
     }
+
+    await auditLog({
+      actorProfileId: user.id,
+      stableId: profile.data.stable_id,
+      action: "member_removed",
+      entityType: "profile",
+      entityId: targetUserId,
+      details: { removedRole: targetProfile.role },
+    });
 
     return NextResponse.json({
       success: true,

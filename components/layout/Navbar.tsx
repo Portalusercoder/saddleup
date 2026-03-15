@@ -128,8 +128,10 @@ export default function Navbar() {
   return (
     <div className="relative">
       <nav
-        className={`h-20 flex items-center justify-between px-4 sm:px-6 md:px-12 lg:px-16 xl:px-20 fixed top-0 z-50 transition-all duration-300 ${
-          isDashboard ? "left-0 right-0 w-full md:left-[5.5rem]" : "left-0 right-0 w-full"
+        className={`h-20 flex items-center justify-between fixed top-0 left-0 right-0 w-full z-50 transition-all duration-300 ${
+          isDashboard
+            ? "px-4 sm:px-6 md:pl-[4.25rem] md:pr-12 lg:pr-16 xl:pr-20"
+            : "px-4 sm:px-6 md:px-12 lg:px-16 xl:px-20"
         } ${
           isOverHero
             ? "bg-transparent text-white"

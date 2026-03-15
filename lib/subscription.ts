@@ -20,11 +20,15 @@ export async function ensureStableCanMutate(stableId: string): Promise<Subscript
 
   const status = (stable?.subscription_status as string) || "trialing";
 
-  if (status === "expired" || status === "suspended") {
+  const blocked = ["expired", "suspended", "past_due", "cancelled"].includes(status);
+  if (blocked) {
     return {
       allowed: false,
       status,
-      message: "Your trial has expired. Please upgrade to continue.",
+      message:
+        status === "past_due"
+          ? "Your payment failed. Please update your billing to continue."
+          : "Your subscription has expired. Please upgrade to continue.",
     };
   }
 

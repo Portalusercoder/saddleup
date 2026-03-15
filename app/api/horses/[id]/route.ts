@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
+import { auditLog } from "@/lib/audit-log";
 import { ensureStableCanMutate } from "@/lib/subscription";
 
 function mapTemperament(value: string | null): string | null {
@@ -229,6 +230,12 @@ export async function DELETE(
 
     const { id } = await params;
 
+    const { data: horse } = await supabase
+      .from("horses")
+      .select("stable_id, name")
+      .eq("id", id)
+      .single();
+
     const { error } = await supabase.from("horses").delete().eq("id", id);
 
     if (error) {
@@ -237,6 +244,17 @@ export async function DELETE(
         { error: error.message || "Delete failed" },
         { status: 500 }
       );
+    }
+
+    if (horse?.stable_id) {
+      await auditLog({
+        actorProfileId: user.id,
+        stableId: horse.stable_id,
+        action: "horse_deleted",
+        entityType: "horse",
+        entityId: id,
+        details: { name: horse.name },
+      });
     }
 
     return NextResponse.json({ success: true });

@@ -103,6 +103,29 @@ export async function POST(req: NextRequest) {
         break;
       }
 
+      case "invoice.payment_failed": {
+        const invoice = event.data.object as { customer?: string; subscription?: string };
+        const customerId = typeof invoice.customer === "string" ? invoice.customer : invoice.customer?.id;
+        if (!customerId) break;
+
+        const { data: stables } = await supabase
+          .from("stables")
+          .select("id")
+          .eq("stripe_customer_id", customerId)
+          .limit(1);
+
+        if (stables?.length) {
+          await supabase
+            .from("stables")
+            .update({
+              subscription_status: "past_due",
+              updated_at: new Date().toISOString(),
+            })
+            .eq("id", stables[0].id);
+        }
+        break;
+      }
+
       default:
         break;
     }
