@@ -104,8 +104,9 @@ export async function POST(req: NextRequest) {
       }
 
       case "invoice.payment_failed": {
-        const invoice = event.data.object as { customer?: string; subscription?: string };
-        const customerId = typeof invoice.customer === "string" ? invoice.customer : invoice.customer?.id;
+        const invoice = event.data.object as { customer?: string | { id?: string } };
+        const raw = invoice.customer;
+        const customerId = typeof raw === "string" ? raw : raw?.id;
         if (!customerId) break;
 
         const { data: stables } = await supabase
