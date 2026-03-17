@@ -83,7 +83,7 @@ export default function ContactPage() {
         throw new Error(data.error || "Failed to send");
       }
       const data = await res.json().catch(() => ({}));
-      setSentType((data.type === "enterprise" ? "enterprise" : "general") ?? "enterprise");
+      setSentType(data.type === "enterprise" ? "enterprise" : "general");
       setSent(true);
     } catch (err) {
       setError(err instanceof Error ? err.message : "Something went wrong");
@@ -107,7 +107,7 @@ export default function ContactPage() {
         throw new Error(data.error || "Failed to send");
       }
       const data = await res.json().catch(() => ({}));
-      setSentType((data.type === "general" ? "general" : "enterprise") ?? "general");
+      setSentType(data.type === "general" ? "general" : "enterprise");
       setSent(true);
     } catch (err) {
       setError(err instanceof Error ? err.message : "Something went wrong");
