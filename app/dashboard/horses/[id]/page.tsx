@@ -635,7 +635,7 @@ export default function HorseDetailPage() {
                   <h2 className="text-black font-medium text-sm uppercase tracking-wider mb-4">
                     Training & work record
                   </h2>
-                  <div className="space-y-3">
+                  <div className="space-y-4">
                     {horse.sessions?.length ? (
                       horse.sessions.map((s) => (
                         <div

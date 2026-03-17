@@ -402,13 +402,13 @@ export default function HorsesPage() {
               </tr>
             </thead>
 
-            <tbody>
+            <tbody className="[&_tr]:border-t [&_tr]:border-black/10">
                 {filteredHorses.map((horse) => {
                   const workload = calculateWorkload(horse);
 
                   return (
-                    <tr key={horse.id} className="border-t border-black/10 hover:bg-black/[0.02]">
-                      <td className="px-6 py-4">
+                    <tr key={horse.id} className="hover:bg-black/[0.02]">
+                      <td className="px-6 py-5">
                         <div className="flex items-center gap-3">
                           <HorseAvatar
                             photoUrl={horse.photoUrl}
@@ -428,13 +428,13 @@ export default function HorsesPage() {
                           )}
                         </div>
                       </td>
-                      <td className="px-6 py-4 text-black/80">{horse.gender}</td>
-                      <td className="px-6 py-4 text-black/80">{horse.age ?? "—"}</td>
-                      <td className="px-6 py-4 text-black/50">
+                      <td className="px-6 py-5 text-black/80">{horse.gender}</td>
+                      <td className="px-6 py-5 text-black/80">{horse.age ?? "—"}</td>
+                      <td className="px-6 py-5 text-black/50">
                         {horse.skillLevel || "—"}
                       </td>
-                      <td className="px-6 py-4 text-black/80">{horse.owner ?? "—"}</td>
-                      <td className="px-6 py-4 text-right space-x-3">
+                      <td className="px-6 py-5 text-black/80">{horse.owner ?? "—"}</td>
+                      <td className="px-6 py-5 text-right space-x-3">
                         <button
                           onClick={() => openSessionModal(horse)}
                           className="text-black hover:underline text-sm uppercase tracking-wider"

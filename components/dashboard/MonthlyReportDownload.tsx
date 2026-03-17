@@ -49,7 +49,7 @@ export default function MonthlyReportDownload() {
       <p className="text-black/60 text-sm mb-4">
         Download a PDF report for any month including classes, new members, riders, training sessions, horses, incidents, and competitions.
       </p>
-      <div className="flex flex-wrap items-center gap-4">
+      <div className="flex flex-wrap items-end gap-4">
         <div>
           <label className="block text-xs uppercase tracking-widest text-black/50 mb-1">
             Month
@@ -82,7 +82,7 @@ export default function MonthlyReportDownload() {
             ))}
           </select>
         </div>
-        <div className="flex items-end">
+        <div>
           <button
             onClick={handleDownload}
             disabled={loading}

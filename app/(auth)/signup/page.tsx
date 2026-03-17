@@ -1,8 +1,8 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
 
 type Role = "owner" | "trainer" | "student" | "guardian";
@@ -15,13 +15,23 @@ type Step = "form" | "code" | "confirm_join";
 
 export default function SignupPage() {
   const router = useRouter();
+  const searchParams = useSearchParams();
   const [step, setStep] = useState<Step>("form");
   const [role, setRole] = useState<Role>("student");
   const [fullName, setFullName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [stableName, setStableName] = useState("");
+  const [enterpriseInviteCode, setEnterpriseInviteCode] = useState("");
   const [joinCode, setJoinCode] = useState("");
+
+  useEffect(() => {
+    const code = searchParams.get("code");
+    if (code?.trim()) {
+      setEnterpriseInviteCode(code.trim().toUpperCase().replace(/\s/g, ""));
+      setRole("owner");
+    }
+  }, [searchParams]);
   const [code, setCode] = useState("");
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
@@ -99,8 +109,8 @@ export default function SignupPage() {
             role,
             fullName: fullName.trim(),
             email: email.trim(),
-            stableName,
-            joinCode: undefined,
+            stableName: enterpriseInviteCode.trim() ? "" : stableName,
+            joinCode: enterpriseInviteCode.trim() ? enterpriseInviteCode.trim().toUpperCase().replace(/\s/g, "") : undefined,
           }),
         });
         const result = await res.json();
@@ -366,23 +376,44 @@ export default function SignupPage() {
             </div>
 
             {role === "owner" && (
-              <div>
-                <label htmlFor="stableName" className={labelClass}>
-                  Stable name
-                </label>
-                <input
-                  id="stableName"
-                  type="text"
-                  value={stableName}
-                  onChange={(e) => setStableName(e.target.value)}
-                  required
-                  className={formClass}
-                  placeholder="My Riding School"
-                />
-                <p className="text-black/40 text-xs mt-2 uppercase tracking-wider">
-                  A unique 8-character join code will be generated for your stable. Share it with trainers and students.
-                </p>
-              </div>
+              <>
+                <div>
+                  <label htmlFor="enterpriseCode" className={labelClass}>
+                    Enterprise invite code (optional)
+                  </label>
+                  <input
+                    id="enterpriseCode"
+                    type="text"
+                    value={enterpriseInviteCode}
+                    onChange={(e) => setEnterpriseInviteCode(e.target.value.toUpperCase().replace(/\s/g, ""))}
+                    className={formClass}
+                    placeholder="e.g. ABC12XYZ — from your admin"
+                  />
+                  <p className="text-black/40 text-xs mt-2 uppercase tracking-wider">
+                    If Saddle Up set up a stable for you, enter the code they sent. Otherwise leave blank and enter a stable name below.
+                  </p>
+                </div>
+                <div>
+                  <label htmlFor="stableName" className={labelClass}>
+                    Stable name {enterpriseInviteCode.trim() ? "(not needed when using invite code)" : ""}
+                  </label>
+                  <input
+                    id="stableName"
+                    type="text"
+                    value={stableName}
+                    onChange={(e) => setStableName(e.target.value)}
+                    required={!enterpriseInviteCode.trim()}
+                    disabled={!!enterpriseInviteCode.trim()}
+                    className={formClass}
+                    placeholder="My Riding School"
+                  />
+                  {!enterpriseInviteCode.trim() && (
+                    <p className="text-black/40 text-xs mt-2 uppercase tracking-wider">
+                      A unique 8-character join code will be generated for your stable. Share it with trainers and students.
+                    </p>
+                  )}
+                </div>
+              </>
             )}
 
             {(role === "trainer" || role === "student" || role === "guardian") && (

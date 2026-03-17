@@ -69,9 +69,47 @@ export async function POST(req: Request) {
     }
 
     if (role === "owner") {
+      const joinCodeTrimmed = typeof joinCode === "string" ? joinCode.trim().toUpperCase().replace(/\s/g, "") : "";
+
+      // Claim existing enterprise stable by invite code (admin-created, no owner yet)
+      if (joinCodeTrimmed.length >= 6) {
+        const { data: stableByCode } = await admin
+          .from("stables")
+          .select("id, subscription_tier")
+          .eq("invite_code", joinCodeTrimmed)
+          .single();
+
+        if (stableByCode && stableByCode.subscription_tier === "enterprise") {
+          const { count } = await admin
+            .from("profiles")
+            .select("id", { count: "exact", head: true })
+            .eq("stable_id", stableByCode.id)
+            .eq("role", "owner");
+
+          if ((count ?? 0) === 0) {
+            const { error: profileError } = await admin.from("profiles").insert({
+              id: user.id,
+              stable_id: stableByCode.id,
+              role: "owner",
+              full_name: fullName.trim(),
+              email: email.trim(),
+            });
+            if (profileError) {
+              console.error("Profile creation (claim enterprise) error:", profileError);
+              return NextResponse.json(
+                { error: "Failed to claim stable" },
+                { status: 500 }
+              );
+            }
+            return NextResponse.json({ success: true });
+          }
+        }
+      }
+
+      // Create new stable (original flow)
       if (!stableName?.trim()) {
         return NextResponse.json(
-          { error: "Stable name is required for owners" },
+          { error: "Stable name is required, or use your enterprise invite code if you have one." },
           { status: 400 }
         );
       }

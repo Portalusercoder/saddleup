@@ -18,6 +18,7 @@ import LogoLoop from "@/components/ui/LogoLoop";
 import BlurText from "@/components/ui/BlurText";
 import Footer from "@/components/landing/Footer";
 import ScrollReveal from "@/components/ui/ScrollReveal";
+import ThemeToggle from "@/components/layout/ThemeToggle";
 
 export default function Home() {
   const [authModalOpen, setAuthModalOpen] = useState(false);
@@ -375,6 +376,11 @@ export default function Home() {
       <ScrollReveal>
         <Footer onGetStarted={() => openAuth()} />
       </ScrollReveal>
+
+      {/* Theme toggle — fixed bottom-right */}
+      <div className="fixed bottom-6 right-6 z-50">
+        <ThemeToggle variant="dark" />
+      </div>
     </main>
   );
 }

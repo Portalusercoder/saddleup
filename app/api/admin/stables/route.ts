@@ -1,0 +1,107 @@
+import { NextResponse } from "next/server";
+import { createClient } from "@/lib/supabase/server";
+import { createAdminClient } from "@/lib/supabase/admin";
+import { isAdminEmail } from "@/lib/admin";
+import { generateInviteCode } from "@/lib/inviteCodes";
+
+/**
+ * POST: Create an enterprise stable (admin only).
+ * Body: { name: string, horseLimit?: number, riderLimit?: number }
+ * Returns: { stableId, name, inviteCode, inviteUrl } so you can send the link to the customer to claim as owner.
+ */
+export async function POST(req: Request) {
+  try {
+    const supabase = await createClient();
+    const {
+      data: { user },
+      error: authError,
+    } = await supabase.auth.getUser();
+
+    if (authError || !user) {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    }
+    if (!isAdminEmail(user.email ?? undefined)) {
+      return NextResponse.json({ error: "Forbidden" }, { status: 403 });
+    }
+
+    const body = await req.json().catch(() => ({}));
+    const name = typeof body.name === "string" ? body.name.trim() : "";
+    if (!name) {
+      return NextResponse.json(
+        { error: "Stable name is required" },
+        { status: 400 }
+      );
+    }
+
+    const slug = name
+      .toLowerCase()
+      .replace(/[^a-z0-9]+/g, "-")
+      .replace(/^-|-$/g, "") || "enterprise";
+
+    const admin = createAdminClient();
+
+    const { data: existingStable } = await admin
+      .from("stables")
+      .select("id")
+      .eq("slug", slug)
+      .single();
+
+    if (existingStable) {
+      return NextResponse.json(
+        { error: `A stable with slug "${slug}" already exists. Use a different name.` },
+        { status: 400 }
+      );
+    }
+
+    let inviteCode = generateInviteCode(8).toUpperCase();
+    for (let i = 0; i < 10; i++) {
+      const { data: dup } = await admin
+        .from("stables")
+        .select("id")
+        .eq("invite_code", inviteCode)
+        .single();
+      if (!dup) break;
+      inviteCode = generateInviteCode(8).toUpperCase();
+    }
+
+    const { data: stable, error: stableError } = await admin
+      .from("stables")
+      .insert({
+        name,
+        slug,
+        invite_code: inviteCode,
+        subscription_tier: "enterprise",
+        subscription_plan_id: "enterprise",
+        subscription_status: "active",
+        trial_ends_at: null,
+        plan_type: "enterprise",
+        grace_period_ends_at: null,
+      })
+      .select("id, name, invite_code")
+      .single();
+
+    if (stableError || !stable) {
+      console.error("Admin create stable error:", stableError);
+      return NextResponse.json(
+        { error: "Failed to create stable" },
+        { status: 500 }
+      );
+    }
+
+    const baseUrl = process.env.NEXT_PUBLIC_APP_URL || "https://yourapp.vercel.app";
+    const inviteUrl = `${baseUrl}/signup?code=${encodeURIComponent(stable.invite_code ?? inviteCode)}`;
+
+    return NextResponse.json({
+      stableId: stable.id,
+      name: stable.name,
+      inviteCode: stable.invite_code ?? inviteCode,
+      inviteUrl,
+    });
+  } catch (err) {
+    console.error("Admin stables POST error:", err);
+    return NextResponse.json(
+      { error: "Something went wrong" },
+      { status: 500 }
+    );
+  }
+}

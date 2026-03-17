@@ -425,7 +425,7 @@ export default function SchedulePage() {
               <p className="text-sm text-black/50 mb-2 uppercase tracking-wider">
                 {formatDate(dateStr)}
               </p>
-              <div className="space-y-2">
+              <div className="space-y-3">
                 {byDate[dateStr].map((s) => (
                   <div
                     key={s.id}

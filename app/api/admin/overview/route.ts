@@ -13,16 +13,15 @@ export type AdminStable = {
   created_at: string;
   member_count: number;
   horse_count: number;
+  stripe_customer_id: string | null;
 };
 
-export type AdminUser = {
-  id: string;
-  email: string | null;
-  full_name: string | null;
-  role: string;
+/** One row per stable: owner contact only (no full user list for privacy). */
+export type AdminOwner = {
   stable_id: string;
-  stable_name: string | null;
-  created_at: string;
+  stable_name: string;
+  owner_email: string | null;
+  owner_name: string | null;
 };
 
 export async function GET() {
@@ -45,7 +44,7 @@ export async function GET() {
 
     const { data: stables, error: stablesError } = await admin
       .from("stables")
-      .select("id, name, slug, subscription_tier, subscription_status, trial_ends_at, created_at")
+      .select("id, name, slug, subscription_tier, subscription_status, trial_ends_at, created_at, stripe_customer_id")
       .order("created_at", { ascending: false });
 
     if (stablesError) {
@@ -55,11 +54,12 @@ export async function GET() {
 
     const stableIds = (stables ?? []).map((s) => s.id);
 
-    const [profilesRes, horseCountsRes] = await Promise.all([
+    const [ownersRes, horseCountsRes] = await Promise.all([
       admin
         .from("profiles")
-        .select("id, email, full_name, role, stable_id, created_at")
-        .in("stable_id", stableIds.length ? stableIds : ["__none__"]),
+        .select("stable_id, email, full_name")
+        .in("stable_id", stableIds.length ? stableIds : ["__none__"])
+        .eq("role", "owner"),
       Promise.all(
         stableIds.map((sid) =>
           admin.from("horses").select("id", { count: "exact", head: true }).eq("stable_id", sid)
@@ -67,19 +67,28 @@ export async function GET() {
       ),
     ]);
 
-    const profiles = profilesRes.data ?? [];
+    const memberCountsRes = await Promise.all(
+      stableIds.map((sid) =>
+        admin.from("profiles").select("id", { count: "exact", head: true }).eq("stable_id", sid)
+      )
+    );
+    const memberCountByStable = new Map<string, number>();
+    memberCountsRes.forEach((r, i) => {
+      memberCountByStable.set(stableIds[i], r.count ?? 0);
+    });
+
     const horseCounts = new Map<string, number>();
     horseCountsRes.forEach((r, i) => {
       horseCounts.set(stableIds[i], r.count ?? 0);
     });
 
-    const memberCountByStable = new Map<string, number>();
-    profiles.forEach((p) => {
-      memberCountByStable.set(p.stable_id, (memberCountByStable.get(p.stable_id) ?? 0) + 1);
-    });
-
     const stableNames = new Map<string, string>();
     (stables ?? []).forEach((s) => stableNames.set(s.id, s.name));
+
+    const ownerByStable = new Map<string, { email: string | null; full_name: string | null }>();
+    (ownersRes.data ?? []).forEach((o) => {
+      ownerByStable.set(o.stable_id, { email: o.email ?? null, full_name: o.full_name ?? null });
+    });
 
     const adminStables: AdminStable[] = (stables ?? []).map((s) => ({
       id: s.id,
@@ -91,17 +100,18 @@ export async function GET() {
       created_at: s.created_at,
       member_count: memberCountByStable.get(s.id) ?? 0,
       horse_count: horseCounts.get(s.id) ?? 0,
+      stripe_customer_id: s.stripe_customer_id ?? null,
     }));
 
-    const adminUsers: AdminUser[] = profiles.map((p) => ({
-      id: p.id,
-      email: p.email ?? null,
-      full_name: p.full_name ?? null,
-      role: p.role ?? "student",
-      stable_id: p.stable_id,
-      stable_name: stableNames.get(p.stable_id) ?? null,
-      created_at: p.created_at,
-    }));
+    const adminOwners: AdminOwner[] = (stables ?? []).map((s) => {
+      const owner = ownerByStable.get(s.id);
+      return {
+        stable_id: s.id,
+        stable_name: s.name,
+        owner_email: owner?.email ?? null,
+        owner_name: owner?.full_name ?? null,
+      };
+    });
 
     const subscriptionCounts = {
       trialing: adminStables.filter((s) => s.subscription_status === "trialing").length,
@@ -113,10 +123,9 @@ export async function GET() {
 
     return NextResponse.json({
       stables: adminStables,
-      users: adminUsers,
+      owners: adminOwners,
       subscriptionCounts,
       totalStables: adminStables.length,
-      totalUsers: adminUsers.length,
     });
   } catch (err) {
     console.error("Admin overview error:", err);

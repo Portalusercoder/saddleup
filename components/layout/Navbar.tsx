@@ -9,7 +9,6 @@ import NotificationBell from "@/components/NotificationBell";
 import { useProfile } from "@/components/providers/ProfileProvider";
 import { useLanguage } from "@/components/providers/LanguageProvider";
 import LanguageToggle from "@/components/layout/LanguageToggle";
-import ThemeToggle from "@/components/layout/ThemeToggle";
 
 const HERO_SCROLL_THRESHOLD = 0.6; // show solid nav after scrolling 60% of viewport
 
@@ -140,9 +139,8 @@ export default function Navbar() {
               : "bg-base border-b border-black/10 text-black"
         }`}
       >
-        {/* Left: Language + Theme toggles (starts after sidebar on dashboard) */}
-        <div className="flex-1 flex items-center gap-2 min-w-0">
-          <ThemeToggle variant={isOverHero ? "light" : "dark"} />
+        {/* Left: Language toggle (starts after sidebar on dashboard) */}
+        <div className="flex-1 flex items-center gap-2 min-w-0 pl-2 md:pl-3">
           <LanguageToggle variant={isOverHero ? "light" : "dark"} />
         </div>
 
@@ -171,8 +169,8 @@ export default function Navbar() {
           </div>
         )}
 
-        {/* Right: Sign in / Sign up or profile avatar */}
-        <div className="flex-1 flex items-center justify-end gap-2">
+        {/* Right: Sign in / Sign up or profile avatar (in RTL this block is on the left; add space from the line) */}
+        <div className={`flex-1 flex items-center justify-end gap-2 ${lang === "ar" ? "me-3 md:me-4" : ""}`}>
           {authChecked && user ? (
             <div className="flex items-center gap-3">
               {!isAuthPage && !isHome && <NotificationBell />}

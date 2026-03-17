@@ -26,6 +26,7 @@ export default function ContactPage() {
   const [enterpriseStep, setEnterpriseStep] = useState(0);
   const [loading, setLoading] = useState(false);
   const [sent, setSent] = useState(false);
+  const [sentType, setSentType] = useState<"enterprise" | "general" | null>(null);
   const [error, setError] = useState<string | null>(null);
 
   // Pre-select enterprise when coming from pricing "Contact sales"
@@ -81,6 +82,8 @@ export default function ContactPage() {
         const data = await res.json().catch(() => ({}));
         throw new Error(data.error || "Failed to send");
       }
+      const data = await res.json().catch(() => ({}));
+      setSentType((data.type === "enterprise" ? "enterprise" : "general") ?? "enterprise");
       setSent(true);
     } catch (err) {
       setError(err instanceof Error ? err.message : "Something went wrong");
@@ -103,6 +106,8 @@ export default function ContactPage() {
         const data = await res.json().catch(() => ({}));
         throw new Error(data.error || "Failed to send");
       }
+      const data = await res.json().catch(() => ({}));
+      setSentType((data.type === "general" ? "general" : "enterprise") ?? "general");
       setSent(true);
     } catch (err) {
       setError(err instanceof Error ? err.message : "Something went wrong");
@@ -112,13 +117,25 @@ export default function ContactPage() {
   };
 
   if (sent) {
+    const isEnterprise = sentType === "enterprise";
     return (
       <div className="min-h-[60vh] flex items-center justify-center p-6 text-black">
         <div className="max-w-md w-full text-center border border-black/10 p-10">
           <h1 className="font-serif text-2xl text-black mb-2">Thank you</h1>
-          <p className="text-black/70 mb-6">
-            We&apos;ve received your enquiry and will get back to you soon.
-          </p>
+          {isEnterprise ? (
+            <>
+              <p className="text-black/70 mb-2">
+                We&apos;ve received your enterprise enquiry.
+              </p>
+              <p className="text-black/60 text-sm mb-6">
+                Our team will contact you with a tailored proposal and demo for your organisation.
+              </p>
+            </>
+          ) : (
+            <p className="text-black/70 mb-6">
+              We&apos;ve received your enquiry and will get back to you soon.
+            </p>
+          )}
           <Link href="/" className={btnPrimary + " inline-block text-center"}>
             Back to home
           </Link>
