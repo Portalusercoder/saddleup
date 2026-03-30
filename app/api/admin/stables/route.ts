@@ -88,7 +88,9 @@ export async function POST(req: Request) {
       );
     }
 
-    const baseUrl = process.env.NEXT_PUBLIC_APP_URL || "https://yourapp.vercel.app";
+    const rawBase =
+      process.env.NEXT_PUBLIC_APP_URL?.trim() || "https://yourapp.vercel.app";
+    const baseUrl = rawBase.replace(/\/+$/, "");
     const inviteUrl = `${baseUrl}/signup?code=${encodeURIComponent(stable.invite_code ?? inviteCode)}`;
 
     return NextResponse.json({
