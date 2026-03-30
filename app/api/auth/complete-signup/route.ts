@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { createClient } from "@/lib/supabase/server";
-import { generateInviteCode } from "@/lib/inviteCodes";
+import { runCompleteSignup } from "@/lib/auth/completeSignup";
 
 export async function POST(req: Request) {
   try {
@@ -15,11 +15,11 @@ export async function POST(req: Request) {
 
     let user = sessionUser;
 
-    // When email confirmation is required, there is often no session yet. Use admin lookup
-    // so we can create the profile right after sign-up (link works when opened on another device).
     if (!user && userId) {
       const admin = createAdminClient();
-      const { data: authUser, error: adminError } = await admin.auth.admin.getUserById(userId);
+      const { data: authUser, error: adminError } = await admin.auth.admin.getUserById(
+        userId
+      );
       if (adminError) {
         console.error("Complete-signup admin getUserById error:", adminError.message);
       }
@@ -43,261 +43,28 @@ export async function POST(req: Request) {
       );
     }
 
+    const result = await runCompleteSignup(user, {
+      role,
+      fullName,
+      email,
+      stableName,
+      joinCode,
+    });
 
-    if (!role || !fullName || !email) {
-      return NextResponse.json(
-        { error: "Missing required fields" },
-        { status: 400 }
-      );
-    }
-
-    const validRoles = ["owner", "trainer", "student", "guardian"];
-    if (!validRoles.includes(role)) {
-      return NextResponse.json({ error: "Invalid role" }, { status: 400 });
-    }
-
-    const admin = createAdminClient();
-
-    const { data: existingProfile } = await admin
-      .from("profiles")
-      .select("id")
-      .eq("id", user.id)
-      .single();
-
-    if (existingProfile) {
-      return NextResponse.json({ success: true });
-    }
-
-    if (role === "owner") {
-      const joinCodeTrimmed = typeof joinCode === "string" ? joinCode.trim().toUpperCase().replace(/\s/g, "") : "";
-
-      // Claim existing enterprise stable by invite code (admin-created, no owner yet)
-      if (joinCodeTrimmed.length >= 6) {
-        const { data: stableByCode } = await admin
-          .from("stables")
-          .select("id, subscription_tier")
-          .eq("invite_code", joinCodeTrimmed)
-          .single();
-
-        if (stableByCode && stableByCode.subscription_tier === "enterprise") {
-          const { count } = await admin
-            .from("profiles")
-            .select("id", { count: "exact", head: true })
-            .eq("stable_id", stableByCode.id)
-            .eq("role", "owner");
-
-          if ((count ?? 0) === 0) {
-            const { error: profileError } = await admin.from("profiles").insert({
-              id: user.id,
-              stable_id: stableByCode.id,
-              role: "owner",
-              full_name: fullName.trim(),
-              email: email.trim(),
-            });
-            if (profileError) {
-              console.error("Profile creation (claim enterprise) error:", profileError);
-              return NextResponse.json(
-                { error: "Failed to claim stable" },
-                { status: 500 }
-              );
-            }
-            return NextResponse.json({ success: true });
-          }
-        }
-      }
-
-      // Create new stable (original flow)
-      if (!stableName?.trim()) {
-        return NextResponse.json(
-          { error: "Stable name is required, or use your enterprise invite code if you have one." },
-          { status: 400 }
-        );
-      }
-
-      const slug = stableName
-        .toLowerCase()
-        .replace(/[^a-z0-9]+/g, "-")
-        .replace(/^-|-$/g, "");
-
-      if (!slug) {
-        return NextResponse.json(
-          { error: "Please enter a valid stable name" },
-          { status: 400 }
-        );
-      }
-
-      const { data: existingStable } = await admin
-        .from("stables")
-        .select("id")
-        .eq("slug", slug)
-        .single();
-
-      if (existingStable) {
-        return NextResponse.json(
-          { error: `Stable "${slug}" already exists. Try a different name.` },
-          { status: 400 }
-        );
-      }
-
-      let inviteCode = generateInviteCode(8).toUpperCase();
-      let attempts = 0;
-      while (attempts < 10) {
-        const { data: existing } = await admin
-          .from("stables")
-          .select("id")
-          .eq("invite_code", inviteCode)
-          .single();
-        if (!existing) break;
-        inviteCode = generateInviteCode(8).toUpperCase();
-        attempts++;
-      }
-
-      const { data: stable, error: stableError } = await admin
-        .from("stables")
-        .insert({
-          name: stableName.trim(),
-          slug,
-          invite_code: inviteCode,
-          subscription_tier: "free",
-          subscription_plan_id: "free",
-        })
-        .select("id")
-        .single();
-
-      if (stableError || !stable) {
-        console.error("Stable creation error:", stableError);
-        return NextResponse.json(
-          { error: "Failed to create stable" },
-          { status: 500 }
-        );
-      }
-
-      const { error: profileError } = await admin.from("profiles").insert({
-        id: user.id,
-        stable_id: stable.id,
-        role: "owner",
-        full_name: fullName.trim(),
-        email: email.trim(),
-      });
-
-      if (profileError) {
-        console.error("Profile creation error:", profileError);
-        await admin.from("stables").delete().eq("id", stable.id);
-        return NextResponse.json(
-          { error: "Failed to create profile" },
-          { status: 500 }
-        );
-      }
-
-      return NextResponse.json({ success: true });
-    }
-
-    if (role === "trainer" || role === "student" || role === "guardian") {
-      if (!joinCode?.trim()) {
-        return NextResponse.json(
-          { error: "Join code is required" },
-          { status: 400 }
-        );
-      }
-
-      const normalized = joinCode.trim().toUpperCase().replace(/\s/g, "");
-      const slugFallback = joinCode
-        .toLowerCase()
-        .replace(/[^a-z0-9-]+/g, "-")
-        .replace(/^-|-$/g, "");
-
-      const { data: stableByCode } = await admin
-        .from("stables")
-        .select("id")
-        .eq("invite_code", normalized)
-        .single();
-
-      const { data: stableBySlug } = !stableByCode
-        ? await admin.from("stables").select("id").eq("slug", slugFallback).single()
-        : { data: null };
-
-      const stable = stableByCode || stableBySlug;
-
-      if (!stable) {
-        const { data: existingCode } = await admin
-          .from("user_invite_codes")
-          .select("invite_code")
-          .eq("user_id", user.id)
-          .single();
-
-        let userCode = existingCode?.invite_code;
-        if (!userCode) {
-          userCode = generateInviteCode(8).toUpperCase();
-          let attempts = 0;
-          while (attempts < 10) {
-            const { data: dup } = await admin
-              .from("user_invite_codes")
-              .select("user_id")
-              .eq("invite_code", userCode)
-              .single();
-            if (!dup) break;
-            userCode = generateInviteCode(8).toUpperCase();
-            attempts++;
-          }
-          await admin.from("user_invite_codes").upsert(
-            { user_id: user.id, invite_code: userCode },
-            { onConflict: "user_id" }
-          );
-        }
-
+    if (!result.ok) {
+      if (result.inviteCode) {
         return NextResponse.json(
           {
-            error: "Invalid join code. Share your personal ID with your stable owner so they can add you:",
-            inviteCode: userCode,
+            error: result.error,
+            inviteCode: result.inviteCode,
           },
-          { status: 400 }
+          { status: result.status }
         );
       }
-
-      const { error: profileError } = await admin.from("profiles").insert({
-        id: user.id,
-        stable_id: stable.id,
-        role,
-        full_name: fullName.trim(),
-        email: email.trim(),
-      });
-
-      if (profileError) {
-        console.error("Profile creation error:", profileError);
-        return NextResponse.json(
-          { error: "Failed to create profile" },
-          { status: 500 }
-        );
-      }
-
-      if (role === "student") {
-        await admin.from("riders").insert({
-          stable_id: stable.id,
-          profile_id: user.id,
-          name: fullName.trim(),
-          email: email.trim(),
-        });
-      }
-
-      let userInviteCode = generateInviteCode(8).toUpperCase();
-      for (let i = 0; i < 10; i++) {
-        const { data: dup } = await admin
-          .from("user_invite_codes")
-          .select("user_id")
-          .eq("invite_code", userInviteCode)
-          .single();
-        if (!dup) break;
-        userInviteCode = generateInviteCode(8).toUpperCase();
-      }
-      await admin.from("user_invite_codes").upsert(
-        { user_id: user.id, invite_code: userInviteCode },
-        { onConflict: "user_id" }
-      );
-
-      return NextResponse.json({ success: true });
+      return NextResponse.json({ error: result.error }, { status: result.status });
     }
 
-    return NextResponse.json({ error: "Invalid role" }, { status: 400 });
+    return NextResponse.json({ success: true });
   } catch (err) {
     console.error("Complete signup error:", err);
     return NextResponse.json(

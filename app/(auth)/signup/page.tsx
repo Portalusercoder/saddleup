@@ -31,6 +31,10 @@ export default function SignupPage() {
       setEnterpriseInviteCode(code.trim().toUpperCase().replace(/\s/g, ""));
       setRole("owner");
     }
+    const qsError = searchParams.get("error");
+    if (qsError?.trim()) {
+      setError(decodeURIComponent(qsError.trim()));
+    }
   }, [searchParams]);
   const [code, setCode] = useState("");
   const [error, setError] = useState<string | null>(null);
@@ -52,6 +56,21 @@ export default function SignupPage() {
             full_name: fullName.trim(),
             role,
             signup_flow: true,
+            // Used when the user confirms via email link (/auth/callback) instead of pasting the code on this page.
+            stable_name:
+              role === "owner"
+                ? enterpriseInviteCode.trim()
+                  ? ""
+                  : stableName.trim()
+                : "",
+            enterprise_invite_code:
+              role === "owner" && enterpriseInviteCode.trim()
+                ? enterpriseInviteCode.trim().toUpperCase().replace(/\s/g, "")
+                : "",
+            join_code:
+              role === "trainer" || role === "student" || role === "guardian"
+                ? joinCode.trim().toUpperCase().replace(/\s/g, "")
+                : "",
           },
         },
       });
