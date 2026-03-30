@@ -1,5 +1,8 @@
 import { NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
+import { createAdminClient } from "@/lib/supabase/admin";
+import { buildCompleteSignupInputFromUser } from "@/lib/auth/signupFromMetadata";
+import { runCompleteSignup } from "@/lib/auth/completeSignup";
 
 export async function GET() {
   try {
@@ -13,23 +16,39 @@ export async function GET() {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
-    const { data: profile, error } = await supabase
+    const admin = createAdminClient();
+    let { data: profile } = await admin
       .from("profiles")
       .select("id, full_name, email, avatar_url, role, stable_id, id_card_url")
       .eq("id", user.id)
-      .single();
+      .maybeSingle();
 
-    if (error || !profile) {
+    if (!profile) {
+      const input = buildCompleteSignupInputFromUser(user);
+      if (input) {
+        const result = await runCompleteSignup(user, input);
+        if (result.ok) {
+          const again = await admin
+            .from("profiles")
+            .select("id, full_name, email, avatar_url, role, stable_id, id_card_url")
+            .eq("id", user.id)
+            .maybeSingle();
+          profile = again.data ?? null;
+        }
+      }
+    }
+
+    if (!profile) {
       return NextResponse.json({ error: "Profile not found" }, { status: 404 });
     }
 
     let myRiderId: string | null = null;
     if (profile.role === "student") {
-      const { data: rider } = await supabase
+      const { data: rider } = await admin
         .from("riders")
         .select("id")
         .eq("profile_id", user.id)
-        .single();
+        .maybeSingle();
       myRiderId = rider?.id ?? null;
     }
 
