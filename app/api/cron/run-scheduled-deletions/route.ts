@@ -1,13 +1,11 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createAdminClient } from "@/lib/supabase/admin";
+import { requireCronBearer } from "@/lib/cron-auth";
 
 /** Call from Vercel Cron or similar: deletes stables where scheduled_deletion_at <= now(). */
 export async function POST(req: NextRequest) {
-  const authHeader = req.headers.get("authorization");
-  const secret = process.env.CRON_SECRET;
-  if (secret && authHeader !== `Bearer ${secret}`) {
-    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-  }
+  const deny = requireCronBearer(req.headers.get("authorization"));
+  if (deny) return deny;
 
   try {
     const admin = createAdminClient();

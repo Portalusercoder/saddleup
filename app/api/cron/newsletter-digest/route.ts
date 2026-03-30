@@ -3,6 +3,7 @@ import { randomUUID } from "crypto";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { sendNotificationEmail } from "@/lib/send-notification-email";
 import { logCronInvoked } from "@/lib/security-logger";
+import { requireCronBearer } from "@/lib/cron-auth";
 
 // Vercel Cron: runs on schedule (e.g. weekly)
 // Add CRON_SECRET to Vercel env vars; Vercel sends it as Authorization: Bearer $CRON_SECRET
@@ -23,11 +24,10 @@ function digestHtml(unsubscribeToken: string) {
 }
 
 export async function GET(req: Request) {
-  const authHeader = req.headers.get("authorization");
-  const expected = process.env.CRON_SECRET;
-  if (expected && authHeader !== `Bearer ${expected}`) {
+  const deny = requireCronBearer(req.headers.get("authorization"));
+  if (deny) {
     logCronInvoked("newsletter-digest", { meta: { unauthorized: true } });
-    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    return deny;
   }
 
   try {
