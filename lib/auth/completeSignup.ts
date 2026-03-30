@@ -105,7 +105,7 @@ export async function runCompleteSignup(
       .from("stables")
       .select("id")
       .eq("slug", slug)
-      .single();
+      .maybeSingle();
 
     if (existingStable) {
       return {
@@ -118,12 +118,12 @@ export async function runCompleteSignup(
     let inviteCodeGen = generateInviteCode(8).toUpperCase();
     let attempts = 0;
     while (attempts < 10) {
-      const { data: existing } = await admin
+      const { data: dup } = await admin
         .from("stables")
         .select("id")
         .eq("invite_code", inviteCodeGen)
-        .single();
-      if (!existing) break;
+        .maybeSingle();
+      if (!dup) break;
       inviteCodeGen = generateInviteCode(8).toUpperCase();
       attempts++;
     }
@@ -136,13 +136,48 @@ export async function runCompleteSignup(
         invite_code: inviteCodeGen,
         subscription_tier: "free",
         subscription_plan_id: "free",
+        subscription_status: "trialing",
+        plan_type: "beta",
       })
       .select("id")
-      .single();
+      .maybeSingle();
 
     if (stableError || !stable) {
       console.error("Stable creation error:", stableError);
-      return { ok: false, status: 500, error: "Failed to create stable" };
+      const msg = stableError?.message ?? "";
+      const code = (stableError as { code?: string })?.code;
+      if (
+        code === "42501" ||
+        /row-level security|permission denied|RLS/i.test(msg)
+      ) {
+        return {
+          ok: false,
+          status: 500,
+          error:
+            "Server misconfiguration: database rejected the new stable. Check that SUPABASE_SERVICE_ROLE_KEY in Vercel is the service_role secret (not the anon key).",
+        };
+      }
+      if (/duplicate key|unique constraint/i.test(msg)) {
+        return {
+          ok: false,
+          status: 400,
+          error:
+            "That stable name or join code is already taken. Try a different stable name.",
+        };
+      }
+      if (/foreign key|subscription_plans/i.test(msg)) {
+        return {
+          ok: false,
+          status: 500,
+          error:
+            "Database setup issue: missing subscription plan. Run Supabase migrations or ensure the \"free\" plan exists in table subscription_plans.",
+        };
+      }
+      return {
+        ok: false,
+        status: 500,
+        error: msg ? `Could not create stable: ${msg}` : "Failed to create stable",
+      };
     }
 
     const { error: profileError } = await admin.from("profiles").insert({
