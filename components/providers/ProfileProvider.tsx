@@ -6,6 +6,7 @@ import {
   useEffect,
   useState,
   useCallback,
+  useRef,
   type ReactNode,
 } from "react";
 import { createClient } from "@/lib/supabase/client";
@@ -35,10 +36,16 @@ export function ProfileProvider({ children }: { children: ReactNode }) {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [userId, setUserId] = useState<string | null>(null);
+  const resumeAttemptedForUser = useRef<string | null>(null);
 
   const fetchProfile = useCallback(async () => {
-    const res = await fetch("/api/profile");
-    const data = await res.json();
+    const load = async () => {
+      const res = await fetch("/api/profile");
+      const data = await res.json();
+      return { res, data };
+    };
+
+    let { res, data } = await load();
 
     if (res.status === 401) {
       createClient().auth.signOut();
@@ -47,6 +54,19 @@ export function ProfileProvider({ children }: { children: ReactNode }) {
       setError(null);
       return;
     }
+
+    if (
+      res.status === 404 &&
+      userId &&
+      resumeAttemptedForUser.current !== userId
+    ) {
+      resumeAttemptedForUser.current = userId;
+      const resume = await fetch("/api/auth/resume-signup", { method: "POST" });
+      if (resume.ok) {
+        ({ res, data } = await load());
+      }
+    }
+
     if (res.status === 404) {
       setProfile(null);
       setError("Profile not found");
@@ -59,13 +79,14 @@ export function ProfileProvider({ children }: { children: ReactNode }) {
     }
     setProfile(data);
     setError(null);
-  }, []);
+  }, [userId]);
 
   useEffect(() => {
     const supabase = createClient();
     supabase.auth.getUser().then(({ data: { user } }) => {
       setUserId(user?.id ?? null);
       if (!user) {
+        resumeAttemptedForUser.current = null;
         setProfile(null);
         setLoading(false);
         setError(null);
@@ -78,6 +99,7 @@ export function ProfileProvider({ children }: { children: ReactNode }) {
       const id = session?.user?.id ?? null;
       setUserId(id);
       if (!id) {
+        resumeAttemptedForUser.current = null;
         setProfile(null);
         setLoading(false);
         setError(null);
@@ -88,6 +110,7 @@ export function ProfileProvider({ children }: { children: ReactNode }) {
 
   useEffect(() => {
     if (!userId) {
+      resumeAttemptedForUser.current = null;
       setLoading(false);
       return;
     }

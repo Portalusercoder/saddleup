@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
 import type { EmailOtpType, SupabaseClient } from "@supabase/supabase-js";
 import { runCompleteSignup } from "@/lib/auth/completeSignup";
+import { buildCompleteSignupInputFromUser } from "@/lib/auth/signupFromMetadata";
 
 function redirectUrl(request: NextRequest, path: string) {
   const origin = request.nextUrl.origin;
@@ -28,31 +29,10 @@ async function ensureSignupProfileIfNeeded(supabase: SupabaseClient) {
 
   if (existing) return;
 
-  const meta = user.user_metadata as Record<string, unknown> | undefined;
-  if (!meta?.signup_flow || typeof meta.role !== "string") return;
+  const input = buildCompleteSignupInputFromUser(user);
+  if (!input) return;
 
-  const role = meta.role;
-  const fullName = typeof meta.full_name === "string" ? meta.full_name : "";
-  const stableName = typeof meta.stable_name === "string" ? meta.stable_name : "";
-  const enterpriseInvite =
-    typeof meta.enterprise_invite_code === "string"
-      ? meta.enterprise_invite_code.trim().toUpperCase().replace(/\s/g, "")
-      : "";
-  const joinCodeStable =
-    typeof meta.join_code === "string"
-      ? meta.join_code.trim().toUpperCase().replace(/\s/g, "")
-      : "";
-
-  const result = await runCompleteSignup(user, {
-    role,
-    fullName,
-    email: user.email,
-    stableName: role === "owner" && enterpriseInvite ? "" : stableName,
-    joinCode:
-      role === "owner"
-        ? enterpriseInvite || undefined
-        : joinCodeStable || undefined,
-  });
+  const result = await runCompleteSignup(user, input);
 
   if (!result.ok) {
     console.error("auth callback runCompleteSignup failed:", result);

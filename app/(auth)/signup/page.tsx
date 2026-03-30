@@ -48,10 +48,13 @@ export default function SignupPage() {
     setLoading(true);
     try {
       const supabase = createClient();
+      const origin =
+        typeof window !== "undefined" ? window.location.origin : "";
       const { error: otpError } = await supabase.auth.signInWithOtp({
         email: email.trim(),
         options: {
           shouldCreateUser: true,
+          emailRedirectTo: origin ? `${origin}/auth/callback` : undefined,
           data: {
             full_name: fullName.trim(),
             role,
