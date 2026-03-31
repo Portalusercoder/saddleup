@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { useProfile } from "@/components/providers/ProfileProvider";
+import PageLoader from "@/components/ui/PageLoader";
 
 type LogRow = {
   id: string;
@@ -49,11 +50,7 @@ export default function ActivityPage() {
   }, [profile, router]);
 
   if (profileLoading || !profile) {
-    return (
-      <div className="flex items-center justify-center min-h-[40vh]">
-        <p className="text-black/50">Loading...</p>
-      </div>
-    );
+    return <PageLoader minHeight="min-h-[40vh]" message="Loading…" />;
   }
 
   if (profile.role !== "owner" && profile.role !== "trainer") {
@@ -70,7 +67,9 @@ export default function ActivityPage() {
       </div>
 
       {loading ? (
-        <p className="text-black/50">Loading activity…</p>
+        <div className="flex justify-center py-16">
+          <PageLoader message="Loading activity…" minHeight="min-h-0" />
+        </div>
       ) : (
         <div className="overflow-x-auto border border-black/10 rounded-lg">
           <table className="w-full text-sm">

@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { usePathname, useRouter } from "next/navigation";
+import PageLoader from "@/components/ui/PageLoader";
 
 export default function DeletionGuard({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
@@ -26,11 +27,7 @@ export default function DeletionGuard({ children }: { children: React.ReactNode 
   }, [pathname, router]);
 
   if (!checked && pathname !== "/dashboard/reactivate") {
-    return (
-      <div className="flex items-center justify-center min-h-[40vh]">
-        <p className="text-black/50">Loading...</p>
-      </div>
-    );
+    return <PageLoader minHeight="min-h-[40vh]" message="Loading…" />;
   }
 
   return <>{children}</>;

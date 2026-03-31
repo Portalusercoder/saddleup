@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { useProfile } from "@/components/providers/ProfileProvider";
 import { useRouter } from "next/navigation";
 import PixelCard from "@/components/ui/PixelCard";
+import PageLoader from "@/components/ui/PageLoader";
 
 interface SubscriptionData {
   tier: string;
@@ -115,11 +116,7 @@ export default function PlansPage() {
     : null;
 
   if (profileLoading || !profile) {
-    return (
-      <div className="flex items-center justify-center min-h-[40vh]">
-        <p className="text-black/50">Loading...</p>
-      </div>
-    );
+    return <PageLoader minHeight="min-h-[40vh]" message="Loading…" />;
   }
 
   if (!isOwner) {
@@ -135,7 +132,11 @@ export default function PlansPage() {
     return (
       <div className="space-y-6">
         <h1 className="font-serif text-3xl md:text-4xl font-normal text-black">Plans</h1>
-        <p className="text-black/50">{loading ? "Loading..." : "Could not load subscription."}</p>
+        {loading ? (
+          <PageLoader minHeight="min-h-[30vh]" message="Loading…" />
+        ) : (
+          <p className="text-black/50">Could not load subscription.</p>
+        )}
       </div>
     );
   }

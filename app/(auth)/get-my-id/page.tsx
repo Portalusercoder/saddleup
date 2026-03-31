@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
+import PageLoader from "@/components/ui/PageLoader";
 
 export default function GetMyIdPage() {
   const [inviteCode, setInviteCode] = useState<string | null>(null);
@@ -39,7 +40,7 @@ export default function GetMyIdPage() {
           </p>
 
           {loading ? (
-            <p className="text-black/50">Loading...</p>
+            <PageLoader message="Loading…" minHeight="min-h-[12rem]" />
           ) : error ? (
             <p className="text-red-600">{error}</p>
           ) : inviteCode ? (

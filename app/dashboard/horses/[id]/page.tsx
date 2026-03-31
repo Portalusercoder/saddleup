@@ -7,6 +7,7 @@ import { useParams } from "next/navigation";
 import { generateHorsePassportPdf } from "@/lib/generatePassportPdf";
 import { HorseAvatar } from "@/components/HorseAvatar";
 import LoadingSpinner from "@/components/ui/LoadingSpinner";
+import PageLoader from "@/components/ui/PageLoader";
 
 interface Session {
   id: number;
@@ -300,11 +301,7 @@ export default function HorseDetailPage() {
   };
 
   if (loading) {
-    return (
-      <div className="flex items-center justify-center min-h-[40vh]">
-        <p className="text-black/50">Loading...</p>
-      </div>
-    );
+    return <PageLoader minHeight="min-h-[40vh]" message="Loading…" />;
   }
 
   if (!horse) {

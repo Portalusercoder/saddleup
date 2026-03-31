@@ -41,6 +41,46 @@ export default function SignupPage() {
   const [loading, setLoading] = useState(false);
   const [stablePreview, setStablePreview] = useState<{ name: string; logoUrl: string | null } | null>(null);
   const [verifyData, setVerifyData] = useState<{ userId: string } | null>(null);
+  const [resendCooldownSec, setResendCooldownSec] = useState(0);
+  const [resendLoading, setResendLoading] = useState(false);
+  const [resendHint, setResendHint] = useState<string | null>(null);
+
+  const getOtpOptions = () => {
+    const origin =
+      typeof window !== "undefined" ? window.location.origin : "";
+    return {
+      shouldCreateUser: true,
+      emailRedirectTo: origin ? `${origin}/auth/callback` : undefined,
+      data: {
+        full_name: fullName.trim(),
+        role,
+        signup_flow: true,
+        stable_name:
+          role === "owner"
+            ? enterpriseInviteCode.trim()
+              ? ""
+              : stableName.trim()
+            : "",
+        enterprise_invite_code:
+          role === "owner" && enterpriseInviteCode.trim()
+            ? enterpriseInviteCode.trim().toUpperCase().replace(/\s/g, "")
+            : "",
+        join_code:
+          role === "trainer" || role === "student" || role === "guardian"
+            ? joinCode.trim().toUpperCase().replace(/\s/g, "")
+            : "",
+      },
+    };
+  };
+
+  useEffect(() => {
+    if (step !== "code" || resendCooldownSec <= 0) return;
+    const id = window.setTimeout(
+      () => setResendCooldownSec((s) => s - 1),
+      1000
+    );
+    return () => window.clearTimeout(id);
+  }, [step, resendCooldownSec]);
 
   const sendCode = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -48,34 +88,9 @@ export default function SignupPage() {
     setLoading(true);
     try {
       const supabase = createClient();
-      const origin =
-        typeof window !== "undefined" ? window.location.origin : "";
       const { error: otpError } = await supabase.auth.signInWithOtp({
         email: email.trim(),
-        options: {
-          shouldCreateUser: true,
-          emailRedirectTo: origin ? `${origin}/auth/callback` : undefined,
-          data: {
-            full_name: fullName.trim(),
-            role,
-            signup_flow: true,
-            // Used when the user confirms via email link (/auth/callback) instead of pasting the code on this page.
-            stable_name:
-              role === "owner"
-                ? enterpriseInviteCode.trim()
-                  ? ""
-                  : stableName.trim()
-                : "",
-            enterprise_invite_code:
-              role === "owner" && enterpriseInviteCode.trim()
-                ? enterpriseInviteCode.trim().toUpperCase().replace(/\s/g, "")
-                : "",
-            join_code:
-              role === "trainer" || role === "student" || role === "guardian"
-                ? joinCode.trim().toUpperCase().replace(/\s/g, "")
-                : "",
-          },
-        },
+        options: getOtpOptions(),
       });
       if (otpError) {
         setError(otpError.message);
@@ -83,11 +98,37 @@ export default function SignupPage() {
         return;
       }
       setStep("code");
+      setResendCooldownSec(60);
+      setResendHint(null);
       setError(null);
     } catch {
       setError("Something went wrong");
     } finally {
       setLoading(false);
+    }
+  };
+
+  const resendVerificationEmail = async () => {
+    if (resendCooldownSec > 0 || resendLoading) return;
+    setResendHint(null);
+    setError(null);
+    setResendLoading(true);
+    try {
+      const supabase = createClient();
+      const { error: otpError } = await supabase.auth.signInWithOtp({
+        email: email.trim(),
+        options: getOtpOptions(),
+      });
+      if (otpError) {
+        setError(otpError.message);
+        return;
+      }
+      setResendCooldownSec(60);
+      setResendHint("We sent another code to your email.");
+    } catch {
+      setError("Something went wrong");
+    } finally {
+      setResendLoading(false);
     }
   };
 
@@ -296,12 +337,37 @@ export default function SignupPage() {
               </button>
               <button
                 type="button"
-                onClick={() => { setStep("form"); setCode(""); setError(null); }}
+                onClick={() => {
+                  setStep("form");
+                  setCode("");
+                  setError(null);
+                  setResendCooldownSec(0);
+                  setResendHint(null);
+                }}
                 className="w-full py-3 border border-black/20 text-red-600 text-sm hover:bg-black/5 transition"
               >
                 Use a different email
               </button>
             </form>
+            <div className="mt-5 pt-5 border-t border-black/10 text-center">
+              {resendHint && (
+                <p className="text-black/70 text-sm mb-3">{resendHint}</p>
+              )}
+              {resendCooldownSec > 0 ? (
+                <p className="text-black/50 text-xs uppercase tracking-wider">
+                  Resend email in {resendCooldownSec}s
+                </p>
+              ) : (
+                <button
+                  type="button"
+                  onClick={resendVerificationEmail}
+                  disabled={resendLoading}
+                  className="text-black font-medium text-sm uppercase tracking-wider underline-offset-2 hover:underline disabled:opacity-50"
+                >
+                  {resendLoading ? "Sending…" : "Resend verification email"}
+                </button>
+              )}
+            </div>
           </div>
           <p className="mt-6 text-center">
             <Link href="/" className="text-black/50 hover:text-black/70 text-xs uppercase tracking-wider">

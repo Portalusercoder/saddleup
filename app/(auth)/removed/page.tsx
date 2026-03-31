@@ -4,6 +4,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
 import { useEffect, useState } from "react";
+import PageLoader from "@/components/ui/PageLoader";
 
 export default function RemovedPage() {
   const router = useRouter();
@@ -25,7 +26,7 @@ export default function RemovedPage() {
     return (
       <div className="min-h-screen bg-base flex text-black items-center justify-center p-6">
         <div className="text-center">
-          <p className="text-black/60">Loading...</p>
+          <PageLoader minHeight="min-h-[8rem]" message="Loading…" />
           <Link
             href="/login"
             className="mt-4 inline-block text-black/80 hover:text-black text-sm uppercase tracking-wider"

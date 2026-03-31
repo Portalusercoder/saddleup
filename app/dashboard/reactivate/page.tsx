@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
+import PageLoader from "@/components/ui/PageLoader";
 
 export default function ReactivatePage() {
   const router = useRouter();
@@ -40,11 +41,7 @@ export default function ReactivatePage() {
   };
 
   if (loading) {
-    return (
-      <div className="flex items-center justify-center min-h-[40vh]">
-        <p className="text-black/50">Loading...</p>
-      </div>
-    );
+    return <PageLoader minHeight="min-h-[40vh]" message="Loading…" />;
   }
 
   if (!deletionAt) {

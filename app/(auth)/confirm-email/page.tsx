@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
 import { Suspense } from "react";
+import LoadingScreen from "@/components/ui/LoadingScreen";
 
 function ConfirmEmailContent() {
   const searchParams = useSearchParams();
@@ -68,13 +69,7 @@ function ConfirmEmailContent() {
 
 export default function ConfirmEmailPage() {
   return (
-    <Suspense
-      fallback={
-        <div className="min-h-screen bg-base flex text-black items-center justify-center">
-          <p className="text-black/60">Loading...</p>
-        </div>
-      }
-    >
+    <Suspense fallback={<LoadingScreen fullPage message="Loading…" />}>
       <ConfirmEmailContent />
     </Suspense>
   );

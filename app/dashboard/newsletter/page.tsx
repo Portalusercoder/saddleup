@@ -4,6 +4,7 @@ import { useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { useProfile } from "@/components/providers/ProfileProvider";
 import TableSkeleton from "@/components/ui/TableSkeleton";
+import HorseLoader from "@/components/ui/HorseLoader";
 
 export default function NewsletterRedirectPage() {
   const router = useRouter();
@@ -24,6 +25,9 @@ export default function NewsletterRedirectPage() {
         <h1 className="font-serif text-3xl md:text-4xl font-normal text-black">
           Notices
         </h1>
+        <div className="flex justify-center py-8">
+          <HorseLoader size="md" />
+        </div>
         <TableSkeleton rows={6} cols={4} />
       </div>
     );

@@ -6,6 +6,7 @@ import { useParams } from "next/navigation";
 import { useProfile } from "@/components/providers/ProfileProvider";
 import { IdCardUpload } from "@/components/dashboard/IdCardUpload";
 import LoadingSpinner from "@/components/ui/LoadingSpinner";
+import PageLoader from "@/components/ui/PageLoader";
 
 interface Rider {
   id: string;
@@ -94,11 +95,7 @@ export default function RiderDetailPage() {
   }, [id, role]);
 
   if (loading) {
-    return (
-      <div className="flex items-center justify-center min-h-[40vh]">
-        <p className="text-black/50">Loading...</p>
-      </div>
-    );
+    return <PageLoader minHeight="min-h-[40vh]" message="Loading…" />;
   }
 
   if (!rider) {

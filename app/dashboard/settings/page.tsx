@@ -6,6 +6,7 @@ import { useProfile } from "@/components/providers/ProfileProvider";
 import AddMemberById from "@/components/dashboard/AddMemberById";
 import StableLogoUpload from "@/components/dashboard/StableLogoUpload";
 import MonthlyReportDownload from "@/components/dashboard/MonthlyReportDownload";
+import PageLoader from "@/components/ui/PageLoader";
 
 export default function SettingsPage() {
   const router = useRouter();
@@ -19,11 +20,7 @@ export default function SettingsPage() {
   }, [profile, router]);
 
   if (loading || !profile || profile.role !== "owner") {
-    return (
-      <div className="flex items-center justify-center min-h-[40vh]">
-        <p className="text-black/50">Loading...</p>
-      </div>
-    );
+    return <PageLoader minHeight="min-h-[40vh]" message="Loading…" />;
   }
 
   return (

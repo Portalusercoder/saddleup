@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { useProfile } from "@/components/providers/ProfileProvider";
 import TableSkeleton from "@/components/ui/TableSkeleton";
+import HorseLoader from "@/components/ui/HorseLoader";
 
 type Recipients = {
   students: { count: number; emails: string[] };
@@ -101,6 +102,9 @@ export default function NoticesPage() {
         <h1 className="font-serif text-3xl md:text-4xl font-normal text-black">
           Notices
         </h1>
+        <div className="flex justify-center py-8">
+          <HorseLoader size="md" />
+        </div>
         <TableSkeleton rows={6} cols={4} />
       </div>
     );
@@ -128,7 +132,12 @@ export default function NoticesPage() {
       </div>
 
       {loadingData ? (
-        <TableSkeleton rows={6} cols={4} />
+        <>
+          <div className="flex justify-center py-8">
+            <HorseLoader size="md" />
+          </div>
+          <TableSkeleton rows={6} cols={4} />
+        </>
       ) : (
         <>
           {/* Audience sections */}

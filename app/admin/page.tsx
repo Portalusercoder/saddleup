@@ -4,6 +4,7 @@ import { useEffect, useState, useMemo } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import type { AdminStable, AdminOwner } from "@/app/api/admin/overview/route";
+import PageLoader from "@/components/ui/PageLoader";
 
 type Overview = {
   stables: AdminStable[];
@@ -167,7 +168,7 @@ export default function AdminPage() {
   if (loading) {
     return (
       <div className="p-8">
-        <p className="text-black/60">Loading…</p>
+        <PageLoader minHeight="min-h-[55vh]" message="Loading…" />
       </div>
     );
   }
