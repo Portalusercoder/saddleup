@@ -23,6 +23,14 @@ interface Horse {
   microchip: string | null;
   ueln: string | null;
   dateOfBirth: string | null;
+  registeredName?: string | null;
+  passportNumber?: string | null;
+  feiId?: string | null;
+  studbook?: string | null;
+  horseCategory?: string | null;
+  sireName?: string | null;
+  damName?: string | null;
+  countryOfBirth?: string | null;
   temperament: string | null;
   skillLevel: string | null;
   trainingStatus: string | null;
@@ -85,16 +93,31 @@ export function generateHorsePassportPdf(horse: Horse): void {
 
   doc.setFont("helvetica", "normal");
   doc.setFontSize(10);
-  const idFields = [
-    ["1. Name", horse.name],
-    ["2. UELN", horse.ueln],
-    ["3. Microchip", horse.microchip],
-    ["4. Breed", horse.breed],
-    ["5. Colour", horse.color],
-    ["6. Markings", horse.markings],
-    ["7. Sex", horse.gender],
-    ["8. Date of birth", horse.dateOfBirth ? formatDate(horse.dateOfBirth) : horse.age ? `~${new Date().getFullYear() - horse.age}` : null],
-    ["9. Height (cm)", horse.height],
+  const idFields: [string, string | number | null | undefined][] = [
+    ["1. Barn name", horse.name],
+    ["2. Registered name", horse.registeredName],
+    ["3. Horse type", horse.horseCategory],
+    ["4. Sex", horse.gender],
+    ["5. UELN", horse.ueln],
+    ["6. Microchip", horse.microchip],
+    ["7. Passport №", horse.passportNumber],
+    ["8. FEI ID", horse.feiId],
+    ["9. Studbook", horse.studbook],
+    ["10. Breed", horse.breed],
+    ["11. Colour", horse.color],
+    ["12. Markings", horse.markings],
+    [
+      "13. Date of birth",
+      horse.dateOfBirth
+        ? formatDate(horse.dateOfBirth)
+        : horse.age != null
+          ? `~${new Date().getFullYear() - horse.age}`
+          : null,
+    ],
+    ["14. Height (cm)", horse.height],
+    ["15. Sire", horse.sireName],
+    ["16. Dam", horse.damName],
+    ["17. Country / place of birth", horse.countryOfBirth],
   ];
 
   idFields.forEach(([label, value]) => {
@@ -118,7 +141,7 @@ export function generateHorsePassportPdf(horse: Horse): void {
     ["Registered owner", horse.owner],
     ["Temperament", horse.temperament],
     ["Skill level", horse.skillLevel],
-    ["Training status", horse.trainingStatus],
+    ["Training status", horse.trainingStatus?.replace(/_/g, " ")],
     ["Riding suitability", horse.ridingSuitability],
   ];
 

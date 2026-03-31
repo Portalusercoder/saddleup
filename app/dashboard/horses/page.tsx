@@ -8,6 +8,7 @@ import { HorseAvatar } from "@/components/HorseAvatar";
 import UpgradePlanModal from "@/components/dashboard/UpgradePlanModal";
 import LoadingSpinner from "@/components/ui/LoadingSpinner";
 import TableSkeleton from "@/components/ui/TableSkeleton";
+import HorseIdentificationFields from "@/components/ui/HorseIdentificationFields";
 
 interface Session {
   id: number;
@@ -26,6 +27,14 @@ interface Horse {
   breed: string | null;
   owner: string | null;
   photoUrl?: string | null;
+  registeredName?: string | null;
+  horseCategory?: string | null;
+  passportNumber?: string | null;
+  feiId?: string | null;
+  studbook?: string | null;
+  sireName?: string | null;
+  damName?: string | null;
+  countryOfBirth?: string | null;
   temperament?: string | null;
   skillLevel?: string | null;
   trainingStatus?: string | null;
@@ -71,16 +80,24 @@ export default function HorsesPage() {
 
   const [form, setForm] = useState({
     name: "",
+    registeredName: "",
+    horseCategory: "",
     gender: "Gelding",
+    dateOfBirth: "",
     age: "",
     breed: "",
-    owner: "",
     color: "",
     markings: "",
     height: "",
     microchip: "",
     ueln: "",
-    dateOfBirth: "",
+    passportNumber: "",
+    feiId: "",
+    studbook: "",
+    sireName: "",
+    damName: "",
+    countryOfBirth: "",
+    owner: "",
     photoUrl: "",
     temperament: "calm",
     skillLevel: "intermediate",
@@ -163,7 +180,7 @@ export default function HorsesPage() {
   };
 
   const handleChange = (
-    e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
+    e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>
   ) => {
     setForm({ ...form, [e.target.name]: e.target.value });
   };
@@ -205,6 +222,8 @@ export default function HorsesPage() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           name: form.name,
+          registeredName: form.registeredName || null,
+          horseCategory: form.horseCategory || null,
           gender: form.gender,
           age: form.age ? Number(form.age) : null,
           breed: form.breed || null,
@@ -214,6 +233,12 @@ export default function HorsesPage() {
           height: form.height ? Number(form.height) : null,
           microchip: form.microchip || null,
           ueln: form.ueln || null,
+          passportNumber: form.passportNumber || null,
+          feiId: form.feiId || null,
+          studbook: form.studbook || null,
+          sireName: form.sireName || null,
+          damName: form.damName || null,
+          countryOfBirth: form.countryOfBirth || null,
           dateOfBirth: form.dateOfBirth || null,
           photoUrl: form.photoUrl || null,
           temperament: form.temperament || null,
@@ -238,16 +263,24 @@ export default function HorsesPage() {
       setShowModal(false);
       setForm({
         name: "",
+        registeredName: "",
+        horseCategory: "",
         gender: "Gelding",
+        dateOfBirth: "",
         age: "",
         breed: "",
-        owner: "",
         color: "",
         markings: "",
         height: "",
         microchip: "",
         ueln: "",
-        dateOfBirth: "",
+        passportNumber: "",
+        feiId: "",
+        studbook: "",
+        sireName: "",
+        damName: "",
+        countryOfBirth: "",
+        owner: "",
         photoUrl: "",
         temperament: "calm",
         skillLevel: "intermediate",
@@ -465,94 +498,15 @@ export default function HorsesPage() {
           onClick={() => setShowModal(false)}
         >
           <div
-            className="bg-base border border-black/10 p-4 sm:p-6 w-full max-w-lg max-h-[90vh] overflow-y-auto modal-enter my-auto"
+            className="bg-base border border-black/10 p-4 sm:p-6 w-full max-w-2xl max-h-[90vh] overflow-y-auto modal-enter my-auto"
             onClick={(e) => e.stopPropagation()}
           >
             <h2 className="font-serif text-xl text-black mb-6">Add Horse</h2>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-              <input
-                name="name"
-                placeholder="Name *"
-                value={form.name}
-                onChange={handleChange}
-                className={`sm:col-span-2 ${formInput}`}
-              />
-              <select
-                name="gender"
-                value={form.gender}
-                onChange={handleChange}
-                className={formInput}
-              >
-                <option value="Stallion">Stallion</option>
-                <option value="Mare">Mare</option>
-                <option value="Gelding">Gelding</option>
-              </select>
-              <input
-                name="age"
-                type="number"
-                placeholder="Age"
-                value={form.age}
-                onChange={handleChange}
-                className={formInput}
-              />
-              <input
-                name="breed"
-                placeholder="Breed"
-                value={form.breed}
-                onChange={handleChange}
-                className={`sm:col-span-2 ${formInput}`}
-              />
-              <input
-                name="owner"
-                placeholder="Owner"
-                value={form.owner}
-                onChange={handleChange}
-                className={`sm:col-span-2 ${formInput}`}
-              />
-              <input
-                name="color"
-                placeholder="Colour"
-                value={form.color}
-                onChange={handleChange}
-                className={formInput}
-              />
-              <input
-                name="markings"
-                placeholder="Markings"
-                value={form.markings}
-                onChange={handleChange}
-                className={formInput}
-              />
-              <input
-                name="height"
-                type="number"
-                placeholder="Height (cm)"
-                value={form.height}
-                onChange={handleChange}
-                className={formInput}
-              />
-              <input
-                name="microchip"
-                placeholder="Microchip"
-                value={form.microchip}
-                onChange={handleChange}
-                className={formInput}
-              />
-              <input
-                name="ueln"
-                placeholder="UELN"
-                value={form.ueln}
-                onChange={handleChange}
-                className={formInput}
-              />
-              <input
-                name="dateOfBirth"
-                type="date"
-                placeholder="Date of birth"
-                value={form.dateOfBirth}
-                onChange={handleChange}
-                className={formInput}
-              />
+              <HorseIdentificationFields form={form} onChange={handleChange} formInput={formInput} />
+              <p className="sm:col-span-2 text-xs uppercase tracking-widest text-black/50 mb-0">
+                Profile & training
+              </p>
               <div className="sm:col-span-2">
                 <label className="text-xs text-black/50 uppercase tracking-widest block mb-2">
                   Profile picture

@@ -1,34 +1,13 @@
 import { NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
 import { checkHorseLimit, ensureStableCanMutate } from "@/lib/subscription";
-
-function mapTemperament(value: string | null): string | null {
-  if (!value) return null;
-  if (value === "beginner-safe") return "beginner_safe";
-  return ["calm", "energetic", "sensitive", "beginner_safe"].includes(value)
-    ? value
-    : null;
-}
-
-function mapSuitability(value: string | null): string[] | null {
-  if (!value?.trim()) return null;
-  return value.split(",").map((s) => s.trim()).filter(Boolean);
-}
-
-const VALID_SKILL_LEVELS = ["beginner", "intermediate", "advanced"];
-const VALID_TRAINING_STATUSES = ["green", "schooling", "competition_ready"];
-
-function mapSkillLevel(value: string | null): string | null {
-  if (!value?.trim()) return null;
-  const v = value.trim().toLowerCase();
-  return VALID_SKILL_LEVELS.includes(v) ? v : null;
-}
-
-function mapTrainingStatus(value: string | null): string | null {
-  if (!value?.trim()) return null;
-  const v = value.trim().toLowerCase().replace(/-/g, "_");
-  return VALID_TRAINING_STATUSES.includes(v) ? v : null;
-}
+import {
+  horseRowToApiShape,
+  mapSkillLevel,
+  mapSuitability,
+  mapTemperament,
+  mapTrainingStatus,
+} from "@/lib/map-horse-payload";
 
 /* ================= GET ALL HORSES ================= */
 
@@ -57,7 +36,6 @@ export async function GET() {
       );
     }
 
-    // Map to shape expected by frontend
     const mapped = (horses || []).map((h) => {
       const punches = (h as { training_punches?: unknown[] }).training_punches || [];
       const sessions = punches.map((p) => {
@@ -71,29 +49,8 @@ export async function GET() {
           createdAt: x.created_at,
         };
       });
-      return {
-        id: h.id,
-        name: h.name,
-        gender: h.gender,
-        age: h.age,
-        breed: h.breed,
-        owner: null,
-        color: h.color,
-        markings: h.markings,
-        height: h.height_cm,
-        microchip: h.microchip,
-        ueln: h.ueln,
-        dateOfBirth: h.date_of_birth,
-        temperament: h.temperament,
-        skillLevel: h.skill_level,
-        trainingStatus: h.training_status,
-        ridingSuitability: Array.isArray(h.suitability) ? h.suitability.join(", ") : null,
-        photoUrl: h.photo_path,
-        notes: h.notes,
-        createdAt: h.created_at,
-        updatedAt: h.updated_at,
-        sessions,
-      };
+      const base = horseRowToApiShape(h as unknown as Record<string, unknown>);
+      return { ...base, sessions };
     });
 
     return NextResponse.json(mapped);
@@ -183,6 +140,14 @@ export async function POST(req: Request) {
       microchip: body.microchip?.trim() || null,
       ueln: body.ueln?.trim() || null,
       date_of_birth: body.dateOfBirth || null,
+      registered_name: body.registeredName?.trim() || null,
+      passport_number: body.passportNumber?.trim() || null,
+      fei_id: body.feiId?.trim() || null,
+      studbook: body.studbook?.trim() || null,
+      horse_category: body.horseCategory?.trim() || null,
+      sire_name: body.sireName?.trim() || null,
+      dam_name: body.damName?.trim() || null,
+      country_of_birth: body.countryOfBirth?.trim() || null,
       temperament: temperament || null,
       skill_level: skillLevel || null,
       training_status: trainingStatus || null,
@@ -205,29 +170,8 @@ export async function POST(req: Request) {
       );
     }
 
-    return NextResponse.json({
-      id: horse.id,
-      name: horse.name,
-      gender: horse.gender,
-      age: horse.age,
-      breed: horse.breed,
-      owner: null,
-      color: horse.color,
-      markings: horse.markings,
-      height: horse.height_cm,
-      microchip: horse.microchip,
-      ueln: horse.ueln,
-      dateOfBirth: horse.date_of_birth,
-      temperament: horse.temperament,
-      skillLevel: horse.skill_level,
-      trainingStatus: horse.training_status,
-      ridingSuitability: Array.isArray(horse.suitability) ? horse.suitability.join(", ") : null,
-      photoUrl: horse.photo_path,
-      notes: horse.notes,
-      createdAt: horse.created_at,
-      updatedAt: horse.updated_at,
-      sessions: [],
-    });
+    const base = horseRowToApiShape(horse as unknown as Record<string, unknown>);
+    return NextResponse.json({ ...base, sessions: [] });
   } catch (err) {
     console.error("POST horse error:", err);
     const message = err instanceof Error ? err.message : "Failed to create horse";

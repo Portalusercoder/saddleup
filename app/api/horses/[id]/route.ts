@@ -2,47 +2,13 @@ import { NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
 import { auditLog } from "@/lib/audit-log";
 import { ensureStableCanMutate } from "@/lib/subscription";
-
-function mapTemperament(value: string | null): string | null {
-  if (!value) return null;
-  if (value === "beginner-safe") return "beginner_safe";
-  return ["calm", "energetic", "sensitive", "beginner_safe"].includes(value)
-    ? value
-    : null;
-}
-
-function mapSuitability(value: string | null): string[] | null {
-  if (!value?.trim()) return null;
-  return value.split(",").map((s) => s.trim()).filter(Boolean);
-}
-
-function toHorseShape(h: Record<string, unknown>) {
-  return {
-    id: h.id,
-    name: h.name,
-    gender: h.gender,
-    age: h.age,
-    breed: h.breed,
-    owner: null,
-    color: h.color,
-    markings: h.markings,
-    height: (h as { height_cm?: number }).height_cm,
-    microchip: h.microchip,
-    ueln: h.ueln,
-    dateOfBirth: (h as { date_of_birth?: string }).date_of_birth,
-    temperament: h.temperament,
-    skillLevel: (h as { skill_level?: string }).skill_level,
-    trainingStatus: (h as { training_status?: string }).training_status,
-    ridingSuitability: Array.isArray((h as { suitability?: string[] }).suitability)
-      ? (h as { suitability: string[] }).suitability.join(", ")
-      : null,
-    photoUrl: (h as { photo_path?: string }).photo_path,
-    notes: h.notes,
-    createdAt: h.created_at,
-    updatedAt: h.updated_at,
-    sessions: [],
-  };
-}
+import {
+  horseRowToApiShape,
+  mapSkillLevel,
+  mapSuitability,
+  mapTemperament,
+  mapTrainingStatus,
+} from "@/lib/map-horse-payload";
 
 /* ================= GET SINGLE HORSE ================= */
 
@@ -103,9 +69,9 @@ export async function GET(
       };
     });
 
-    const shape = toHorseShape(horse);
+    const shape = horseRowToApiShape(horse as unknown as Record<string, unknown>);
     const notes = (horse as { notes?: string }).notes ?? "";
-    const ownerFromNotes = notes.startsWith("Owner: ") ? notes.replace(/^Owner:\s*/, "").trim() : null;
+    const ownerFromNotes = notes.startsWith("Owner: ") ? notes.replace(/^Owner:\s*/, "").split("\n")[0]?.trim() ?? null : null;
     return NextResponse.json({
       ...shape,
       owner: ownerFromNotes ?? shape.owner,
@@ -144,6 +110,8 @@ export async function PUT(
 
     const temperament = mapTemperament(body.temperament);
     const suitability = mapSuitability(body.ridingSuitability);
+    const skillLevel = mapSkillLevel(body.skillLevel);
+    const trainingStatus = mapTrainingStatus(body.trainingStatus);
 
     const { data: profile } = await supabase
       .from("profiles")
@@ -174,10 +142,18 @@ export async function PUT(
       microchip: body.microchip?.trim() || null,
       ueln: body.ueln?.trim() || null,
       date_of_birth: body.dateOfBirth || null,
-      temperament: temperament ?? undefined,
-      skill_level: body.skillLevel || null,
-      training_status: body.trainingStatus || null,
-      suitability: suitability ?? undefined,
+      registered_name: body.registeredName?.trim() || null,
+      passport_number: body.passportNumber?.trim() || null,
+      fei_id: body.feiId?.trim() || null,
+      studbook: body.studbook?.trim() || null,
+      horse_category: body.horseCategory?.trim() || null,
+      sire_name: body.sireName?.trim() || null,
+      dam_name: body.damName?.trim() || null,
+      country_of_birth: body.countryOfBirth?.trim() || null,
+      temperament: temperament ?? null,
+      skill_level: skillLevel,
+      training_status: trainingStatus,
+      suitability: suitability ?? null,
       photo_path: body.photoUrl?.trim() || null,
       notes: body.owner?.trim() ? `Owner: ${body.owner.trim()}` : body.notes?.trim() || null,
     };
@@ -197,9 +173,9 @@ export async function PUT(
       );
     }
 
-    const shape = toHorseShape(horse);
+    const shape = horseRowToApiShape(horse as unknown as Record<string, unknown>);
     const notes = (horse as { notes?: string }).notes ?? "";
-    const ownerFromNotes = notes.startsWith("Owner: ") ? notes.replace(/^Owner:\s*/, "").trim() : null;
+    const ownerFromNotes = notes.startsWith("Owner: ") ? notes.replace(/^Owner:\s*/, "").split("\n")[0]?.trim() ?? null : null;
     return NextResponse.json({
       ...shape,
       owner: ownerFromNotes ?? shape.owner,

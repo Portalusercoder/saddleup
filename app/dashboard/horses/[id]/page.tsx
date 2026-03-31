@@ -8,6 +8,7 @@ import { generateHorsePassportPdf } from "@/lib/generatePassportPdf";
 import { HorseAvatar } from "@/components/HorseAvatar";
 import LoadingSpinner from "@/components/ui/LoadingSpinner";
 import PageLoader from "@/components/ui/PageLoader";
+import HorseIdentificationFields from "@/components/ui/HorseIdentificationFields";
 
 interface Session {
   id: number;
@@ -44,6 +45,14 @@ interface Horse {
   microchip: string | null;
   ueln: string | null;
   dateOfBirth: string | null;
+  registeredName?: string | null;
+  passportNumber?: string | null;
+  feiId?: string | null;
+  studbook?: string | null;
+  horseCategory?: string | null;
+  sireName?: string | null;
+  damName?: string | null;
+  countryOfBirth?: string | null;
   temperament: string | null;
   skillLevel: string | null;
   trainingStatus: string | null;
@@ -104,16 +113,24 @@ export default function HorseDetailPage() {
   const photoInputRef = useRef<HTMLInputElement>(null);
   const [editForm, setEditForm] = useState({
     name: "",
+    registeredName: "",
+    horseCategory: "",
     gender: "Gelding",
+    dateOfBirth: "",
     age: "",
     breed: "",
-    owner: "",
     color: "",
     markings: "",
     height: "",
     microchip: "",
     ueln: "",
-    dateOfBirth: "",
+    passportNumber: "",
+    feiId: "",
+    studbook: "",
+    sireName: "",
+    damName: "",
+    countryOfBirth: "",
+    owner: "",
     photoUrl: "",
     temperament: "calm",
     skillLevel: "intermediate",
@@ -155,26 +172,36 @@ export default function HorseDetailPage() {
     const ownerVal = horse.owner ?? (notes.startsWith("Owner: ") ? notes.replace(/^Owner:\s*/, "").trim() : "");
     setEditForm({
       name: horse.name ?? "",
+      registeredName: horse.registeredName ?? "",
+      horseCategory: horse.horseCategory ?? "",
       gender: horse.gender ?? "Gelding",
+      dateOfBirth: horse.dateOfBirth ?? "",
       age: horse.age != null ? String(horse.age) : "",
       breed: horse.breed ?? "",
-      owner: ownerVal,
       color: horse.color ?? "",
       markings: horse.markings ?? "",
       height: horse.height != null ? String(horse.height) : "",
       microchip: horse.microchip ?? "",
       ueln: horse.ueln ?? "",
-      dateOfBirth: horse.dateOfBirth ?? "",
+      passportNumber: horse.passportNumber ?? "",
+      feiId: horse.feiId ?? "",
+      studbook: horse.studbook ?? "",
+      sireName: horse.sireName ?? "",
+      damName: horse.damName ?? "",
+      countryOfBirth: horse.countryOfBirth ?? "",
+      owner: ownerVal,
       photoUrl: horse.photoUrl ?? "",
       temperament: horse.temperament ?? "calm",
       skillLevel: horse.skillLevel ?? "intermediate",
-      trainingStatus: horse.trainingStatus ?? "schooling",
+      trainingStatus: horse.trainingStatus?.replace(/_/g, "-") ?? "schooling",
       ridingSuitability: horse.ridingSuitability ?? "adults",
     });
     setShowEditModal(true);
   };
 
-  const handleEditChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
+  const handleEditChange = (
+    e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>
+  ) => {
     setEditForm({ ...editForm, [e.target.name]: e.target.value });
   };
 
@@ -207,6 +234,8 @@ export default function HorseDetailPage() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           name: editForm.name,
+          registeredName: editForm.registeredName || null,
+          horseCategory: editForm.horseCategory || null,
           gender: editForm.gender,
           age: editForm.age ? Number(editForm.age) : null,
           breed: editForm.breed || null,
@@ -216,6 +245,12 @@ export default function HorseDetailPage() {
           height: editForm.height ? Number(editForm.height) : null,
           microchip: editForm.microchip || null,
           ueln: editForm.ueln || null,
+          passportNumber: editForm.passportNumber || null,
+          feiId: editForm.feiId || null,
+          studbook: editForm.studbook || null,
+          sireName: editForm.sireName || null,
+          damName: editForm.damName || null,
+          countryOfBirth: editForm.countryOfBirth || null,
           dateOfBirth: editForm.dateOfBirth || null,
           photoUrl: editForm.photoUrl || null,
           temperament: editForm.temperament || null,
@@ -421,27 +456,32 @@ export default function HorseDetailPage() {
                   Section I — Identification of the animal
                 </h2>
                 <div className="space-y-0">
-                  <PassportField label="1. Name" value={horse.name} />
-                  <PassportField label="2. UELN" value={horse.ueln} />
-                  <PassportField label="3. Microchip" value={horse.microchip} />
-                  <PassportField label="4. Breed" value={horse.breed} />
-                  <PassportField label="5. Colour" value={horse.color} />
-                  <PassportField label="6. Markings" value={horse.markings} />
-                  <PassportField label="7. Sex" value={horse.gender} />
+                  <PassportField label="1. Barn name" value={horse.name} />
+                  <PassportField label="2. Registered name" value={horse.registeredName} />
+                  <PassportField label="3. Horse type" value={horse.horseCategory} />
+                  <PassportField label="4. Sex" value={horse.gender} />
+                  <PassportField label="5. UELN" value={horse.ueln} />
+                  <PassportField label="6. Microchip" value={horse.microchip} />
+                  <PassportField label="7. Passport №" value={horse.passportNumber} />
+                  <PassportField label="8. FEI ID" value={horse.feiId} />
+                  <PassportField label="9. Studbook / society" value={horse.studbook} />
+                  <PassportField label="10. Breed" value={horse.breed} />
+                  <PassportField label="11. Coat colour" value={horse.color} />
+                  <PassportField label="12. Markings" value={horse.markings} />
                   <PassportField
-                    label="8. Date of birth"
+                    label="13. Date of birth"
                     value={
                       horse.dateOfBirth
                         ? new Date(horse.dateOfBirth).toLocaleDateString()
-                        : horse.age
+                        : horse.age != null
                           ? `~${new Date().getFullYear() - horse.age}`
                           : null
                     }
                   />
-                  <PassportField
-                    label="9. Height (cm)"
-                    value={horse.height}
-                  />
+                  <PassportField label="14. Height (cm)" value={horse.height} />
+                  <PassportField label="15. Sire" value={horse.sireName} />
+                  <PassportField label="16. Dam" value={horse.damName} />
+                  <PassportField label="17. Country / place of birth" value={horse.countryOfBirth} />
                 </div>
               </div>
             </div>
@@ -456,7 +496,10 @@ export default function HorseDetailPage() {
                   <PassportField label="Registered owner" value={horse.owner} />
                   <PassportField label="Temperament" value={horse.temperament} />
                   <PassportField label="Skill level" value={horse.skillLevel} />
-                  <PassportField label="Training status" value={horse.trainingStatus} />
+                  <PassportField
+                    label="Training status"
+                    value={horse.trainingStatus?.replace(/_/g, " ")}
+                  />
                   <PassportField label="Riding suitability" value={horse.ridingSuitability} />
                 </div>
               </div>
@@ -679,26 +722,15 @@ export default function HorseDetailPage() {
           onClick={() => setShowEditModal(false)}
         >
           <div
-            className="bg-base border border-black/10 p-4 sm:p-6 w-full max-w-lg max-h-[90vh] overflow-y-auto modal-enter my-auto"
+            className="bg-base border border-black/10 p-4 sm:p-6 w-full max-w-2xl max-h-[90vh] overflow-y-auto modal-enter my-auto"
             onClick={(e) => e.stopPropagation()}
           >
             <h2 className="font-serif text-xl text-black mb-6">Edit Horse</h2>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-              <input name="name" placeholder="Name *" value={editForm.name} onChange={handleEditChange} className={`sm:col-span-2 ${formInput}`} />
-              <select name="gender" value={editForm.gender} onChange={handleEditChange} className={formInput}>
-                <option value="Stallion">Stallion</option>
-                <option value="Mare">Mare</option>
-                <option value="Gelding">Gelding</option>
-              </select>
-              <input name="age" type="number" placeholder="Age" value={editForm.age} onChange={handleEditChange} className={formInput} />
-              <input name="breed" placeholder="Breed" value={editForm.breed} onChange={handleEditChange} className={`sm:col-span-2 ${formInput}`} />
-              <input name="owner" placeholder="Owner" value={editForm.owner} onChange={handleEditChange} className={`sm:col-span-2 ${formInput}`} />
-              <input name="color" placeholder="Colour" value={editForm.color} onChange={handleEditChange} className={formInput} />
-              <input name="markings" placeholder="Markings" value={editForm.markings} onChange={handleEditChange} className={formInput} />
-              <input name="height" type="number" placeholder="Height (cm)" value={editForm.height} onChange={handleEditChange} className={formInput} />
-              <input name="microchip" placeholder="Microchip" value={editForm.microchip} onChange={handleEditChange} className={formInput} />
-              <input name="ueln" placeholder="UELN" value={editForm.ueln} onChange={handleEditChange} className={formInput} />
-              <input name="dateOfBirth" type="date" placeholder="Date of birth" value={editForm.dateOfBirth} onChange={handleEditChange} className={formInput} />
+              <HorseIdentificationFields form={editForm} onChange={handleEditChange} formInput={formInput} />
+              <p className="sm:col-span-2 text-xs uppercase tracking-widest text-black/50 mb-0">
+                Profile & training
+              </p>
               <div className="sm:col-span-2">
                 <label className="text-xs text-black/50 uppercase tracking-widest block mb-2">Profile picture</label>
                 <div className="flex items-center gap-4">
