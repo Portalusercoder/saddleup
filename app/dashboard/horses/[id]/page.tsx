@@ -429,8 +429,8 @@ export default function HorseDetailPage() {
             </div>
           </div>
 
-          {/* Passport Body - Two column layout: Photo + Identification */}
-          <div className="p-4 sm:p-6 md:p-8">
+          {/* Passport body: .passport-document fixes dark-mode text (white-on-white) */}
+          <div className="passport-document p-4 sm:p-6 md:p-8 bg-white">
             <div className="grid md:grid-cols-[200px_1fr] gap-8 mb-8">
               {/* Photo Section */}
               <div className="flex flex-col items-center">

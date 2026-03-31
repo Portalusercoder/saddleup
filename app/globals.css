@@ -140,6 +140,46 @@ html.dark {
   color: #fcd34d !important;
 }
 
+/*
+ * Horse passport body: light "paper" card uses bg-white + text-black utilities.
+ * Global .dark .text-black forces white ink (for the dark dashboard), which made
+ * passport copy invisible (white on white). Scope readable neutrals to .passport-document only.
+ */
+.dark .passport-document .text-black,
+.dark .passport-document .text-black\/90,
+.dark .passport-document .text-black\/80 {
+  color: #18181b !important;
+}
+.dark .passport-document .text-black\/70 {
+  color: rgba(24, 24, 27, 0.78) !important;
+}
+.dark .passport-document .text-black\/60 {
+  color: rgba(24, 24, 27, 0.65) !important;
+}
+.dark .passport-document .text-black\/50 {
+  color: rgba(24, 24, 27, 0.52) !important;
+}
+.dark .passport-document .text-black\/40,
+.dark .passport-document .text-black\/30 {
+  color: rgba(24, 24, 27, 0.42) !important;
+}
+.dark .passport-document .border-black\/20,
+.dark .passport-document .border-black\/10 {
+  border-color: rgba(0, 0, 0, 0.12) !important;
+}
+.dark .passport-document .border-black {
+  border-color: #18181b !important;
+}
+.dark .passport-document .bg-black\/5 {
+  background-color: rgba(0, 0, 0, 0.06) !important;
+}
+.dark .passport-document .bg-black\/10 {
+  background-color: rgba(0, 0, 0, 0.08) !important;
+}
+.dark .passport-document .hover\:text-black:hover {
+  color: #18181b !important;
+}
+
 /* ---------------- Base ---------------- */
 
 body {
