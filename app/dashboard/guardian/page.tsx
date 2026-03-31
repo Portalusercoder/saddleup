@@ -4,7 +4,6 @@ import { useEffect, useState } from "react";
 import Link from "next/link";
 import { HorseAvatar } from "@/components/HorseAvatar";
 import TableSkeleton from "@/components/ui/TableSkeleton";
-import HorseLoader from "@/components/ui/HorseLoader";
 
 interface Child {
   id: string;
@@ -105,9 +104,6 @@ export default function GuardianPage() {
         <h1 className="font-serif text-3xl md:text-4xl font-normal text-black">
           Parent Portal
         </h1>
-        <div className="flex justify-center py-8">
-          <HorseLoader size="md" />
-        </div>
         <TableSkeleton rows={6} cols={4} />
       </div>
     );

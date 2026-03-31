@@ -6,7 +6,6 @@ import { useProfile } from "@/components/providers/ProfileProvider";
 import { useRouter } from "next/navigation";
 import { HorseAvatar } from "@/components/HorseAvatar";
 import TableSkeleton from "@/components/ui/TableSkeleton";
-import HorseLoader from "@/components/ui/HorseLoader";
 
 interface Horse {
   id: string | number;
@@ -298,12 +297,7 @@ export default function SchedulePage() {
           {formatDate(weekStartStr)} – {formatDate(weekEndStr)}
         </p>
         {loading ? (
-          <>
-            <div className="flex justify-center py-8">
-              <HorseLoader size="md" />
-            </div>
-            <TableSkeleton rows={8} cols={5} showHeaderBar={false} showBottomBar={false} />
-          </>
+          <TableSkeleton rows={8} cols={5} showHeaderBar={false} showBottomBar={false} />
         ) : (
           <div className="min-w-[800px]">
             <div className="grid gap-px bg-white/10" style={{ gridTemplateColumns: `60px repeat(7, 1fr)` }}>

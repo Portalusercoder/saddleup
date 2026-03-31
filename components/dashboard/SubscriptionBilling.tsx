@@ -2,7 +2,6 @@
 
 import { useEffect, useState } from "react";
 import PixelCard from "@/components/ui/PixelCard";
-import HorseLoader from "@/components/ui/HorseLoader";
 
 interface SubscriptionData {
   tier: string;
@@ -101,9 +100,11 @@ export default function SubscriptionBilling() {
       <div className="border border-black/10 p-6">
         <h2 className="font-serif text-lg text-black mb-4">Billing & Plan</h2>
         {loading ? (
-          <div className="flex flex-col items-center justify-center gap-4 py-8">
-            <HorseLoader size="md" />
-            <p className="text-xs uppercase tracking-[0.28em] text-black/45">
+          <div className="flex flex-col gap-3 py-6 max-w-md">
+            <div className="skeleton h-3 w-2/3" />
+            <div className="skeleton h-12 w-full rounded-md" />
+            <div className="skeleton h-3 w-1/2" />
+            <p className="text-xs uppercase tracking-[0.28em] text-black/45 pt-2">
               Loading…
             </p>
           </div>

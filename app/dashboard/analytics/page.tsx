@@ -6,7 +6,6 @@ import { useRouter } from "next/navigation";
 import { useProfile } from "@/components/providers/ProfileProvider";
 import { useTheme } from "@/components/providers/ThemeProvider";
 import TableSkeleton from "@/components/ui/TableSkeleton";
-import HorseLoader from "@/components/ui/HorseLoader";
 import {
   LineChart,
   Line,
@@ -81,9 +80,6 @@ export default function AnalyticsPage() {
         <h1 className="font-serif text-2xl md:text-3xl font-normal text-black">
           Analytics
         </h1>
-        <div className="flex justify-center py-8">
-          <HorseLoader size="md" />
-        </div>
         <TableSkeleton rows={6} cols={4} />
       </div>
     );

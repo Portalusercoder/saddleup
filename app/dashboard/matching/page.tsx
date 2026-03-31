@@ -5,7 +5,6 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useProfile } from "@/components/providers/ProfileProvider";
 import TableSkeleton from "@/components/ui/TableSkeleton";
-import HorseLoader from "@/components/ui/HorseLoader";
 
 interface SuggestedHorse {
   horseId: string;
@@ -99,9 +98,6 @@ export default function MatchingPage() {
         <h1 className="font-serif text-2xl md:text-3xl font-normal text-black">
           Horse–rider matching
         </h1>
-        <div className="flex justify-center py-8">
-          <HorseLoader size="md" />
-        </div>
         <TableSkeleton rows={6} cols={4} />
       </div>
     );
