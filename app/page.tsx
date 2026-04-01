@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Link from "next/link";
 import {
   SiReact,
@@ -19,6 +19,7 @@ import BlurText from "@/components/ui/BlurText";
 import Footer from "@/components/landing/Footer";
 import ScrollReveal from "@/components/ui/ScrollReveal";
 import ThemeToggle from "@/components/layout/ThemeToggle";
+import { HORSE_NEWS_HEADLINES } from "@/lib/horseNewsHeadlines";
 
 export default function Home() {
   const [authModalOpen, setAuthModalOpen] = useState(false);
@@ -141,9 +142,9 @@ export default function Home() {
               <p className="text-white/50">Coaches</p>
               <p className="mt-1 text-white/90 font-normal">Features</p>
             </div>
-            <div>
-              <p className="text-white/50">Location</p>
-              <p className="mt-1 text-white/90 font-normal">Web</p>
+            <div className="min-w-0 max-w-[14rem] sm:max-w-[16rem] md:max-w-[20rem] shrink-0">
+              <p className="text-white/50">News</p>
+              <HeroRotatingHorseNews />
             </div>
           </div>
         </ScrollReveal>
@@ -382,6 +383,27 @@ export default function Home() {
         <ThemeToggle variant="dark" />
       </div>
     </main>
+  );
+}
+
+function HeroRotatingHorseNews() {
+  const [index, setIndex] = useState(0);
+
+  useEffect(() => {
+    const id = window.setInterval(() => {
+      setIndex((i) => (i + 1) % HORSE_NEWS_HEADLINES.length);
+    }, 5000);
+    return () => window.clearInterval(id);
+  }, []);
+
+  return (
+    <p
+      className="mt-1 text-white/90 font-normal leading-relaxed normal-case tracking-normal text-[0.65rem] md:text-[0.7rem]"
+      aria-live="polite"
+      aria-atomic="true"
+    >
+      {HORSE_NEWS_HEADLINES[index]}
+    </p>
   );
 }
 
