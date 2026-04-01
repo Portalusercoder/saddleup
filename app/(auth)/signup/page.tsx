@@ -130,7 +130,16 @@ export default function SignupPage() {
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ email: emailValue.trim() }),
     });
-    if (!res.ok) return false;
+    if (!res.ok) {
+      let message = "Could not verify email availability. Please try again.";
+      try {
+        const data = (await res.json()) as { error?: string };
+        if (data?.error) message = data.error;
+      } catch {
+        /* ignore json parse */
+      }
+      throw new Error(message);
+    }
     const data = (await res.json()) as { exists?: boolean };
     return Boolean(data.exists);
   };
@@ -188,8 +197,8 @@ export default function SignupPage() {
       setResendCooldownSec(60);
       setResendHint(null);
       setError(null);
-    } catch {
-      setError("Something went wrong");
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Something went wrong");
     } finally {
       setLoading(false);
     }

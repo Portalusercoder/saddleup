@@ -72,7 +72,7 @@ export default function GuidedTourOverlay({
 
   return (
     <div className="fixed inset-0 z-[95]">
-      <div className="absolute inset-0 bg-black/65" />
+      {!rect ? <div className="absolute inset-0 bg-black/65" /> : null}
 
       {rect ? (
         <div
