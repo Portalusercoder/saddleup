@@ -7,6 +7,7 @@ import { LanguageProvider } from "@/components/providers/LanguageProvider"
 import { ThemeProvider } from "@/components/providers/ThemeProvider"
 import { Playfair_Display, Inter } from "next/font/google"
 import Script from "next/script"
+import type { Metadata } from "next"
 
 const playfair = Playfair_Display({
   subsets: ["latin"],
@@ -20,13 +21,37 @@ const inter = Inter({
   display: "swap",
 })
 
-export const metadata = {
-  title: "Saddle Up",
-  description: "Saddle Up platform",
+const appUrl = process.env.NEXT_PUBLIC_APP_URL || "https://www.saddleup-sa.com";
+
+export const metadata: Metadata = {
+  metadataBase: new URL(appUrl),
+  title: {
+    default: "Saddle Up | Horse & Stable Management Software",
+    template: "%s | Saddle Up",
+  },
+  description:
+    "Saddle Up helps riding schools, trainers, and horse owners manage horses, riders, bookings, sessions, and stable operations in one place.",
+  applicationName: "Saddle Up",
   icons: {
     icon: "/icon.svg",
     shortcut: "/icon.svg",
     apple: "/icon.svg",
+  },
+  openGraph: {
+    type: "website",
+    siteName: "Saddle Up",
+    title: "Saddle Up | Horse & Stable Management Software",
+    description:
+      "Manage horses, riders, lessons, sessions, and stable operations in one place.",
+    url: "/",
+    images: [{ url: "/hero-bg.jpg" }],
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Saddle Up | Horse & Stable Management Software",
+    description:
+      "Manage horses, riders, lessons, sessions, and stable operations in one place.",
+    images: ["/hero-bg.jpg"],
   },
 }
 

@@ -4,6 +4,15 @@ import TrialBanner from "@/components/dashboard/TrialBanner";
 import TrialCTAModal from "@/components/dashboard/TrialCTAModal";
 import UpgradeCTAModal from "@/components/dashboard/UpgradeCTAModal";
 import DeletionGuard from "@/components/dashboard/DeletionGuard";
+import type { Metadata } from "next";
+
+export const metadata: Metadata = {
+  robots: {
+    index: false,
+    follow: false,
+    nocache: true,
+  },
+};
 
 export default function DashboardLayout({
   children,
