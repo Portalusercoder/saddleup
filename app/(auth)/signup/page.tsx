@@ -73,12 +73,13 @@ export default function SignupPage() {
   const [resendLoading, setResendLoading] = useState(false);
   const [resendHint, setResendHint] = useState<string | null>(null);
 
-  const getOtpOptions = () => {
+  const getOtpOptions = (includeRedirect = true) => {
     const origin =
       typeof window !== "undefined" ? window.location.origin : "";
     return {
       shouldCreateUser: true,
-      emailRedirectTo: origin ? `${origin}/auth/callback` : undefined,
+      emailRedirectTo:
+        includeRedirect && origin ? `${origin}/auth/callback` : undefined,
       data: {
         full_name: fullName.trim(),
         role,
@@ -99,6 +100,28 @@ export default function SignupPage() {
             : "",
       },
     };
+  };
+
+  const requestSignupOtp = async (emailValue: string) => {
+    const supabase = createClient();
+    const firstTry = await supabase.auth.signInWithOtp({
+      email: emailValue.trim(),
+      options: getOtpOptions(true),
+    });
+    if (!firstTry.error) return firstTry;
+
+    const msg = firstTry.error.message.toLowerCase();
+    const redirectRejected =
+      msg.includes("redirect") ||
+      msg.includes("not allowed") ||
+      msg.includes("site url");
+
+    if (!redirectRejected) return firstTry;
+
+    return await supabase.auth.signInWithOtp({
+      email: emailValue.trim(),
+      options: getOtpOptions(false),
+    });
   };
 
   useEffect(() => {
@@ -138,11 +161,7 @@ export default function SignupPage() {
     setError(null);
     setLoading(true);
     try {
-      const supabase = createClient();
-      const { error: otpError } = await supabase.auth.signInWithOtp({
-        email: email.trim(),
-        options: getOtpOptions(),
-      });
+      const { error: otpError } = await requestSignupOtp(email);
       if (otpError) {
         setError(otpError.message);
         setLoading(false);
@@ -165,11 +184,7 @@ export default function SignupPage() {
     setError(null);
     setResendLoading(true);
     try {
-      const supabase = createClient();
-      const { error: otpError } = await supabase.auth.signInWithOtp({
-        email: email.trim(),
-        options: getOtpOptions(),
-      });
+      const { error: otpError } = await requestSignupOtp(email);
       if (otpError) {
         setError(otpError.message);
         return;
