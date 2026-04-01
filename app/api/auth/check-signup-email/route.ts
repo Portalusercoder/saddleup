@@ -22,21 +22,6 @@ export async function POST(req: Request) {
       return NextResponse.json({ exists: true });
     }
 
-    // Catch orphan auth users with no profile yet.
-    let page = 1;
-    const perPage = 200;
-    const maxPages = 20;
-    while (page <= maxPages) {
-      const { data, error } = await admin.auth.admin.listUsers({ page, perPage });
-      if (error) break;
-      const users = data?.users ?? [];
-      if (users.some((u) => (u.email ?? "").toLowerCase() === raw)) {
-        return NextResponse.json({ exists: true });
-      }
-      if (users.length < perPage) break;
-      page += 1;
-    }
-
     return NextResponse.json({ exists: false });
   } catch (err) {
     console.error("check-signup-email error:", err);
