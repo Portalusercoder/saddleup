@@ -5,7 +5,9 @@ import { useProfile } from "@/components/providers/ProfileProvider";
 import Link from "next/link";
 import ShareInviteCode from "@/components/dashboard/ShareInviteCode";
 import { HorseAvatar } from "@/components/HorseAvatar";
-import FirstTimeTutorial from "@/components/dashboard/FirstTimeTutorial";
+import GuidedTourOverlay, {
+  type GuidedTourStep,
+} from "@/components/dashboard/GuidedTourOverlay";
 
 interface Horse {
   id: number;
@@ -76,10 +78,11 @@ export default function DashboardPage() {
 
   useEffect(() => {
     if (!profile) return;
+    if (loading) return;
     if (profile.onboardingCompleted) return;
     if (profile.role === "guardian") return;
     setShowTutorial(true);
-  }, [profile]);
+  }, [profile, loading]);
 
   const finishTutorial = async () => {
     if (!profile || savingTutorial) return;
@@ -191,6 +194,82 @@ export default function DashboardPage() {
       new Date(b.bookingDate) >= new Date(new Date().toDateString())
   ).slice(0, 5);
 
+  const tourSteps: GuidedTourStep[] = isStudent
+    ? [
+        {
+          id: "notif",
+          title: "Notifications",
+          description: "Tap the bell to see booking updates and reminders.",
+          selector: '[aria-label="Notifications"]',
+        },
+        {
+          id: "upcoming",
+          title: "Upcoming Lessons",
+          description: "Track your next sessions and stay ready.",
+          selector: '[data-tour="upcoming-lessons"]',
+        },
+        {
+          id: "stats",
+          title: "Your Stats",
+          description: "Quick view of assigned horses and upcoming lessons.",
+          selector: '[data-tour="stats-grid"]',
+        },
+        {
+          id: "recent",
+          title: "Recent Sessions",
+          description: "See your latest training activity here.",
+          selector: '[data-tour="recent-sessions"]',
+        },
+        {
+          id: "links",
+          title: "Quick Links",
+          description: "Jump to horses, bookings, and competitions in one tap.",
+          selector: '[data-tour="quick-links"]',
+        },
+      ]
+    : [
+        {
+          id: "notif",
+          title: "Notifications",
+          description: "Tap the bell to review booking updates and reminders.",
+          selector: '[aria-label="Notifications"]',
+        },
+        ...(isOwner
+          ? [
+              {
+                id: "invite",
+                title: "Invite Your Team",
+                description: "Share this code so trainers and students can join your stable.",
+                selector: '[data-tour="invite-code"]',
+              } as GuidedTourStep,
+            ]
+          : []),
+        {
+          id: "care",
+          title: "Care Reminders",
+          description: "Upcoming care reminders help you stay ahead of horse health tasks.",
+          selector: '[data-tour="care-reminders"]',
+        },
+        {
+          id: "stats",
+          title: "Stable Stats",
+          description: "See total horses, sessions, and weekly performance at a glance.",
+          selector: '[data-tour="stats-grid"]',
+        },
+        {
+          id: "recent",
+          title: "Recent Sessions",
+          description: "Review latest training entries quickly.",
+          selector: '[data-tour="recent-sessions"]',
+        },
+        {
+          id: "actions",
+          title: "Quick Actions",
+          description: "Add horses, log sessions, and manage your schedule from here.",
+          selector: '[data-tour="quick-actions"]',
+        },
+      ];
+
   if (isGuardian) {
     return (
       <div className="space-y-10">
@@ -230,9 +309,9 @@ export default function DashboardPage() {
 
   return (
     <div className="space-y-10">
-      <FirstTimeTutorial
-        role={profile?.role}
+      <GuidedTourOverlay
         open={showTutorial}
+        steps={tourSteps}
         saving={savingTutorial}
         onComplete={finishTutorial}
         onSkip={finishTutorial}
@@ -246,7 +325,7 @@ export default function DashboardPage() {
 
       {/* Student: Upcoming lessons */}
       {isStudent && upcomingBookings.length > 0 && (
-        <div className="border border-black/20 p-6">
+        <div className="border border-black/20 p-6" data-tour="upcoming-lessons">
           <h2 className="font-serif text-lg text-black mb-2">Upcoming Lessons</h2>
           <div className="space-y-2">
             {upcomingBookings.map((b) => (
@@ -281,7 +360,7 @@ export default function DashboardPage() {
 
       {/* Upcoming Care Reminders - trainers/owners only */}
       {!isStudent && careReminders.length > 0 && (
-        <div className="border border-black/20 p-6">
+        <div className="border border-black/20 p-6" data-tour="care-reminders">
           <h2 className="font-serif text-lg text-black mb-2 flex items-center gap-2">
             <span>📋</span> Upcoming Care Reminders
           </h2>
@@ -347,7 +426,7 @@ export default function DashboardPage() {
         </div>
       )}
 
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4" data-tour="stats-grid">
         {isStudent ? (
           <>
             <StatCard title="Assigned Horses" value={horses.length} />
@@ -364,7 +443,7 @@ export default function DashboardPage() {
       </div>
 
       <div className="grid md:grid-cols-2 gap-6">
-        <div className="border border-black/10 p-6">
+        <div className="border border-black/10 p-6" data-tour="recent-sessions">
           <h2 className="font-serif text-lg text-black mb-4">
             {isStudent ? "My Recent Sessions" : "Recent Sessions"}
           </h2>
@@ -392,11 +471,12 @@ export default function DashboardPage() {
         </div>
 
         {!isStudent && (
-          <div className="border border-black/10 p-6">
+          <div className="border border-black/10 p-6" data-tour="quick-actions">
             <h2 className="font-serif text-lg text-black mb-4">Quick Actions</h2>
             <div className="space-y-3">
               <Link
                 href="/dashboard/horses?add=1"
+                data-tour="add-horse-button"
                 className="block w-full px-4 py-3 bg-accent text-white font-medium text-center text-sm uppercase tracking-wider hover:opacity-95 transition"
               >
                 + Add Horse
@@ -417,7 +497,7 @@ export default function DashboardPage() {
           </div>
         )}
         {isStudent && (
-          <div className="border border-black/10 p-6">
+          <div className="border border-black/10 p-6" data-tour="quick-links">
             <h2 className="font-serif text-lg text-black mb-4">Quick Links</h2>
             <div className="space-y-3">
               <Link

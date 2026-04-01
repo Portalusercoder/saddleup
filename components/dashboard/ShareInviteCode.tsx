@@ -45,7 +45,7 @@ export default function ShareInviteCode({ stable: initialStable = null }: ShareI
   if (!stable) return null;
 
   return (
-    <div className="border border-black/10 p-6">
+    <div className="border border-black/10 p-6" data-tour="invite-code">
       <h2 className="font-serif text-lg text-black mb-2">Invite trainers & students</h2>
       <p className="text-black/60 text-sm mb-4">
         Share this code so trainers and students can join {stable.name}.
