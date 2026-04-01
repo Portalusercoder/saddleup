@@ -6,6 +6,8 @@ import { useProfile } from "@/components/providers/ProfileProvider";
 import { HorseAvatar } from "@/components/HorseAvatar";
 import LoadingSpinner from "@/components/ui/LoadingSpinner";
 import TableSkeleton from "@/components/ui/TableSkeleton";
+import GuidedTourOverlay, { type GuidedTourStep } from "@/components/dashboard/GuidedTourOverlay";
+import { usePageTour } from "@/components/dashboard/usePageTour";
 
 interface Booking {
   id: string;
@@ -42,6 +44,10 @@ export default function BookingsPage() {
     notes: "",
   });
   const [createLoading, setCreateLoading] = useState(false);
+  const { open: showTour, complete: completeTour } = usePageTour(
+    "saddleup_tour_bookings_v1",
+    !loading
+  );
 
   useEffect(() => {
     Promise.all([
@@ -207,14 +213,41 @@ export default function BookingsPage() {
   const btnSecondary =
     "px-4 py-2.5 border border-black/10 text-black text-sm uppercase tracking-wider hover:border-black/30 transition";
 
+  const tourSteps: GuidedTourStep[] = [
+    {
+      id: "create",
+      title: "Request Lesson",
+      description: "Students can request a new lesson from here.",
+      selector: '[data-tour="bookings-create"]',
+    },
+    {
+      id: "pending",
+      title: "Pending Requests",
+      description: "Owners and trainers approve or decline lesson requests here.",
+      selector: '[data-tour="bookings-pending"]',
+    },
+    {
+      id: "upcoming",
+      title: "Upcoming Lessons",
+      description: "Track scheduled and pending lessons in one place.",
+      selector: '[data-tour="bookings-upcoming"]',
+    },
+  ];
+
   return (
     <div className="space-y-8">
+      <GuidedTourOverlay
+        open={showTour}
+        steps={tourSteps}
+        onSkip={completeTour}
+        onComplete={completeTour}
+      />
       <div className="flex items-center justify-between flex-wrap gap-4">
         <h1 className="font-serif text-3xl md:text-4xl font-normal text-black">
           {isStudent ? "My Bookings" : "Bookings"}
         </h1>
         {isStudent && horses.length > 0 && (
-          <button onClick={() => setShowCreate(true)} className={btnPrimary}>
+          <button onClick={() => setShowCreate(true)} className={btnPrimary} data-tour="bookings-create">
             + Request Lesson
           </button>
         )}
@@ -225,7 +258,7 @@ export default function BookingsPage() {
       ) : (
         <>
           {isTrainerOrOwner && pending.length > 0 && (
-            <div className="border border-black/20 p-6">
+            <div className="border border-black/20 p-6" data-tour="bookings-pending">
               <h2 className="font-serif text-lg text-black mb-2">
                 Pending Requests
               </h2>
@@ -282,7 +315,7 @@ export default function BookingsPage() {
           )}
 
           {(upcoming.length > 0 || (isStudent && myUpcomingPending.length > 0)) && (
-            <div className="border border-black/10 p-6">
+            <div className="border border-black/10 p-6" data-tour="bookings-upcoming">
               <h2 className="font-serif text-lg text-black mb-4">
                 {isStudent ? "My Lessons" : "Upcoming Lessons"}
               </h2>

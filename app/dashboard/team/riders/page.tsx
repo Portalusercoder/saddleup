@@ -7,6 +7,8 @@ import UpgradePlanModal from "@/components/dashboard/UpgradePlanModal";
 import { IdCardUpload } from "@/components/dashboard/IdCardUpload";
 import LoadingSpinner from "@/components/ui/LoadingSpinner";
 import TableSkeleton from "@/components/ui/TableSkeleton";
+import GuidedTourOverlay, { type GuidedTourStep } from "@/components/dashboard/GuidedTourOverlay";
+import { usePageTour } from "@/components/dashboard/usePageTour";
 
 interface Rider {
   id: string;
@@ -46,6 +48,31 @@ export default function TeamRidersPage() {
   const [showUpgradeModal, setShowUpgradeModal] = useState(false);
   const [submitLoading, setSubmitLoading] = useState(false);
   const { profile } = useProfile();
+  const { open: showTour, complete: completeTour } = usePageTour(
+    "saddleup_tour_team_v1",
+    !loading && profile?.role !== "student"
+  );
+
+  const tourSteps: GuidedTourStep[] = [
+    {
+      id: "search",
+      title: "Search Riders",
+      description: "Filter your rider list instantly by name or email.",
+      selector: '[data-tour="team-search"]',
+    },
+    {
+      id: "add",
+      title: "Add Rider",
+      description: "Create rider profiles here and complete details later.",
+      selector: '[data-tour="team-add-rider"]',
+    },
+    {
+      id: "list",
+      title: "Rider List",
+      description: "Manage rider records, edit details, and upload IDs from this table.",
+      selector: '[data-tour="team-riders-table"]',
+    },
+  ];
 
   const fetchRiders = () => {
     fetch("/api/riders")
@@ -152,6 +179,12 @@ export default function TeamRidersPage() {
 
   return (
     <>
+      <GuidedTourOverlay
+        open={showTour}
+        steps={tourSteps}
+        onSkip={completeTour}
+        onComplete={completeTour}
+      />
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-4">
         {subscription && !subscription.canAddRider && (
           <Link
@@ -167,9 +200,10 @@ export default function TeamRidersPage() {
             placeholder="Search riders..."
             value={search}
             onChange={(e) => setSearch(e.target.value)}
+            data-tour="team-search"
             className="px-4 py-2.5 bg-base border border-black/10 text-black placeholder-black/40 focus:border-black/30 focus:outline-none text-sm"
           />
-          <button onClick={openAdd} className={btnPrimary}>
+          <button onClick={openAdd} className={btnPrimary} data-tour="team-add-rider">
             Add rider
           </button>
         </div>
@@ -188,7 +222,7 @@ export default function TeamRidersPage() {
           {search ? "No riders match your search." : "No riders yet. Add one or use Add member by personal ID above."}
         </p>
       ) : (
-        <div className="border border-black/10 overflow-hidden">
+        <div className="border border-black/10 overflow-hidden" data-tour="team-riders-table">
           <table className="w-full text-left text-sm">
             <thead className="border-b border-black/10 text-black/50 text-xs uppercase tracking-widest">
               <tr>

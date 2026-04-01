@@ -52,6 +52,20 @@ export async function POST(req: Request) {
     });
 
     if (!result.ok) {
+      // Guarantee cleanup: if signup failed and no profile exists yet, remove auth user.
+      const admin = createAdminClient();
+      const { data: hasProfile } = await admin
+        .from("profiles")
+        .select("id")
+        .eq("id", user.id)
+        .maybeSingle();
+      if (!hasProfile) {
+        await supabase.auth.signOut();
+        const { error: delErr } = await admin.auth.admin.deleteUser(user.id);
+        if (delErr) {
+          console.error("Complete-signup cleanup deleteUser:", delErr.message);
+        }
+      }
       if (result.inviteCode) {
         return NextResponse.json(
           {

@@ -9,6 +9,8 @@ import UpgradePlanModal from "@/components/dashboard/UpgradePlanModal";
 import LoadingSpinner from "@/components/ui/LoadingSpinner";
 import TableSkeleton from "@/components/ui/TableSkeleton";
 import HorseIdentificationFields from "@/components/ui/HorseIdentificationFields";
+import GuidedTourOverlay, { type GuidedTourStep } from "@/components/dashboard/GuidedTourOverlay";
+import { usePageTour } from "@/components/dashboard/usePageTour";
 
 interface Session {
   id: number;
@@ -64,6 +66,37 @@ export default function HorsesPage() {
   const [search, setSearch] = useState("");
   const { profile } = useProfile();
   const role = profile?.role ?? null;
+  const { open: showTour, complete: completeTour } = usePageTour(
+    "saddleup_tour_horses_v1",
+    !loading && role !== "student"
+  );
+
+  const tourSteps: GuidedTourStep[] = [
+    {
+      id: "add",
+      title: "Add Horse",
+      description: "Start by adding horse profiles with details and photo.",
+      selector: '[data-tour="horses-add"]',
+    },
+    {
+      id: "search",
+      title: "Search Horses",
+      description: "Quickly find any horse by name.",
+      selector: '[data-tour="horses-search"]',
+    },
+    {
+      id: "table",
+      title: "Horse List",
+      description: "View key horse info, workload warning, and actions here.",
+      selector: '[data-tour="horses-table"]',
+    },
+    {
+      id: "log",
+      title: "Log Session",
+      description: "Log training sessions directly from this table.",
+      selector: '[data-tour="horses-log-session"]',
+    },
+  ];
 
   const [showModal, setShowModal] = useState(false);
   const [showSessionModal, setShowSessionModal] = useState(false);
@@ -399,6 +432,12 @@ export default function HorsesPage() {
 
   return (
     <div className="space-y-6">
+      <GuidedTourOverlay
+        open={showTour}
+        steps={tourSteps}
+        onSkip={completeTour}
+        onComplete={completeTour}
+      />
       <div className="flex items-center justify-between flex-wrap gap-2">
         <h1 className="font-serif text-2xl md:text-3xl font-normal text-black">Horses</h1>
         <div className="flex items-center gap-2">
@@ -418,6 +457,7 @@ export default function HorsesPage() {
                 setShowModal(true);
               }
             }}
+            data-tour="horses-add"
             className={btnPrimary}
           >
             + Add Horse
@@ -433,10 +473,11 @@ export default function HorsesPage() {
         placeholder="Search horses..."
         value={search}
         onChange={(e) => setSearch(e.target.value)}
+        data-tour="horses-search"
         className="w-full px-4 py-3 bg-base border border-black/10 text-black placeholder-black/40 focus:border-black/30 focus:outline-none"
       />
 
-      <div className="border border-black/10 overflow-hidden">
+      <div className="border border-black/10 overflow-hidden" data-tour="horses-table">
         <div className="overflow-x-auto">
           <table className="w-full text-sm">
             <thead className="border-b border-black/10 text-black/50 text-xs uppercase tracking-widest">
@@ -485,6 +526,7 @@ export default function HorsesPage() {
                       <td className="px-6 py-5 text-right space-x-3">
                         <button
                           onClick={() => openSessionModal(horse)}
+                          data-tour="horses-log-session"
                           className="text-black hover:underline text-sm uppercase tracking-wider"
                         >
                           Log Session

@@ -98,34 +98,45 @@ export async function runCompleteSignup(
       return { ok: false, status: 400, error: "Please enter a valid stable name" };
     }
 
-    const slug = await allocateUniqueSlug(admin, baseSlug);
+    let stable: { id: string } | null = null;
+    let stableError: { message?: string; code?: string } | null = null;
 
-    let inviteCodeGen = generateInviteCode(8).toUpperCase();
-    let attempts = 0;
-    while (attempts < 10) {
-      const { data: dup } = await admin
+    for (let insertAttempt = 0; insertAttempt < 5; insertAttempt++) {
+      const slug = await allocateUniqueSlug(admin, baseSlug);
+
+      let inviteCodeGen = generateInviteCode(8).toUpperCase();
+      for (let i = 0; i < 10; i++) {
+        const { data: dup } = await admin
+          .from("stables")
+          .select("id")
+          .eq("invite_code", inviteCodeGen)
+          .maybeSingle();
+        if (!dup) break;
+        inviteCodeGen = generateInviteCode(8).toUpperCase();
+      }
+
+      const insert = await admin
         .from("stables")
+        .insert({
+          name: stableName.trim(),
+          slug,
+          invite_code: inviteCodeGen,
+          subscription_tier: "free",
+          subscription_plan_id: "free",
+          subscription_status: "trialing",
+          plan_type: "beta",
+        })
         .select("id")
-        .eq("invite_code", inviteCodeGen)
         .maybeSingle();
-      if (!dup) break;
-      inviteCodeGen = generateInviteCode(8).toUpperCase();
-      attempts++;
-    }
 
-    const { data: stable, error: stableError } = await admin
-      .from("stables")
-      .insert({
-        name: stableName.trim(),
-        slug,
-        invite_code: inviteCodeGen,
-        subscription_tier: "free",
-        subscription_plan_id: "free",
-        subscription_status: "trialing",
-        plan_type: "beta",
-      })
-      .select("id")
-      .maybeSingle();
+      stable = insert.data ?? null;
+      stableError = (insert.error as { message?: string; code?: string } | null) ?? null;
+
+      const duplicate =
+        stableError?.code === "23505" ||
+        /duplicate key|unique constraint/i.test(stableError?.message ?? "");
+      if (!duplicate || stable) break;
+    }
 
     if (stableError || !stable) {
       console.error("Stable creation error:", stableError);
