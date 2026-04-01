@@ -13,7 +13,11 @@ const btnPrimary = "w-full py-3 bg-accent text-white font-medium uppercase track
 function LoginForm() {
   const router = useRouter();
   const searchParams = useSearchParams();
-  const redirect = searchParams.get("redirect") || "/dashboard";
+  const rawRedirect = searchParams.get("redirect") || "/dashboard";
+  const redirect =
+    rawRedirect.startsWith("/") && !rawRedirect.startsWith("//")
+      ? rawRedirect
+      : "/dashboard";
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState<string | null>(null);
@@ -37,8 +41,9 @@ function LoginForm() {
         setLoading(false);
         return;
       }
-
-      router.replace(redirect);
+      // Use a full navigation to avoid occasional client-router stalls right after auth.
+      window.location.assign(redirect);
+      return;
     } catch {
       setError("Something went wrong");
     } finally {
