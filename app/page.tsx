@@ -41,7 +41,7 @@ export default function Home() {
       />
 
       {/* Hero - extends under nav so transparent nav shows hero, not body bg */}
-      <section className="relative min-h-screen flex flex-col overflow-hidden -mt-20 pt-20">
+      <section className="relative min-h-screen w-screen left-1/2 right-1/2 -ml-[50vw] -mr-[50vw] flex flex-col overflow-hidden -mt-20 pt-20">
         {/* Background image */}
         <div
           className="absolute inset-0 bg-cover bg-center bg-no-repeat parallax-bg"
