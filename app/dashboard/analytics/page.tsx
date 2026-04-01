@@ -6,6 +6,8 @@ import { useRouter } from "next/navigation";
 import { useProfile } from "@/components/providers/ProfileProvider";
 import { useTheme } from "@/components/providers/ThemeProvider";
 import TableSkeleton from "@/components/ui/TableSkeleton";
+import GuidedTourOverlay, { type GuidedTourStep } from "@/components/dashboard/GuidedTourOverlay";
+import { usePageTour } from "@/components/dashboard/usePageTour";
 import {
   LineChart,
   Line,
@@ -37,6 +39,10 @@ export default function AnalyticsPage() {
   const [data, setData] = useState<AnalyticsData | null>(null);
   const [loading, setLoading] = useState(true);
   const [locked, setLocked] = useState(false);
+  const { open: showTour, complete: completeTour } = usePageTour(
+    "saddleup_tour_analytics_v1",
+    !loading && !locked && Boolean(data)
+  );
 
   const chart = {
     grid: isDark ? "rgba(255,255,255,0.1)" : "rgba(0,0,0,0.1)",
@@ -117,8 +123,35 @@ export default function AnalyticsPage() {
     );
   }
 
+  const tourSteps: GuidedTourStep[] = [
+    {
+      id: "kpis",
+      title: "Key Metrics",
+      description: "Monitor total sessions, minutes, and lesson totals at a glance.",
+      selector: '[data-tour="analytics-kpis"]',
+    },
+    {
+      id: "workload",
+      title: "Workload Trend",
+      description: "Track weekly training volume over the last 8 weeks.",
+      selector: '[data-tour="analytics-workload"]',
+    },
+    {
+      id: "breakdown",
+      title: "Session Breakdown",
+      description: "See which types of sessions are used most.",
+      selector: '[data-tour="analytics-breakdown"]',
+    },
+  ];
+
   return (
     <div className="space-y-10">
+      <GuidedTourOverlay
+        open={showTour}
+        steps={tourSteps}
+        onSkip={completeTour}
+        onComplete={completeTour}
+      />
       <h1 className="font-serif text-2xl md:text-3xl font-normal text-black">
         Analytics
       </h1>
@@ -126,7 +159,7 @@ export default function AnalyticsPage() {
         Workload trends, session breakdown, and top horses. Data from the last 8 weeks.
       </p>
 
-      <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-3 sm:gap-4">
+      <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-3 sm:gap-4" data-tour="analytics-kpis">
         <div className="border border-black/10 p-4">
           <p className="text-black/50 text-xs uppercase tracking-widest">Total sessions</p>
           <p className="text-2xl font-serif text-black mt-1">{data.totalSessions}</p>
@@ -151,7 +184,7 @@ export default function AnalyticsPage() {
         </div>
       </div>
 
-      <div className="border border-black/10 p-6">
+      <div className="border border-black/10 p-6" data-tour="analytics-workload">
         <h2 className="font-serif text-lg text-black mb-4">Workload by week</h2>
         <p className="text-black/50 text-sm mb-4">
           Training minutes logged per week (excluding rest days).
@@ -247,7 +280,7 @@ export default function AnalyticsPage() {
         </div>
       </div>
 
-      <div className="border border-black/10 p-6">
+      <div className="border border-black/10 p-6" data-tour="analytics-breakdown">
         <h2 className="font-serif text-lg text-black mb-4">Cost per horse</h2>
         <p className="text-black/50 text-sm mb-4">
           Total care costs (vet, farrier, vaccinations, etc.) from health records.

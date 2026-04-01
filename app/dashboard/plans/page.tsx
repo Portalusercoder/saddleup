@@ -5,6 +5,8 @@ import { useProfile } from "@/components/providers/ProfileProvider";
 import { useRouter } from "next/navigation";
 import PixelCard from "@/components/ui/PixelCard";
 import PageLoader from "@/components/ui/PageLoader";
+import GuidedTourOverlay, { type GuidedTourStep } from "@/components/dashboard/GuidedTourOverlay";
+import { usePageTour } from "@/components/dashboard/usePageTour";
 
 interface SubscriptionData {
   tier: string;
@@ -39,6 +41,10 @@ export default function PlansPage() {
 
   const isOwner = profile?.role === "owner";
   const hasUsage = data && data.limits && data.usage;
+  const { open: showTour, complete: completeTour } = usePageTour(
+    "saddleup_tour_plans_v1",
+    !loading && Boolean(profile) && profile?.role === "owner" && Boolean(hasUsage)
+  );
 
   const handleCheckout = async (planId: string) => {
     setCheckoutLoading(planId);
@@ -141,15 +147,27 @@ export default function PlansPage() {
     );
   }
 
+  const tourSteps: GuidedTourStep[] = [
+    { id: "current", title: "Current Plan", description: "See your current tier and usage.", selector: '[data-tour="plans-current"]' },
+    { id: "manage", title: "Manage Billing", description: "Upgrade, downgrade, cancel, or open billing portal.", selector: '[data-tour="plans-manage"]' },
+    { id: "tiers", title: "Plan Cards", description: "Compare starter and stable plans quickly.", selector: '[data-tour="plans-tiers"]' },
+  ];
+
   return (
     <div className="space-y-10">
+      <GuidedTourOverlay
+        open={showTour}
+        steps={tourSteps}
+        onSkip={completeTour}
+        onComplete={completeTour}
+      />
       <div>
         <h1 className="font-serif text-3xl md:text-4xl font-normal text-black">Plans</h1>
         <p className="text-black/60 mt-2 text-sm">Current plan, upgrade, or cancel.</p>
       </div>
 
       {/* Current plan */}
-      <div className="border border-black/10 p-6">
+      <div className="border border-black/10 p-6" data-tour="plans-current">
         <h2 className="font-serif text-lg text-black mb-4">Current plan</h2>
         <p className="font-medium text-black capitalize">{data.tier} Plan</p>
         <p className="text-sm text-black/60 mt-1">
@@ -165,7 +183,7 @@ export default function PlansPage() {
 
       {/* Upgrade & Cancel */}
       {isOwner && (
-        <div className="border border-black/10 p-6 space-y-4">
+        <div className="border border-black/10 p-6 space-y-4" data-tour="plans-manage">
           <h2 className="font-serif text-lg text-black mb-4">Upgrade or cancel</h2>
           {data.hasStripeCustomer && (
             <button
@@ -227,7 +245,7 @@ export default function PlansPage() {
       )}
 
       {/* Plan cards */}
-      <div className="grid gap-4 sm:grid-cols-2">
+      <div className="grid gap-4 sm:grid-cols-2" data-tour="plans-tiers">
         <PixelCard variant="white" className={`!min-h-[120px] ${data.tier === "starter" ? "border-black/30" : ""}`}>
           <div className="absolute inset-0 p-4 z-10 flex flex-col">
             <p className="font-medium text-black">Starter — $19.99/mo</p>

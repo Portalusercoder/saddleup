@@ -5,6 +5,8 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useProfile } from "@/components/providers/ProfileProvider";
 import TableSkeleton from "@/components/ui/TableSkeleton";
+import GuidedTourOverlay, { type GuidedTourStep } from "@/components/dashboard/GuidedTourOverlay";
+import { usePageTour } from "@/components/dashboard/usePageTour";
 
 interface SuggestedHorse {
   horseId: string;
@@ -67,6 +69,10 @@ export default function MatchingPage() {
   const [loading, setLoading] = useState(true);
   const [locked, setLocked] = useState(false);
   const [activeTab, setActiveTab] = useState<"riders" | "horses">("riders");
+  const { open: showTour, complete: completeTour } = usePageTour(
+    "saddleup_tour_matching_v1",
+    !loading && !locked && Boolean(data)
+  );
 
   useEffect(() => {
     if (!profile) return;
@@ -132,8 +138,29 @@ export default function MatchingPage() {
     );
   }
 
+  const tourSteps: GuidedTourStep[] = [
+    {
+      id: "tabs",
+      title: "Matching Views",
+      description: "Switch between rider-first and horse-first compatibility suggestions.",
+      selector: '[data-tour="matching-tabs"]',
+    },
+    {
+      id: "list",
+      title: "Suggestions List",
+      description: "Open each rider or horse to review scored compatibility recommendations.",
+      selector: '[data-tour="matching-list"]',
+    },
+  ];
+
   return (
     <div className="space-y-8">
+      <GuidedTourOverlay
+        open={showTour}
+        steps={tourSteps}
+        onSkip={completeTour}
+        onComplete={completeTour}
+      />
       <h1 className="font-serif text-2xl md:text-3xl font-normal text-black">
         Horse–rider matching
       </h1>
@@ -141,7 +168,7 @@ export default function MatchingPage() {
         Compatibility suggestions based on rider level, horse temperament, and skill level. Assign horses from the rider detail page.
       </p>
 
-      <nav className="flex gap-2 border-b border-black/10 pb-2">
+      <nav className="flex gap-2 border-b border-black/10 pb-2" data-tour="matching-tabs">
         <button
           onClick={() => setActiveTab("riders")}
           className={`px-4 py-2 text-sm font-medium uppercase tracking-wider transition ${
@@ -165,7 +192,7 @@ export default function MatchingPage() {
       </nav>
 
       {activeTab === "riders" && (
-        <div className="space-y-6">
+        <div className="space-y-6" data-tour="matching-list">
           <h2 className="font-serif text-lg text-black">Suggested horses for each rider</h2>
           {data.riderSuggestions.length === 0 ? (
             <p className="text-black/50">Add riders and horses to see suggestions.</p>
@@ -234,7 +261,7 @@ export default function MatchingPage() {
       )}
 
       {activeTab === "horses" && (
-        <div className="space-y-6">
+        <div className="space-y-6" data-tour="matching-list">
           <h2 className="font-serif text-lg text-black">Suggested riders for each horse</h2>
           {data.horseSuggestions.length === 0 ? (
             <p className="text-black/50">Add horses and riders to see suggestions.</p>

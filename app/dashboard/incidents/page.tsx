@@ -5,6 +5,8 @@ import Link from "next/link";
 import { useProfile } from "@/components/providers/ProfileProvider";
 import LoadingSpinner from "@/components/ui/LoadingSpinner";
 import TableSkeleton from "@/components/ui/TableSkeleton";
+import GuidedTourOverlay, { type GuidedTourStep } from "@/components/dashboard/GuidedTourOverlay";
+import { usePageTour } from "@/components/dashboard/usePageTour";
 
 interface IncidentReport {
   id: string;
@@ -68,6 +70,25 @@ export default function IncidentsPage() {
 
   const isTrainerOrOwner =
     profile?.role === "trainer" || profile?.role === "owner";
+  const { open: showTour, complete: completeTour } = usePageTour(
+    "saddleup_tour_incidents_v1",
+    !loading
+  );
+
+  const tourSteps: GuidedTourStep[] = [
+    {
+      id: "create",
+      title: "Create Incident",
+      description: "Log a safety event with horse, date, and notes.",
+      selector: '[data-tour="incidents-create"]',
+    },
+    {
+      id: "history",
+      title: "Incident History",
+      description: "Review, edit, and maintain incident records.",
+      selector: '[data-tour="incidents-history"]',
+    },
+  ];
 
   const fetchReports = () => {
     fetch("/api/incident-reports")
@@ -223,6 +244,12 @@ export default function IncidentsPage() {
 
   return (
     <div className="space-y-8">
+      <GuidedTourOverlay
+        open={showTour}
+        steps={tourSteps}
+        onSkip={completeTour}
+        onComplete={completeTour}
+      />
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div>
           <h1 className="font-serif text-3xl md:text-4xl font-normal text-black">
@@ -234,7 +261,7 @@ export default function IncidentsPage() {
           </p>
         </div>
         {isTrainerOrOwner && horses.length > 0 && (
-          <button onClick={openAdd} className={btnPrimary}>
+          <button onClick={openAdd} className={btnPrimary} data-tour="incidents-create">
             + Report incident
           </button>
         )}
@@ -264,7 +291,7 @@ export default function IncidentsPage() {
           )}
         </div>
       ) : (
-        <div className="border border-black/10 p-6">
+        <div className="border border-black/10 p-6" data-tour="incidents-history">
           <div className="space-y-3">
             {reports.map((r) => (
               <div

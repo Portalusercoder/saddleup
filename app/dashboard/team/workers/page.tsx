@@ -3,6 +3,8 @@
 import { useEffect, useState } from "react";
 import { useProfile } from "@/components/providers/ProfileProvider";
 import LoadingSpinner from "@/components/ui/LoadingSpinner";
+import GuidedTourOverlay, { type GuidedTourStep } from "@/components/dashboard/GuidedTourOverlay";
+import { usePageTour } from "@/components/dashboard/usePageTour";
 
 interface Worker {
   id: string;
@@ -26,6 +28,24 @@ export default function TeamWorkersPage() {
   const [toast, setToast] = useState<string | null>(null);
   const [submitLoading, setSubmitLoading] = useState(false);
   const { profile } = useProfile();
+  const { open: showTour, complete: completeTour } = usePageTour(
+    "saddleup_tour_team_workers_v1",
+    Boolean(profile) && profile?.role === "owner"
+  );
+  const tourSteps: GuidedTourStep[] = [
+    {
+      id: "worker-add",
+      title: "Add Worker",
+      description: "Create non-account staff records like groom, vet, and farrier.",
+      selector: '[data-tour="workers-add"]',
+    },
+    {
+      id: "worker-list",
+      title: "Worker List",
+      description: "Edit and remove worker records from the staff table.",
+      selector: '[data-tour="workers-list"]',
+    },
+  ];
 
   const fetchWorkers = () => {
     fetch("/api/workers")
@@ -47,6 +67,12 @@ export default function TeamWorkersPage() {
 
   return (
     <>
+      <GuidedTourOverlay
+        open={showTour}
+        steps={tourSteps}
+        onSkip={completeTour}
+        onComplete={completeTour}
+      />
       <p className="text-black/50 text-sm mb-4">
         Track staff without accounts. Add names and custom roles (e.g. Groom, Farrier, Vet).
       </p>
@@ -58,6 +84,7 @@ export default function TeamWorkersPage() {
           setShowModal(true);
         }}
         className={btnPrimary}
+        data-tour="workers-add"
       >
         + Add worker
       </button>
@@ -69,7 +96,7 @@ export default function TeamWorkersPage() {
       )}
 
       {workers.length > 0 && (
-        <div className="mt-6 border border-black/10 overflow-hidden">
+        <div className="mt-6 border border-black/10 overflow-hidden" data-tour="workers-list">
           <table className="w-full text-left text-sm">
             <thead className="border-b border-black/10 text-black/50 text-xs uppercase tracking-widest">
               <tr>

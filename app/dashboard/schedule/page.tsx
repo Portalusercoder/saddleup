@@ -6,6 +6,8 @@ import { useProfile } from "@/components/providers/ProfileProvider";
 import { useRouter } from "next/navigation";
 import { HorseAvatar } from "@/components/HorseAvatar";
 import TableSkeleton from "@/components/ui/TableSkeleton";
+import GuidedTourOverlay, { type GuidedTourStep } from "@/components/dashboard/GuidedTourOverlay";
+import { usePageTour } from "@/components/dashboard/usePageTour";
 
 interface Horse {
   id: string | number;
@@ -125,6 +127,31 @@ export default function SchedulePage() {
   };
 
   const { profile } = useProfile();
+  const { open: showTour, complete: completeTour } = usePageTour(
+    "saddleup_tour_schedule_v1",
+    !loading && profile?.role !== "student"
+  );
+
+  const tourSteps: GuidedTourStep[] = [
+    {
+      id: "week-nav",
+      title: "Week Navigation",
+      description: "Move between weeks and jump back to today.",
+      selector: '[data-tour="schedule-week-nav"]',
+    },
+    {
+      id: "block-slot",
+      title: "Block Slot",
+      description: "Mark unavailable time for events or closures.",
+      selector: '[data-tour="schedule-block-slot"]',
+    },
+    {
+      id: "grid",
+      title: "Schedule Grid",
+      description: "See bookings and sessions across the week.",
+      selector: '[data-tour="schedule-grid"]',
+    },
+  ];
 
   useEffect(() => {
     if (profile?.role === "student") {
@@ -272,11 +299,17 @@ export default function SchedulePage() {
 
   return (
     <div className="space-y-10">
+      <GuidedTourOverlay
+        open={showTour}
+        steps={tourSteps}
+        onSkip={completeTour}
+        onComplete={completeTour}
+      />
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <h1 className="font-serif text-3xl md:text-4xl font-normal text-black">
           Schedule & Availability
         </h1>
-        <div className="flex flex-wrap items-center gap-2">
+        <div className="flex flex-wrap items-center gap-2" data-tour="schedule-week-nav">
           <button onClick={prevWeek} className={btnSecondary}>
             ← Prev
           </button>
@@ -286,13 +319,13 @@ export default function SchedulePage() {
           <button onClick={nextWeek} className={btnSecondary}>
             Next →
           </button>
-          <button onClick={() => setShowBlockModal(true)} className={btnPrimary}>
+          <button onClick={() => setShowBlockModal(true)} className={btnPrimary} data-tour="schedule-block-slot">
             Block Slot
           </button>
         </div>
       </div>
 
-      <div className="border border-black/10 p-4 overflow-x-auto">
+      <div className="border border-black/10 p-4 overflow-x-auto" data-tour="schedule-grid">
         <p className="text-black/50 text-sm mb-4">
           {formatDate(weekStartStr)} – {formatDate(weekEndStr)}
         </p>

@@ -4,6 +4,8 @@ import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { useProfile } from "@/components/providers/ProfileProvider";
 import TableSkeleton from "@/components/ui/TableSkeleton";
+import GuidedTourOverlay, { type GuidedTourStep } from "@/components/dashboard/GuidedTourOverlay";
+import { usePageTour } from "@/components/dashboard/usePageTour";
 
 type Recipients = {
   students: { count: number; emails: string[] };
@@ -31,6 +33,31 @@ export default function NoticesPage() {
   const [sendBody, setSendBody] = useState("");
   const [sendStatus, setSendStatus] = useState<"idle" | "loading" | "success" | "error">("idle");
   const [sendMessage, setSendMessage] = useState("");
+  const { open: showTour, complete: completeTour } = usePageTour(
+    "saddleup_tour_notices_v1",
+    !loadingData && Boolean(profile) && profile?.role === "owner"
+  );
+
+  const tourSteps: GuidedTourStep[] = [
+    {
+      id: "audience",
+      title: "Choose Audience",
+      description: "Pick which groups receive the notice email.",
+      selector: '[data-tour="notices-audience"]',
+    },
+    {
+      id: "composer",
+      title: "Compose Notice",
+      description: "Write the subject and content, then send to selected recipients.",
+      selector: '[data-tour="notices-compose"]',
+    },
+    {
+      id: "history",
+      title: "Campaign History",
+      description: "Review previously sent notice campaigns.",
+      selector: '[data-tour="notices-history"]',
+    },
+  ];
 
   useEffect(() => {
     if (!profile) return;
@@ -118,6 +145,12 @@ export default function NoticesPage() {
 
   return (
     <div className="space-y-10">
+      <GuidedTourOverlay
+        open={showTour}
+        steps={tourSteps}
+        onSkip={completeTour}
+        onComplete={completeTour}
+      />
       <div>
         <h1 className="font-serif text-3xl md:text-4xl font-normal text-black">
           Notice emails
@@ -132,7 +165,7 @@ export default function NoticesPage() {
       ) : (
         <>
           {/* Audience sections */}
-          <section>
+          <section data-tour="notices-audience">
             <h2 className="font-serif text-xl text-black mb-4">Who receives notices</h2>
             <div className="grid gap-4 sm:grid-cols-3">
               <div className="border border-black/10 p-4">
@@ -181,7 +214,7 @@ export default function NoticesPage() {
           </section>
 
           {/* Send notice */}
-          <section>
+          <section data-tour="notices-compose">
             <h2 className="font-serif text-xl text-black mb-4">Send a notice</h2>
             <form onSubmit={handleSend} className="space-y-4 max-w-2xl">
               <div>
@@ -236,7 +269,7 @@ export default function NoticesPage() {
           </section>
 
           {/* Sent notices history */}
-          <section>
+          <section data-tour="notices-history">
             <h2 className="font-serif text-xl text-black mb-4">Sent notices</h2>
             {campaigns.length === 0 ? (
               <p className="text-black/50 text-sm">No notices sent yet.</p>

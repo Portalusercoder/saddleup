@@ -3,6 +3,8 @@
 import { useEffect, useState } from "react";
 import { useProfile } from "@/components/providers/ProfileProvider";
 import { IdCardUpload } from "@/components/dashboard/IdCardUpload";
+import GuidedTourOverlay, { type GuidedTourStep } from "@/components/dashboard/GuidedTourOverlay";
+import { usePageTour } from "@/components/dashboard/usePageTour";
 
 interface TeamMember {
   id: string;
@@ -17,6 +19,18 @@ export default function TeamTrainersPage() {
   const [toast, setToast] = useState<string | null>(null);
   const { profile } = useProfile();
   const currentUserId = profile?.id ?? null;
+  const { open: showTour, complete: completeTour } = usePageTour(
+    "saddleup_tour_team_trainers_v1",
+    Boolean(profile) && profile?.role !== "student"
+  );
+  const tourSteps: GuidedTourStep[] = [
+    {
+      id: "trainers-list",
+      title: "Trainer Directory",
+      description: "Manage trainers, upload ID cards, and remove members if needed.",
+      selector: '[data-tour="trainers-list"]',
+    },
+  ];
 
   const fetchMembers = () => {
     fetch("/api/members")
@@ -41,6 +55,12 @@ export default function TeamTrainersPage() {
 
   return (
     <>
+      <GuidedTourOverlay
+        open={showTour}
+        steps={tourSteps}
+        onSkip={completeTour}
+        onComplete={completeTour}
+      />
       <p className="text-black/50 text-sm mb-4">
         Trainers are added via &quot;Add member by personal ID&quot; above. They can teach lessons and manage riders.
       </p>
@@ -54,7 +74,7 @@ export default function TeamTrainersPage() {
       {trainers.length === 0 ? (
         <p className="text-black/50">No trainers yet. Add one using their personal ID above.</p>
       ) : (
-        <div className="border border-black/10 overflow-hidden">
+        <div className="border border-black/10 overflow-hidden" data-tour="trainers-list">
           <table className="w-full text-left text-sm">
             <thead className="border-b border-black/10 text-black/50 text-xs uppercase tracking-widest">
               <tr>

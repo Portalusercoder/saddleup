@@ -6,6 +6,8 @@ import { useRouter } from "next/navigation";
 import { useProfile } from "@/components/providers/ProfileProvider";
 import { ProfileAvatar } from "@/components/ProfileAvatar";
 import PageLoader from "@/components/ui/PageLoader";
+import GuidedTourOverlay, { type GuidedTourStep } from "@/components/dashboard/GuidedTourOverlay";
+import { usePageTour } from "@/components/dashboard/usePageTour";
 
 const formInput = "w-full px-4 py-3 bg-base border border-black/10 text-black placeholder-black/40 focus:border-black/30 focus:outline-none";
 const labelClass = "block text-xs uppercase tracking-widest text-black/50 mb-2";
@@ -38,6 +40,16 @@ export default function ProfilePage() {
 
   const idCardUrl = riderIdCard ?? profile?.id_card_url ?? null;
   const loading = profileLoading;
+  const { open: showTour, complete: completeTour } = usePageTour(
+    "saddleup_tour_profile_v1",
+    !loading
+  );
+
+  const tourSteps: GuidedTourStep[] = [
+    { id: "avatar", title: "Profile Photo", description: "Upload or change your avatar.", selector: '[data-tour="profile-avatar"]' },
+    { id: "details", title: "Profile Details", description: "Review and edit your basic account details.", selector: '[data-tour="profile-details"]' },
+    { id: "save", title: "Save Changes", description: "Save profile updates after editing.", selector: '[data-tour="profile-save"]' },
+  ];
 
   const handlePhotoUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -104,6 +116,12 @@ export default function ProfilePage() {
 
   return (
     <div className="space-y-10">
+      <GuidedTourOverlay
+        open={showTour}
+        steps={tourSteps}
+        onSkip={completeTour}
+        onComplete={completeTour}
+      />
       <div>
         <Link href="/dashboard" className="text-black/60 hover:text-black text-sm uppercase tracking-wider">
           ← Back to Dashboard
@@ -122,7 +140,7 @@ export default function ProfilePage() {
 
       <div className="border border-black/10 p-6 max-w-md">
         <div className="flex items-start gap-6">
-          <div className="flex flex-col items-center gap-3">
+          <div className="flex flex-col items-center gap-3" data-tour="profile-avatar">
             <ProfileAvatar
               avatarUrl={profile.avatarUrl}
               name={profile.fullName ?? profile.email}
@@ -144,7 +162,7 @@ export default function ProfilePage() {
             </button>
           </div>
 
-          <div className="flex-1 space-y-4 min-w-0">
+          <div className="flex-1 space-y-4 min-w-0" data-tour="profile-details">
             <div>
               <label className={labelClass}>Full name</label>
               <input
@@ -207,6 +225,7 @@ export default function ProfilePage() {
               onClick={handleSave}
               disabled={saving}
               className={`${btnPrimary} disabled:opacity-50`}
+              data-tour="profile-save"
             >
               {saving ? "Saving..." : "Save changes"}
             </button>

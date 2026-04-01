@@ -4,6 +4,8 @@ import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { useProfile } from "@/components/providers/ProfileProvider";
 import PageLoader from "@/components/ui/PageLoader";
+import GuidedTourOverlay, { type GuidedTourStep } from "@/components/dashboard/GuidedTourOverlay";
+import { usePageTour } from "@/components/dashboard/usePageTour";
 
 type LogRow = {
   id: string;
@@ -35,6 +37,18 @@ export default function ActivityPage() {
   const { profile, loading: profileLoading } = useProfile();
   const [logs, setLogs] = useState<LogRow[]>([]);
   const [loading, setLoading] = useState(true);
+  const { open: showTour, complete: completeTour } = usePageTour(
+    "saddleup_tour_activity_v1",
+    !loading && Boolean(profile) && (profile?.role === "owner" || profile?.role === "trainer")
+  );
+  const tourSteps: GuidedTourStep[] = [
+    {
+      id: "activity-table",
+      title: "Activity Feed",
+      description: "Track key stable actions and changes over time.",
+      selector: '[data-tour="activity-table"]',
+    },
+  ];
 
   useEffect(() => {
     if (!profile) return;
@@ -59,6 +73,12 @@ export default function ActivityPage() {
 
   return (
     <div className="space-y-6">
+      <GuidedTourOverlay
+        open={showTour}
+        steps={tourSteps}
+        onSkip={completeTour}
+        onComplete={completeTour}
+      />
       <div>
         <h1 className="font-serif text-3xl md:text-4xl font-normal text-black">Activity</h1>
         <p className="text-black/60 mt-2 text-sm">
@@ -71,7 +91,7 @@ export default function ActivityPage() {
           <PageLoader message="Loading activity…" minHeight="min-h-0" />
         </div>
       ) : (
-        <div className="overflow-x-auto border border-black/10 rounded-lg">
+        <div className="overflow-x-auto border border-black/10 rounded-lg" data-tour="activity-table">
           <table className="w-full text-sm">
             <thead>
               <tr className="border-b border-black/10 bg-black/5">
