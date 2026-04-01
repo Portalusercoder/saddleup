@@ -23,6 +23,11 @@ const inter = Inter({
 export const metadata = {
   title: "Saddle Up",
   description: "Saddle Up platform",
+  icons: {
+    icon: "/icon.svg",
+    shortcut: "/icon.svg",
+    apple: "/icon.svg",
+  },
 }
 
 function supabasePreconnectOrigin(): string | null {
