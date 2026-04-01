@@ -119,32 +119,46 @@ export default function Home() {
         {/* Scroll indicator */}
         <a
           href="#features"
-          className="absolute bottom-6 left-1/2 -translate-x-1/2 flex flex-col items-center gap-1 text-white/40 hover:text-white/70 transition text-[0.65rem] uppercase tracking-[0.3em] font-sans"
+          aria-label="Scroll to features"
+          className="absolute bottom-6 left-1/2 -translate-x-1/2 flex items-center justify-center text-white/40 hover:text-white/70 transition"
         >
-          <span>Scroll</span>
-          <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden>
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 14l-7 7m0 0l-7-7m7 7V3" />
           </svg>
         </a>
 
-        {/* Footer stats bar */}
-        <ScrollReveal className="relative border-t border-white/10 py-5 px-8 md:px-14 lg:px-20">
-          <div className="flex flex-wrap justify-between gap-8 uppercase text-[0.65rem] md:text-[0.7rem] tracking-[0.25em] text-white/80 font-sans">
-            <div>
+        {/* Footer stats bar — fixed value heights so news length doesn’t resize the hero */}
+        <ScrollReveal className="relative border-t border-white/10 py-5 px-8 md:px-14 lg:px-20 min-h-[6.5rem]">
+          <div className="flex flex-wrap justify-between gap-x-8 gap-y-6 items-start uppercase text-[0.65rem] md:text-[0.7rem] tracking-[0.25em] text-white/80 font-sans">
+            <div className="shrink-0">
               <p className="text-white/50">Established</p>
-              <p className="mt-1 text-white/90 font-normal">2024</p>
+              <div className="mt-1 h-[3.75rem] md:h-[4rem] flex items-start overflow-hidden">
+                <p className="text-white/90 font-normal leading-snug line-clamp-3">
+                  2024
+                </p>
+              </div>
             </div>
-            <div>
-              <p className="text-white/50">The Area</p>
-              <p className="mt-1 text-white/90 font-normal">Plans</p>
+            <div className="shrink-0 max-w-[11rem] sm:max-w-none">
+              <p className="text-white/50">Starter</p>
+              <div className="mt-1 h-[3.75rem] md:h-[4rem] flex items-start overflow-hidden">
+                <p className="text-white/90 font-normal leading-snug line-clamp-3">
+                  2 horses · 10 riders free
+                </p>
+              </div>
             </div>
-            <div>
-              <p className="text-white/50">Coaches</p>
-              <p className="mt-1 text-white/90 font-normal">Features</p>
+            <div className="shrink-0 max-w-[11rem] sm:max-w-none">
+              <p className="text-white/50">Built for</p>
+              <div className="mt-1 h-[3.75rem] md:h-[4rem] flex items-start overflow-hidden">
+                <p className="text-white/90 font-normal leading-snug line-clamp-3">
+                  Schools, trainers & owners
+                </p>
+              </div>
             </div>
-            <div className="min-w-0 max-w-[14rem] sm:max-w-[16rem] md:max-w-[20rem] shrink-0">
+            <div className="min-w-0 w-full sm:w-[min(100%,18rem)] md:w-[min(100%,22rem)] shrink-0 basis-full sm:basis-auto">
               <p className="text-white/50">News</p>
-              <HeroRotatingHorseNews />
+              <div className="mt-1 h-[3.75rem] md:h-[4rem] w-full flex items-start overflow-hidden">
+                <HeroRotatingHorseNews />
+              </div>
             </div>
           </div>
         </ScrollReveal>
@@ -387,22 +401,58 @@ export default function Home() {
 }
 
 function HeroRotatingHorseNews() {
+  const [headlines, setHeadlines] = useState<string[]>(() => [
+    ...HORSE_NEWS_HEADLINES,
+  ]);
   const [index, setIndex] = useState(0);
 
   useEffect(() => {
+    let cancelled = false;
+    (async () => {
+      try {
+        const res = await fetch("/api/news/horse-headlines");
+        if (!res.ok) return;
+        const data = (await res.json()) as { headlines?: unknown };
+        if (
+          cancelled ||
+          !Array.isArray(data.headlines) ||
+          data.headlines.length === 0
+        )
+          return;
+        const next = data.headlines.filter(
+          (h): h is string => typeof h === "string" && h.length > 0
+        );
+        if (next.length > 0) {
+          setHeadlines(next);
+          setIndex(0);
+        }
+      } catch {
+        /* keep bundled fallback */
+      }
+    })();
+    return () => {
+      cancelled = true;
+    };
+  }, []);
+
+  useEffect(() => {
+    if (headlines.length === 0) return;
     const id = window.setInterval(() => {
-      setIndex((i) => (i + 1) % HORSE_NEWS_HEADLINES.length);
+      setIndex((i) => (i + 1) % headlines.length);
     }, 5000);
     return () => window.clearInterval(id);
-  }, []);
+  }, [headlines]);
+
+  const line = headlines[index] ?? "";
 
   return (
     <p
-      className="mt-1 text-white/90 font-normal leading-relaxed normal-case tracking-normal text-[0.65rem] md:text-[0.7rem]"
+      className="text-white/90 font-normal normal-case tracking-normal text-[0.65rem] md:text-[0.7rem] leading-snug line-clamp-3 overflow-hidden w-full"
+      title={line}
       aria-live="polite"
       aria-atomic="true"
     >
-      {HORSE_NEWS_HEADLINES[index]}
+      {line}
     </p>
   );
 }
