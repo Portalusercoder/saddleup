@@ -124,6 +124,17 @@ export default function SignupPage() {
     });
   };
 
+  const checkEmailAlreadyExists = async (emailValue: string) => {
+    const res = await fetch("/api/auth/check-signup-email", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ email: emailValue.trim() }),
+    });
+    if (!res.ok) return false;
+    const data = (await res.json()) as { exists?: boolean };
+    return Boolean(data.exists);
+  };
+
   useEffect(() => {
     if (step !== "code" || resendCooldownSec <= 0) return;
     const id = window.setTimeout(
@@ -161,6 +172,12 @@ export default function SignupPage() {
     setError(null);
     setLoading(true);
     try {
+      const exists = await checkEmailAlreadyExists(email);
+      if (exists) {
+        setError("This email is already in use. Please sign in instead.");
+        setLoading(false);
+        return;
+      }
       const { error: otpError } = await requestSignupOtp(email);
       if (otpError) {
         setError(otpError.message);
