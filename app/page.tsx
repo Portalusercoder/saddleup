@@ -20,6 +20,7 @@ import Footer from "@/components/landing/Footer";
 import ScrollReveal from "@/components/ui/ScrollReveal";
 import ThemeToggle from "@/components/layout/ThemeToggle";
 import { HORSE_NEWS_HEADLINES } from "@/lib/horseNewsHeadlines";
+import PartnerSpotlight from "@/components/landing/PartnerSpotlight";
 
 export default function Home() {
   const [authModalOpen, setAuthModalOpen] = useState(false);
@@ -333,6 +334,8 @@ export default function Home() {
           </button>
         </ScrollReveal>
       </section>
+
+      <PartnerSpotlight />
 
       {/* Tech stack */}
       <section className="bg-base border-t border-black/10 py-12 overflow-hidden text-black dark:border-white/10">
