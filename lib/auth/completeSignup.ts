@@ -176,6 +176,15 @@ export async function runCompleteSignup(
     if (profileError) {
       console.error("Profile creation error:", profileError);
       await admin.from("stables").delete().eq("id", stable.id);
+      const msg = profileError.message ?? "";
+      if (/onboarding_completed/i.test(msg)) {
+        return {
+          ok: false,
+          status: 500,
+          error:
+            "Database is missing onboarding setup. Run migration 00029_profiles_onboarding_completed.sql, then try signup again.",
+        };
+      }
       return { ok: false, status: 500, error: "Failed to create profile" };
     }
 
@@ -251,6 +260,15 @@ export async function runCompleteSignup(
 
     if (profileError) {
       console.error("Profile creation error:", profileError);
+      const msg = profileError.message ?? "";
+      if (/onboarding_completed/i.test(msg)) {
+        return {
+          ok: false,
+          status: 500,
+          error:
+            "Database is missing onboarding setup. Run migration 00029_profiles_onboarding_completed.sql, then try signup again.",
+        };
+      }
       return { ok: false, status: 500, error: "Failed to create profile" };
     }
 

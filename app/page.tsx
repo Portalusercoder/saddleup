@@ -138,7 +138,7 @@ export default function Home() {
                 </p>
               </div>
             </div>
-            <div className="shrink-0 max-w-[11rem] sm:max-w-none">
+            <div className="shrink-0 w-[min(100%,18rem)] sm:w-[16rem] md:w-[18rem]">
               <p className="text-white/50">Plan</p>
               <div className="mt-1 h-[3.75rem] md:h-[4rem] flex items-start overflow-hidden">
                 <HeroRotatingPlan />
