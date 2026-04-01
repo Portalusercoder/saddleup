@@ -9,6 +9,7 @@ import NotificationBell from "@/components/NotificationBell";
 import { useProfile } from "@/components/providers/ProfileProvider";
 import { useLanguage } from "@/components/providers/LanguageProvider";
 import LanguageToggle from "@/components/layout/LanguageToggle";
+import ThemeToggle from "@/components/layout/ThemeToggle";
 
 const HERO_SCROLL_THRESHOLD = 0.6; // show solid nav after scrolling 60% of viewport
 
@@ -73,6 +74,15 @@ export default function Navbar() {
     }
     return () => document.removeEventListener("click", handleClickOutside);
   }, [profileMenuOpen]);
+
+  useEffect(() => {
+    if (!mobileOpen) return;
+    const prev = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+    return () => {
+      document.body.style.overflow = prev;
+    };
+  }, [mobileOpen]);
 
   const handleSignOut = async () => {
     const supabase = createClient();
@@ -285,12 +295,59 @@ export default function Navbar() {
         )}
       </nav>
 
-      {mobileOpen && user && !isAuthPage && !isHome && (
-        <div className="md:hidden absolute top-20 left-0 right-0 bg-base border-b border-black/10 py-2 px-4 z-40 max-h-[calc(100vh-5rem)] overflow-y-auto">
-          {navItems.map((item) => (
-            <NavLink key={item.href} item={item} />
-          ))}
-        </div>
+      {user && !isAuthPage && !isHome && (
+        <>
+          <div
+            className={`md:hidden fixed inset-0 bg-black/45 z-[60] transition-opacity duration-300 ${
+              mobileOpen ? "opacity-100 pointer-events-auto" : "opacity-0 pointer-events-none"
+            }`}
+            onClick={() => setMobileOpen(false)}
+            aria-hidden={!mobileOpen}
+          />
+          <aside
+            className={`md:hidden fixed top-0 right-0 h-screen w-[86vw] max-w-sm bg-base border-l border-black/10 z-[70] transition-transform duration-300 ease-out ${
+              mobileOpen ? "translate-x-0" : "translate-x-full"
+            }`}
+            aria-hidden={!mobileOpen}
+          >
+            <div className="h-20 px-4 flex items-center justify-between border-b border-black/10">
+              <p className="text-xs uppercase tracking-[0.22em] text-black/60">Menu</p>
+              <button
+                onClick={() => setMobileOpen(false)}
+                className="p-2 hover:bg-black/10 transition"
+                aria-label="Close menu"
+              >
+                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                </svg>
+              </button>
+            </div>
+
+            <div className="px-3 py-3 max-h-[calc(100vh-5rem)] overflow-y-auto">
+              {navItems.map((item) => (
+                <NavLink key={item.href} item={item} />
+              ))}
+
+              <div className="mt-4 border-t border-black/10 pt-4 px-1">
+                <div className="flex items-center justify-between">
+                  <span className="text-xs uppercase tracking-[0.2em] text-black/60">
+                    Theme
+                  </span>
+                  <ThemeToggle />
+                </div>
+                <button
+                  onClick={() => {
+                    setMobileOpen(false);
+                    handleSignOut();
+                  }}
+                  className="mt-4 block w-full text-left px-4 py-3 text-sm border border-black/15 text-black/80 hover:bg-black/5 transition uppercase tracking-wider"
+                >
+                  Sign out
+                </button>
+              </div>
+            </div>
+          </aside>
+        </>
       )}
     </div>
   );

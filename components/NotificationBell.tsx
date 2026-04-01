@@ -70,7 +70,7 @@ export default function NotificationBell() {
         )}
       </button>
       {open && (
-        <div className="absolute right-0 top-full mt-2 w-80 max-h-96 overflow-y-auto border border-black/10 bg-base z-50">
+        <div className="fixed top-20 left-3 right-3 md:absolute md:top-full md:left-auto md:right-0 md:mt-2 md:w-80 max-h-[70vh] md:max-h-96 overflow-y-auto border border-black/10 bg-base z-[75]">
           <div className="p-3 border-b border-black/10">
             <h3 className="text-sm font-medium text-black uppercase tracking-wider">Notifications</h3>
           </div>
