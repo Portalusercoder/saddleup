@@ -21,6 +21,7 @@ import ScrollReveal from "@/components/ui/ScrollReveal";
 import ThemeToggle from "@/components/layout/ThemeToggle";
 import { HORSE_NEWS_HEADLINES } from "@/lib/horseNewsHeadlines";
 import PartnerSpotlight from "@/components/landing/PartnerSpotlight";
+import TextLogo from "@/components/brand/TextLogo";
 
 export default function Home() {
   const [authModalOpen, setAuthModalOpen] = useState(false);
@@ -60,9 +61,7 @@ export default function Home() {
         <div className="relative flex-1 flex flex-col justify-end pb-24 sm:pb-28 md:pb-32">
           <div className="px-5 sm:px-8 md:px-14 lg:px-20 max-w-5xl">
             {/* Brand text above headline - FASTRACK style */}
-            <p className="font-sans text-[0.7rem] sm:text-[0.75rem] uppercase tracking-[0.35em] text-[#d4a574] mb-3">
-              Saddle Up
-            </p>
+            <TextLogo className="mb-3 text-[0.72rem] sm:text-[0.78rem] text-[#d4a574]" />
 
             {/* Main headline - Playfair Display (previous fonts) */}
             <div role="heading" aria-level={1} className="[&>p]:flex [&>p]:flex-col [&>p]:items-start">
@@ -314,25 +313,6 @@ export default function Home() {
             ))}
           </div>
         </div>
-      </section>
-
-      {/* CTA */}
-      <section className="bg-base border-t border-black/10 py-20 px-6 text-black">
-        <ScrollReveal className="max-w-3xl mx-auto text-center">
-          <h2 className="font-serif text-3xl md:text-4xl font-normal mb-4">
-            Ready to saddle up?
-          </h2>
-          <p className="text-black/60 mb-8">
-            Start managing your horses, riders, and training in one place. Free
-            for 2 horses and 10 riders.
-          </p>
-          <button
-            onClick={() => openAuth()}
-            className="px-8 py-3 bg-accent text-white font-medium hover:opacity-95 transition uppercase tracking-wider"
-          >
-            Get Started
-          </button>
-        </ScrollReveal>
       </section>
 
       <PartnerSpotlight />

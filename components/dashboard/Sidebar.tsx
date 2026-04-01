@@ -2,6 +2,7 @@
 
 import Link from "next/link"
 import { usePathname } from "next/navigation"
+import TextLogo from "@/components/brand/TextLogo"
 
 const navItems = [
   { name: "Dashboard", href: "/dashboard" },
@@ -16,12 +17,11 @@ export default function Sidebar() {
     <aside className="w-64 min-h-screen bg-neutral-950 border-r border-neutral-800 flex flex-col">
       {/* Brand */}
       <div className="px-6 py-5 border-b border-neutral-800">
-        <div className="text-lg font-semibold tracking-tight">
-          Saddle Up
-        </div>
-        <p className="text-xs text-neutral-500 mt-0.5">
-          Management Dashboard
-        </p>
+        <TextLogo
+          className="text-[0.95rem] text-white"
+          subtitle="Management dashboard"
+          subtitleClassName="text-neutral-500"
+        />
       </div>
 
       {/* Navigation */}
@@ -58,7 +58,10 @@ export default function Sidebar() {
 
       {/* Footer */}
       <div className="px-6 py-4 border-t border-neutral-800 text-xs text-neutral-500">
-        © Saddle Up
+        <div className="flex items-center gap-2">
+          <span>©</span>
+          <TextLogo className="text-[0.65rem] text-neutral-400" />
+        </div>
       </div>
     </aside>
   )

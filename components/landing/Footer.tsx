@@ -1,8 +1,8 @@
 "use client";
 
-import { useState } from "react";
 import Link from "next/link";
 import { SiGithub, SiInstagram, SiX } from "react-icons/si";
+import TextLogo from "@/components/brand/TextLogo";
 
 const navLinks = [
   { href: "/#features", label: "Features" },
@@ -40,12 +40,7 @@ export default function Footer({
       <div className="relative max-w-4xl mx-auto py-16 sm:py-20 px-6 text-center">
         {/* Logo + Brand */}
         <div className="flex flex-col items-center mb-10">
-          <div className="w-12 h-12 rounded-full border border-black/20 flex items-center justify-center mb-3">
-            <span className="font-serif text-xl font-bold text-black">S</span>
-          </div>
-          <p className="text-sm uppercase tracking-[0.3em] text-black/90 font-medium">
-            Saddle Up
-          </p>
+          <TextLogo className="text-[0.95rem] text-black/90" subtitle="Stable management" />
         </div>
 
         {/* Heading + CTA */}
