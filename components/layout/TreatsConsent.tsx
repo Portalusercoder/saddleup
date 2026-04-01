@@ -42,7 +42,7 @@ export default function TreatsConsent() {
         className="pointer-events-auto w-full max-w-7xl mx-auto border border-black/10 dark:border-white/15 bg-[var(--bg-elevated)] text-black dark:text-white shadow-lg"
         style={{ borderRadius: "var(--radius-sm)" }}
       >
-        <div className="p-5 sm:p-6 lg:p-7 flex flex-col sm:flex-row sm:items-end gap-5 lg:gap-6">
+        <div className="p-5 sm:p-6 lg:p-7 flex flex-col sm:flex-row sm:items-start gap-5 lg:gap-6">
           <div className="flex-1 min-w-0">
             <h2
               id="treats-consent-title"
