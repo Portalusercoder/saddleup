@@ -33,16 +33,16 @@ export default function TreatsConsent() {
 
   return (
     <div
-      className="fixed bottom-0 left-0 right-0 z-[60] px-4 pb-4 pt-2 pointer-events-none"
+      className="fixed bottom-0 left-0 right-0 z-[60] px-4 sm:px-6 lg:px-8 pb-4 sm:pb-5 pt-2 pointer-events-none"
       role="dialog"
       aria-labelledby="treats-consent-title"
       aria-describedby="treats-consent-desc"
     >
       <div
-        className="pointer-events-auto max-w-3xl mx-auto border border-black/10 dark:border-white/15 bg-[var(--bg-elevated)] text-black dark:text-white shadow-lg"
+        className="pointer-events-auto w-full max-w-7xl mx-auto border border-black/10 dark:border-white/15 bg-[var(--bg-elevated)] text-black dark:text-white shadow-lg"
         style={{ borderRadius: "var(--radius-sm)" }}
       >
-        <div className="p-4 sm:p-5 flex flex-col sm:flex-row sm:items-end gap-4">
+        <div className="p-5 sm:p-6 lg:p-7 flex flex-col sm:flex-row sm:items-end gap-5 lg:gap-6">
           <div className="flex-1 min-w-0">
             <h2
               id="treats-consent-title"
