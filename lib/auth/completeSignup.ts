@@ -1,6 +1,7 @@
 import type { User } from "@supabase/supabase-js";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { generateInviteCode } from "@/lib/inviteCodes";
+import { allocateUniqueSlug, slugFromStableName } from "@/lib/stableSlug";
 
 export type CompleteSignupInput = {
   role: string;
@@ -92,28 +93,12 @@ export async function runCompleteSignup(
       };
     }
 
-    const slug = stableName
-      .toLowerCase()
-      .replace(/[^a-z0-9]+/g, "-")
-      .replace(/^-|-$/g, "");
-
-    if (!slug) {
+    const baseSlug = slugFromStableName(stableName);
+    if (!baseSlug) {
       return { ok: false, status: 400, error: "Please enter a valid stable name" };
     }
 
-    const { data: existingStable } = await admin
-      .from("stables")
-      .select("id")
-      .eq("slug", slug)
-      .maybeSingle();
-
-    if (existingStable) {
-      return {
-        ok: false,
-        status: 400,
-        error: `Stable "${slug}" already exists. Try a different name.`,
-      };
-    }
+    const slug = await allocateUniqueSlug(admin, baseSlug);
 
     let inviteCodeGen = generateInviteCode(8).toUpperCase();
     let attempts = 0;
@@ -162,7 +147,7 @@ export async function runCompleteSignup(
           ok: false,
           status: 400,
           error:
-            "That stable name or join code is already taken. Try a different stable name.",
+            "Could not create stable (duplicate invite code or slug). Please try again.",
         };
       }
       if (/foreign key|subscription_plans/i.test(msg)) {

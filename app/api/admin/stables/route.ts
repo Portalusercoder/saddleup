@@ -3,6 +3,7 @@ import { createClient } from "@/lib/supabase/server";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { isAdminEmail } from "@/lib/admin";
 import { generateInviteCode } from "@/lib/inviteCodes";
+import { allocateUniqueSlug, slugFromStableName } from "@/lib/stableSlug";
 
 /**
  * POST: Create an enterprise stable (admin only).
@@ -33,25 +34,10 @@ export async function POST(req: Request) {
       );
     }
 
-    const slug = name
-      .toLowerCase()
-      .replace(/[^a-z0-9]+/g, "-")
-      .replace(/^-|-$/g, "") || "enterprise";
-
     const admin = createAdminClient();
-
-    const { data: existingStable } = await admin
-      .from("stables")
-      .select("id")
-      .eq("slug", slug)
-      .single();
-
-    if (existingStable) {
-      return NextResponse.json(
-        { error: `A stable with slug "${slug}" already exists. Use a different name.` },
-        { status: 400 }
-      );
-    }
+    const baseSlug = slugFromStableName(name);
+    const slugBase = baseSlug || "enterprise";
+    const slug = await allocateUniqueSlug(admin, slugBase);
 
     let inviteCode = generateInviteCode(8).toUpperCase();
     for (let i = 0; i < 10; i++) {

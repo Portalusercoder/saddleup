@@ -1,6 +1,7 @@
 import "./globals.css"
 import Navbar from "@/components/layout/Navbar"
 import PagePadding from "@/components/layout/PagePadding"
+import TreatsConsent from "@/components/layout/TreatsConsent"
 import { ProfileProvider } from "@/components/providers/ProfileProvider"
 import { LanguageProvider } from "@/components/providers/LanguageProvider"
 import { ThemeProvider } from "@/components/providers/ThemeProvider"
@@ -43,6 +44,7 @@ export default function RootLayout({
             <ProfileProvider>
               <Navbar />
               <PagePadding>{children}</PagePadding>
+              <TreatsConsent />
             </ProfileProvider>
           </LanguageProvider>
         </ThemeProvider>

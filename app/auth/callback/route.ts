@@ -3,6 +3,8 @@ import { createClient } from "@/lib/supabase/server";
 import type { EmailOtpType, SupabaseClient } from "@supabase/supabase-js";
 import { runCompleteSignup } from "@/lib/auth/completeSignup";
 import { buildCompleteSignupInputFromUser } from "@/lib/auth/signupFromMetadata";
+import { createAdminClient } from "@/lib/supabase/admin";
+import { cleanupIncompleteSignupSession } from "@/lib/auth/cleanupIncompleteSignup";
 
 function redirectUrl(request: NextRequest, path: string) {
   const origin = request.nextUrl.origin;
@@ -59,6 +61,12 @@ export async function GET(request: NextRequest) {
       await ensureSignupProfileIfNeeded(supabase);
     } catch (e) {
       const msg = e instanceof Error ? e.message : "setup_failed";
+      try {
+        const admin = createAdminClient();
+        await cleanupIncompleteSignupSession(supabase, admin);
+      } catch (cleanupErr) {
+        console.error("auth callback cleanup:", cleanupErr);
+      }
       return NextResponse.redirect(
         redirectUrl(
           request,
@@ -79,6 +87,12 @@ export async function GET(request: NextRequest) {
       await ensureSignupProfileIfNeeded(supabase);
     } catch (e) {
       const msg = e instanceof Error ? e.message : "setup_failed";
+      try {
+        const admin = createAdminClient();
+        await cleanupIncompleteSignupSession(supabase, admin);
+      } catch (cleanupErr) {
+        console.error("auth callback cleanup:", cleanupErr);
+      }
       return NextResponse.redirect(
         redirectUrl(
           request,

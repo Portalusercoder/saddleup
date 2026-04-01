@@ -31,11 +31,39 @@ export default function SignupPage() {
       setEnterpriseInviteCode(code.trim().toUpperCase().replace(/\s/g, ""));
       setRole("owner");
     }
-    const qsError = searchParams.get("error");
-    if (qsError?.trim()) {
-      setError(decodeURIComponent(qsError.trim()));
-    }
   }, [searchParams]);
+
+  const errParam = searchParams.get("error");
+  useEffect(() => {
+    if (!errParam?.trim()) return;
+    const decoded = decodeURIComponent(errParam.trim());
+    let cancelled = false;
+    (async () => {
+      try {
+        await fetch("/api/auth/cleanup-incomplete-signup", {
+          method: "POST",
+          credentials: "include",
+        });
+      } catch {
+        /* ignore */
+      }
+      try {
+        await createClient().auth.signOut();
+      } catch {
+        /* ignore */
+      }
+      if (cancelled) return;
+      setStablePreview(null);
+      setVerifyData(null);
+      setCode("");
+      setStep("form");
+      setError(decoded);
+      router.replace("/signup");
+    })();
+    return () => {
+      cancelled = true;
+    };
+  }, [errParam, router]);
   const [code, setCode] = useState("");
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
@@ -81,6 +109,29 @@ export default function SignupPage() {
     );
     return () => window.clearTimeout(id);
   }, [step, resendCooldownSec]);
+
+  /** After email OTP verified: remove orphan auth user (no profile) and clear session so failed signup isn’t “half logged in”. */
+  const abortVerifiedSignup = async (message: string) => {
+    try {
+      await fetch("/api/auth/cleanup-incomplete-signup", {
+        method: "POST",
+        credentials: "include",
+      });
+    } catch {
+      /* ignore */
+    }
+    try {
+      await createClient().auth.signOut();
+    } catch {
+      /* ignore */
+    }
+    setStablePreview(null);
+    setVerifyData(null);
+    setCode("");
+    setStep("form");
+    setError(message);
+    router.refresh();
+  };
 
   const sendCode = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -159,8 +210,8 @@ export default function SignupPage() {
       }
       const { error: updateError } = await supabase.auth.updateUser({ password });
       if (updateError) {
-        setError(updateError.message);
         setLoading(false);
+        await abortVerifiedSignup(updateError.message);
         return;
       }
       if (role === "owner") {
@@ -178,8 +229,8 @@ export default function SignupPage() {
         });
         const result = await res.json();
         if (!res.ok) {
-          setError(result.error || "Failed to complete signup");
           setLoading(false);
+          await abortVerifiedSignup(result.error || "Failed to complete signup");
           return;
         }
         router.push("/dashboard");
@@ -189,15 +240,19 @@ export default function SignupPage() {
       const previewRes = await fetch(`/api/stables/preview-by-code?code=${encodeURIComponent(joinCode.trim())}`);
       const preview = await previewRes.json();
       if (!previewRes.ok || !preview.name) {
-        setError("Invalid join code. Please check the code and try again.");
         setLoading(false);
+        await abortVerifiedSignup(
+          "Invalid join code. Please check the code and try again."
+        );
         return;
       }
       setStablePreview({ name: preview.name, logoUrl: preview.logoUrl ?? null });
       setVerifyData({ userId: vData.user.id });
       setStep("confirm_join");
     } catch {
-      setError("Something went wrong");
+      setLoading(false);
+      await abortVerifiedSignup("Something went wrong");
+      return;
     } finally {
       setLoading(false);
     }
@@ -221,25 +276,36 @@ export default function SignupPage() {
       });
       const result = await res.json();
       if (!res.ok) {
-        if (result.inviteCode) {
-          setError(`${result.error} ${result.inviteCode}. Share this ID with your stable owner.`);
-        } else {
-          setError(result.error || "Failed to complete signup");
-        }
         setLoading(false);
+        await abortVerifiedSignup(
+          result.inviteCode
+            ? `${result.error ?? "Failed to complete signup"} ${result.inviteCode}. Share this ID with your stable owner.`
+            : result.error || "Failed to complete signup"
+        );
         return;
       }
       router.push("/dashboard");
       router.refresh();
     } catch {
-      setError("Something went wrong");
       setLoading(false);
+      await abortVerifiedSignup("Something went wrong");
     }
   };
 
   const declineJoinStable = async () => {
-    const supabase = createClient();
-    await supabase.auth.signOut();
+    try {
+      await fetch("/api/auth/cleanup-incomplete-signup", {
+        method: "POST",
+        credentials: "include",
+      });
+    } catch {
+      /* ignore */
+    }
+    try {
+      await createClient().auth.signOut();
+    } catch {
+      /* ignore */
+    }
     router.push("/signup");
     router.refresh();
   };
