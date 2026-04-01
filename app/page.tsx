@@ -139,11 +139,9 @@ export default function Home() {
               </div>
             </div>
             <div className="shrink-0 max-w-[11rem] sm:max-w-none">
-              <p className="text-white/50">Starter</p>
+              <p className="text-white/50">Plan</p>
               <div className="mt-1 h-[3.75rem] md:h-[4rem] flex items-start overflow-hidden">
-                <p className="text-white/90 font-normal leading-snug line-clamp-3">
-                  2 horses · 10 riders free
-                </p>
+                <HeroRotatingPlan />
               </div>
             </div>
             <div className="shrink-0 max-w-[11rem] sm:max-w-none">
@@ -448,6 +446,38 @@ function HeroRotatingHorseNews() {
   return (
     <p
       className="text-white/90 font-normal normal-case tracking-normal text-[0.65rem] md:text-[0.7rem] leading-snug line-clamp-3 overflow-hidden w-full"
+      title={line}
+      aria-live="polite"
+      aria-atomic="true"
+    >
+      {line}
+    </p>
+  );
+}
+
+function HeroRotatingPlan() {
+  const [index, setIndex] = useState(0);
+
+  useEffect(() => {
+    const id = window.setInterval(() => {
+      setIndex((i) => (i + 1) % SUBSCRIPTION_PLANS.length);
+    }, 5000);
+    return () => window.clearInterval(id);
+  }, []);
+
+  const plan = SUBSCRIPTION_PLANS[index];
+  if (!plan) return null;
+
+  const line =
+    plan.price === null
+      ? `${plan.name} · Unlimited horses & riders`
+      : plan.price === 0
+      ? `${plan.name} · ${plan.horses} horses · ${plan.riders} riders free`
+      : `${plan.name} · ${plan.horses} horses · ${plan.riders} riders`;
+
+  return (
+    <p
+      className="w-full text-white/90 font-normal normal-case tracking-normal text-[0.65rem] md:text-[0.7rem] leading-snug line-clamp-3 overflow-hidden"
       title={line}
       aria-live="polite"
       aria-atomic="true"

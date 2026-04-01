@@ -2,15 +2,25 @@
 
 import { useEffect, useState } from "react";
 
-export default function ShareInviteCode() {
-  const [stable, setStable] = useState<{
-    name: string;
-    joinCode: string;
-    role: string;
-  } | null>(null);
+type StableInvite = {
+  name: string;
+  joinCode: string;
+  role: string;
+};
+
+interface ShareInviteCodeProps {
+  stable?: StableInvite | null;
+}
+
+export default function ShareInviteCode({ stable: initialStable = null }: ShareInviteCodeProps) {
+  const [stable, setStable] = useState<StableInvite | null>(initialStable);
   const [copied, setCopied] = useState(false);
 
   useEffect(() => {
+    if (initialStable) {
+      setStable(initialStable);
+      return;
+    }
     fetch("/api/stable")
       .then((res) => res.json())
       .then((data) => {
@@ -23,7 +33,7 @@ export default function ShareInviteCode() {
         }
       })
       .catch(() => {});
-  }, []);
+  }, [initialStable]);
 
   const copyCode = () => {
     if (!stable) return;

@@ -5,6 +5,7 @@ import { useProfile } from "@/components/providers/ProfileProvider";
 import Link from "next/link";
 import ShareInviteCode from "@/components/dashboard/ShareInviteCode";
 import { HorseAvatar } from "@/components/HorseAvatar";
+import FirstTimeTutorial from "@/components/dashboard/FirstTimeTutorial";
 
 interface Horse {
   id: number;
@@ -53,31 +54,105 @@ function calculateWorkload(horse: Horse) {
 export default function DashboardPage() {
   const [horses, setHorses] = useState<Horse[]>([]);
   const [sessions, setSessions] = useState<Session[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [inviteStable, setInviteStable] = useState<{
+    name: string;
+    joinCode: string;
+    role: string;
+  } | null>(null);
   const [bookings, setBookings] = useState<
     { id: string; bookingDate: string; startTime: string; status?: string; horse?: { name: string; photoUrl?: string | null } }[]
   >([]);
   const [careReminders, setCareReminders] = useState<
     { id: string; typeLabel: string; nextDue: string; horseName: string; horseId: string; overdue: boolean }[]
   >([]);
-  const { profile } = useProfile();
+  const [showTutorial, setShowTutorial] = useState(false);
+  const [savingTutorial, setSavingTutorial] = useState(false);
+  const { profile, refetch: refetchProfile } = useProfile();
 
   useEffect(() => {
     fetchData();
   }, []);
 
+  useEffect(() => {
+    if (!profile) return;
+    if (profile.onboardingCompleted) return;
+    if (profile.role === "guardian") return;
+    setShowTutorial(true);
+  }, [profile]);
+
+  const finishTutorial = async () => {
+    if (!profile || savingTutorial) return;
+    setSavingTutorial(true);
+    try {
+      const res = await fetch("/api/profile", {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ onboardingCompleted: true }),
+      });
+      if (!res.ok) return;
+      setShowTutorial(false);
+      await refetchProfile();
+    } finally {
+      setSavingTutorial(false);
+    }
+  };
+
   const fetchData = async () => {
-    const [horsesRes, sessionsRes, bookingsRes, careRes] = await Promise.all([
-      fetch("/api/horses"),
-      fetch("/api/sessions"),
-      fetch("/api/bookings").catch(() => ({ json: async () => [] })),
-      fetch("/api/care-reminders").catch(() => ({ json: async () => [] })),
-    ]);
-    const bookingsData = await bookingsRes.json();
-    const careData = await careRes.json();
-    setHorses(await horsesRes.json());
-    setSessions(await sessionsRes.json());
-    setBookings(Array.isArray(bookingsData) ? bookingsData : []);
-    setCareReminders(Array.isArray(careData) ? careData : []);
+    setLoading(true);
+    const safeJson = async (res: Response | null, fallback: unknown) => {
+      if (!res) return fallback;
+      try {
+        return await res.json();
+      } catch {
+        return fallback;
+      }
+    };
+
+    try {
+      const [horsesRes, sessionsRes, bookingsRes, careRes, stableRes] =
+        await Promise.all([
+          fetch("/api/horses"),
+          fetch("/api/sessions"),
+          fetch("/api/bookings").catch(() => null),
+          fetch("/api/care-reminders").catch(() => null),
+          fetch("/api/stable").catch(() => null),
+        ]);
+
+      const [horsesData, sessionsData, bookingsData, careData, stableData] =
+        await Promise.all([
+          safeJson(horsesRes, []),
+          safeJson(sessionsRes, []),
+          safeJson(bookingsRes, []),
+          safeJson(careRes, []),
+          safeJson(stableRes, null),
+        ]);
+
+      setHorses(Array.isArray(horsesData) ? horsesData : []);
+      setSessions(Array.isArray(sessionsData) ? sessionsData : []);
+      setBookings(Array.isArray(bookingsData) ? bookingsData : []);
+      setCareReminders(Array.isArray(careData) ? careData : []);
+      setInviteStable(
+        stableData &&
+          typeof stableData === "object" &&
+          "joinCode" in stableData &&
+          typeof (stableData as { joinCode?: unknown }).joinCode === "string"
+          ? {
+              name:
+                typeof (stableData as { name?: unknown }).name === "string"
+                  ? (stableData as { name: string }).name
+                  : "Your Stable",
+              joinCode: (stableData as { joinCode: string }).joinCode,
+              role:
+                typeof (stableData as { role?: unknown }).role === "string"
+                  ? (stableData as { role: string }).role
+                  : "owner",
+            }
+          : null
+      );
+    } finally {
+      setLoading(false);
+    }
   };
 
   const totalSessions = sessions.filter(
@@ -137,13 +212,37 @@ export default function DashboardPage() {
     );
   }
 
+  if (loading) {
+    return (
+      <div className="space-y-4">
+        <div className="h-10 w-44 border border-black/10" />
+        <div className="h-36 border border-black/10" />
+        <div className="h-24 border border-black/10" />
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+          <div className="h-24 border border-black/10" />
+          <div className="h-24 border border-black/10" />
+          <div className="h-24 border border-black/10" />
+          <div className="h-24 border border-black/10" />
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="space-y-10">
+      <FirstTimeTutorial
+        role={profile?.role}
+        open={showTutorial}
+        saving={savingTutorial}
+        onComplete={finishTutorial}
+        onSkip={finishTutorial}
+      />
+
       <h1 className="font-serif text-3xl md:text-4xl font-normal text-black">
         Dashboard
       </h1>
 
-      {isOwner && <ShareInviteCode />}
+      {isOwner && <ShareInviteCode stable={inviteStable} />}
 
       {/* Student: Upcoming lessons */}
       {isStudent && upcomingBookings.length > 0 && (

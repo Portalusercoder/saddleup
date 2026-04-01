@@ -19,6 +19,7 @@ export interface Profile {
   role?: string;
   id_card_url?: string | null;
   myRiderId?: string | null;
+  onboardingCompleted?: boolean;
 }
 
 interface ProfileContextValue {

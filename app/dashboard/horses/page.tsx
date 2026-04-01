@@ -122,16 +122,33 @@ export default function HorsesPage() {
       router.replace("/dashboard/my-horses");
       return;
     }
-    fetchHorses();
-    fetch("/api/subscription")
-      .then((r) => r.json())
-      .then((d) => setSubscription(d))
-      .catch(() => setSubscription(null));
-    fetch("/api/riders")
-      .then((r) => r.json())
-      .then((data) => setRiders(Array.isArray(data) ? data : []))
-      .catch(() => setRiders([]));
-  }, [profile]);
+    setLoading(true);
+    (async () => {
+      try {
+        const [horsesRes, subRes, ridersRes] = await Promise.all([
+          fetch("/api/horses"),
+          fetch("/api/subscription"),
+          fetch("/api/riders"),
+        ]);
+        const horsesData = await horsesRes.json();
+        const subData = subRes.ok ? await subRes.json() : null;
+        const ridersData = await ridersRes.json();
+        setHorses(Array.isArray(horsesData) ? horsesData : []);
+        setSubscription(
+          subData && typeof subData === "object" && "canAddHorse" in subData
+            ? subData
+            : null
+        );
+        setRiders(Array.isArray(ridersData) ? ridersData : []);
+      } catch {
+        setHorses([]);
+        setSubscription(null);
+        setRiders([]);
+      } finally {
+        setLoading(false);
+      }
+    })();
+  }, [profile, router]);
 
   const fetchHorses = async () => {
     try {
@@ -141,8 +158,6 @@ export default function HorsesPage() {
     } catch (err) {
       console.error(err);
       setHorses([]);
-    } finally {
-      setLoading(false);
     }
   };
 

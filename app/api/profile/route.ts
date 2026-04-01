@@ -16,21 +16,21 @@ export async function GET() {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
-    const admin = createAdminClient();
-    let { data: profile } = await admin
+    let { data: profile } = await supabase
       .from("profiles")
-      .select("id, full_name, email, avatar_url, role, stable_id, id_card_url")
+      .select("id, full_name, email, avatar_url, role, stable_id, id_card_url, onboarding_completed")
       .eq("id", user.id)
       .maybeSingle();
 
     if (!profile) {
+      const admin = createAdminClient();
       const input = buildCompleteSignupInputFromUser(user);
       if (input) {
         const result = await runCompleteSignup(user, input);
         if (result.ok) {
           const again = await admin
             .from("profiles")
-            .select("id, full_name, email, avatar_url, role, stable_id, id_card_url")
+            .select("id, full_name, email, avatar_url, role, stable_id, id_card_url, onboarding_completed")
             .eq("id", user.id)
             .maybeSingle();
           profile = again.data ?? null;
@@ -44,7 +44,7 @@ export async function GET() {
 
     let myRiderId: string | null = null;
     if (profile.role === "student") {
-      const { data: rider } = await admin
+      const { data: rider } = await supabase
         .from("riders")
         .select("id")
         .eq("profile_id", user.id)
@@ -60,6 +60,7 @@ export async function GET() {
       role: profile.role,
       id_card_url: profile.id_card_url,
       myRiderId,
+      onboardingCompleted: Boolean(profile.onboarding_completed),
     });
   } catch (err) {
     console.error("GET profile error:", err);
@@ -83,11 +84,14 @@ export async function PUT(req: Request) {
     }
 
     const body = await req.json();
-    const { fullName, avatarUrl } = body;
+    const { fullName, avatarUrl, onboardingCompleted } = body;
 
     const updates: Record<string, unknown> = {};
     if (typeof fullName === "string") updates.full_name = fullName.trim();
     if (typeof avatarUrl === "string") updates.avatar_url = avatarUrl.trim() || null;
+    if (typeof onboardingCompleted === "boolean") {
+      updates.onboarding_completed = onboardingCompleted;
+    }
 
     if (Object.keys(updates).length === 0) {
       return NextResponse.json({ error: "No valid updates" }, { status: 400 });
@@ -110,6 +114,7 @@ export async function PUT(req: Request) {
       email: data.email ?? user.email,
       avatarUrl: data.avatar_url,
       role: data.role,
+      onboardingCompleted: Boolean(data.onboarding_completed),
     });
   } catch (err) {
     console.error("PUT profile error:", err);

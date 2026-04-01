@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, Suspense } from "react";
+import { useEffect, useState, Suspense } from "react";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
@@ -19,6 +19,10 @@ function LoginForm() {
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
 
+  useEffect(() => {
+    router.prefetch(redirect);
+  }, [router, redirect]);
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError(null);
@@ -34,8 +38,7 @@ function LoginForm() {
         return;
       }
 
-      router.push(redirect);
-      router.refresh();
+      router.replace(redirect);
     } catch {
       setError("Something went wrong");
     } finally {
