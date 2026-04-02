@@ -255,23 +255,41 @@ export default function SignupPage() {
         await abortVerifiedSignup(updateError.message);
         return;
       }
+      // Persist session to cookies before server-side routes read them (SSR client).
+      await supabase.auth.getSession();
       if (role === "owner") {
         const res = await fetch("/api/auth/complete-signup", {
           method: "POST",
+          credentials: "include",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
             userId: vData.user.id,
             role,
             fullName: fullName.trim(),
             email: email.trim(),
-            stableName: enterpriseInviteCode.trim() ? "" : stableName,
-            joinCode: enterpriseInviteCode.trim() ? enterpriseInviteCode.trim().toUpperCase().replace(/\s/g, "") : undefined,
+            stableName: enterpriseInviteCode.trim() ? "" : stableName.trim(),
+            joinCode: enterpriseInviteCode.trim()
+              ? enterpriseInviteCode.trim().toUpperCase().replace(/\s/g, "")
+              : undefined,
           }),
         });
-        const result = await res.json();
+        let result: { error?: string; inviteCode?: string } = {};
+        try {
+          result = (await res.json()) as { error?: string; inviteCode?: string };
+        } catch {
+          if (!res.ok) {
+            setLoading(false);
+            await abortVerifiedSignup("Failed to complete signup");
+            return;
+          }
+        }
         if (!res.ok) {
           setLoading(false);
-          await abortVerifiedSignup(result.error || "Failed to complete signup");
+          await abortVerifiedSignup(
+            result.inviteCode
+              ? `${result.error ?? "Failed to complete signup"} ${result.inviteCode}`
+              : result.error || "Failed to complete signup"
+          );
           return;
         }
         router.push("/dashboard");
@@ -304,8 +322,10 @@ export default function SignupPage() {
     setLoading(true);
     setError(null);
     try {
+      await createClient().auth.getSession();
       const res = await fetch("/api/auth/complete-signup", {
         method: "POST",
+        credentials: "include",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           userId: verifyData.userId,
@@ -315,7 +335,16 @@ export default function SignupPage() {
           joinCode: joinCode.trim(),
         }),
       });
-      const result = await res.json();
+      let result: { error?: string; inviteCode?: string } = {};
+      try {
+        result = (await res.json()) as { error?: string; inviteCode?: string };
+      } catch {
+        if (!res.ok) {
+          setLoading(false);
+          await abortVerifiedSignup("Failed to complete signup");
+          return;
+        }
+      }
       if (!res.ok) {
         setLoading(false);
         await abortVerifiedSignup(

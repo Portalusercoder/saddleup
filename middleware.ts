@@ -8,10 +8,11 @@ export async function middleware(request: NextRequest) {
 export const config = {
   matcher: [
     /*
-     * Skip /api : route handlers read session from cookies; refreshing JWT on every
-     * API call duplicated getUser() and added latency. Session still refreshes on
-     * full page navigations (dashboard, auth pages, etc.).
+     * Most /api routes skip middleware to avoid duplicate getUser() work.
+     * Auth API routes still need session refresh so cookies match the browser client
+     * right after verifyOtp (e.g. POST /api/auth/complete-signup).
      */
     "/((?!api/|_next/static|_next/image|favicon.ico|.*\\.(?:svg|png|jpg|jpeg|gif|webp)$).*)",
+    "/api/auth/:path*",
   ],
 };

@@ -38,9 +38,9 @@ export default function GuidedTourOverlay({
     if (!open || !current) return;
     const el = document.querySelector(current.selector) as HTMLElement | null;
     if (!el) {
-      if (index >= steps.length - 1) {
-        onComplete();
-      } else {
+      // Skip forward when an anchor is missing, but never auto-finish: that was
+      // incorrectly marking onboarding / tours "done" without user action.
+      if (index < steps.length - 1) {
         setIndex((v) => Math.min(v + 1, steps.length - 1));
       }
       return;
@@ -64,7 +64,7 @@ export default function GuidedTourOverlay({
       window.removeEventListener("resize", update);
       window.removeEventListener("scroll", update, true);
     };
-  }, [open, current, index, steps.length, onComplete]);
+  }, [open, current, index, steps.length]);
 
   if (!open || !current || steps.length === 0) return null;
 
