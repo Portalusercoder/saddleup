@@ -10,8 +10,6 @@ const navLinks = [
   { href: "/#about", label: "About" },
   { href: "/blog", label: "Guides" },
   { href: "/contact", label: "Contact" },
-  { href: "/login", label: "Sign in" },
-  { href: "/signup", label: "Sign up" },
 ];
 
 const socialLinks = [

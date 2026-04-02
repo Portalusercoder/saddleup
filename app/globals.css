@@ -73,6 +73,11 @@ html.dark {
   color: var(--text-muted) !important;
 }
 
+.dark .text-black\/65,
+.dark .text-black\/75 {
+  color: var(--text-muted) !important;
+}
+
 .dark .border-black\/5,
 .dark .border-black\/10,
 .dark .border-black\/15,

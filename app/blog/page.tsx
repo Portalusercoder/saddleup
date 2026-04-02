@@ -30,30 +30,33 @@ const posts = [
 
 export default function BlogIndexPage() {
   return (
-    <main className="min-h-screen bg-base text-black">
+    <main className="min-h-screen bg-base text-black dark:text-white">
       <div className="max-w-3xl mx-auto px-4 sm:px-6 md:px-8 py-12 sm:py-16 md:py-20">
         <Link
           href="/"
-          className="text-xs uppercase tracking-[0.2em] text-black/50 hover:text-black transition"
+          className="text-xs uppercase tracking-[0.2em] text-black/50 hover:text-black dark:text-white/55 dark:hover:text-white transition"
         >
           ← Home
         </Link>
-        <h1 className="mt-8 font-serif text-3xl sm:text-4xl font-normal text-black">
+        <h1 className="mt-8 font-serif text-3xl sm:text-4xl font-normal text-black dark:text-white">
           Guides for stables
         </h1>
-        <p className="mt-4 text-black/65 leading-relaxed">
+        <p className="mt-4 leading-relaxed text-black/65 dark:text-white/70">
           Articles for riding schools and equestrian facilities in Saudi Arabia and the Gulf. Written for owners and managers evaluating operations and software.
         </p>
         <ul className="mt-12 space-y-8">
           {posts.map((post) => (
-            <li key={post.href} className="border-b border-black/10 pb-8 last:border-0">
+            <li
+              key={post.href}
+              className="border-b border-black/10 pb-8 last:border-0 dark:border-white/10"
+            >
               <Link
                 href={post.href}
-                className="font-serif text-xl text-black hover:text-accent transition"
+                className="font-serif text-xl text-black transition hover:text-accent dark:text-white dark:hover:text-accent"
               >
                 {post.title}
               </Link>
-              <p className="mt-2 text-sm text-black/60">{post.blurb}</p>
+              <p className="mt-2 text-sm text-black/60 dark:text-white/65">{post.blurb}</p>
               <Link
                 href={post.href}
                 className="mt-3 inline-block text-xs uppercase tracking-wider text-accent hover:opacity-90"
