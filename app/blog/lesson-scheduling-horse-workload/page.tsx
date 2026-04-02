@@ -1,0 +1,89 @@
+import type { Metadata } from "next";
+import Link from "next/link";
+import { SeoArticle } from "@/components/landing/SeoArticle";
+
+const appUrl = process.env.NEXT_PUBLIC_APP_URL || "https://www.saddleup-sa.com";
+
+export const metadata: Metadata = {
+  title: "Lesson scheduling & horse workload for stables",
+  description:
+    "Why lesson scheduling and workload tracking matter for horse welfare and stable reputation — and how to structure it for riding schools in KSA & GCC.",
+  alternates: { canonical: `${appUrl}/blog/lesson-scheduling-horse-workload` },
+  openGraph: {
+    title: "Lesson scheduling & horse workload | Saddle Up",
+    description:
+      "Reduce overtraining risk with clearer scheduling and workload visibility.",
+    url: "/blog/lesson-scheduling-horse-workload",
+    type: "article",
+  },
+};
+
+export default function LessonSchedulingHorseWorkloadPage() {
+  return (
+    <main className="min-h-screen">
+      <SeoArticle
+        title="Lesson scheduling and horse workload management for stables"
+        description="Busy lesson programs can push the same horses repeatedly through the week. Transparent scheduling and workload habits protect equine athletes and your stable’s reputation."
+      >
+        <h2>Why workload matters</h2>
+        <p>
+          Horses are not interchangeable lesson units. Repeated hard sessions without adequate rest increase injury risk, sour behavior, and long-term soundness issues. For a riding school, that translates into unhappy clients, vet bills, and trainer burnout.
+        </p>
+
+        <h2>Scheduling principles</h2>
+        <ul>
+          <li>
+            Match horse assignment to rider level and lesson type (schooling vs. jump vs. lunge).
+          </li>
+          <li>
+            Cap back-to-back high-intensity use per horse where possible; use your schedule grid to see conflicts.
+          </li>
+          <li>
+            Block arena or facility maintenance without double-booking horses that need those windows.
+          </li>
+          <li>
+            Keep pending requests visible so trainers do not verbally promise the same slot twice.
+          </li>
+        </ul>
+
+        <h2>What to track weekly</h2>
+        <ul>
+          <li>Total minutes or sessions per horse by type (training, lesson, rest).</li>
+          <li>Horses approaching consecutive heavy days without a rest marker.</li>
+          <li>Trainers who need more balanced horse rotation across their roster.</li>
+        </ul>
+
+        <h2>Tools that help</h2>
+        <p>
+          A combined{" "}
+          <Link href="/#features" className="text-accent underline underline-offset-2 hover:opacity-90">
+            schedule and booking
+          </Link>{" "}
+          view lets you see lessons alongside blocked time. Session logging ties actual work to each horse so analytics reflect reality, not assumptions.{" "}
+          <Link href="/" className="text-accent underline underline-offset-2 hover:opacity-90">
+            Saddle Up
+          </Link>{" "}
+          includes scheduling, bookings, sessions, and workload-oriented views for trainers and owners.
+        </p>
+
+        <h2>KSA & GCC considerations</h2>
+        <p>
+          Summer heat and midday restrictions may compress lesson windows into tighter peaks — which makes rotation and honest workload data even more important. Plan density where your facility can still rest its lesson string.
+        </p>
+
+        <h2>Get started</h2>
+        <p>
+          If you are evaluating software, start with a two-week pilot: log every lesson and session, then review which horses carried the load. Adjust rules before peak season.{" "}
+          <Link href="/signup" className="text-accent underline underline-offset-2 hover:opacity-90">
+            Sign up
+          </Link>{" "}
+          or{" "}
+          <Link href="/contact" className="text-accent underline underline-offset-2 hover:opacity-90">
+            talk to us
+          </Link>{" "}
+          about a structured rollout.
+        </p>
+      </SeoArticle>
+    </main>
+  );
+}
