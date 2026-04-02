@@ -186,6 +186,23 @@ export async function runCompleteSignup(
 
     if (profileError) {
       console.error("Profile creation error:", profileError);
+      // Idempotency: during fast retries/double-submit it's possible another
+      // request created the profile while this request was still running.
+      // In that case we should treat signup as success and only delete the
+      // *extra* stable record we created (if it's not the one referenced by
+      // the existing profile).
+      const { data: existing } = await admin
+        .from("profiles")
+        .select("id, stable_id")
+        .eq("id", user.id)
+        .maybeSingle();
+      if (existing) {
+        if (existing.stable_id !== stable.id) {
+          await admin.from("stables").delete().eq("id", stable.id);
+        }
+        return { ok: true };
+      }
+
       await admin.from("stables").delete().eq("id", stable.id);
       const msg = profileError.message ?? "";
       if (/onboarding_completed/i.test(msg)) {
@@ -271,6 +288,17 @@ export async function runCompleteSignup(
 
     if (profileError) {
       console.error("Profile creation error:", profileError);
+      // Idempotency for retries/double-submit: if the profile already exists,
+      // consider this a success.
+      const { data: existing } = await admin
+        .from("profiles")
+        .select("id")
+        .eq("id", user.id)
+        .maybeSingle();
+      if (existing) {
+        return { ok: true };
+      }
+
       const msg = profileError.message ?? "";
       if (/onboarding_completed/i.test(msg)) {
         return {
