@@ -170,9 +170,6 @@ export default function Navbar() {
             <Link href="/#about" className={isOverHero ? "hover:text-white transition" : "hover:text-black transition"}>
               {lang === "ar" ? "عن المنصة" : "About"}
             </Link>
-            <Link href="/#pricing" className={isOverHero ? "hover:text-white transition" : "hover:text-black transition"}>
-              {lang === "ar" ? "معلومات" : "Information"}
-            </Link>
             <Link href="/contact" className={isOverHero ? "hover:text-white transition" : "hover:text-black transition"}>
               {lang === "ar" ? "تواصل" : "Contact"}
             </Link>

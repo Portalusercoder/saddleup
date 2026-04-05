@@ -77,6 +77,30 @@ export default function Footer({
           ))}
         </nav>
 
+        <nav
+          className="mt-6 flex flex-wrap items-center justify-center gap-x-4 gap-y-2 text-xs uppercase tracking-wider text-black/50"
+          aria-label="Legal"
+        >
+          <Link href="/privacy" className="hover:text-black/80 transition">
+            Privacy
+          </Link>
+          <span className="text-black/20" aria-hidden>
+            |
+          </span>
+          <Link href="/terms" className="hover:text-black/80 transition">
+            Terms
+          </Link>
+          <span className="text-black/20" aria-hidden>
+            |
+          </span>
+          <Link
+            href="/legal/data-compliance"
+            className="hover:text-black/80 transition"
+          >
+            Data &amp; compliance
+          </Link>
+        </nav>
+
         {/* Social icons */}
         <div className="mt-10 flex items-center justify-center gap-6">
           {socialLinks.map(({ href, icon: Icon, label }) => (

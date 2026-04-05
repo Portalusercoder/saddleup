@@ -10,6 +10,7 @@ import {
   SiSupabase,
   SiStripe,
   SiPrisma,
+  SiCloudflare,
 } from "react-icons/si";
 import { SUBSCRIPTION_PLANS } from "@/lib/constants";
 import AuthModal from "@/components/landing/AuthModal";
@@ -348,6 +349,11 @@ export default function Home() {
                 node: <SiSupabase />,
                 title: "Supabase",
                 href: "https://supabase.com",
+              },
+              {
+                node: <SiCloudflare />,
+                title: "Cloudflare",
+                href: "https://www.cloudflare.com",
               },
               { node: <SiStripe />, title: "Stripe", href: "https://stripe.com" },
               {
