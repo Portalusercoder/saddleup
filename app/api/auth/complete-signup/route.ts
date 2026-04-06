@@ -2,11 +2,14 @@ import { NextResponse } from "next/server";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { createClient } from "@/lib/supabase/server";
 import { runCompleteSignup } from "@/lib/auth/completeSignup";
+import { parseJsonBody } from "@/lib/validation/parse-json";
+import { completeSignupBodySchema } from "@/lib/validation/schemas";
 
 export async function POST(req: Request) {
   try {
-    const body = await req.json();
-    const { role, fullName, email, stableName, joinCode, userId } = body;
+    const parsed = await parseJsonBody(req, completeSignupBodySchema);
+    if (!parsed.ok) return parsed.response;
+    const { role, fullName, email, stableName, joinCode, userId } = parsed.data;
 
     const supabase = await createClient();
     const {
@@ -47,8 +50,8 @@ export async function POST(req: Request) {
       role,
       fullName,
       email,
-      stableName,
-      joinCode,
+      stableName: stableName ?? undefined,
+      joinCode: joinCode ?? undefined,
     });
 
     if (!result.ok) {

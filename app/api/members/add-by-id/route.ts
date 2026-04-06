@@ -2,6 +2,8 @@ import { NextResponse } from "next/server";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { createClient } from "@/lib/supabase/server";
 import { ensureStableCanMutate } from "@/lib/subscription";
+import { parseJsonBody } from "@/lib/validation/parse-json";
+import { addMemberByIdSchema } from "@/lib/validation/schemas";
 
 export async function POST(req: Request) {
   try {
@@ -41,26 +43,12 @@ export async function POST(req: Request) {
       );
     }
 
-    const body = await req.json();
-    const { inviteCode, memberRole } = body;
-
-    if (!inviteCode?.trim()) {
-      return NextResponse.json(
-        { error: "Invite code (personal ID) is required" },
-        { status: 400 }
-      );
-    }
-
-    const validRoles = ["student", "trainer", "guardian"];
-    if (!memberRole || !validRoles.includes(memberRole)) {
-      return NextResponse.json(
-        { error: "Member role must be student, trainer, or guardian" },
-        { status: 400 }
-      );
-    }
+    const parsed = await parseJsonBody(req, addMemberByIdSchema);
+    if (!parsed.ok) return parsed.response;
+    const { inviteCode, memberRole } = parsed.data;
 
     const admin = createAdminClient();
-    const code = inviteCode.trim().toUpperCase().replace(/\s/g, "");
+    const code = inviteCode;
 
     const { data: inviteRow, error: inviteError } = await admin
       .from("user_invite_codes")

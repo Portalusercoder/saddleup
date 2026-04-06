@@ -1,6 +1,8 @@
 import { NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
 import { ensureStableCanMutate } from "@/lib/subscription";
+import { parseJsonBody } from "@/lib/validation/parse-json";
+import { healthPostSchema } from "@/lib/validation/schemas";
 
 /* ================= GET HEALTH LOGS ================= */
 
@@ -73,7 +75,9 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
-    const body = await req.json();
+    const parsed = await parseJsonBody(req, healthPostSchema);
+    if (!parsed.ok) return parsed.response;
+    const body = parsed.data;
 
     const { data: profile } = await supabase
       .from("profiles")
@@ -93,31 +97,16 @@ export async function POST(req: Request) {
       );
     }
 
-    if (!body.horseId || !body.type) {
-      return NextResponse.json(
-        { error: "horseId and type are required" },
-        { status: 400 }
-      );
-    }
-
-    const validTypes = ["vet", "vaccination", "deworming", "farrier", "injury"];
-    if (!validTypes.includes(body.type)) {
-      return NextResponse.json(
-        { error: "Invalid log type" },
-        { status: 400 }
-      );
-    }
-
     const { data: log, error } = await supabase
       .from("health_logs")
       .insert({
         horse_id: body.horseId,
         log_type: body.type,
-        log_date: body.date || new Date().toISOString().slice(0, 10),
-        description: body.description?.trim() || null,
-        cost_cents: body.cost ? Math.round(Number(body.cost) * 100) : null,
-        next_due: body.nextDue || null,
-        recovery_status: body.recoveryStatus?.trim() || null,
+        log_date: body.date ?? new Date().toISOString().slice(0, 10),
+        description: body.description,
+        cost_cents: body.cost != null ? Math.round(body.cost * 100) : null,
+        next_due: body.nextDue,
+        recovery_status: body.recoveryStatus,
       })
       .select()
       .single();

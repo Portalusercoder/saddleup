@@ -1,5 +1,7 @@
 import { NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
+import { parseJsonBody } from "@/lib/validation/parse-json";
+import { riderPutSchema } from "@/lib/validation/schemas";
 
 export async function GET(
   _req: Request,
@@ -54,20 +56,22 @@ export async function PUT(
     }
 
     const id = (await params).id;
-    const body = await req.json();
+    const parsed = await parseJsonBody(req, riderPutSchema);
+    if (!parsed.ok) return parsed.response;
+    const body = parsed.data;
 
     const { data: rider, error } = await supabase
       .from("riders")
       .update({
-        name: body.name?.trim(),
-        email: body.email?.trim() || null,
-        phone: body.phone?.trim() || null,
+        name: body.name,
+        email: body.email,
+        phone: body.phone,
         level: body.level || body.ridingLevel || null,
-        goals: body.goals?.trim() || null,
+        goals: body.goals,
         assigned_trainer_id: body.assigned_trainer_id || null,
         guardian_id: body.guardian_id !== undefined ? body.guardian_id || null : undefined,
-        notes: body.notes?.trim() || null,
-        instructor_feedback: body.instructor_feedback?.trim() || body.instructorFeedback?.trim() || null,
+        notes: body.notes,
+        instructor_feedback: body.instructor_feedback ?? body.instructorFeedback ?? null,
       })
       .eq("id", id)
       .select()

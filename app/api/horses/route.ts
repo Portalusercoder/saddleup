@@ -8,6 +8,8 @@ import {
   mapTemperament,
   mapTrainingStatus,
 } from "@/lib/map-horse-payload";
+import { parseJsonBody } from "@/lib/validation/parse-json";
+import { horsePostSchema } from "@/lib/validation/schemas";
 
 /* ================= GET ALL HORSES ================= */
 
@@ -106,14 +108,9 @@ export async function POST(req: Request) {
       );
     }
 
-    const body = await req.json();
-
-    if (!body.name?.trim()) {
-      return NextResponse.json(
-        { error: "Name is required" },
-        { status: 400 }
-      );
-    }
+    const parsed = await parseJsonBody(req, horsePostSchema);
+    if (!parsed.ok) return parsed.response;
+    const body = parsed.data;
 
     const limitCheck = await checkHorseLimit(profile.data.stable_id);
     if (!limitCheck.allowed) {
@@ -130,30 +127,30 @@ export async function POST(req: Request) {
 
     const insertPayload = {
       stable_id: profile.data.stable_id,
-      name: body.name.trim(),
-      gender: body.gender || "Gelding",
-      age: body.age ? Number(body.age) : null,
-      breed: body.breed?.trim() || null,
-      color: body.color?.trim() || null,
-      markings: body.markings?.trim() || null,
-      height_cm: body.height ? Number(body.height) : null,
-      microchip: body.microchip?.trim() || null,
-      ueln: body.ueln?.trim() || null,
-      date_of_birth: body.dateOfBirth || null,
-      registered_name: body.registeredName?.trim() || null,
-      passport_number: body.passportNumber?.trim() || null,
-      fei_id: body.feiId?.trim() || null,
-      studbook: body.studbook?.trim() || null,
-      horse_category: body.horseCategory?.trim() || null,
-      sire_name: body.sireName?.trim() || null,
-      dam_name: body.damName?.trim() || null,
-      country_of_birth: body.countryOfBirth?.trim() || null,
+      name: body.name,
+      gender: body.gender,
+      age: body.age,
+      breed: body.breed,
+      color: body.color,
+      markings: body.markings,
+      height_cm: body.height,
+      microchip: body.microchip,
+      ueln: body.ueln,
+      date_of_birth: body.dateOfBirth,
+      registered_name: body.registeredName,
+      passport_number: body.passportNumber,
+      fei_id: body.feiId,
+      studbook: body.studbook,
+      horse_category: body.horseCategory,
+      sire_name: body.sireName,
+      dam_name: body.damName,
+      country_of_birth: body.countryOfBirth,
       temperament: temperament || null,
       skill_level: skillLevel || null,
       training_status: trainingStatus || null,
       suitability: suitability || null,
-      photo_path: body.photoUrl?.trim() || null,
-      notes: body.owner?.trim() ? `Owner: ${body.owner.trim()}` : body.notes?.trim() || null,
+      photo_path: body.photoUrl,
+      notes: body.owner ? `Owner: ${body.owner}` : body.notes,
     };
 
     const { data: horse, error } = await supabase

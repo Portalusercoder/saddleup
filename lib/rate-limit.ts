@@ -1,10 +1,9 @@
-/**
- * Simple in-memory rate limiter: max N requests per window per identifier (e.g. IP).
- * Resets on serverless cold start. For multi-instance use Redis (e.g. Upstash) later.
- */
+import { Ratelimit } from "@upstash/ratelimit";
+import { Redis } from "@upstash/redis";
 
 const store = new Map<string, number[]>();
-const WINDOW_MS = 60 * 1000; // 1 minute
+const WINDOW_MS = 60 * 1000;
+const ratelimitCache = new Map<string, Ratelimit>();
 
 function prune(keys: number[], windowMs: number): number[] {
   const cutoff = Date.now() - windowMs;
@@ -15,16 +14,10 @@ export type RateLimitResult =
   | { allowed: true }
   | { allowed: false; retryAfterMs: number };
 
-/**
- * Check rate limit. If allowed, records the request.
- * @param key - e.g. IP or user id
- * @param maxPerWindow - max requests per window (default 10)
- * @param windowMs - window in ms (default 60000)
- */
-export function checkRateLimit(
+function checkRateLimitInMemory(
   key: string,
-  maxPerWindow = 10,
-  windowMs = WINDOW_MS
+  maxPerWindow: number,
+  windowMs: number
 ): RateLimitResult {
   const now = Date.now();
   let keys = store.get(key) ?? [];
@@ -41,6 +34,54 @@ export function checkRateLimit(
   keys.push(now);
   store.set(key, keys);
   return { allowed: true };
+}
+
+function getUpstashRatelimit(
+  maxPerWindow: number,
+  windowMs: number
+): Ratelimit | null {
+  const url = process.env.UPSTASH_REDIS_REST_URL;
+  const token = process.env.UPSTASH_REDIS_REST_TOKEN;
+  if (!url || !token) return null;
+
+  const cacheKey = `${maxPerWindow}:${windowMs}`;
+  const existing = ratelimitCache.get(cacheKey);
+  if (existing) return existing;
+
+  const redis = Redis.fromEnv();
+  const windowSeconds = Math.max(1, Math.ceil(windowMs / 1000));
+  const limiter = new Ratelimit({
+    redis,
+    limiter: Ratelimit.slidingWindow(maxPerWindow, `${windowSeconds} s`),
+    prefix: "saddleup:rl",
+  });
+  ratelimitCache.set(cacheKey, limiter);
+  return limiter;
+}
+
+/**
+ * Check rate limit. Uses Upstash Redis when configured,
+ * otherwise falls back to in-memory (dev/single instance).
+ */
+export async function checkRateLimit(
+  key: string,
+  maxPerWindow = 10,
+  windowMs = WINDOW_MS
+): Promise<RateLimitResult> {
+  const upstash = getUpstashRatelimit(maxPerWindow, windowMs);
+  if (!upstash) {
+    return checkRateLimitInMemory(key, maxPerWindow, windowMs);
+  }
+
+  try {
+    const result = await upstash.limit(key);
+    if (result.success) return { allowed: true };
+    const retryAfterMs = Math.max(0, result.reset - Date.now());
+    return { allowed: false, retryAfterMs };
+  } catch {
+    // Fail-open to local in-memory limiter if Redis is transiently unavailable.
+    return checkRateLimitInMemory(key, maxPerWindow, windowMs);
+  }
 }
 
 /** Get client IP from request (Vercel / Next). */

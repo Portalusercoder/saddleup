@@ -1,6 +1,8 @@
 import { NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
 import { checkRiderLimit, ensureStableCanMutate } from "@/lib/subscription";
+import { parseJsonBody } from "@/lib/validation/parse-json";
+import { riderPostSchema } from "@/lib/validation/schemas";
 
 export async function GET() {
   try {
@@ -75,14 +77,10 @@ export async function POST(req: Request) {
       );
     }
 
-    const body = await req.json();
+    const parsed = await parseJsonBody(req, riderPostSchema);
+    if (!parsed.ok) return parsed.response;
 
-    if (!body.name?.trim()) {
-      return NextResponse.json(
-        { error: "Name is required" },
-        { status: 400 }
-      );
-    }
+    const body = parsed.data;
 
     const limitCheck = await checkRiderLimit(profile.data.stable_id);
     if (!limitCheck.allowed) {
@@ -96,14 +94,15 @@ export async function POST(req: Request) {
       .from("riders")
       .insert({
         stable_id: profile.data.stable_id,
-        name: body.name.trim(),
-        email: body.email?.trim() || null,
-        phone: body.phone?.trim() || null,
-        level: body.level || body.ridingLevel || null,
-        goals: body.goals?.trim() || null,
-        assigned_trainer_id: body.assigned_trainer_id || null,
-        notes: body.notes?.trim() || null,
-        instructor_feedback: body.instructor_feedback?.trim() || body.instructorFeedback?.trim() || null,
+        name: body.name,
+        email: body.email,
+        phone: body.phone,
+        level: body.level ?? body.ridingLevel,
+        goals: body.goals,
+        assigned_trainer_id: body.assigned_trainer_id,
+        notes: body.notes,
+        instructor_feedback:
+          body.instructor_feedback ?? body.instructorFeedback,
       })
       .select()
       .single();

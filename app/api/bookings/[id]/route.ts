@@ -2,6 +2,8 @@ import { NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
 import { sendNotificationEmail } from "@/lib/send-notification-email";
 import { ensureStableCanMutate } from "@/lib/subscription";
+import { parseJsonBody } from "@/lib/validation/parse-json";
+import { bookingPatchSchema } from "@/lib/validation/schemas";
 
 export async function PATCH(
   req: Request,
@@ -39,7 +41,9 @@ export async function PATCH(
       }
     }
 
-    const body = await req.json();
+    const parsed = await parseJsonBody(req, bookingPatchSchema);
+    if (!parsed.ok) return parsed.response;
+    const body = parsed.data;
     const role = profile.data.role as string;
 
     if (role === "student") {

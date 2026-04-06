@@ -1,6 +1,8 @@
 import { NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
 import { ensureStableCanMutate } from "@/lib/subscription";
+import { parseJsonBody } from "@/lib/validation/parse-json";
+import { incidentPostSchema } from "@/lib/validation/schemas";
 
 export async function GET() {
   try {
@@ -97,7 +99,9 @@ export async function POST(req: Request) {
       );
     }
 
-    const body = await req.json();
+    const parsed = await parseJsonBody(req, incidentPostSchema);
+    if (!parsed.ok) return parsed.response;
+
     const {
       incidentDate,
       horseId,
@@ -108,22 +112,7 @@ export async function POST(req: Request) {
       location,
       severity,
       followUpNotes,
-    } = body;
-
-    if (!incidentDate?.trim() || !horseId || !description?.trim()) {
-      return NextResponse.json(
-        { error: "Date, horse, and description are required" },
-        { status: 400 }
-      );
-    }
-
-    const validSeverity = ["minor", "moderate", "serious"];
-    if (severity && !validSeverity.includes(severity)) {
-      return NextResponse.json(
-        { error: "Severity must be minor, moderate, or serious" },
-        { status: 400 }
-      );
-    }
+    } = parsed.data;
 
     const { data: report, error } = await supabase
       .from("incident_reports")
@@ -131,13 +120,13 @@ export async function POST(req: Request) {
         stable_id: profile.stable_id,
         incident_date: incidentDate,
         horse_id: horseId,
-        rider_id: riderId || null,
-        rider_name: riderName?.trim() || null,
-        description: description.trim(),
-        witnesses: witnesses?.trim() || null,
-        location: location?.trim() || null,
-        severity: severity || null,
-        follow_up_notes: followUpNotes?.trim() || null,
+        rider_id: riderId,
+        rider_name: riderName,
+        description,
+        witnesses,
+        location,
+        severity,
+        follow_up_notes: followUpNotes,
         reported_by: user.id,
       })
       .select(

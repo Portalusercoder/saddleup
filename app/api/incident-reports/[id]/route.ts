@@ -1,5 +1,7 @@
 import { NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
+import { parseJsonBody } from "@/lib/validation/parse-json";
+import { incidentPutSchema } from "@/lib/validation/schemas";
 
 export async function PUT(
   req: Request,
@@ -30,7 +32,8 @@ export async function PUT(
       );
     }
 
-    const body = await req.json();
+    const parsed = await parseJsonBody(req, incidentPutSchema);
+    if (!parsed.ok) return parsed.response;
     const {
       incidentDate,
       horseId,
@@ -41,22 +44,18 @@ export async function PUT(
       location,
       severity,
       followUpNotes,
-    } = body;
+    } = parsed.data;
 
     const updates: Record<string, unknown> = {};
     if (typeof incidentDate === "string") updates.incident_date = incidentDate;
     if (typeof horseId === "string") updates.horse_id = horseId;
     if (riderId !== undefined) updates.rider_id = riderId || null;
-    if (riderName !== undefined) updates.rider_name = riderName?.trim() || null;
-    if (typeof description === "string") updates.description = description.trim();
-    if (witnesses !== undefined) updates.witnesses = witnesses?.trim() || null;
-    if (location !== undefined) updates.location = location?.trim() || null;
-    if (severity !== undefined)
-      updates.severity = ["minor", "moderate", "serious"].includes(severity)
-        ? severity
-        : null;
-    if (followUpNotes !== undefined)
-      updates.follow_up_notes = followUpNotes?.trim() || null;
+    if (riderName !== undefined) updates.rider_name = riderName;
+    if (typeof description === "string") updates.description = description;
+    if (witnesses !== undefined) updates.witnesses = witnesses;
+    if (location !== undefined) updates.location = location;
+    if (severity !== undefined) updates.severity = severity;
+    if (followUpNotes !== undefined) updates.follow_up_notes = followUpNotes;
 
     if (Object.keys(updates).length === 0) {
       return NextResponse.json({ error: "No valid updates" }, { status: 400 });

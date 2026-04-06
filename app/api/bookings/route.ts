@@ -2,6 +2,8 @@ import { NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
 import { checkRateLimit, getClientIp } from "@/lib/rate-limit";
 import { ensureStableCanMutate } from "@/lib/subscription";
+import { parseJsonBody } from "@/lib/validation/parse-json";
+import { bookingPostSchema } from "@/lib/validation/schemas";
 
 export async function GET(req: Request) {
   try {
@@ -88,7 +90,7 @@ export async function GET(req: Request) {
 export async function POST(req: Request) {
   try {
     const ip = getClientIp(req);
-    const limit = checkRateLimit(`bookings:${ip}`, 10, 60_000);
+    const limit = await checkRateLimit(`bookings:${ip}`, 10, 60_000);
     if (!limit.allowed) {
       return NextResponse.json(
         { error: "Too many requests. Try again in a minute." },
@@ -124,19 +126,15 @@ export async function POST(req: Request) {
       );
     }
 
-    const body = await req.json();
-    const { horseId, riderId, bookingDate, startTime, endTime, notes } = body;
+    const parsed = await parseJsonBody(req, bookingPostSchema);
+    if (!parsed.ok) return parsed.response;
 
-    if (!horseId || !bookingDate || !startTime || !endTime) {
-      return NextResponse.json(
-        { error: "horseId, bookingDate, startTime, endTime are required" },
-        { status: 400 }
-      );
-    }
+    const { horseId, riderId, bookingDate, startTime, endTime, notes, trainerId } =
+      parsed.data;
 
     const role = profile.data.role as string;
 
-    let finalRiderId = riderId || null;
+    let finalRiderId = riderId;
     if (role === "student") {
       const { data: myRider } = await supabase
         .from("riders")
@@ -205,12 +203,12 @@ export async function POST(req: Request) {
         stable_id: profile.data.stable_id,
         horse_id: horseId,
         rider_id: finalRiderId,
-        trainer_id: body.trainerId || null,
+        trainer_id: trainerId,
         booking_date: bookingDate,
         start_time: startTime,
         end_time: endTime,
         status,
-        notes: notes?.trim() || null,
+        notes,
       })
       .select()
       .single();

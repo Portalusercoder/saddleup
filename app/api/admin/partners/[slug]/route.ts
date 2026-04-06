@@ -3,25 +3,8 @@ import { createClient } from "@/lib/supabase/server";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { isAdminEmail } from "@/lib/admin";
 import { getPartnerCampaignStatus } from "@/lib/partners/campaigns";
-
-type PatchBody = {
-  name?: string;
-  enabled?: boolean;
-  startsAt?: string | null;
-  endsAt?: string | null;
-  destinationUrl?: string;
-  promoCode?: string | null;
-  ctaText?: string;
-};
-
-function isValidUrl(value: string): boolean {
-  try {
-    const url = new URL(value);
-    return url.protocol === "http:" || url.protocol === "https:";
-  } catch {
-    return false;
-  }
-}
+import { parseJsonBody } from "@/lib/validation/parse-json";
+import { adminPartnerPatchSchema } from "@/lib/validation/schemas";
 
 async function requireAdmin() {
   const supabase = await createClient();
@@ -54,17 +37,9 @@ export async function PATCH(
   if (!user) return NextResponse.json({ error: "Forbidden" }, { status: 403 });
 
   const { slug } = await params;
-  const body = (await req.json()) as PatchBody;
-
-  if (typeof body.destinationUrl === "string" && !isValidUrl(body.destinationUrl)) {
-    return NextResponse.json({ error: "Invalid destinationUrl" }, { status: 400 });
-  }
-  if (body.startsAt && Number.isNaN(new Date(body.startsAt).getTime())) {
-    return NextResponse.json({ error: "Invalid startsAt" }, { status: 400 });
-  }
-  if (body.endsAt && Number.isNaN(new Date(body.endsAt).getTime())) {
-    return NextResponse.json({ error: "Invalid endsAt" }, { status: 400 });
-  }
+  const parsed = await parseJsonBody(req, adminPartnerPatchSchema);
+  if (!parsed.ok) return parsed.response;
+  const body = parsed.data;
 
   const admin = createAdminClient();
   const patch: Record<string, unknown> = {};

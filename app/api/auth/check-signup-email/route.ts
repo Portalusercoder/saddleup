@@ -1,13 +1,13 @@
 import { NextResponse } from "next/server";
 import { createAdminClient } from "@/lib/supabase/admin";
+import { parseJsonBody } from "@/lib/validation/parse-json";
+import { checkSignupEmailSchema } from "@/lib/validation/schemas";
 
 export async function POST(req: Request) {
   try {
-    const body = (await req.json()) as { email?: string };
-    const raw = (body.email ?? "").trim().toLowerCase();
-    if (!raw) {
-      return NextResponse.json({ error: "Email is required" }, { status: 400 });
-    }
+    const parsed = await parseJsonBody(req, checkSignupEmailSchema);
+    if (!parsed.ok) return parsed.response;
+    const raw = parsed.data.email;
 
     const admin = createAdminClient();
 

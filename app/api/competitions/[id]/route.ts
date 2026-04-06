@@ -1,5 +1,7 @@
 import { NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
+import { parseJsonBody } from "@/lib/validation/parse-json";
+import { competitionPutSchema } from "@/lib/validation/schemas";
 
 export async function PUT(
   req: Request,
@@ -27,17 +29,19 @@ export async function PUT(
       return NextResponse.json({ error: "Only owners and trainers can edit competitions" }, { status: 403 });
     }
 
-    const body = await req.json();
-    const { eventName, eventDate, horseId, location, discipline, result, notes } = body;
+    const parsed = await parseJsonBody(req, competitionPutSchema);
+    if (!parsed.ok) return parsed.response;
+    const { eventName, eventDate, horseId, location, discipline, result, notes } =
+      parsed.data;
 
     const updates: Record<string, unknown> = {};
-    if (typeof eventName === "string") updates.event_name = eventName.trim();
+    if (typeof eventName === "string") updates.event_name = eventName;
     if (typeof eventDate === "string") updates.event_date = eventDate;
     if (typeof horseId === "string") updates.horse_id = horseId;
-    if (location !== undefined) updates.location = location?.trim() || null;
-    if (discipline !== undefined) updates.discipline = discipline?.trim() || null;
-    if (result !== undefined) updates.result = result?.trim() || null;
-    if (notes !== undefined) updates.notes = notes?.trim() || null;
+    if (location !== undefined) updates.location = location;
+    if (discipline !== undefined) updates.discipline = discipline;
+    if (result !== undefined) updates.result = result;
+    if (notes !== undefined) updates.notes = notes;
 
     if (Object.keys(updates).length === 0) {
       return NextResponse.json({ error: "No valid updates" }, { status: 400 });

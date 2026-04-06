@@ -2,6 +2,8 @@ import { NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
 import { sendNotificationEmail } from "@/lib/send-notification-email";
 import { ensureStableCanMutate } from "@/lib/subscription";
+import { parseJsonBody } from "@/lib/validation/parse-json";
+import { noticesSendSchema } from "@/lib/validation/schemas";
 
 const delay = (ms: number) => new Promise((r) => setTimeout(r, ms));
 
@@ -40,22 +42,10 @@ export async function POST(req: Request) {
       );
     }
 
-    const body = await req.json();
-    const { subject, bodyHtml, sendToStudents, sendToTrainers, sendToGuardians } = body;
-
-    if (!subject || typeof subject !== "string" || !subject.trim()) {
-      return NextResponse.json({ error: "Subject is required" }, { status: 400 });
-    }
-    if (!bodyHtml || typeof bodyHtml !== "string" || !bodyHtml.trim()) {
-      return NextResponse.json({ error: "Content is required" }, { status: 400 });
-    }
-
-    const toStudents = !!sendToStudents;
-    const toTrainers = !!sendToTrainers;
-    const toGuardians = !!sendToGuardians;
-    if (!toStudents && !toTrainers && !toGuardians) {
-      return NextResponse.json({ error: "Select at least one audience (Students, Trainers, or Guardians)" }, { status: 400 });
-    }
+    const parsed = await parseJsonBody(req, noticesSendSchema);
+    if (!parsed.ok) return parsed.response;
+    const { subject, bodyHtml, sendToStudents: toStudents, sendToTrainers: toTrainers, sendToGuardians: toGuardians } =
+      parsed.data;
 
     const emails: string[] = [];
 
@@ -88,13 +78,13 @@ export async function POST(req: Request) {
       );
     }
 
-    const html = bodyHtml.trim();
+    const html = bodyHtml;
     let sent = 0;
     const failures: string[] = [];
 
     for (let i = 0; i < uniqueEmails.length; i++) {
       if (i > 0) await delay(600);
-      const result = await sendNotificationEmail(uniqueEmails[i], subject.trim(), html);
+      const result = await sendNotificationEmail(uniqueEmails[i], subject, html);
       if (result.ok) {
         sent++;
       } else {
@@ -104,7 +94,7 @@ export async function POST(req: Request) {
 
     await supabase.from("newsletter_campaigns").insert({
       stable_id: stableId,
-      subject: subject.trim(),
+      subject,
       body_html: html,
       recipient_count: sent,
     });

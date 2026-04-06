@@ -1,6 +1,8 @@
 import { NextResponse } from "next/server";
 import { randomUUID } from "crypto";
 import { createClient } from "@/lib/supabase/server";
+import { parseJsonBody } from "@/lib/validation/parse-json";
+import { newsletterSubscriberAddSchema } from "@/lib/validation/schemas";
 
 export async function GET(req: Request) {
   try {
@@ -84,17 +86,9 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: "No stable found" }, { status: 403 });
     }
 
-    const body = await req.json();
-    const email = typeof body.email === "string" ? body.email.trim().toLowerCase() : "";
-    const fullName = typeof body.fullName === "string" ? body.fullName.trim() : null;
-
-    const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    if (!email || !EMAIL_REGEX.test(email)) {
-      return NextResponse.json(
-        { error: "Please enter a valid email address" },
-        { status: 400 }
-      );
-    }
+    const parsed = await parseJsonBody(req, newsletterSubscriberAddSchema);
+    if (!parsed.ok) return parsed.response;
+    const { email, fullName } = parsed.data;
 
     const { data: existing } = await supabase
       .from("newsletter_subscribers")

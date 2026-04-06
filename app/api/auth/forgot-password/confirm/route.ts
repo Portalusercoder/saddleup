@@ -6,10 +6,12 @@ import {
   normalizeResetEmail,
   verifyResetCode,
 } from "@/lib/password-reset";
+import { parseJsonBody } from "@/lib/validation/parse-json";
+import { forgotPasswordConfirmSchema } from "@/lib/validation/schemas";
 
 export async function POST(req: Request) {
   const ip = getClientIp(req);
-  const ipLimit = checkRateLimit(`forgot-pw-confirm-ip:${ip}`, 30, 60_000);
+  const ipLimit = await checkRateLimit(`forgot-pw-confirm-ip:${ip}`, 30, 60_000);
   if (!ipLimit.allowed) {
     return NextResponse.json(
       { error: "Too many attempts. Try again in a minute." },
@@ -17,20 +19,13 @@ export async function POST(req: Request) {
     );
   }
 
-  let body: { email?: string; code?: string; newPassword?: string };
-  try {
-    body = await req.json();
-  } catch {
-    return NextResponse.json({ error: "Invalid request" }, { status: 400 });
-  }
-
-  const emailRaw = body.email?.trim();
-  const codeRaw = body.code?.trim()?.replace(/\D/g, "") ?? "";
-  const newPassword = body.newPassword ?? "";
-
-  if (!emailRaw || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(emailRaw)) {
+  const parsed = await parseJsonBody(req, forgotPasswordConfirmSchema);
+  if (!parsed.ok) {
     return NextResponse.json({ error: "Enter a valid email address." }, { status: 400 });
   }
+  const emailRaw = parsed.data.email;
+  const codeRaw = parsed.data.code;
+  const newPassword = parsed.data.newPassword;
 
   if (codeRaw.length !== 4) {
     return NextResponse.json({ error: "Enter the 4-digit code from your email." }, { status: 400 });
@@ -45,7 +40,7 @@ export async function POST(req: Request) {
 
   const email = normalizeResetEmail(emailRaw);
 
-  const emailLimit = checkRateLimit(`forgot-pw-confirm-email:${email}`, 10, 15 * 60_000);
+  const emailLimit = await checkRateLimit(`forgot-pw-confirm-email:${email}`, 10, 15 * 60_000);
   if (!emailLimit.allowed) {
     return NextResponse.json(
       { error: "Too many attempts for this email. Try again later." },

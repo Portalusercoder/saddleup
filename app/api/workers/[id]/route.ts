@@ -1,5 +1,7 @@
 import { NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
+import { parseJsonBody } from "@/lib/validation/parse-json";
+import { workerPutSchema } from "@/lib/validation/schemas";
 
 export async function PUT(
   req: Request,
@@ -30,23 +32,16 @@ export async function PUT(
       );
     }
 
-    const body = await req.json();
-    const { name, email, phone, role, notes } = body;
+    const parsed = await parseJsonBody(req, workerPutSchema);
+    if (!parsed.ok) return parsed.response;
+    const { name, email, phone, role, notes } = parsed.data;
 
     const updates: Record<string, unknown> = {};
-    if (name !== undefined) {
-      const v = (name?.trim() || "").slice(0, 500);
-      if (!v) return NextResponse.json({ error: "Name is required" }, { status: 400 });
-      updates.name = v;
-    }
-    if (email !== undefined) updates.email = email?.trim() || null;
-    if (phone !== undefined) updates.phone = phone?.trim() || null;
-    if (role !== undefined) {
-      const v = (role?.trim() || "").slice(0, 200);
-      if (!v) return NextResponse.json({ error: "Role is required" }, { status: 400 });
-      updates.role = v;
-    }
-    if (notes !== undefined) updates.notes = notes?.trim() || null;
+    if (name !== undefined) updates.name = name;
+    if (email !== undefined) updates.email = email;
+    if (phone !== undefined) updates.phone = phone;
+    if (role !== undefined) updates.role = role;
+    if (notes !== undefined) updates.notes = notes;
     updates.updated_at = new Date().toISOString();
 
     const { data: worker, error } = await supabase

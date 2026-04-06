@@ -1,6 +1,8 @@
 import { NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
 import { ensureStableCanMutate } from "@/lib/subscription";
+import { parseJsonBody } from "@/lib/validation/parse-json";
+import { riderHorseAssignmentPostSchema } from "@/lib/validation/schemas";
 
 export async function GET(req: Request) {
   try {
@@ -103,15 +105,9 @@ export async function POST(req: Request) {
       );
     }
 
-    const body = await req.json();
-    const { riderId, horseId, suitabilityNotes } = body;
-
-    if (!riderId || !horseId) {
-      return NextResponse.json(
-        { error: "riderId and horseId are required" },
-        { status: 400 }
-      );
-    }
+    const parsed = await parseJsonBody(req, riderHorseAssignmentPostSchema);
+    if (!parsed.ok) return parsed.response;
+    const { riderId, horseId, suitabilityNotes } = parsed.data;
 
     const { data, error } = await supabase
       .from("rider_horse_assignments")
@@ -119,7 +115,7 @@ export async function POST(req: Request) {
         stable_id: profile.data.stable_id,
         rider_id: riderId,
         horse_id: horseId,
-        suitability_notes: suitabilityNotes?.trim() || null,
+        suitability_notes: suitabilityNotes,
       })
       .select()
       .single();

@@ -3,6 +3,8 @@ import { randomUUID } from "crypto";
 import { createClient } from "@/lib/supabase/server";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { sendNotificationEmail } from "@/lib/send-notification-email";
+import { parseJsonBody } from "@/lib/validation/parse-json";
+import { newsletterSendSchema } from "@/lib/validation/schemas";
 
 const BASE_URL = process.env.NEXT_PUBLIC_APP_URL || "https://saddleup-sand.vercel.app";
 
@@ -39,15 +41,9 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: "No stable found" }, { status: 403 });
     }
 
-    const body = await req.json();
-    const { subject, bodyHtml } = body;
-
-    if (!subject || typeof subject !== "string" || !subject.trim()) {
-      return NextResponse.json({ error: "Subject is required" }, { status: 400 });
-    }
-    if (!bodyHtml || typeof bodyHtml !== "string" || !bodyHtml.trim()) {
-      return NextResponse.json({ error: "Content is required" }, { status: 400 });
-    }
+    const parsed = await parseJsonBody(req, newsletterSendSchema);
+    if (!parsed.ok) return parsed.response;
+    const { subject, bodyHtml } = parsed.data;
 
     const admin = createAdminClient();
 
@@ -87,8 +83,8 @@ export async function POST(req: Request) {
           .eq("email", s.email)
           .eq("stable_id", stableId);
       }
-      const html = appendUnsubscribeLink(bodyHtml.trim(), token);
-      const result = await sendNotificationEmail(s.email, subject.trim(), html);
+      const html = appendUnsubscribeLink(bodyHtml, token);
+      const result = await sendNotificationEmail(s.email, subject, html);
       if (result.ok) {
         sent++;
       } else {
@@ -98,8 +94,8 @@ export async function POST(req: Request) {
 
     await admin.from("newsletter_campaigns").insert({
       stable_id: stableId,
-      subject: subject.trim(),
-      body_html: bodyHtml.trim(),
+      subject,
+      body_html: bodyHtml,
       recipient_count: sent,
     });
 

@@ -9,7 +9,7 @@ const DELAY_DAYS = 30;
 export async function POST(req: Request) {
   try {
     const ip = getClientIp(req);
-    const limit = checkRateLimit(`request-deletion:${ip}`, 5, 60_000);
+    const limit = await checkRateLimit(`request-deletion:${ip}`, 5, 60_000);
     if (!limit.allowed) {
       return NextResponse.json(
         { error: "Too many requests. Try again in a minute." },

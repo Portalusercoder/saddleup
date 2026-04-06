@@ -1,6 +1,8 @@
 import { NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
 import { ensureStableCanMutate } from "@/lib/subscription";
+import { parseJsonBody } from "@/lib/validation/parse-json";
+import { workerPostSchema } from "@/lib/validation/schemas";
 
 export async function GET() {
   try {
@@ -84,32 +86,19 @@ export async function POST(req: Request) {
       );
     }
 
-    const body = await req.json();
-    const { name, email, phone, role, notes } = body;
-
-    if (!name || typeof name !== "string" || !name.trim()) {
-      return NextResponse.json(
-        { error: "Name is required" },
-        { status: 400 }
-      );
-    }
-
-    if (!role || typeof role !== "string" || !role.trim()) {
-      return NextResponse.json(
-        { error: "Role is required" },
-        { status: 400 }
-      );
-    }
+    const parsed = await parseJsonBody(req, workerPostSchema);
+    if (!parsed.ok) return parsed.response;
+    const { name, email, phone, role, notes } = parsed.data;
 
     const { data: worker, error } = await supabase
       .from("workers")
       .insert({
         stable_id: profile.stable_id,
-        name: name.trim(),
-        email: email?.trim() || null,
-        phone: phone?.trim() || null,
-        role: role.trim(),
-        notes: notes?.trim() || null,
+        name,
+        email,
+        phone,
+        role,
+        notes,
       })
       .select()
       .single();

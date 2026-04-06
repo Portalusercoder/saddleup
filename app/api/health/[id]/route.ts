@@ -1,21 +1,25 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
+import { parseJsonBody } from "@/lib/validation/parse-json";
+import { healthPutSchema } from "@/lib/validation/schemas";
 
 export async function PUT(
   req: Request,
   { params }: { params: Promise<{ id: string }> }
 ) {
   try {
-    const body = await req.json();
+    const parsed = await parseJsonBody(req, healthPutSchema);
+    if (!parsed.ok) return parsed.response;
+    const body = parsed.data;
     const id = Number((await params).id);
 
     const log = await prisma.healthLog.update({
       where: { id },
       data: {
-        type: body.type,
+        type: body.type ?? undefined,
         date: body.date ? new Date(body.date) : undefined,
         description: body.description ?? undefined,
-        cost: body.cost !== undefined ? Number(body.cost) : undefined,
+        cost: body.cost !== undefined ? body.cost : undefined,
         nextDue: body.nextDue ? new Date(body.nextDue) : undefined,
         recoveryStatus: body.recoveryStatus ?? undefined,
       },

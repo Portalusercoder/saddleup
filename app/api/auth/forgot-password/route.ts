@@ -8,13 +8,15 @@ import {
   PASSWORD_RESET_TTL_MS,
 } from "@/lib/password-reset";
 import { sendPasswordResetCodeEmail } from "@/lib/send-password-reset-email";
+import { parseJsonBody } from "@/lib/validation/parse-json";
+import { forgotPasswordRequestSchema } from "@/lib/validation/schemas";
 
 const PUBLIC_OK =
   "If an account exists for that email, you’ll receive a 4-digit code shortly.";
 
 export async function POST(req: Request) {
   const ip = getClientIp(req);
-  const ipLimit = checkRateLimit(`forgot-pw-ip:${ip}`, 20, 60_000);
+  const ipLimit = await checkRateLimit(`forgot-pw-ip:${ip}`, 20, 60_000);
   if (!ipLimit.allowed) {
     return NextResponse.json(
       { error: "Too many requests. Try again in a minute." },
@@ -22,21 +24,16 @@ export async function POST(req: Request) {
     );
   }
 
-  let body: { email?: string };
-  try {
-    body = await req.json();
-  } catch {
-    return NextResponse.json({ error: "Invalid request" }, { status: 400 });
-  }
-
-  const emailRaw = body.email?.trim();
-  if (!emailRaw || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(emailRaw)) {
+  const parsed = await parseJsonBody(req, forgotPasswordRequestSchema);
+  if (!parsed.ok) {
     return NextResponse.json({ error: "Enter a valid email address." }, { status: 400 });
   }
 
+  const emailRaw = parsed.data.email;
+
   const email = normalizeResetEmail(emailRaw);
 
-  const emailLimit = checkRateLimit(`forgot-pw-email:${email}`, 5, 15 * 60_000);
+  const emailLimit = await checkRateLimit(`forgot-pw-email:${email}`, 5, 15 * 60_000);
   if (!emailLimit.allowed) {
     return NextResponse.json({ ok: true, message: PUBLIC_OK });
   }

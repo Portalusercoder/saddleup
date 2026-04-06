@@ -2,14 +2,14 @@ import { NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
 import { stripe, STRIPE_PRICE_IDS } from "@/lib/stripe";
 import { SUBSCRIPTION_LIMITS } from "@/lib/constants";
+import { parseJsonBody } from "@/lib/validation/parse-json";
+import { planIdSchema } from "@/lib/validation/schemas";
 
 export async function POST(req: Request) {
   try {
-    const { planId } = await req.json();
-
-    if (!planId || !["starter", "stable"].includes(planId)) {
-      return NextResponse.json({ error: "Invalid plan" }, { status: 400 });
-    }
+    const parsed = await parseJsonBody(req, planIdSchema);
+    if (!parsed.ok) return parsed.response;
+    const { planId } = parsed.data;
 
     const priceId = planId === "starter" ? STRIPE_PRICE_IDS.starter : STRIPE_PRICE_IDS.stable;
     if (!priceId || !process.env.STRIPE_SECRET_KEY) {

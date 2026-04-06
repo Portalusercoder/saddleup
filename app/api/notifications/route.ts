@@ -1,6 +1,8 @@
 import { NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
 import { sendNotificationEmail } from "@/lib/send-notification-email";
+import { parseJsonBody } from "@/lib/validation/parse-json";
+import { notificationMarkReadSchema } from "@/lib/validation/schemas";
 
 export async function GET() {
   try {
@@ -124,15 +126,9 @@ export async function PATCH(req: Request) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
-    const body = await req.json();
-    const { id, read } = body;
-
-    if (!id || read !== true) {
-      return NextResponse.json(
-        { error: "id and read: true required" },
-        { status: 400 }
-      );
-    }
+    const parsed = await parseJsonBody(req, notificationMarkReadSchema);
+    if (!parsed.ok) return parsed.response;
+    const { id } = parsed.data;
 
     const { data, error } = await supabase
       .from("notifications")

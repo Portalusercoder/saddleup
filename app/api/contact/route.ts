@@ -1,6 +1,8 @@
 import { NextResponse } from "next/server";
 import { Resend } from "resend";
 import { checkRateLimit, getClientIp } from "@/lib/rate-limit";
+import { parseJsonBody } from "@/lib/validation/parse-json";
+import { contactBodySchema } from "@/lib/validation/schemas";
 
 const CONTACT_TO = process.env.CONTACT_TO_EMAIL ?? "omarkhuddus@gmail.com";
 const RESEND_FROM =
@@ -56,7 +58,7 @@ function buildGeneralBody(body: Record<string, unknown>): string {
 export async function POST(req: Request) {
   try {
     const ip = getClientIp(req);
-    const limit = checkRateLimit(`contact:${ip}`, 10, 60_000);
+    const limit = await checkRateLimit(`contact:${ip}`, 10, 60_000);
     if (!limit.allowed) {
       return NextResponse.json(
         { error: "Too many requests. Try again in a minute." },
@@ -73,43 +75,17 @@ export async function POST(req: Request) {
       );
     }
 
-    const body = (await req.json()) as Record<string, unknown>;
-    const type = body.type as string | undefined;
+    const parsed = await parseJsonBody(req, contactBodySchema);
+    if (!parsed.ok) return parsed.response;
+    const body = parsed.data as unknown as Record<string, unknown>;
 
-    if (type === "enterprise") {
-      const {
-        companyLegalName,
-        entityType,
-        countryOfRegistration,
-        addressLine1,
-        city,
-        postalCode,
-        country,
-        contactName,
-        email,
-      } = body;
-      if (
-        !companyLegalName ||
-        !entityType ||
-        !countryOfRegistration ||
-        !addressLine1 ||
-        !city ||
-        !postalCode ||
-        !country ||
-        !contactName ||
-        !email
-      ) {
-        return NextResponse.json(
-          { error: "Missing required enterprise fields" },
-          { status: 400 }
-        );
-      }
+    if (parsed.data.type === "enterprise") {
       const resend = new Resend(apiKey);
       const text = buildEnterpriseBody(body);
       const { error } = await resend.emails.send({
         from: RESEND_FROM,
         to: [CONTACT_TO],
-        subject: `[Saddle Up · Enterprise] ${String(body.companyLegalName).slice(0, 50)} — ${String(body.contactName)}`,
+        subject: `[Saddle Up · Enterprise] ${parsed.data.companyLegalName.slice(0, 50)} — ${parsed.data.contactName}`,
         text,
       });
       if (error) {
@@ -122,20 +98,13 @@ export async function POST(req: Request) {
       return NextResponse.json({ ok: true, type: "enterprise" });
     }
 
-    if (type === "general") {
-      const { name, email, subject, message } = body;
-      if (!name || !email || !subject || !message) {
-        return NextResponse.json(
-          { error: "Missing required fields: name, email, subject, message" },
-          { status: 400 }
-        );
-      }
+    if (parsed.data.type === "general") {
       const resend = new Resend(apiKey);
       const text = buildGeneralBody(body);
       const { error } = await resend.emails.send({
         from: RESEND_FROM,
         to: [CONTACT_TO],
-        subject: `[Saddle Up] ${String(subject).slice(0, 60)}`,
+        subject: `[Saddle Up] ${parsed.data.subject.slice(0, 60)}`,
         text,
       });
       if (error) {
@@ -152,7 +121,8 @@ export async function POST(req: Request) {
       { error: "Invalid type: use 'enterprise' or 'general'" },
       { status: 400 }
     );
-  } catch {
+  } catch (err) {
+    console.error("contact POST:", err);
     return NextResponse.json(
       { error: "Invalid request body" },
       { status: 400 }

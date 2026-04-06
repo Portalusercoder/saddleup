@@ -1,6 +1,8 @@
 import { NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
 import { ensureStableCanMutate } from "@/lib/subscription";
+import { parseJsonBody } from "@/lib/validation/parse-json";
+import { competitionPostSchema } from "@/lib/validation/schemas";
 
 export async function GET() {
   try {
@@ -86,27 +88,23 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: "Only owners and trainers can add competitions" }, { status: 403 });
     }
 
-    const body = await req.json();
-    const { eventName, eventDate, horseId, location, discipline, result, notes } = body;
+    const parsed = await parseJsonBody(req, competitionPostSchema);
+    if (!parsed.ok) return parsed.response;
 
-    if (!eventName?.trim() || !eventDate || !horseId) {
-      return NextResponse.json(
-        { error: "Event name, date, and horse are required" },
-        { status: 400 }
-      );
-    }
+    const { eventName, eventDate, horseId, location, discipline, result, notes } =
+      parsed.data;
 
     const { data: competition, error } = await supabase
       .from("competitions")
       .insert({
         stable_id: profile.stable_id,
         horse_id: horseId,
-        event_name: eventName.trim(),
+        event_name: eventName,
         event_date: eventDate,
-        location: location?.trim() || null,
-        discipline: discipline?.trim() || null,
-        result: result?.trim() || null,
-        notes: notes?.trim() || null,
+        location,
+        discipline,
+        result,
+        notes,
       })
       .select("id, event_name, event_date, location, discipline, result, notes, horse_id, horses(id, name)")
       .single();

@@ -2,8 +2,9 @@ import { NextResponse } from "next/server";
 import { randomUUID } from "crypto";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { sendNotificationEmail } from "@/lib/send-notification-email";
+import { parseJsonBody } from "@/lib/validation/parse-json";
+import { newsletterSubscribeSchema } from "@/lib/validation/schemas";
 
-const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 const BASE_URL = process.env.NEXT_PUBLIC_APP_URL || "https://saddleup-sand.vercel.app";
 
 const WELCOME_EMAIL_SUBJECT = "You're subscribed to Saddle Up";
@@ -20,19 +21,12 @@ function welcomeEmailHtml(unsubscribeToken: string) {
 
 export async function POST(req: Request) {
   try {
-    const body = await req.json();
-    const { email, fullName, stableId } = body;
+    const parsed = await parseJsonBody(req, newsletterSubscribeSchema);
+    if (!parsed.ok) return parsed.response;
 
-    const emailTrimmed = typeof email === "string" ? email.trim().toLowerCase() : "";
-    if (!emailTrimmed || !EMAIL_REGEX.test(emailTrimmed)) {
-      return NextResponse.json(
-        { error: "Please enter a valid email address" },
-        { status: 400 }
-      );
-    }
+    const { email: emailTrimmed, fullName, stableId: stable_id } = parsed.data;
 
     const supabase = createAdminClient();
-    const stable_id = stableId && typeof stableId === "string" ? stableId : null;
 
     const { data: existing } = await supabase
       .from("newsletter_subscribers")
@@ -47,7 +41,7 @@ export async function POST(req: Request) {
           .from("newsletter_subscribers")
           .update({
             unsubscribed_at: null,
-            full_name: fullName?.trim() || null,
+            full_name: fullName,
             subscribed_at: new Date().toISOString(),
           })
           .eq("id", existing.id);
@@ -79,7 +73,7 @@ export async function POST(req: Request) {
     const token = randomUUID();
     const { error } = await supabase.from("newsletter_subscribers").insert({
       email: emailTrimmed,
-      full_name: fullName?.trim() || null,
+      full_name: fullName,
       stable_id,
       unsubscribe_token: token,
     });

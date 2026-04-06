@@ -1,8 +1,7 @@
 import { NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
-
-const UUID_REGEX =
-  /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+import { parseJsonBody } from "@/lib/validation/parse-json";
+import { sessionPostSchema } from "@/lib/validation/schemas";
 
 function mapPunchType(value: string): string {
   const m: Record<string, string> = {
@@ -87,22 +86,11 @@ export async function GET() {
 
 export async function POST(req: Request) {
   try {
-    const body = await req.json();
+    const parsed = await parseJsonBody(req, sessionPostSchema);
+    if (!parsed.ok) return parsed.response;
 
-    if (!body.horseId) {
-      return NextResponse.json(
-        { error: "horseId is required" },
-        { status: 400 }
-      );
-    }
-
-    const horseId = String(body.horseId);
-    if (!UUID_REGEX.test(horseId)) {
-      return NextResponse.json(
-        { error: "Invalid horse ID. Horses must be from your stable." },
-        { status: 400 }
-      );
-    }
+    const body = parsed.data;
+    const horseId = body.horseId;
 
     const supabase = await createClient();
     const {
@@ -122,9 +110,9 @@ export async function POST(req: Request) {
       .insert({
         horse_id: horseId,
         punch_type: mapPunchType(body.punchType || "training"),
-        duration_minutes: isRest ? 0 : Number(body.duration ?? 0),
-        intensity: mapIntensity(body.intensity),
-        discipline: mapDiscipline(body.discipline),
+        duration_minutes: isRest ? 0 : body.duration,
+        intensity: mapIntensity(body.intensity ?? ""),
+        discipline: mapDiscipline(body.discipline ?? ""),
         rider_name: body.rider || null,
         notes: body.notes || null,
       })

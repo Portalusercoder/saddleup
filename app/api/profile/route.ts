@@ -1,5 +1,7 @@
 import { NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
+import { parseJsonBody } from "@/lib/validation/parse-json";
+import { profileUpdateSchema } from "@/lib/validation/schemas";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { buildCompleteSignupInputFromUser } from "@/lib/auth/signupFromMetadata";
 import { runCompleteSignup } from "@/lib/auth/completeSignup";
@@ -83,18 +85,15 @@ export async function PUT(req: Request) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
-    const body = await req.json();
-    const { fullName, avatarUrl, onboardingCompleted } = body;
+    const parsed = await parseJsonBody(req, profileUpdateSchema);
+    if (!parsed.ok) return parsed.response;
+    const { fullName, avatarUrl, onboardingCompleted } = parsed.data;
 
     const updates: Record<string, unknown> = {};
-    if (typeof fullName === "string") updates.full_name = fullName.trim();
-    if (typeof avatarUrl === "string") updates.avatar_url = avatarUrl.trim() || null;
-    if (typeof onboardingCompleted === "boolean") {
+    if (fullName !== undefined) updates.full_name = fullName;
+    if (avatarUrl !== undefined) updates.avatar_url = avatarUrl;
+    if (onboardingCompleted !== undefined) {
       updates.onboarding_completed = onboardingCompleted;
-    }
-
-    if (Object.keys(updates).length === 0) {
-      return NextResponse.json({ error: "No valid updates" }, { status: 400 });
     }
 
     const { data, error } = await supabase

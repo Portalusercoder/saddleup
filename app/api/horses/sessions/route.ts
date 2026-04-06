@@ -1,5 +1,7 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
+import { parseJsonBody } from "@/lib/validation/parse-json";
+import { horseSessionPrismaPostSchema } from "@/lib/validation/schemas";
 
 /* ================= GET ALL SESSIONS ================= */
 
@@ -26,24 +28,19 @@ export async function GET() {
 
 export async function POST(req: Request) {
   try {
-    const body = await req.json();
-
-    if (!body.horseId) {
-      return NextResponse.json(
-        { error: "horseId is required" },
-        { status: 400 }
-      );
-    }
+    const parsed = await parseJsonBody(req, horseSessionPrismaPostSchema);
+    if (!parsed.ok) return parsed.response;
+    const body = parsed.data;
 
     const session = await prisma.session.create({
       data: {
         punchType: body.punchType || "training",
-        duration: Number(body.duration ?? 0),
+        duration: body.duration,
         intensity: body.intensity || "medium",
         discipline: body.discipline || "flatwork",
         rider: body.rider || null,
         notes: body.notes || null,
-        horseId: Number(body.horseId),
+        horseId: body.horseId,
       },
     });
 

@@ -4,6 +4,8 @@ import { createAdminClient } from "@/lib/supabase/admin";
 import { isAdminEmail } from "@/lib/admin";
 import { generateInviteCode } from "@/lib/inviteCodes";
 import { allocateUniqueSlug, slugFromStableName } from "@/lib/stableSlug";
+import { parseJsonBody } from "@/lib/validation/parse-json";
+import { adminStableCreateSchema } from "@/lib/validation/schemas";
 
 /**
  * POST: Create an enterprise stable (admin only).
@@ -25,14 +27,9 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: "Forbidden" }, { status: 403 });
     }
 
-    const body = await req.json().catch(() => ({}));
-    const name = typeof body.name === "string" ? body.name.trim() : "";
-    if (!name) {
-      return NextResponse.json(
-        { error: "Stable name is required" },
-        { status: 400 }
-      );
-    }
+    const parsed = await parseJsonBody(req, adminStableCreateSchema);
+    if (!parsed.ok) return parsed.response;
+    const { name } = parsed.data;
 
     const admin = createAdminClient();
     const baseSlug = slugFromStableName(name);

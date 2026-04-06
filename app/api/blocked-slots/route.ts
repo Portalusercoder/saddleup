@@ -1,6 +1,8 @@
 import { NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
 import { ensureStableCanMutate } from "@/lib/subscription";
+import { parseJsonBody } from "@/lib/validation/parse-json";
+import { blockedSlotPostSchema } from "@/lib/validation/schemas";
 
 export async function GET(req: Request) {
   try {
@@ -112,15 +114,9 @@ export async function POST(req: Request) {
       );
     }
 
-    const body = await req.json();
-    const { blockedDate, startTime, endTime, reason } = body;
-
-    if (!blockedDate || !startTime || !endTime) {
-      return NextResponse.json(
-        { error: "blockedDate, startTime, endTime are required" },
-        { status: 400 }
-      );
-    }
+    const parsed = await parseJsonBody(req, blockedSlotPostSchema);
+    if (!parsed.ok) return parsed.response;
+    const { blockedDate, startTime, endTime, reason } = parsed.data;
 
     const { data, error } = await supabase
       .from("blocked_slots")
@@ -129,7 +125,7 @@ export async function POST(req: Request) {
         blocked_date: blockedDate,
         start_time: startTime,
         end_time: endTime,
-        reason: reason?.trim() || null,
+        reason,
         created_by: user.id,
       })
       .select()

@@ -9,6 +9,61 @@ import {
   mapTemperament,
   mapTrainingStatus,
 } from "@/lib/map-horse-payload";
+import { parseJsonBody } from "@/lib/validation/parse-json";
+import { horsePatchSchema } from "@/lib/validation/schemas";
+import type { z } from "zod";
+
+function horsePatchDataToRow(
+  d: z.infer<typeof horsePatchSchema>
+): Record<string, unknown> {
+  const updates: Record<string, unknown> = {};
+
+  if ("name" in d) updates.name = d.name;
+  if ("gender" in d) updates.gender = d.gender;
+  if ("age" in d) updates.age = d.age;
+  if ("breed" in d) updates.breed = d.breed;
+  if ("color" in d) updates.color = d.color;
+  if ("markings" in d) updates.markings = d.markings;
+  if ("height" in d) updates.height_cm = d.height;
+  if ("microchip" in d) updates.microchip = d.microchip;
+  if ("ueln" in d) updates.ueln = d.ueln;
+  if ("dateOfBirth" in d) updates.date_of_birth = d.dateOfBirth;
+  if ("registeredName" in d) updates.registered_name = d.registeredName;
+  if ("passportNumber" in d) updates.passport_number = d.passportNumber;
+  if ("feiId" in d) updates.fei_id = d.feiId;
+  if ("studbook" in d) updates.studbook = d.studbook;
+  if ("horseCategory" in d) updates.horse_category = d.horseCategory;
+  if ("sireName" in d) updates.sire_name = d.sireName;
+  if ("damName" in d) updates.dam_name = d.damName;
+  if ("countryOfBirth" in d) updates.country_of_birth = d.countryOfBirth;
+  if ("temperament" in d) {
+    updates.temperament = mapTemperament(d.temperament ?? null) ?? null;
+  }
+  if ("skillLevel" in d) {
+    updates.skill_level = mapSkillLevel(d.skillLevel ?? null);
+  }
+  if ("trainingStatus" in d) {
+    updates.training_status = mapTrainingStatus(d.trainingStatus ?? null);
+  }
+  if ("ridingSuitability" in d) {
+    updates.suitability = mapSuitability(d.ridingSuitability ?? null) ?? null;
+  }
+  if ("photoUrl" in d) updates.photo_path = d.photoUrl;
+
+  if ("owner" in d || "notes" in d) {
+    const hasOwner = "owner" in d;
+    const hasNotes = "notes" in d;
+    if (hasOwner && hasNotes) {
+      updates.notes = d.owner ? `Owner: ${d.owner}` : d.notes;
+    } else if (hasOwner) {
+      updates.notes = d.owner ? `Owner: ${d.owner}` : null;
+    } else if (hasNotes) {
+      updates.notes = d.notes;
+    }
+  }
+
+  return updates;
+}
 
 /* ================= GET SINGLE HORSE ================= */
 
@@ -105,13 +160,10 @@ export async function PUT(
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
-    const body = await req.json();
-    const { id } = await params;
+    const parsed = await parseJsonBody(req, horsePatchSchema);
+    if (!parsed.ok) return parsed.response;
 
-    const temperament = mapTemperament(body.temperament);
-    const suitability = mapSuitability(body.ridingSuitability);
-    const skillLevel = mapSkillLevel(body.skillLevel);
-    const trainingStatus = mapTrainingStatus(body.trainingStatus);
+    const { id } = await params;
 
     const { data: profile } = await supabase
       .from("profiles")
@@ -131,32 +183,7 @@ export async function PUT(
       );
     }
 
-    const updates: Record<string, unknown> = {
-      name: body.name?.trim(),
-      gender: body.gender,
-      age: body.age ? Number(body.age) : null,
-      breed: body.breed?.trim() || null,
-      color: body.color?.trim() || null,
-      markings: body.markings?.trim() || null,
-      height_cm: body.height ? Number(body.height) : null,
-      microchip: body.microchip?.trim() || null,
-      ueln: body.ueln?.trim() || null,
-      date_of_birth: body.dateOfBirth || null,
-      registered_name: body.registeredName?.trim() || null,
-      passport_number: body.passportNumber?.trim() || null,
-      fei_id: body.feiId?.trim() || null,
-      studbook: body.studbook?.trim() || null,
-      horse_category: body.horseCategory?.trim() || null,
-      sire_name: body.sireName?.trim() || null,
-      dam_name: body.damName?.trim() || null,
-      country_of_birth: body.countryOfBirth?.trim() || null,
-      temperament: temperament ?? null,
-      skill_level: skillLevel,
-      training_status: trainingStatus,
-      suitability: suitability ?? null,
-      photo_path: body.photoUrl?.trim() || null,
-      notes: body.owner?.trim() ? `Owner: ${body.owner.trim()}` : body.notes?.trim() || null,
-    };
+    const updates = horsePatchDataToRow(parsed.data);
 
     const { data: horse, error } = await supabase
       .from("horses")
