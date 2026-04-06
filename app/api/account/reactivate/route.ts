@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
 import { createAdminClient } from "@/lib/supabase/admin";
+import { captureServerEvent } from "@/lib/analytics/posthog-server";
 
 export async function POST() {
   try {
@@ -14,6 +15,9 @@ export async function POST() {
     const admin = createAdminClient();
     const { error } = await admin.from("stables").update({ scheduled_deletion_at: null }).eq("id", profile.stable_id);
     if (error) return NextResponse.json({ error: "Failed to reactivate" }, { status: 500 });
+    captureServerEvent("account_reactivated", user.id, {
+      stable_id: profile.stable_id,
+    });
     return NextResponse.json({ success: true });
   } catch (err) {
     console.error("Reactivate error:", err);

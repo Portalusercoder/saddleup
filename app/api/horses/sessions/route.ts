@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { parseJsonBody } from "@/lib/validation/parse-json";
 import { horseSessionPrismaPostSchema } from "@/lib/validation/schemas";
+import { captureServerEvent } from "@/lib/analytics/posthog-server";
 
 /* ================= GET ALL SESSIONS ================= */
 
@@ -42,6 +43,13 @@ export async function POST(req: Request) {
         notes: body.notes || null,
         horseId: body.horseId,
       },
+    });
+
+    captureServerEvent("session_logged", String(body.horseId), {
+      punch_type: body.punchType || "training",
+      duration_minutes: body.duration,
+      intensity: body.intensity || "medium",
+      discipline: body.discipline || "flatwork",
     });
 
     return NextResponse.json(session);

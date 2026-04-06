@@ -4,6 +4,7 @@ import { createAdminClient } from "@/lib/supabase/admin";
 import { sendNotificationEmail } from "@/lib/send-notification-email";
 import { parseJsonBody } from "@/lib/validation/parse-json";
 import { newsletterSubscribeSchema } from "@/lib/validation/schemas";
+import { captureServerEvent } from "@/lib/analytics/posthog-server";
 
 const BASE_URL = process.env.NEXT_PUBLIC_APP_URL || "https://saddleup-sand.vercel.app";
 
@@ -113,6 +114,11 @@ export async function POST(req: Request) {
     if (!emailResult2.ok) {
       console.error("newsletter welcome email failed:", emailResult2.error);
     }
+
+    captureServerEvent("newsletter_subscribed", emailTrimmed, {
+      stable_id: stable_id ?? null,
+    });
+
     return NextResponse.json({
       success: true,
       message: "You're subscribed!",

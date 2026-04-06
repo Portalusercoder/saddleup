@@ -7,7 +7,8 @@ import { useProfile } from "@/components/providers/ProfileProvider";
 import { readTreatsConsent, TREATS_STORAGE_KEY } from "@/lib/treatsConsent";
 
 const POSTHOG_KEY = process.env.NEXT_PUBLIC_POSTHOG_KEY;
-const POSTHOG_HOST = process.env.NEXT_PUBLIC_POSTHOG_HOST || "https://us.i.posthog.com";
+const POSTHOG_HOST = "/ingest";
+const POSTHOG_UI_HOST = process.env.NEXT_PUBLIC_POSTHOG_HOST || "https://us.posthog.com";
 const CONSENT_EVENT = "saddleup:treats-consent-changed";
 
 function syncConsent() {
@@ -30,6 +31,7 @@ export default function PostHogProvider() {
     if (!POSTHOG_KEY) return;
     posthog.init(POSTHOG_KEY, {
       api_host: POSTHOG_HOST,
+      ui_host: POSTHOG_UI_HOST,
       person_profiles: "identified_only",
       capture_pageview: false,
       capture_pageleave: true,

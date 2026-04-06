@@ -4,6 +4,7 @@ import { sendNotificationEmail } from "@/lib/send-notification-email";
 import { ensureStableCanMutate } from "@/lib/subscription";
 import { parseJsonBody } from "@/lib/validation/parse-json";
 import { bookingPatchSchema } from "@/lib/validation/schemas";
+import { captureServerEvent } from "@/lib/analytics/posthog-server";
 
 export async function PATCH(
   req: Request,
@@ -242,6 +243,19 @@ export async function PATCH(
       if (error) {
         return NextResponse.json({ error: "Failed to update booking" }, { status: 500 });
       }
+
+      if (body.action === "approve") {
+        captureServerEvent("booking_approved", user.id, {
+          booking_id: id,
+          stable_id: profile.data.stable_id,
+        });
+      } else if (body.action === "decline") {
+        captureServerEvent("booking_declined", user.id, {
+          booking_id: id,
+          stable_id: profile.data.stable_id,
+        });
+      }
+
       return NextResponse.json(data);
     }
 

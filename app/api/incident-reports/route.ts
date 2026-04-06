@@ -3,6 +3,7 @@ import { createClient } from "@/lib/supabase/server";
 import { ensureStableCanMutate } from "@/lib/subscription";
 import { parseJsonBody } from "@/lib/validation/parse-json";
 import { incidentPostSchema } from "@/lib/validation/schemas";
+import { captureServerEvent } from "@/lib/analytics/posthog-server";
 
 export async function GET() {
   try {
@@ -146,6 +147,12 @@ export async function POST(req: Request) {
     const riders = (report as { riders?: { id: string; name: string } | { id: string; name: string }[] | null }).riders;
     const horse = Array.isArray(horses) ? horses[0] : horses;
     const rider = Array.isArray(riders) ? riders[0] : riders;
+
+    captureServerEvent("incident_reported", user.id, {
+      stable_id: profile.stable_id,
+      severity: report.severity,
+      horse_id: report.horse_id,
+    });
 
     return NextResponse.json({
       id: report.id,

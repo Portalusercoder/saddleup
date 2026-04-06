@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { createClient } from "@supabase/supabase-js";
 import Stripe from "stripe";
 import { stripe } from "@/lib/stripe";
+import { captureServerEvent } from "@/lib/analytics/posthog-server";
 
 const webhookSecret = process.env.STRIPE_WEBHOOK_SECRET!;
 
@@ -54,6 +55,11 @@ export async function POST(req: NextRequest) {
               updated_at: new Date().toISOString(),
             })
             .eq("id", stableId);
+
+          captureServerEvent("subscription_activated", stableId, {
+            plan_id: planId,
+            stripe_customer_id: customerId,
+          });
         }
         break;
       }
@@ -99,6 +105,10 @@ export async function POST(req: NextRequest) {
               updated_at: new Date().toISOString(),
             })
             .eq("id", stables[0].id);
+
+          captureServerEvent("subscription_expired", stables[0].id, {
+            stripe_subscription_status: sub.status,
+          });
         }
         break;
       }

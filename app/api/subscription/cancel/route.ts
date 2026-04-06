@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
 import { stripe } from "@/lib/stripe";
+import { captureServerEvent } from "@/lib/analytics/posthog-server";
 
 export async function POST() {
   try {
@@ -15,6 +16,9 @@ export async function POST() {
     if (!stable?.stripe_subscription_id) return NextResponse.json({ error: "No active subscription to cancel" }, { status: 400 });
 
     await stripe.subscriptions.update(stable.stripe_subscription_id, { cancel_at_period_end: true });
+    captureServerEvent("subscription_cancelled", user.id, {
+      stable_id: profile.stable_id,
+    });
     return NextResponse.json({ success: true });
   } catch (err) {
     console.error("Cancel subscription error:", err);
