@@ -112,7 +112,7 @@ export async function POST(req: Request) {
     if (error) {
       console.error("POST competition error:", error);
       return NextResponse.json(
-        { error: error.message || "Failed to add competition" },
+        { error: "Failed to add competition" },
         { status: 500 }
       );
     }

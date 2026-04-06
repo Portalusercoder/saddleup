@@ -73,7 +73,7 @@ export async function PUT(
     if (error) {
       console.error("PUT incident report error:", error);
       return NextResponse.json(
-        { error: error.message || "Failed to update incident report" },
+        { error: "Failed to update incident report" },
         { status: 500 }
       );
     }
@@ -143,7 +143,7 @@ export async function DELETE(
     if (error) {
       console.error("DELETE incident report error:", error);
       return NextResponse.json(
-        { error: error.message || "Failed to delete incident report" },
+        { error: "Failed to delete incident report" },
         { status: 500 }
       );
     }

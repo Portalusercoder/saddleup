@@ -3,6 +3,7 @@ import { createClient } from "@/lib/supabase/server";
 import { checkRiderLimit, ensureStableCanMutate } from "@/lib/subscription";
 import { parseJsonBody } from "@/lib/validation/parse-json";
 import { riderPostSchema } from "@/lib/validation/schemas";
+import { captureServerEvent } from "@/lib/analytics/posthog-server";
 
 export async function GET() {
   try {
@@ -114,6 +115,11 @@ export async function POST(req: Request) {
         { status: 500 }
       );
     }
+
+    captureServerEvent("rider_created", user.id, {
+      stable_id: profile.data.stable_id,
+      rider_id: rider.id,
+    });
 
     return NextResponse.json(rider);
   } catch (err) {

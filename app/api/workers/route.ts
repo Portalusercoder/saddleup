@@ -106,7 +106,7 @@ export async function POST(req: Request) {
     if (error) {
       console.error("POST workers error:", error);
       return NextResponse.json(
-        { error: error.message || "Failed to add worker" },
+        { error: "Failed to add worker" },
         { status: 500 }
       );
     }

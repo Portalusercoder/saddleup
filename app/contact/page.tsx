@@ -3,6 +3,7 @@
 import { useState, useEffect } from "react";
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
+import { captureClientEvent } from "@/lib/analytics/posthog-client";
 
 const formClass =
   "w-full px-4 py-3 bg-base border border-black/20 text-black placeholder-black/40 focus:border-black/40 focus:outline-none";
@@ -31,7 +32,10 @@ export default function ContactPage() {
 
   // Pre-select enterprise when coming from pricing "Contact sales"
   useEffect(() => {
-    if (searchParams.get("type") === "enterprise") setContactType("enterprise");
+    if (searchParams.get("type") === "enterprise") {
+      setContactType("enterprise");
+      captureClientEvent("contact_type_selected", { type: "enterprise", source: "query" });
+    }
   }, [searchParams]);
 
   // Enterprise form state (all steps)
@@ -72,6 +76,7 @@ export default function ContactPage() {
     e.preventDefault();
     setError(null);
     setLoading(true);
+    captureClientEvent("contact_submit_attempted", { type: "enterprise" });
     try {
       const res = await fetch("/api/contact", {
         method: "POST",
@@ -82,10 +87,12 @@ export default function ContactPage() {
         const data = await res.json().catch(() => ({}));
         throw new Error(data.error || "Failed to send");
       }
+      captureClientEvent("contact_submit_succeeded", { type: "enterprise" });
       const data = await res.json().catch(() => ({}));
       setSentType(data.type === "enterprise" ? "enterprise" : "general");
       setSent(true);
     } catch (err) {
+      captureClientEvent("contact_submit_failed", { type: "enterprise" });
       setError(err instanceof Error ? err.message : "Something went wrong");
     } finally {
       setLoading(false);
@@ -96,6 +103,7 @@ export default function ContactPage() {
     e.preventDefault();
     setError(null);
     setLoading(true);
+    captureClientEvent("contact_submit_attempted", { type: "general" });
     try {
       const res = await fetch("/api/contact", {
         method: "POST",
@@ -106,10 +114,12 @@ export default function ContactPage() {
         const data = await res.json().catch(() => ({}));
         throw new Error(data.error || "Failed to send");
       }
+      captureClientEvent("contact_submit_succeeded", { type: "general" });
       const data = await res.json().catch(() => ({}));
       setSentType(data.type === "general" ? "general" : "enterprise");
       setSent(true);
     } catch (err) {
+      captureClientEvent("contact_submit_failed", { type: "general" });
       setError(err instanceof Error ? err.message : "Something went wrong");
     } finally {
       setLoading(false);
@@ -156,7 +166,10 @@ export default function ContactPage() {
           <div className="grid sm:grid-cols-2 gap-6">
             <button
               type="button"
-              onClick={() => setContactType("enterprise")}
+              onClick={() => {
+                setContactType("enterprise");
+                captureClientEvent("contact_type_selected", { type: "enterprise" });
+              }}
               className="border border-black/20 p-8 text-left hover:bg-black/5 transition focus:outline-none focus:ring-2 focus:ring-black/20"
             >
               <span className="font-serif text-xl text-black block mb-2">
@@ -169,7 +182,10 @@ export default function ContactPage() {
             </button>
             <button
               type="button"
-              onClick={() => setContactType("general")}
+              onClick={() => {
+                setContactType("general");
+                captureClientEvent("contact_type_selected", { type: "general" });
+              }}
               className="border border-black/20 p-8 text-left hover:bg-black/5 transition focus:outline-none focus:ring-2 focus:ring-black/20"
             >
               <span className="font-serif text-xl text-black block mb-2">

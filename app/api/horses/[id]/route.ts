@@ -195,7 +195,7 @@ export async function PUT(
     if (error) {
       console.error("PUT horse error:", error);
       return NextResponse.json(
-        { error: error.message || "Update failed" },
+        { error: "Update failed" },
         { status: 500 }
       );
     }
@@ -244,7 +244,7 @@ export async function DELETE(
     if (error) {
       console.error("DELETE horse error:", error);
       return NextResponse.json(
-        { error: error.message || "Delete failed" },
+        { error: "Delete failed" },
         { status: 500 }
       );
     }

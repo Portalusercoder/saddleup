@@ -57,7 +57,7 @@ export async function PUT(
     if (error) {
       console.error("PUT competition error:", error);
       return NextResponse.json(
-        { error: error.message || "Failed to update competition" },
+        { error: "Failed to update competition" },
         { status: 500 }
       );
     }
@@ -115,7 +115,7 @@ export async function DELETE(
     if (error) {
       console.error("DELETE competition error:", error);
       return NextResponse.json(
-        { error: error.message || "Failed to delete competition" },
+        { error: "Failed to delete competition" },
         { status: 500 }
       );
     }

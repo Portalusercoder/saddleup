@@ -4,6 +4,7 @@ import { checkRateLimit, getClientIp } from "@/lib/rate-limit";
 import { ensureStableCanMutate } from "@/lib/subscription";
 import { parseJsonBody } from "@/lib/validation/parse-json";
 import { bookingPostSchema } from "@/lib/validation/schemas";
+import { captureServerEvent } from "@/lib/analytics/posthog-server";
 
 export async function GET(req: Request) {
   try {
@@ -216,10 +217,17 @@ export async function POST(req: Request) {
     if (error) {
       console.error("POST booking error:", error);
       return NextResponse.json(
-        { error: error.message || "Failed to create booking" },
+        { error: "Failed to create booking" },
         { status: 500 }
       );
     }
+
+    captureServerEvent("booking_created", user.id, {
+      stable_id: profile.data.stable_id,
+      horse_id: booking.horse_id,
+      rider_id: booking.rider_id,
+      status: booking.status,
+    });
 
     return NextResponse.json({
       id: booking.id,

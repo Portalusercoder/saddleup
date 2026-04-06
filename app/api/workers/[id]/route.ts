@@ -55,7 +55,7 @@ export async function PUT(
     if (error) {
       console.error("PUT workers error:", error);
       return NextResponse.json(
-        { error: error.message || "Failed to update worker" },
+        { error: "Failed to update worker" },
         { status: 500 }
       );
     }
@@ -112,7 +112,7 @@ export async function DELETE(
     if (error) {
       console.error("DELETE workers error:", error);
       return NextResponse.json(
-        { error: error.message || "Failed to delete worker" },
+        { error: "Failed to delete worker" },
         { status: 500 }
       );
     }

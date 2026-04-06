@@ -70,7 +70,7 @@ export async function PATCH(
         .single();
 
       if (error) {
-        return NextResponse.json({ error: error.message }, { status: 500 });
+        return NextResponse.json({ error: "Failed to update booking" }, { status: 500 });
       }
       if (!data) {
         return NextResponse.json({ error: "Booking not found or not yours" }, { status: 404 });
@@ -240,7 +240,7 @@ export async function PATCH(
         .single();
 
       if (error) {
-        return NextResponse.json({ error: error.message }, { status: 500 });
+        return NextResponse.json({ error: "Failed to update booking" }, { status: 500 });
       }
       return NextResponse.json(data);
     }

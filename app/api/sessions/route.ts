@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
 import { parseJsonBody } from "@/lib/validation/parse-json";
 import { sessionPostSchema } from "@/lib/validation/schemas";
+import { captureServerEvent } from "@/lib/analytics/posthog-server";
 
 function mapPunchType(value: string): string {
   const m: Record<string, string> = {
@@ -122,10 +123,16 @@ export async function POST(req: Request) {
     if (error) {
       console.error("POST session error:", error);
       return NextResponse.json(
-        { error: error.message || "Failed to create session" },
+        { error: "Failed to create session" },
         { status: 500 }
       );
     }
+
+    captureServerEvent("session_logged", user.id, {
+      horse_id: punch.horse_id,
+      punch_type: punch.punch_type,
+      duration_minutes: punch.duration_minutes,
+    });
 
     return NextResponse.json({
       id: punch.id,

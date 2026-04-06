@@ -10,6 +10,7 @@ import {
 } from "@/lib/map-horse-payload";
 import { parseJsonBody } from "@/lib/validation/parse-json";
 import { horsePostSchema } from "@/lib/validation/schemas";
+import { captureServerEvent } from "@/lib/analytics/posthog-server";
 
 /* ================= GET ALL HORSES ================= */
 
@@ -162,10 +163,16 @@ export async function POST(req: Request) {
     if (error) {
       console.error("POST horse error:", error);
       return NextResponse.json(
-        { error: error.message || "Failed to create horse" },
+        { error: "Failed to create horse" },
         { status: 500 }
       );
     }
+
+    captureServerEvent("horse_created", user.id, {
+      stable_id: profile.data.stable_id,
+      horse_id: horse.id,
+      horse_name: horse.name,
+    });
 
     const base = horseRowToApiShape(horse as unknown as Record<string, unknown>);
     return NextResponse.json({ ...base, sessions: [] });

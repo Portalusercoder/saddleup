@@ -4,6 +4,7 @@ import { createClient } from "@/lib/supabase/server";
 import { runCompleteSignup } from "@/lib/auth/completeSignup";
 import { parseJsonBody } from "@/lib/validation/parse-json";
 import { completeSignupBodySchema } from "@/lib/validation/schemas";
+import { captureServerEvent } from "@/lib/analytics/posthog-server";
 
 export async function POST(req: Request) {
   try {
@@ -80,6 +81,12 @@ export async function POST(req: Request) {
       }
       return NextResponse.json({ error: result.error }, { status: result.status });
     }
+
+    captureServerEvent("signup_completed", user.id, {
+      role,
+      has_join_code: Boolean(joinCode),
+      has_stable_name: Boolean(stableName),
+    });
 
     return NextResponse.json({ success: true });
   } catch (err) {

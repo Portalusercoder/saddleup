@@ -134,7 +134,7 @@ export async function POST(req: Request) {
     if (error) {
       console.error("POST blocked slot error:", error);
       return NextResponse.json(
-        { error: error.message || "Failed to block slot" },
+        { error: "Failed to block slot" },
         { status: 500 }
       );
     }

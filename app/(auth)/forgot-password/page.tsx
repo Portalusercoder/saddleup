@@ -4,6 +4,7 @@ import { useState, useEffect, Suspense } from "react";
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
 import LoadingScreen from "@/components/ui/LoadingScreen";
+import { captureClientEvent } from "@/lib/analytics/posthog-client";
 
 const MIN_PASSWORD_LENGTH = 8;
 
@@ -44,6 +45,7 @@ function ForgotPasswordForm() {
     setError(null);
     setInfo(null);
     setLoading(true);
+    captureClientEvent("password_reset_code_requested");
     try {
       const res = await fetch("/api/auth/forgot-password", {
         method: "POST",
@@ -52,10 +54,12 @@ function ForgotPasswordForm() {
       });
       const data = await res.json().catch(() => ({}));
       if (!res.ok) {
+        captureClientEvent("password_reset_code_request_failed");
         setError(typeof data.error === "string" ? data.error : "Something went wrong");
         setLoading(false);
         return;
       }
+      captureClientEvent("password_reset_code_sent");
       setInfo(typeof data.message === "string" ? data.message : null);
       setStep("reset");
       setCode("");
@@ -73,6 +77,7 @@ function ForgotPasswordForm() {
     if (resendCooldownSec > 0 || resendLoading || !email.trim()) return;
     setResendLoading(true);
     setError(null);
+    captureClientEvent("password_reset_code_resend_requested");
     try {
       const res = await fetch("/api/auth/forgot-password", {
         method: "POST",
@@ -81,9 +86,11 @@ function ForgotPasswordForm() {
       });
       const data = await res.json().catch(() => ({}));
       if (!res.ok) {
+        captureClientEvent("password_reset_code_resend_failed");
         setError(typeof data.error === "string" ? data.error : "Could not resend");
         return;
       }
+      captureClientEvent("password_reset_code_resent");
       setResendCooldownSec(60);
       setInfo("We sent another code to your email.");
     } catch {
@@ -110,6 +117,7 @@ function ForgotPasswordForm() {
       return;
     }
     setLoading(true);
+    captureClientEvent("password_reset_confirm_attempted");
     try {
       const res = await fetch("/api/auth/forgot-password/confirm", {
         method: "POST",
@@ -122,10 +130,12 @@ function ForgotPasswordForm() {
       });
       const data = await res.json().catch(() => ({}));
       if (!res.ok) {
+        captureClientEvent("password_reset_confirm_failed");
         setError(typeof data.error === "string" ? data.error : "Could not reset password");
         setLoading(false);
         return;
       }
+      captureClientEvent("password_reset_confirmed");
       setError(null);
       setInfo(null);
       setStep("done");

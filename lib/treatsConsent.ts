@@ -12,6 +12,9 @@ export function readTreatsConsent(): TreatsChoice | null {
 
 export function writeTreatsConsent(choice: TreatsChoice) {
   localStorage.setItem(TREATS_STORAGE_KEY, choice);
+  if (typeof window !== "undefined") {
+    window.dispatchEvent(new Event("saddleup:treats-consent-changed"));
+  }
 }
 
 /** Use before loading non-essential scripts (analytics, marketing). */

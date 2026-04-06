@@ -5,6 +5,7 @@ import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
 import LoadingScreen from "@/components/ui/LoadingScreen";
+import { captureClientEvent } from "@/lib/analytics/posthog-client";
 
 const formClass = "w-full px-4 py-3 bg-base border border-black/10 text-black placeholder-black/40 focus:border-black/30 focus:outline-none";
 const labelClass = "block text-xs uppercase tracking-widest text-black/60 mb-2";
@@ -31,16 +32,19 @@ function LoginForm() {
     e.preventDefault();
     setError(null);
     setLoading(true);
+    captureClientEvent("login_attempted", { has_redirect: Boolean(redirect) });
 
     try {
       const supabase = createClient();
       const { error } = await supabase.auth.signInWithPassword({ email, password });
 
       if (error) {
+        captureClientEvent("login_failed");
         setError(error.message);
         setLoading(false);
         return;
       }
+      captureClientEvent("login_succeeded");
       // Use a full navigation to avoid occasional client-router stalls right after auth.
       window.location.assign(redirect);
       return;
