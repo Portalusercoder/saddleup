@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { useProfile } from "@/components/providers/ProfileProvider";
 import LoadingSpinner from "@/components/ui/LoadingSpinner";
 import TableSkeleton from "@/components/ui/TableSkeleton";
+import { captureClientEvent } from "@/lib/analytics/posthog-client";
 
 interface Competition {
   id: string;
@@ -124,6 +125,7 @@ export default function CompetitionsPage() {
         setCompetitions((prev) =>
           prev.map((x) => (x.id === editingCompetition.id ? data : x))
         );
+        captureClientEvent("competition_updated", { competition_id: editingCompetition.id, event_name: form.eventName, discipline: form.discipline || null });
         setToast("Competition updated");
         setTimeout(() => setToast(null), 3000);
       } else {
@@ -135,6 +137,7 @@ export default function CompetitionsPage() {
         const data = await res.json();
         if (!res.ok) throw new Error(data.error || "Failed");
         setCompetitions((prev) => [data, ...prev]);
+        captureClientEvent("competition_added", { event_name: form.eventName, discipline: form.discipline || null, horse_id: form.horseId });
         setToast("Competition added");
         setTimeout(() => setToast(null), 3000);
       }
@@ -156,6 +159,7 @@ export default function CompetitionsPage() {
         throw new Error(data.error || "Failed");
       }
       setCompetitions((prev) => prev.filter((x) => x.id !== id));
+      captureClientEvent("competition_deleted", { competition_id: id });
       setToast("Competition deleted");
       setTimeout(() => setToast(null), 3000);
     } catch (err) {

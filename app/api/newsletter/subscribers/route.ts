@@ -3,6 +3,7 @@ import { randomUUID } from "crypto";
 import { createClient } from "@/lib/supabase/server";
 import { parseJsonBody } from "@/lib/validation/parse-json";
 import { newsletterSubscriberAddSchema } from "@/lib/validation/schemas";
+import { captureServerEvent } from "@/lib/analytics/posthog-server";
 
 export async function GET(req: Request) {
   try {
@@ -129,6 +130,7 @@ export async function POST(req: Request) {
       );
     }
 
+    captureServerEvent("newsletter_subscriber_added", user.id, { stable_id: stableId });
     return NextResponse.json({ success: true, message: "Subscriber added" });
   } catch (err) {
     console.error("newsletter add subscriber error:", err);

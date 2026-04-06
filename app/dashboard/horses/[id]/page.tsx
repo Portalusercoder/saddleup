@@ -9,6 +9,7 @@ import { HorseAvatar } from "@/components/HorseAvatar";
 import LoadingSpinner from "@/components/ui/LoadingSpinner";
 import PageLoader from "@/components/ui/PageLoader";
 import HorseIdentificationFields from "@/components/ui/HorseIdentificationFields";
+import { captureClientEvent } from "@/lib/analytics/posthog-client";
 
 interface Session {
   id: number;
@@ -267,6 +268,7 @@ export default function HorseDetailPage() {
       }
       setShowEditModal(false);
       setToast("Horse updated");
+      captureClientEvent("horse_updated", { horse_id: id, horse_name: editForm.name });
       fetchHorse();
       setTimeout(() => setToast(null), 3000);
     } catch (err) {
@@ -294,6 +296,12 @@ export default function HorseDetailPage() {
         }),
       });
       setShowHealthModal(false);
+      captureClientEvent("horse_health_record_added", {
+        horse_id: String(horse.id),
+        record_type: healthForm.type,
+        has_cost: !!healthForm.cost,
+        has_next_due: !!healthForm.nextDue,
+      });
       setHealthForm({
         type: "vet",
         date: new Date().toISOString().slice(0, 10),
@@ -397,7 +405,10 @@ export default function HorseDetailPage() {
             </>
           )}
           <button
-            onClick={() => generateHorsePassportPdf(horse)}
+            onClick={() => {
+              generateHorsePassportPdf(horse);
+              captureClientEvent("horse_passport_downloaded", { horse_id: String(horse.id), horse_name: horse.name });
+            }}
             className={btnPrimary}
           >
             <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -567,6 +578,7 @@ export default function HorseDetailPage() {
                         onClick={async () => {
                           setAiLoading(true);
                           setAiSuggestions(null);
+                          captureClientEvent("ai_workload_suggestions_requested", { horse_id: id, horse_name: horse.name });
                           try {
                             const res = await fetch(`/api/horses/${id}/workload-suggestions`);
                             const data = await res.json().catch(() => ({}));

@@ -4,6 +4,7 @@ import { createClient } from "@/lib/supabase/server";
 import { ensureStableCanMutate } from "@/lib/subscription";
 import { parseJsonBody } from "@/lib/validation/parse-json";
 import { addMemberByIdSchema } from "@/lib/validation/schemas";
+import { captureServerEvent } from "@/lib/analytics/posthog-server";
 
 export async function POST(req: Request) {
   try {
@@ -125,6 +126,11 @@ export async function POST(req: Request) {
     }
 
     const roleLabel = memberRole === "student" ? "Student" : memberRole === "guardian" ? "Guardian" : "Trainer";
+    captureServerEvent("member_added_by_id", user.id, {
+      stable_id: profile.data.stable_id,
+      member_role: memberRole,
+      added_by_role: role,
+    });
     return NextResponse.json({
       success: true,
       message: `${roleLabel} added successfully. They can now sign in.`,
