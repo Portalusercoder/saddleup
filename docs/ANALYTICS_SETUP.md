@@ -14,7 +14,7 @@ Add these in Vercel (Production, Preview, Development as needed):
 - `NEXT_PUBLIC_MIXPANEL_TOKEN`
   - Value: your Mixpanel project token (Project Settings -> Project Token).
 - `NEXT_PUBLIC_MIXPANEL_API_HOST` (optional)
-  - Default in code: `https://api-js.mixpanel.com`.
+  - Default in code: `/ingest` (first-party proxy to reduce tracking-blocker issues).
 - `NEXT_PUBLIC_CLARITY_PROJECT_ID`
   - Value: your Clarity project ID (Clarity setup/install snippet).
 

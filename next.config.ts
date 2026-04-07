@@ -10,6 +10,14 @@ const securityHeaders = [
 ];
 
 const nextConfig: NextConfig = {
+  async rewrites() {
+    return [
+      {
+        source: "/ingest/:path*",
+        destination: "https://api-js.mixpanel.com/:path*",
+      },
+    ];
+  },
   async redirects() {
     return [
       {

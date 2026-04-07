@@ -13,9 +13,9 @@ export function initMixpanel() {
   if (!token) return;
 
   mixpanel.init(token, {
-    api_host: process.env.NEXT_PUBLIC_MIXPANEL_API_HOST || "https://api-js.mixpanel.com",
+    api_host: process.env.NEXT_PUBLIC_MIXPANEL_API_HOST || "/ingest",
     persistence: "localStorage",
-    ignore_dnt: false,
+    ignore_dnt: true,
     autocapture: true,
     track_pageview: false,
   });
