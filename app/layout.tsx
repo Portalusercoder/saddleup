@@ -5,9 +5,11 @@ import TreatsConsent from "@/components/layout/TreatsConsent"
 import { ProfileProvider } from "@/components/providers/ProfileProvider"
 import { LanguageProvider } from "@/components/providers/LanguageProvider"
 import { ThemeProvider } from "@/components/providers/ThemeProvider"
+import AnalyticsProvider from "@/components/providers/AnalyticsProvider"
 import { Playfair_Display, Inter } from "next/font/google"
 import Script from "next/script"
 import type { Metadata } from "next"
+import { Suspense } from "react"
 
 const playfair = Playfair_Display({
   subsets: ["latin"],
@@ -86,6 +88,9 @@ export default function RootLayout({
         <ThemeProvider>
           <LanguageProvider>
             <ProfileProvider>
+              <Suspense fallback={null}>
+                <AnalyticsProvider />
+              </Suspense>
               <Navbar />
               <PagePadding>{children}</PagePadding>
               <TreatsConsent />

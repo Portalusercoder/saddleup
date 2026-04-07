@@ -7,6 +7,7 @@ import PixelCard from "@/components/ui/PixelCard";
 import PageLoader from "@/components/ui/PageLoader";
 import GuidedTourOverlay, { type GuidedTourStep } from "@/components/dashboard/GuidedTourOverlay";
 import { usePageTour } from "@/components/dashboard/usePageTour";
+import { trackEvent } from "@/lib/analytics/mixpanel-client";
 
 interface SubscriptionData {
   tier: string;
@@ -49,6 +50,7 @@ export default function PlansPage() {
   const handleCheckout = async (planId: string) => {
     setCheckoutLoading(planId);
     setError(null);
+    trackEvent("plan_checkout_clicked", { plan_id: planId });
     try {
       const res = await fetch("/api/subscription/checkout", {
         method: "POST",
@@ -57,8 +59,10 @@ export default function PlansPage() {
       });
       const { url } = await res.json();
       if (!res.ok) throw new Error("Failed");
+      trackEvent("plan_checkout_redirected", { plan_id: planId });
       if (url) window.location.href = url;
     } catch {
+      trackEvent("plan_checkout_failed", { plan_id: planId });
       setError("Failed to start checkout");
     } finally {
       setCheckoutLoading(null);
@@ -67,10 +71,12 @@ export default function PlansPage() {
 
   const handlePortal = async () => {
     setPortalLoading(true);
+    trackEvent("billing_portal_open_clicked");
     try {
       const res = await fetch("/api/subscription/portal", { method: "POST" });
       const { url } = await res.json();
       if (!res.ok) throw new Error("Failed");
+      trackEvent("billing_portal_redirected");
       if (url) window.location.href = url;
     } finally {
       setPortalLoading(false);
@@ -80,6 +86,7 @@ export default function PlansPage() {
   const handleChangePlan = async (planId: string) => {
     setError(null);
     setChangePlanLoading(planId);
+    trackEvent("plan_change_clicked", { to_plan: planId });
     try {
       const res = await fetch("/api/subscription/change-plan", {
         method: "POST",
@@ -88,11 +95,14 @@ export default function PlansPage() {
       });
       const j = await res.json();
       if (!res.ok) {
+        trackEvent("plan_change_failed", { to_plan: planId });
         setError(j.error || "Failed to change plan");
         return;
       }
+      trackEvent("plan_change_succeeded", { to_plan: planId });
       window.location.reload();
     } catch {
+      trackEvent("plan_change_failed", { to_plan: planId });
       setError("Failed to change plan");
     } finally {
       setChangePlanLoading(null);
@@ -102,15 +112,19 @@ export default function PlansPage() {
   const handleCancelPlan = async () => {
     setError(null);
     setCancelLoading(true);
+    trackEvent("plan_cancel_clicked");
     try {
       const res = await fetch("/api/subscription/cancel", { method: "POST" });
       if (!res.ok) {
         const j = await res.json();
+        trackEvent("plan_cancel_failed");
         setError(j.error || "Failed to cancel");
         return;
       }
+      trackEvent("plan_cancel_succeeded");
       window.location.reload();
     } catch {
+      trackEvent("plan_cancel_failed");
       setError("Failed to cancel plan");
     } finally {
       setCancelLoading(false);

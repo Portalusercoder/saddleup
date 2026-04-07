@@ -4,6 +4,7 @@ import { useState, useEffect, Suspense } from "react";
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
 import LoadingScreen from "@/components/ui/LoadingScreen";
+import { trackEvent } from "@/lib/analytics/mixpanel-client";
 
 const MIN_PASSWORD_LENGTH = 8;
 
@@ -44,6 +45,7 @@ function ForgotPasswordForm() {
     setError(null);
     setInfo(null);
     setLoading(true);
+    trackEvent("password_reset_code_requested");
     try {
       const res = await fetch("/api/auth/forgot-password", {
         method: "POST",
@@ -52,11 +54,13 @@ function ForgotPasswordForm() {
       });
       const data = await res.json().catch(() => ({}));
       if (!res.ok) {
+        trackEvent("password_reset_code_request_failed");
         setError(typeof data.error === "string" ? data.error : "Something went wrong");
         setLoading(false);
         return;
       }
       setInfo(typeof data.message === "string" ? data.message : null);
+      trackEvent("password_reset_code_sent");
       setStep("reset");
       setCode("");
       setNewPassword("");
@@ -73,6 +77,7 @@ function ForgotPasswordForm() {
     if (resendCooldownSec > 0 || resendLoading || !email.trim()) return;
     setResendLoading(true);
     setError(null);
+    trackEvent("password_reset_code_resend_requested");
     try {
       const res = await fetch("/api/auth/forgot-password", {
         method: "POST",
@@ -81,9 +86,11 @@ function ForgotPasswordForm() {
       });
       const data = await res.json().catch(() => ({}));
       if (!res.ok) {
+        trackEvent("password_reset_code_resend_failed");
         setError(typeof data.error === "string" ? data.error : "Could not resend");
         return;
       }
+      trackEvent("password_reset_code_resent");
       setResendCooldownSec(60);
       setInfo("We sent another code to your email.");
     } catch {
@@ -110,6 +117,7 @@ function ForgotPasswordForm() {
       return;
     }
     setLoading(true);
+    trackEvent("password_reset_confirm_attempted");
     try {
       const res = await fetch("/api/auth/forgot-password/confirm", {
         method: "POST",
@@ -122,10 +130,12 @@ function ForgotPasswordForm() {
       });
       const data = await res.json().catch(() => ({}));
       if (!res.ok) {
+        trackEvent("password_reset_confirm_failed");
         setError(typeof data.error === "string" ? data.error : "Could not reset password");
         setLoading(false);
         return;
       }
+      trackEvent("password_reset_confirmed");
       setError(null);
       setInfo(null);
       setStep("done");

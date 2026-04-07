@@ -8,6 +8,7 @@ import LoadingSpinner from "@/components/ui/LoadingSpinner";
 import TableSkeleton from "@/components/ui/TableSkeleton";
 import GuidedTourOverlay, { type GuidedTourStep } from "@/components/dashboard/GuidedTourOverlay";
 import { usePageTour } from "@/components/dashboard/usePageTour";
+import { trackEvent } from "@/lib/analytics/mixpanel-client";
 
 interface Booking {
   id: string;
@@ -79,6 +80,7 @@ export default function BookingsPage() {
   const handleCreate = async () => {
     if (!createForm.horseId || !createForm.bookingDate) return;
     setCreateLoading(true);
+    trackEvent("booking_request_attempted", { horse_id: createForm.horseId });
     try {
       const res = await fetch("/api/bookings", {
         method: "POST",
@@ -93,6 +95,10 @@ export default function BookingsPage() {
       });
       const data = await res.json();
       if (!res.ok) throw new Error(data.error || "Failed");
+      trackEvent("booking_request_succeeded", {
+        horse_id: createForm.horseId,
+        status: data.status ?? "pending",
+      });
       setBookings((prev) => [
         ...prev,
         {
@@ -111,6 +117,7 @@ export default function BookingsPage() {
       setShowCreate(false);
       setCreateForm({ horseId: "", bookingDate: "", startTime: "09:00", endTime: "09:45", notes: "" });
     } catch (err) {
+      trackEvent("booking_request_failed", { horse_id: createForm.horseId });
       alert((err as Error).message);
     } finally {
       setCreateLoading(false);
@@ -118,6 +125,7 @@ export default function BookingsPage() {
   };
 
   const handleApprove = async (b: Booking) => {
+    trackEvent("booking_approve_attempted", { booking_id: b.id, horse_id: b.horse?.id ?? null });
     try {
       const res = await fetch(`/api/bookings/${b.id}`, {
         method: "PATCH",
@@ -131,13 +139,19 @@ export default function BookingsPage() {
       setBookings((prev) =>
         prev.map((x) => (x.id === b.id ? { ...x, status: "scheduled" } : x))
       );
+      trackEvent("booking_approved", { booking_id: b.id, horse_id: b.horse?.id ?? null });
     } catch (err) {
+      trackEvent("booking_approve_failed", { booking_id: b.id, horse_id: b.horse?.id ?? null });
       alert((err as Error).message);
     }
   };
 
   const handleDecline = async () => {
     if (!showDeclineModal) return;
+    trackEvent("booking_decline_attempted", {
+      booking_id: showDeclineModal.id,
+      horse_id: showDeclineModal.horse?.id ?? null,
+    });
     try {
       const res = await fetch(`/api/bookings/${showDeclineModal.id}`, {
         method: "PATCH",
@@ -157,13 +171,22 @@ export default function BookingsPage() {
       );
       setShowDeclineModal(null);
       setDeclineNotes("");
+      trackEvent("booking_declined", {
+        booking_id: showDeclineModal.id,
+        horse_id: showDeclineModal.horse?.id ?? null,
+      });
     } catch (err) {
+      trackEvent("booking_decline_failed", {
+        booking_id: showDeclineModal.id,
+        horse_id: showDeclineModal.horse?.id ?? null,
+      });
       alert((err as Error).message);
     }
   };
 
   const handleCancel = async (id: string) => {
     if (!confirm("Cancel this booking?")) return;
+    trackEvent("booking_cancel_attempted", { booking_id: id });
     try {
       const res = await fetch(`/api/bookings/${id}`, {
         method: "PATCH",
@@ -177,7 +200,9 @@ export default function BookingsPage() {
       setBookings((prev) =>
         prev.map((b) => (b.id === id ? { ...b, status: "cancelled" } : b))
       );
+      trackEvent("booking_cancelled", { booking_id: id });
     } catch (err) {
+      trackEvent("booking_cancel_failed", { booking_id: id });
       alert((err as Error).message);
     }
   };

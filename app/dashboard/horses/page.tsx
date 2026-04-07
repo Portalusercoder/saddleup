@@ -11,6 +11,7 @@ import TableSkeleton from "@/components/ui/TableSkeleton";
 import HorseIdentificationFields from "@/components/ui/HorseIdentificationFields";
 import GuidedTourOverlay, { type GuidedTourStep } from "@/components/dashboard/GuidedTourOverlay";
 import { usePageTour } from "@/components/dashboard/usePageTour";
+import { trackEvent } from "@/lib/analytics/mixpanel-client";
 
 interface Session {
   id: number;
@@ -236,6 +237,10 @@ export default function HorsesPage() {
   const handlePhotoUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
+    trackEvent("horse_photo_upload_attempted", {
+      mime_type: file.type || null,
+      file_size_bytes: file.size,
+    });
     try {
       const fd = new FormData();
       fd.append("file", file);
@@ -245,12 +250,15 @@ export default function HorsesPage() {
       });
       const data = await res.json();
       if (!res.ok) {
+        trackEvent("horse_photo_upload_failed");
         showToast(data.error || "Upload failed");
         return;
       }
       setForm((f) => ({ ...f, photoUrl: data.url }));
+      trackEvent("horse_photo_uploaded");
       showToast("Photo uploaded");
     } catch {
+      trackEvent("horse_photo_upload_failed");
       showToast("Upload failed");
     }
     e.target.value = "";
@@ -264,6 +272,7 @@ export default function HorsesPage() {
 
   const addHorse = async () => {
     setAddHorseLoading(true);
+    trackEvent("horse_add_attempted");
     try {
       const res = await fetch("/api/horses", {
         method: "POST",
@@ -304,9 +313,11 @@ export default function HorsesPage() {
         } else {
           showToast(data.error || "Failed to add horse");
         }
+        trackEvent("horse_add_failed");
         return;
       }
       setHorses((prev) => [data, ...prev]);
+      trackEvent("horse_add_succeeded", { horse_id: data.id ?? null });
 
       setShowModal(false);
       setForm({
@@ -338,6 +349,7 @@ export default function HorsesPage() {
 
       showToast("Horse added successfully");
     } catch (err) {
+      trackEvent("horse_add_failed");
       console.error(err);
     } finally {
       setAddHorseLoading(false);
@@ -350,10 +362,12 @@ export default function HorsesPage() {
 
     lastDeleted.current = horseToDelete;
     setHorses((prev) => prev.filter((h) => h.id !== id));
+    trackEvent("horse_delete_soft", { horse_id: String(id) });
     setToast("Horse deleted");
 
     deleteTimer.current = setTimeout(async () => {
       await fetch(`/api/horses/${id}`, { method: "DELETE" });
+      trackEvent("horse_delete_committed", { horse_id: String(id) });
       lastDeleted.current = null;
       setToast(null);
     }, 4000);
@@ -364,6 +378,7 @@ export default function HorsesPage() {
     if (deleteTimer.current) clearTimeout(deleteTimer.current);
 
     setHorses((prev) => [lastDeleted.current!, ...prev]);
+    trackEvent("horse_delete_undone", { horse_id: String(lastDeleted.current.id) });
     lastDeleted.current = null;
     setToast(null);
   };
@@ -375,8 +390,12 @@ export default function HorsesPage() {
       sessionForm.punchType === "rest" || sessionForm.punchType === "medical_rest";
 
     setLogSessionLoading(true);
+    trackEvent("horse_session_log_attempted", {
+      horse_id: String(selectedHorse.id),
+      punch_type: sessionForm.punchType,
+    });
     try {
-      await fetch("/api/sessions", {
+      const res = await fetch("/api/sessions", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
@@ -389,6 +408,10 @@ export default function HorsesPage() {
           notes: sessionForm.notes || null,
         }),
       });
+      if (!res.ok) {
+        trackEvent("horse_session_log_failed", { horse_id: String(selectedHorse.id) });
+        throw new Error("Failed to log session");
+      }
 
       setShowSessionModal(false);
       setSelectedHorse(null);
@@ -400,9 +423,14 @@ export default function HorsesPage() {
         rider: "",
         notes: "",
       });
+      trackEvent("horse_session_logged", {
+        horse_id: String(selectedHorse.id),
+        punch_type: sessionForm.punchType,
+      });
       showToast("Session logged successfully");
       fetchHorses();
     } catch (err) {
+      trackEvent("horse_session_log_failed", { horse_id: String(selectedHorse.id) });
       console.error(err);
     } finally {
       setLogSessionLoading(false);
