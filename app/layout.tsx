@@ -6,6 +6,7 @@ import { ProfileProvider } from "@/components/providers/ProfileProvider"
 import { LanguageProvider } from "@/components/providers/LanguageProvider"
 import { ThemeProvider } from "@/components/providers/ThemeProvider"
 import AnalyticsProvider from "@/components/providers/AnalyticsProvider"
+import GoogleAnalyticsProvider from "@/components/providers/GoogleAnalyticsProvider"
 import { Playfair_Display, Inter } from "next/font/google"
 import Script from "next/script"
 import type { Metadata } from "next"
@@ -90,6 +91,7 @@ export default function RootLayout({
             <ProfileProvider>
               <Suspense fallback={null}>
                 <AnalyticsProvider />
+                <GoogleAnalyticsProvider />
               </Suspense>
               <Navbar />
               <PagePadding>{children}</PagePadding>

@@ -1,9 +1,10 @@
-# Analytics Setup (Mixpanel + Clarity)
+# Analytics Setup (Mixpanel + Clarity + GA4)
 
 This project uses a lightweight, consent-aware analytics setup:
 
 - Mixpanel for product events and funnels.
 - Microsoft Clarity for session recordings and UX behavior.
+- Google Analytics 4 (GA4) for high-level traffic reporting.
 
 Both tools load only when treats consent is set to `all`.
 
@@ -17,6 +18,8 @@ Add these in Vercel (Production, Preview, Development as needed):
   - Default in code: `/ingest` (first-party proxy to reduce tracking-blocker issues).
 - `NEXT_PUBLIC_CLARITY_PROJECT_ID`
   - Value: your Clarity project ID (Clarity setup/install snippet).
+- `NEXT_PUBLIC_GA_MEASUREMENT_ID`
+  - Value: your GA4 Measurement ID (for example `G-WETPY19P8W`).
 
 ## What Is Tracked
 
@@ -64,6 +67,8 @@ Horses events:
 2. Open browser devtools Network tab:
    - Mixpanel requests should hit `api-js.mixpanel.com`.
    - Clarity should load `clarity.ms/tag/...`.
+   - GA should load `www.googletagmanager.com/gtag/js?id=...`.
 3. Trigger flows (login/signup/plan actions).
 4. Confirm events in Mixpanel Live View.
 5. Confirm sessions in Clarity dashboard.
+6. Confirm page views in GA4 Realtime report.
