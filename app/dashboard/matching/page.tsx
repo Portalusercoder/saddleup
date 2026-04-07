@@ -7,7 +7,6 @@ import { useProfile } from "@/components/providers/ProfileProvider";
 import TableSkeleton from "@/components/ui/TableSkeleton";
 import GuidedTourOverlay, { type GuidedTourStep } from "@/components/dashboard/GuidedTourOverlay";
 import { usePageTour } from "@/components/dashboard/usePageTour";
-import { captureClientEvent } from "@/lib/analytics/posthog-client";
 
 interface SuggestedHorse {
   horseId: string;
@@ -87,15 +86,10 @@ export default function MatchingPage() {
         if (res.code === "MATCHING_LOCKED") {
           setLocked(true);
           setData(null);
-          captureClientEvent("matching_upgrade_prompted", { role: profile?.role ?? null });
         } else if (res.error) {
           setData(null);
         } else {
           setData(res);
-          captureClientEvent("matching_viewed", {
-            rider_count: res.riderSuggestions?.length ?? 0,
-            horse_count: res.horseSuggestions?.length ?? 0,
-          });
         }
       })
       .catch(() => setData(null))

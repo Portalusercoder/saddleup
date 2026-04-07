@@ -1,8 +1,6 @@
 import { NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
-import { OpenAI as PostHogOpenAI } from "@posthog/ai";
 import OpenAI from "openai";
-import { getPostHogClient } from "@/lib/analytics/posthog-server";
 
 export async function GET(
   _req: Request,
@@ -119,11 +117,8 @@ export async function GET(
 
     let text: string;
     try {
-      const phClient = getPostHogClient();
-      const openai: OpenAI = phClient
-        ? (new PostHogOpenAI({ apiKey, posthog: phClient }) as unknown as OpenAI)
-        : new OpenAI({ apiKey });
-      const completion = await (openai as PostHogOpenAI).chat.completions.create({
+      const openai = new OpenAI({ apiKey });
+      const completion = await openai.chat.completions.create({
         model: "gpt-4o-mini",
         messages: [
           {
@@ -136,8 +131,6 @@ export async function GET(
           },
         ],
         max_tokens: 300,
-        posthogDistinctId: user.id,
-        posthogProperties: { horse_id: id },
       });
       text = completion.choices[0]?.message?.content?.trim() || buildFallback();
     } catch (aiErr) {

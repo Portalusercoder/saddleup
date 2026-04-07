@@ -4,10 +4,6 @@ type Properties = Record<string, string | number | boolean | null | undefined>;
 
 let client: PostHog | null | undefined;
 
-export function getPostHogClient(): PostHog | null {
-  return getClient();
-}
-
 function getClient(): PostHog | null {
   if (client !== undefined) return client;
 
