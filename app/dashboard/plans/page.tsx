@@ -7,7 +7,6 @@ import PixelCard from "@/components/ui/PixelCard";
 import PageLoader from "@/components/ui/PageLoader";
 import GuidedTourOverlay, { type GuidedTourStep } from "@/components/dashboard/GuidedTourOverlay";
 import { usePageTour } from "@/components/dashboard/usePageTour";
-import { captureClientEvent } from "@/lib/analytics/posthog-client";
 
 interface SubscriptionData {
   tier: string;
@@ -50,7 +49,6 @@ export default function PlansPage() {
   const handleCheckout = async (planId: string) => {
     setCheckoutLoading(planId);
     setError(null);
-    captureClientEvent("plan_checkout_clicked", { plan_id: planId });
     try {
       const res = await fetch("/api/subscription/checkout", {
         method: "POST",
@@ -59,10 +57,8 @@ export default function PlansPage() {
       });
       const { url } = await res.json();
       if (!res.ok) throw new Error("Failed");
-      captureClientEvent("plan_checkout_redirected", { plan_id: planId });
       if (url) window.location.href = url;
     } catch {
-      captureClientEvent("plan_checkout_failed", { plan_id: planId });
       setError("Failed to start checkout");
     } finally {
       setCheckoutLoading(null);
@@ -71,12 +67,10 @@ export default function PlansPage() {
 
   const handlePortal = async () => {
     setPortalLoading(true);
-    captureClientEvent("billing_portal_open_clicked");
     try {
       const res = await fetch("/api/subscription/portal", { method: "POST" });
       const { url } = await res.json();
       if (!res.ok) throw new Error("Failed");
-      captureClientEvent("billing_portal_redirected");
       if (url) window.location.href = url;
     } finally {
       setPortalLoading(false);
@@ -86,7 +80,6 @@ export default function PlansPage() {
   const handleChangePlan = async (planId: string) => {
     setError(null);
     setChangePlanLoading(planId);
-    captureClientEvent("plan_change_clicked", { to_plan: planId });
     try {
       const res = await fetch("/api/subscription/change-plan", {
         method: "POST",
@@ -95,14 +88,11 @@ export default function PlansPage() {
       });
       const j = await res.json();
       if (!res.ok) {
-        captureClientEvent("plan_change_failed", { to_plan: planId });
         setError(j.error || "Failed to change plan");
         return;
       }
-      captureClientEvent("plan_change_succeeded", { to_plan: planId });
       window.location.reload();
     } catch {
-      captureClientEvent("plan_change_failed", { to_plan: planId });
       setError("Failed to change plan");
     } finally {
       setChangePlanLoading(null);
@@ -112,19 +102,15 @@ export default function PlansPage() {
   const handleCancelPlan = async () => {
     setError(null);
     setCancelLoading(true);
-    captureClientEvent("plan_cancel_clicked");
     try {
       const res = await fetch("/api/subscription/cancel", { method: "POST" });
       if (!res.ok) {
-        captureClientEvent("plan_cancel_failed");
         const j = await res.json();
         setError(j.error || "Failed to cancel");
         return;
       }
-      captureClientEvent("plan_cancel_succeeded");
       window.location.reload();
     } catch {
-      captureClientEvent("plan_cancel_failed");
       setError("Failed to cancel plan");
     } finally {
       setCancelLoading(false);

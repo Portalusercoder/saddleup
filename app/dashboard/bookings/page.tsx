@@ -8,7 +8,6 @@ import LoadingSpinner from "@/components/ui/LoadingSpinner";
 import TableSkeleton from "@/components/ui/TableSkeleton";
 import GuidedTourOverlay, { type GuidedTourStep } from "@/components/dashboard/GuidedTourOverlay";
 import { usePageTour } from "@/components/dashboard/usePageTour";
-import { captureClientEvent } from "@/lib/analytics/posthog-client";
 
 interface Booking {
   id: string;
@@ -80,7 +79,6 @@ export default function BookingsPage() {
   const handleCreate = async () => {
     if (!createForm.horseId || !createForm.bookingDate) return;
     setCreateLoading(true);
-    captureClientEvent("booking_request_attempted");
     try {
       const res = await fetch("/api/bookings", {
         method: "POST",
@@ -95,7 +93,6 @@ export default function BookingsPage() {
       });
       const data = await res.json();
       if (!res.ok) throw new Error(data.error || "Failed");
-      captureClientEvent("booking_request_succeeded", { status: data.status });
       setBookings((prev) => [
         ...prev,
         {
@@ -114,7 +111,6 @@ export default function BookingsPage() {
       setShowCreate(false);
       setCreateForm({ horseId: "", bookingDate: "", startTime: "09:00", endTime: "09:45", notes: "" });
     } catch (err) {
-      captureClientEvent("booking_request_failed");
       alert((err as Error).message);
     } finally {
       setCreateLoading(false);
@@ -123,7 +119,6 @@ export default function BookingsPage() {
 
   const handleApprove = async (b: Booking) => {
     try {
-      captureClientEvent("booking_approve_attempted");
       const res = await fetch(`/api/bookings/${b.id}`, {
         method: "PATCH",
         headers: { "Content-Type": "application/json" },
@@ -133,12 +128,10 @@ export default function BookingsPage() {
         const d = await res.json();
         throw new Error(d.error || "Failed");
       }
-      captureClientEvent("booking_approved");
       setBookings((prev) =>
         prev.map((x) => (x.id === b.id ? { ...x, status: "scheduled" } : x))
       );
     } catch (err) {
-      captureClientEvent("booking_approve_failed");
       alert((err as Error).message);
     }
   };
@@ -146,7 +139,6 @@ export default function BookingsPage() {
   const handleDecline = async () => {
     if (!showDeclineModal) return;
     try {
-      captureClientEvent("booking_decline_attempted");
       const res = await fetch(`/api/bookings/${showDeclineModal.id}`, {
         method: "PATCH",
         headers: { "Content-Type": "application/json" },
@@ -156,7 +148,6 @@ export default function BookingsPage() {
         const d = await res.json();
         throw new Error(d.error || "Failed");
       }
-      captureClientEvent("booking_declined");
       setBookings((prev) =>
         prev.map((x) =>
           x.id === showDeclineModal.id
@@ -167,7 +158,6 @@ export default function BookingsPage() {
       setShowDeclineModal(null);
       setDeclineNotes("");
     } catch (err) {
-      captureClientEvent("booking_decline_failed");
       alert((err as Error).message);
     }
   };
@@ -175,7 +165,6 @@ export default function BookingsPage() {
   const handleCancel = async (id: string) => {
     if (!confirm("Cancel this booking?")) return;
     try {
-      captureClientEvent("booking_cancel_attempted");
       const res = await fetch(`/api/bookings/${id}`, {
         method: "PATCH",
         headers: { "Content-Type": "application/json" },
@@ -185,12 +174,10 @@ export default function BookingsPage() {
         const d = await res.json();
         throw new Error(d.error || "Failed");
       }
-      captureClientEvent("booking_cancelled");
       setBookings((prev) =>
         prev.map((b) => (b.id === id ? { ...b, status: "cancelled" } : b))
       );
     } catch (err) {
-      captureClientEvent("booking_cancel_failed");
       alert((err as Error).message);
     }
   };

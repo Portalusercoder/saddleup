@@ -3,7 +3,6 @@ import { createClient } from "@/lib/supabase/server";
 import { stripe, STRIPE_PRICE_IDS } from "@/lib/stripe";
 import { parseJsonBody } from "@/lib/validation/parse-json";
 import { planIdSchema } from "@/lib/validation/schemas";
-import { captureServerEvent } from "@/lib/analytics/posthog-server";
 
 export async function POST(req: Request) {
   try {
@@ -63,12 +62,6 @@ export async function POST(req: Request) {
       ...(stable.stripe_customer_id
         ? { customer: stable.stripe_customer_id }
         : { customer_email: user.email || undefined }),
-    });
-
-    captureServerEvent("checkout_started", user.id, {
-      plan_id: planId,
-      stable_id: stable.id,
-      checkout_session_id: session.id,
     });
 
     return NextResponse.json({ url: session.url });

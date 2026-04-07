@@ -11,7 +11,6 @@ import TableSkeleton from "@/components/ui/TableSkeleton";
 import HorseIdentificationFields from "@/components/ui/HorseIdentificationFields";
 import GuidedTourOverlay, { type GuidedTourStep } from "@/components/dashboard/GuidedTourOverlay";
 import { usePageTour } from "@/components/dashboard/usePageTour";
-import { captureClientEvent } from "@/lib/analytics/posthog-client";
 
 interface Session {
   id: number;
@@ -238,7 +237,6 @@ export default function HorsesPage() {
     const file = e.target.files?.[0];
     if (!file) return;
     try {
-      captureClientEvent("horse_photo_upload_attempted");
       const fd = new FormData();
       fd.append("file", file);
       const res = await fetch("/api/horses/upload-photo", {
@@ -247,15 +245,12 @@ export default function HorsesPage() {
       });
       const data = await res.json();
       if (!res.ok) {
-        captureClientEvent("horse_photo_upload_failed");
         showToast(data.error || "Upload failed");
         return;
       }
-      captureClientEvent("horse_photo_uploaded");
       setForm((f) => ({ ...f, photoUrl: data.url }));
       showToast("Photo uploaded");
     } catch {
-      captureClientEvent("horse_photo_upload_failed");
       showToast("Upload failed");
     }
     e.target.value = "";
@@ -269,7 +264,6 @@ export default function HorsesPage() {
 
   const addHorse = async () => {
     setAddHorseLoading(true);
-    captureClientEvent("horse_add_attempted");
     try {
       const res = await fetch("/api/horses", {
         method: "POST",
@@ -304,7 +298,6 @@ export default function HorsesPage() {
 
       const data = await res.json();
       if (!res.ok) {
-        captureClientEvent("horse_add_failed");
         if (data.code === "LIMIT_REACHED") {
           setShowModal(false);
           setShowUpgradeModal(true);
@@ -314,7 +307,6 @@ export default function HorsesPage() {
         return;
       }
       setHorses((prev) => [data, ...prev]);
-      captureClientEvent("horse_add_succeeded");
 
       setShowModal(false);
       setForm({
@@ -346,7 +338,6 @@ export default function HorsesPage() {
 
       showToast("Horse added successfully");
     } catch (err) {
-      captureClientEvent("horse_add_failed");
       console.error(err);
     } finally {
       setAddHorseLoading(false);
@@ -359,12 +350,10 @@ export default function HorsesPage() {
 
     lastDeleted.current = horseToDelete;
     setHorses((prev) => prev.filter((h) => h.id !== id));
-    captureClientEvent("horse_delete_soft", { horse_id: String(id) });
     setToast("Horse deleted");
 
     deleteTimer.current = setTimeout(async () => {
       await fetch(`/api/horses/${id}`, { method: "DELETE" });
-      captureClientEvent("horse_delete_committed", { horse_id: String(id) });
       lastDeleted.current = null;
       setToast(null);
     }, 4000);
@@ -375,7 +364,6 @@ export default function HorsesPage() {
     if (deleteTimer.current) clearTimeout(deleteTimer.current);
 
     setHorses((prev) => [lastDeleted.current!, ...prev]);
-    captureClientEvent("horse_delete_undone");
     lastDeleted.current = null;
     setToast(null);
   };
@@ -387,9 +375,6 @@ export default function HorsesPage() {
       sessionForm.punchType === "rest" || sessionForm.punchType === "medical_rest";
 
     setLogSessionLoading(true);
-    captureClientEvent("horse_session_log_attempted", {
-      punch_type: sessionForm.punchType,
-    });
     try {
       await fetch("/api/sessions", {
         method: "POST",
@@ -406,9 +391,6 @@ export default function HorsesPage() {
       });
 
       setShowSessionModal(false);
-      captureClientEvent("horse_session_logged", {
-        punch_type: sessionForm.punchType,
-      });
       setSelectedHorse(null);
       setSessionForm({
         punchType: "training",
@@ -421,7 +403,6 @@ export default function HorsesPage() {
       showToast("Session logged successfully");
       fetchHorses();
     } catch (err) {
-      captureClientEvent("horse_session_log_failed");
       console.error(err);
     } finally {
       setLogSessionLoading(false);

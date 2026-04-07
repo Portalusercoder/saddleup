@@ -104,7 +104,7 @@ export async function PUT(req: Request) {
       .single();
 
     if (error) {
-      return NextResponse.json({ error: "Invalid profile update" }, { status: 400 });
+      return NextResponse.json({ error: error.message }, { status: 400 });
     }
 
     return NextResponse.json({

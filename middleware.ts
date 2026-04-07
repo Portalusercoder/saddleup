@@ -7,7 +7,6 @@ import {
 } from "@/lib/security/cors";
 import { checkRateLimit, getClientIp } from "@/lib/rate-limit";
 import { getApiRateLimitPolicy } from "@/lib/security/rate-limit-policy";
-import { apiError } from "@/lib/api/error";
 
 export async function middleware(request: NextRequest) {
   const pathname = request.nextUrl.pathname;
@@ -18,7 +17,7 @@ export async function middleware(request: NextRequest) {
     const allowedOrigin = getAllowedCorsOrigin(requestOrigin);
 
     if (requestOrigin && !allowedOrigin) {
-      return apiError(403, "CORS origin forbidden", { code: "CORS_FORBIDDEN" });
+      return NextResponse.json({ error: "CORS origin forbidden" }, { status: 403 });
     }
 
     const policy = getApiRateLimitPolicy(pathname, request.method);
@@ -27,10 +26,13 @@ export async function middleware(request: NextRequest) {
       const result = await checkRateLimit(`mw:${policy.bucket}:${ip}`, policy.max, policy.windowMs);
       if (!result.allowed) {
         const retryAfterSeconds = Math.max(1, Math.ceil(result.retryAfterMs / 1000));
-        return apiError(429, "Too many requests. Please try again shortly.", {
-          code: "RATE_LIMITED",
-          headers: { "Retry-After": String(retryAfterSeconds) },
-        });
+        return NextResponse.json(
+          { error: "Too many requests. Please try again shortly." },
+          {
+            status: 429,
+            headers: { "Retry-After": String(retryAfterSeconds) },
+          }
+        );
       }
     }
 

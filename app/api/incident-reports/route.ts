@@ -137,7 +137,7 @@ export async function POST(req: Request) {
     if (error) {
       console.error("POST incident report error:", error);
       return NextResponse.json(
-        { error: "Failed to add incident report" },
+        { error: error.message || "Failed to add incident report" },
         { status: 500 }
       );
     }

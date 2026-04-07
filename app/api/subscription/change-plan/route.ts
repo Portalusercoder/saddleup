@@ -4,7 +4,6 @@ import { stripe, STRIPE_PRICE_IDS } from "@/lib/stripe";
 import { SUBSCRIPTION_LIMITS } from "@/lib/constants";
 import { parseJsonBody } from "@/lib/validation/parse-json";
 import { planIdSchema } from "@/lib/validation/schemas";
-import { captureServerEvent } from "@/lib/analytics/posthog-server";
 
 export async function POST(req: Request) {
   try {
@@ -93,12 +92,6 @@ export async function POST(req: Request) {
 
     await stripe.subscriptions.update(stable.stripe_subscription_id, {
       items: [{ id: itemId, price: priceId }],
-    });
-
-    captureServerEvent("plan_changed", user.id, {
-      stable_id: profile.stable_id,
-      from_plan: currentTier,
-      to_plan: planId,
     });
 
     return NextResponse.json({ success: true });

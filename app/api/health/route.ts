@@ -114,7 +114,7 @@ export async function POST(req: Request) {
     if (error) {
       console.error("POST health log error:", error);
       return NextResponse.json(
-        { error: "Failed to create health log" },
+        { error: error.message || "Failed to create health log" },
         { status: 500 }
       );
     }

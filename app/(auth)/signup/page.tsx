@@ -4,7 +4,6 @@ import { useState, useEffect } from "react";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
-import { captureClientEvent } from "@/lib/analytics/posthog-client";
 
 type Role = "owner" | "trainer" | "student" | "guardian";
 
@@ -181,29 +180,24 @@ export default function SignupPage() {
     e.preventDefault();
     setError(null);
     setLoading(true);
-    captureClientEvent("signup_code_requested", { role });
     try {
       const exists = await checkEmailAlreadyExists(email);
       if (exists) {
-        captureClientEvent("signup_code_request_failed", { reason: "email_exists" });
         setError("This email is already in use. Please sign in instead.");
         setLoading(false);
         return;
       }
       const { error: otpError } = await requestSignupOtp(email);
       if (otpError) {
-        captureClientEvent("signup_code_request_failed", { reason: "otp_error" });
         setError(otpError.message);
         setLoading(false);
         return;
       }
       setStep("code");
-      captureClientEvent("signup_code_sent", { role });
       setResendCooldownSec(60);
       setResendHint(null);
       setError(null);
     } catch (err) {
-      captureClientEvent("signup_code_request_failed", { reason: "unknown" });
       setError(err instanceof Error ? err.message : "Something went wrong");
     } finally {
       setLoading(false);
@@ -215,15 +209,12 @@ export default function SignupPage() {
     setResendHint(null);
     setError(null);
     setResendLoading(true);
-    captureClientEvent("signup_code_resend_requested", { role });
     try {
       const { error: otpError } = await requestSignupOtp(email);
       if (otpError) {
-        captureClientEvent("signup_code_resend_failed");
         setError(otpError.message);
         return;
       }
-      captureClientEvent("signup_code_resent");
       setResendCooldownSec(60);
       setResendHint("We sent another code to your email.");
     } catch {
@@ -241,7 +232,6 @@ export default function SignupPage() {
     }
     setError(null);
     setLoading(true);
-    captureClientEvent("signup_verify_attempted", { role });
     try {
       const supabase = createClient();
       const { data: vData, error: verifyError } = await supabase.auth.verifyOtp({
@@ -250,20 +240,17 @@ export default function SignupPage() {
         type: "email",
       });
       if (verifyError) {
-        captureClientEvent("signup_verify_failed", { reason: "otp_verify_error" });
         setError(verifyError.message);
         setLoading(false);
         return;
       }
       if (!vData.user) {
-        captureClientEvent("signup_verify_failed", { reason: "missing_user" });
         setError("Verification failed");
         setLoading(false);
         return;
       }
       const { error: updateError } = await supabase.auth.updateUser({ password });
       if (updateError) {
-        captureClientEvent("signup_verify_failed", { reason: "password_set_error" });
         setLoading(false);
         await abortVerifiedSignup(updateError.message);
         return;
@@ -297,7 +284,6 @@ export default function SignupPage() {
           }
         }
         if (!res.ok) {
-          captureClientEvent("signup_complete_failed", { role });
           setLoading(false);
           await abortVerifiedSignup(
             result.inviteCode
@@ -307,14 +293,12 @@ export default function SignupPage() {
           return;
         }
         router.push("/dashboard");
-        captureClientEvent("signup_completed_client", { role });
         router.refresh();
         return;
       }
       const previewRes = await fetch(`/api/stables/preview-by-code?code=${encodeURIComponent(joinCode.trim())}`);
       const preview = await previewRes.json();
       if (!previewRes.ok || !preview.name) {
-        captureClientEvent("signup_complete_failed", { role, reason: "invalid_join_code" });
         setLoading(false);
         await abortVerifiedSignup(
           "Invalid join code. Please check the code and try again."
@@ -324,9 +308,7 @@ export default function SignupPage() {
       setStablePreview({ name: preview.name, logoUrl: preview.logoUrl ?? null });
       setVerifyData({ userId: vData.user.id });
       setStep("confirm_join");
-      captureClientEvent("signup_stable_previewed", { role });
     } catch {
-      captureClientEvent("signup_verify_failed", { reason: "unknown" });
       setLoading(false);
       await abortVerifiedSignup("Something went wrong");
       return;
@@ -339,7 +321,6 @@ export default function SignupPage() {
     if (!verifyData || !stablePreview) return;
     setLoading(true);
     setError(null);
-    captureClientEvent("signup_join_confirmed_click");
     try {
       await createClient().auth.getSession();
       const res = await fetch("/api/auth/complete-signup", {
@@ -365,7 +346,6 @@ export default function SignupPage() {
         }
       }
       if (!res.ok) {
-        captureClientEvent("signup_complete_failed", { role });
         setLoading(false);
         await abortVerifiedSignup(
           result.inviteCode
@@ -375,7 +355,6 @@ export default function SignupPage() {
         return;
       }
       router.push("/dashboard");
-      captureClientEvent("signup_completed_client", { role });
       router.refresh();
     } catch {
       setLoading(false);
@@ -384,7 +363,6 @@ export default function SignupPage() {
   };
 
   const declineJoinStable = async () => {
-    captureClientEvent("signup_join_declined");
     try {
       await fetch("/api/auth/cleanup-incomplete-signup", {
         method: "POST",
