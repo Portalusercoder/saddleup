@@ -6,7 +6,6 @@ import { ProfileProvider } from "@/components/providers/ProfileProvider"
 import { LanguageProvider } from "@/components/providers/LanguageProvider"
 import { ThemeProvider } from "@/components/providers/ThemeProvider"
 import PostHogProvider from "@/components/providers/PostHogProvider"
-import { Suspense } from "react"
 import { Playfair_Display, Inter } from "next/font/google"
 import Script from "next/script"
 import type { Metadata } from "next"
@@ -88,9 +87,7 @@ export default function RootLayout({
         <ThemeProvider>
           <LanguageProvider>
             <ProfileProvider>
-              <Suspense fallback={null}>
-                <PostHogProvider />
-              </Suspense>
+              <PostHogProvider />
               <Navbar />
               <PagePadding>{children}</PagePadding>
               <TreatsConsent />
