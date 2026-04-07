@@ -2,7 +2,6 @@ import { NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { checkRateLimit, getClientIp } from "@/lib/rate-limit";
-import { captureServerEvent } from "@/lib/analytics/posthog-server";
 
 const DELAY_DAYS = 30;
 
@@ -52,11 +51,6 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: "Failed to schedule deletion" }, { status: 500 });
     }
 
-    captureServerEvent("account_deletion_requested", user.id, {
-      stable_id: profile.stable_id,
-      deletion_scheduled_at: deadline.toISOString(),
-      delay_days: DELAY_DAYS,
-    });
     return NextResponse.json({ success: true, deletionAt: deadline.toISOString() });
   } catch (err) {
     console.error("Request deletion error:", err);

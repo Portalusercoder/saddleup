@@ -1,7 +1,6 @@
 import { NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
 import { stripe } from "@/lib/stripe";
-import { captureServerEvent } from "@/lib/analytics/posthog-server";
 
 export async function POST(req: Request) {
   try {
@@ -48,7 +47,6 @@ export async function POST(req: Request) {
       return_url: `${origin}/dashboard/plans`,
     });
 
-    captureServerEvent("subscription_portal_accessed", user.id, { stable_id: profile.stable_id });
     return NextResponse.json({ url: session.url });
   } catch (err) {
     console.error("Portal error:", err);

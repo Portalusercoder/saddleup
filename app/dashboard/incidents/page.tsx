@@ -7,7 +7,6 @@ import LoadingSpinner from "@/components/ui/LoadingSpinner";
 import TableSkeleton from "@/components/ui/TableSkeleton";
 import GuidedTourOverlay, { type GuidedTourStep } from "@/components/dashboard/GuidedTourOverlay";
 import { usePageTour } from "@/components/dashboard/usePageTour";
-import { captureClientEvent } from "@/lib/analytics/posthog-client";
 
 interface IncidentReport {
   id: string;
@@ -199,12 +198,6 @@ export default function IncidentsPage() {
         const data = await res.json();
         if (!res.ok) throw new Error(data.error || "Failed");
         setReports((prev) => [data, ...prev]);
-        captureClientEvent("incident_reported", {
-          horse_id: form.horseId,
-          severity: form.severity || null,
-          has_rider: !!(form.riderId || form.riderName),
-          has_witnesses: !!form.witnesses,
-        });
         setToast("Incident report added");
       }
       setTimeout(() => setToast(null), 3000);

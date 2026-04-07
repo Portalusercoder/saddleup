@@ -8,7 +8,6 @@ import { HorseAvatar } from "@/components/HorseAvatar";
 import GuidedTourOverlay, {
   type GuidedTourStep,
 } from "@/components/dashboard/GuidedTourOverlay";
-import { captureClientEvent } from "@/lib/analytics/posthog-client";
 
 interface Horse {
   id: number;
@@ -95,7 +94,6 @@ export default function DashboardPage() {
         body: JSON.stringify({ onboardingCompleted: true }),
       });
       if (!res.ok) return;
-      captureClientEvent("onboarding_completed", { role: profile.role ?? null });
       setShowTutorial(false);
       await refetchProfile();
     } finally {

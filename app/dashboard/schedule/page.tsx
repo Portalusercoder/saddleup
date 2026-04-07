@@ -8,7 +8,6 @@ import { HorseAvatar } from "@/components/HorseAvatar";
 import TableSkeleton from "@/components/ui/TableSkeleton";
 import GuidedTourOverlay, { type GuidedTourStep } from "@/components/dashboard/GuidedTourOverlay";
 import { usePageTour } from "@/components/dashboard/usePageTour";
-import { captureClientEvent } from "@/lib/analytics/posthog-client";
 
 interface Horse {
   id: string | number;
@@ -239,12 +238,6 @@ export default function SchedulePage() {
         throw new Error(d.error || "Failed");
       }
       setShowBlockModal(false);
-      captureClientEvent("schedule_slot_blocked", {
-        blocked_date: blockForm.blockedDate,
-        start_time: blockForm.startTime,
-        end_time: blockForm.endTime,
-        has_reason: !!blockForm.reason,
-      });
       setBlockForm({ blockedDate: "", startTime: "09:00", endTime: "09:45", reason: "" });
       fetchData();
     } catch (err) {
@@ -268,12 +261,6 @@ export default function SchedulePage() {
         const d = await res.json();
         throw new Error(d.error || "Failed");
       }
-      captureClientEvent("booking_rescheduled", {
-        booking_id: showRescheduleModal.id,
-        new_date: rescheduleForm.bookingDate,
-        horse_name: showRescheduleModal.horse?.name ?? null,
-        rider_name: showRescheduleModal.rider?.name ?? null,
-      });
       setShowRescheduleModal(null);
       fetchData();
     } catch (err) {
