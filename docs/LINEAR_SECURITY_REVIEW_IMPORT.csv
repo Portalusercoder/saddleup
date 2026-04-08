@@ -1,0 +1,15 @@
+Name,Notes,Priority,Tags
+Run external headers/TLS scan,"Run securityheaders.com and SSL Labs, record findings and remediation actions.",High,security
+Auth and role enforcement review,"Verify protected routes reject unauthenticated users and wrong roles with safe status codes.",High,security
+Admin route authorization audit,"Confirm all admin routes are restricted and consistently enforce admin checks.",High,security
+Input validation fuzz pass,"Send malformed JSON, bad types, and oversized payloads to writable endpoints and verify safe errors.",High,security
+Rate limit verification pass,"Exercise high-risk endpoints and verify throttling, 429 responses, and retry headers.",High,security
+CORS allowlist validation,"Verify allowed origins pass and unknown origins are rejected in production.",High,security
+IDOR access control checks,"Attempt cross-stable resource access/update/delete and verify denials.",High,security
+File upload safety checks,"Validate mime/type/size restrictions and verify no script execution via uploaded content.",Medium,security
+Secrets exposure sweep,"Check repo/docs/logs for leaked keys and rotate anything exposed.",High,security
+Dependency vulnerability triage,"Run npm audit and triage critical/high vulnerabilities with issues created for fixes.",Medium,security
+Dependabot and code scanning review,"Review GitHub security alerts and create remediation tasks for valid findings.",Medium,security
+Sentry alert pipeline validation,"Trigger test errors and verify issue ingestion plus alert delivery channels.",High,infra
+Security runbook freshness check,"Confirm incident/rollback runbook is current and owners are assigned.",Medium,infra
+Launch security sign-off,"Document final security sign-off with evidence links and outstanding accepted risks.",High,security

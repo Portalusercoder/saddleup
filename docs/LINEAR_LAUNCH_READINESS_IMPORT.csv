@@ -1,0 +1,26 @@
+Name,Notes,Priority,Tags
+Set production env var audit baseline,"Verify all required env vars are present in Vercel production and documented.",High,infra
+Verify signup flow end-to-end,"Test code request, verification, complete signup, and role assignment on production.",High,backend
+Verify login flow end-to-end,"Test successful and failed login paths and session persistence across reloads.",High,backend
+Verify forgot-password flow,"Test request code, resend, confirm reset, and login with new password.",High,backend
+Validate CORS allowlist in production,"Confirm expected origins are allowed and unknown origins are rejected.",High,security
+Validate API write rate limits,"Exercise hot write endpoints and confirm 429 behavior + retry-after headers.",High,security
+Confirm standardized API errors,"Ensure client-safe error bodies are returned without leaking internals.",High,security
+Run auth abuse smoke tests,"Attempt invalid token and role edge cases on protected routes.",High,security
+Verify Mixpanel core events,"Confirm page_viewed, auth, bookings, and horses events in Mixpanel Live View.",Medium,analytics
+Verify GA4 realtime tracking,"Confirm page views and key traffic in GA4 Realtime report.",Medium,analytics
+Verify Clarity session recording,"Confirm sessions and rage/dead click signals appear after test traffic.",Medium,analytics
+Verify Sentry client error capture,"Trigger browser test error and confirm issue appears with stack trace.",High,infra
+Verify Sentry server error capture,"Trigger API/server error and confirm issue appears with request context.",High,infra
+Configure Sentry alert rules,"Create alerts for new issue, regression, and spike in error rate.",High,infra
+Set on-call notification channel,"Route urgent Sentry alerts to Slack/email and validate delivery.",High,infra
+Run booking creation QA,"Test booking request create/approve/decline/cancel across roles.",Medium,backend
+Run horse management QA,"Test add/edit/delete horse, photo upload, and session logging.",Medium,frontend
+Run competition and incident QA,"Test create/update/delete and permission checks for competitions/incidents.",Medium,backend
+Run newsletter and notices QA,"Test subscriber add and send flows with rate-limit behavior.",Medium,backend
+Check mobile responsive pass,"Smoke test core flows on iOS Safari and Android Chrome.",Medium,frontend
+Set deployment rollback checklist,"Document quick rollback steps and ownership for release day.",High,infra
+Prepare launch-day runbook,"Define monitoring cadence, owners, and incident communication template.",High,infra
+Set post-launch KPI dashboard,"Create a shared dashboard for signups, activation, and key usage metrics.",Medium,analytics
+Create post-launch bug triage board,"Define severity policy and daily bug triage process for week one.",Medium,infra
+Freeze release candidate branch,"Create launch candidate branch and permit only blocker fixes.",High,infra
