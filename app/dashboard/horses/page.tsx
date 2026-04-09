@@ -409,8 +409,9 @@ export default function HorsesPage() {
         }),
       });
       if (!res.ok) {
+        const data = await res.json().catch(() => ({}));
         trackEvent("horse_session_log_failed", { horse_id: String(selectedHorse.id) });
-        throw new Error("Failed to log session");
+        throw new Error(typeof data.error === "string" ? data.error : "Failed to log session");
       }
 
       setShowSessionModal(false);
@@ -432,6 +433,7 @@ export default function HorsesPage() {
     } catch (err) {
       trackEvent("horse_session_log_failed", { horse_id: String(selectedHorse.id) });
       console.error(err);
+      showToast(err instanceof Error ? err.message : "Failed to log session");
     } finally {
       setLogSessionLoading(false);
     }

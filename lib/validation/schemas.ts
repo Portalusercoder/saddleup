@@ -231,8 +231,20 @@ export const sessionPostSchema = z
     duration: optionalDurationMinutes(),
     intensity: z.string().max(40).optional(),
     discipline: z.string().max(40).optional(),
-    rider: z.string().max(200).trim().optional().transform((s) => (s === "" ? undefined : s)),
-    notes: z.string().max(20_000).trim().optional().transform((s) => (s === "" ? undefined : s)),
+    rider: z
+      .union([z.string(), z.null(), z.undefined()])
+      .transform((v) => {
+        if (v == null) return undefined;
+        const s = String(v).trim();
+        return s === "" ? undefined : s.slice(0, 200);
+      }),
+    notes: z
+      .union([z.string(), z.null(), z.undefined()])
+      .transform((v) => {
+        if (v == null) return undefined;
+        const s = String(v).trim();
+        return s === "" ? undefined : s.slice(0, 20_000);
+      }),
   })
   .strip();
 
