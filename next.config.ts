@@ -11,7 +11,19 @@ function normalizeOrigin(raw?: string): string | null {
   }
 }
 
+function escapeRegex(value: string): string {
+  return value.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+}
+
 const appOrigin = normalizeOrigin(process.env.NEXT_PUBLIC_APP_URL);
+const appHost = (() => {
+  if (!appOrigin) return null;
+  try {
+    return new URL(appOrigin).host;
+  } catch {
+    return null;
+  }
+})();
 const supabaseOrigin = normalizeOrigin(process.env.NEXT_PUBLIC_SUPABASE_URL);
 const sentryOrigin = (() => {
   const dsn = process.env.NEXT_PUBLIC_SENTRY_DSN;
@@ -73,13 +85,34 @@ const nextConfig: NextConfig = {
     ];
   },
   async redirects() {
-    return [
+    const redirects: Array<{
+      source: string;
+      destination: string;
+      permanent: boolean;
+      has?: Array<{ type: "host"; value: string }>;
+    }> = [
       {
         source: "/favicon.ico",
         destination: "/icon.svg",
         permanent: true,
       },
     ];
+
+    if (appOrigin && appHost) {
+      redirects.unshift({
+        source: "/:path*",
+        has: [
+          {
+            type: "host",
+            value: `((?!^${escapeRegex(appHost)}$).+)`,
+          },
+        ],
+        destination: `${appOrigin}/:path*`,
+        permanent: true,
+      });
+    }
+
+    return redirects;
   },
   async headers() {
     return [
