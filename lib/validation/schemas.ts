@@ -70,6 +70,7 @@ export const profileUpdateSchema = z
 const enterpriseContactSchema = z
   .object({
     type: z.literal("enterprise"),
+    turnstileToken: z.string().trim().min(1),
     companyLegalName: z.string().max(300).trim().min(1),
     entityType: z.string().max(120).trim().min(1),
     registrationNumber: optStr(120),
@@ -99,6 +100,7 @@ const enterpriseContactSchema = z
 const generalContactSchema = z
   .object({
     type: z.literal("general"),
+    turnstileToken: z.string().trim().min(1),
     name: z.string().max(200).trim().min(1),
     email: z
       .string()
@@ -307,6 +309,7 @@ export const planIdSchema = z
 export const forgotPasswordRequestSchema = z
   .object({
     email: z.string().max(320).trim().pipe(z.string().email()),
+    turnstileToken: z.string().trim().min(1),
   })
   .strip();
 

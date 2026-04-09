@@ -3,6 +3,11 @@
 import { useState, useEffect } from "react";
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
+import TurnstileWidget from "@/components/security/TurnstileWidget";
+import {
+  hasTurnstileToken,
+  TURNSTILE_REQUIRED_MESSAGE,
+} from "@/lib/security/turnstile-client";
 
 const formClass =
   "w-full px-4 py-3 bg-base border border-black/20 text-black placeholder-black/40 focus:border-black/40 focus:outline-none";
@@ -28,6 +33,7 @@ export default function ContactPage() {
   const [sent, setSent] = useState(false);
   const [sentType, setSentType] = useState<"enterprise" | "general" | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const [turnstileToken, setTurnstileToken] = useState("");
 
   // Pre-select enterprise when coming from pricing "Contact sales"
   useEffect(() => {
@@ -71,12 +77,20 @@ export default function ContactPage() {
   const handleSubmitEnterprise = async (e: React.FormEvent) => {
     e.preventDefault();
     setError(null);
+    if (!hasTurnstileToken(turnstileToken)) {
+      setError(TURNSTILE_REQUIRED_MESSAGE);
+      return;
+    }
     setLoading(true);
     try {
       const res = await fetch("/api/contact", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ type: "enterprise", ...enterprise }),
+        body: JSON.stringify({
+          type: "enterprise",
+          ...enterprise,
+          turnstileToken: turnstileToken.trim(),
+        }),
       });
       if (!res.ok) {
         const data = await res.json().catch(() => ({}));
@@ -95,12 +109,20 @@ export default function ContactPage() {
   const handleSubmitGeneral = async (e: React.FormEvent) => {
     e.preventDefault();
     setError(null);
+    if (!hasTurnstileToken(turnstileToken)) {
+      setError(TURNSTILE_REQUIRED_MESSAGE);
+      return;
+    }
     setLoading(true);
     try {
       const res = await fetch("/api/contact", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ type: "general", ...general }),
+        body: JSON.stringify({
+          type: "general",
+          ...general,
+          turnstileToken: turnstileToken.trim(),
+        }),
       });
       if (!res.ok) {
         const data = await res.json().catch(() => ({}));
@@ -257,6 +279,9 @@ export default function ContactPage() {
                   setGeneral((p) => ({ ...p, subject: e.target.value }))
                 }
               />
+            </div>
+            <div>
+              <TurnstileWidget onTokenChange={setTurnstileToken} />
             </div>
             <div>
               <label htmlFor="message" className={labelClass}>
@@ -617,6 +642,9 @@ export default function ContactPage() {
                     }
                   />
                 </div>
+              </div>
+              <div>
+                <TurnstileWidget onTokenChange={setTurnstileToken} />
               </div>
               <div>
                 <label htmlFor="message" className={labelClass}>

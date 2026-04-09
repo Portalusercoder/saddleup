@@ -12,17 +12,41 @@ function normalizeOrigin(raw?: string): string | null {
 }
 
 const appOrigin = normalizeOrigin(process.env.NEXT_PUBLIC_APP_URL);
+const supabaseOrigin = normalizeOrigin(process.env.NEXT_PUBLIC_SUPABASE_URL);
+const sentryOrigin = (() => {
+  const dsn = process.env.NEXT_PUBLIC_SENTRY_DSN;
+  if (!dsn) return null;
+  try {
+    return new URL(dsn).origin;
+  } catch {
+    return null;
+  }
+})();
+const imgSources = [
+  "'self'",
+  "data:",
+  "blob:",
+  ...(appOrigin ? [appOrigin] : []),
+  ...(supabaseOrigin ? [supabaseOrigin] : []),
+];
+const connectSources = [
+  "'self'",
+  "https://www.google-analytics.com",
+  "https://region1.google-analytics.com",
+  "https://www.clarity.ms",
+  ...(sentryOrigin ? [sentryOrigin] : []),
+];
 const csp = [
   "default-src 'self'",
   "base-uri 'self'",
   "frame-ancestors 'none'",
   "object-src 'none'",
   "form-action 'self'",
-  "script-src 'self' 'unsafe-inline' 'unsafe-eval' https://www.googletagmanager.com https://www.clarity.ms",
+  "script-src 'self' 'unsafe-inline' https://www.googletagmanager.com https://www.clarity.ms",
   "style-src 'self' 'unsafe-inline'",
-  "img-src 'self' data: blob: https:",
-  "font-src 'self' data: https:",
-  "connect-src 'self' https://api-js.mixpanel.com https://*.mixpanel.com https://www.google-analytics.com https://region1.google-analytics.com https://www.clarity.ms https://*.ingest.sentry.io https://*.sentry.io",
+  `img-src ${imgSources.join(" ")}`,
+  "font-src 'self' data:",
+  `connect-src ${connectSources.join(" ")}`,
   "frame-src 'self'",
 ].join("; ");
 
@@ -65,9 +89,7 @@ const nextConfig: NextConfig = {
       },
       {
         source: "/:path*",
-        headers: appOrigin
-          ? [...securityHeaders, { key: "Access-Control-Allow-Origin", value: appOrigin }]
-          : securityHeaders,
+        headers: securityHeaders,
       },
     ];
   },

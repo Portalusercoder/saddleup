@@ -5,6 +5,11 @@ import Link from "next/link";
 import { useSearchParams } from "next/navigation";
 import LoadingScreen from "@/components/ui/LoadingScreen";
 import { trackEvent } from "@/lib/analytics/mixpanel-client";
+import TurnstileWidget from "@/components/security/TurnstileWidget";
+import {
+  hasTurnstileToken,
+  TURNSTILE_REQUIRED_MESSAGE,
+} from "@/lib/security/turnstile-client";
 
 const MIN_PASSWORD_LENGTH = 8;
 
@@ -28,6 +33,7 @@ function ForgotPasswordForm() {
   const [loading, setLoading] = useState(false);
   const [resendCooldownSec, setResendCooldownSec] = useState(0);
   const [resendLoading, setResendLoading] = useState(false);
+  const [turnstileToken, setTurnstileToken] = useState("");
 
   useEffect(() => {
     const pre = searchParams.get("email")?.trim();
@@ -44,13 +50,20 @@ function ForgotPasswordForm() {
     e.preventDefault();
     setError(null);
     setInfo(null);
+    if (!hasTurnstileToken(turnstileToken)) {
+      setError(TURNSTILE_REQUIRED_MESSAGE);
+      return;
+    }
     setLoading(true);
     trackEvent("password_reset_code_requested");
     try {
       const res = await fetch("/api/auth/forgot-password", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email: email.trim() }),
+        body: JSON.stringify({
+          email: email.trim(),
+          turnstileToken: turnstileToken.trim(),
+        }),
       });
       const data = await res.json().catch(() => ({}));
       if (!res.ok) {
@@ -75,6 +88,10 @@ function ForgotPasswordForm() {
 
   const resendCode = async () => {
     if (resendCooldownSec > 0 || resendLoading || !email.trim()) return;
+    if (!hasTurnstileToken(turnstileToken)) {
+      setError(TURNSTILE_REQUIRED_MESSAGE);
+      return;
+    }
     setResendLoading(true);
     setError(null);
     trackEvent("password_reset_code_resend_requested");
@@ -82,7 +99,10 @@ function ForgotPasswordForm() {
       const res = await fetch("/api/auth/forgot-password", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email: email.trim() }),
+        body: JSON.stringify({
+          email: email.trim(),
+          turnstileToken: turnstileToken.trim(),
+        }),
       });
       const data = await res.json().catch(() => ({}));
       if (!res.ok) {
@@ -181,6 +201,9 @@ function ForgotPasswordForm() {
           ) : step === "email" ? (
             <form onSubmit={sendCode} className="space-y-5">
               <div>
+                <TurnstileWidget onTokenChange={setTurnstileToken} />
+              </div>
+              <div>
                 <label htmlFor="email" className={labelClass}>
                   Email
                 </label>
@@ -259,6 +282,7 @@ function ForgotPasswordForm() {
                 {loading ? "Updating…" : "Update password"}
               </button>
               <div className="flex flex-wrap items-center gap-2 text-sm text-black/60">
+                <TurnstileWidget onTokenChange={setTurnstileToken} className="w-full" />
                 <button
                   type="button"
                   onClick={() => {

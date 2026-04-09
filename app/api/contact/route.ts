@@ -3,6 +3,10 @@ import { Resend } from "resend";
 import { checkRateLimit, getClientIp } from "@/lib/rate-limit";
 import { parseJsonBody } from "@/lib/validation/parse-json";
 import { contactBodySchema } from "@/lib/validation/schemas";
+import {
+  getTurnstileTokenFromRequest,
+  verifyTurnstileToken,
+} from "@/lib/security/turnstile";
 
 const CONTACT_TO = process.env.CONTACT_TO_EMAIL ?? "omarkhuddus@gmail.com";
 const RESEND_FROM =
@@ -78,6 +82,17 @@ export async function POST(req: Request) {
     const parsed = await parseJsonBody(req, contactBodySchema);
     if (!parsed.ok) return parsed.response;
     const body = parsed.data as unknown as Record<string, unknown>;
+    const turnstileToken = getTurnstileTokenFromRequest(req, parsed.data.turnstileToken);
+    const turnstileOk = await verifyTurnstileToken({
+      token: turnstileToken,
+      remoteIp: ip,
+    });
+    if (!turnstileOk) {
+      return NextResponse.json(
+        { error: "Verification failed. Please try again." },
+        { status: 400 }
+      );
+    }
 
     if (parsed.data.type === "enterprise") {
       const resend = new Resend(apiKey);

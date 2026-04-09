@@ -10,6 +10,10 @@ import {
 import { sendPasswordResetCodeEmail } from "@/lib/send-password-reset-email";
 import { parseJsonBody } from "@/lib/validation/parse-json";
 import { forgotPasswordRequestSchema } from "@/lib/validation/schemas";
+import {
+  getTurnstileTokenFromRequest,
+  verifyTurnstileToken,
+} from "@/lib/security/turnstile";
 
 const PUBLIC_OK =
   "If an account exists for that email, you’ll receive a 4-digit code shortly.";
@@ -30,6 +34,17 @@ export async function POST(req: Request) {
   }
 
   const emailRaw = parsed.data.email;
+  const turnstileToken = getTurnstileTokenFromRequest(req, parsed.data.turnstileToken);
+  const turnstileOk = await verifyTurnstileToken({
+    token: turnstileToken,
+    remoteIp: ip,
+  });
+  if (!turnstileOk) {
+    return NextResponse.json(
+      { error: "Verification failed. Please try again." },
+      { status: 400 }
+    );
+  }
 
   const email = normalizeResetEmail(emailRaw);
 
