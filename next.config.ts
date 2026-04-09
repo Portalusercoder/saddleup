@@ -34,6 +34,8 @@ const connectSources = [
   "https://www.google-analytics.com",
   "https://region1.google-analytics.com",
   "https://www.clarity.ms",
+  "https://challenges.cloudflare.com",
+  ...(supabaseOrigin ? [supabaseOrigin] : []),
   ...(sentryOrigin ? [sentryOrigin] : []),
 ];
 const csp = [
@@ -42,12 +44,12 @@ const csp = [
   "frame-ancestors 'none'",
   "object-src 'none'",
   "form-action 'self'",
-  "script-src 'self' 'unsafe-inline' https://www.googletagmanager.com https://www.clarity.ms",
+  "script-src 'self' 'unsafe-inline' https://www.googletagmanager.com https://www.clarity.ms https://challenges.cloudflare.com",
   "style-src 'self' 'unsafe-inline'",
   `img-src ${imgSources.join(" ")}`,
   "font-src 'self' data:",
   `connect-src ${connectSources.join(" ")}`,
-  "frame-src 'self'",
+  "frame-src 'self' https://challenges.cloudflare.com",
 ].join("; ");
 
 const securityHeaders = [
