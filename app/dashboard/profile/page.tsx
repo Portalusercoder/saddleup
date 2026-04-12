@@ -28,15 +28,23 @@ export default function ProfilePage() {
   }, [profile]);
 
   useEffect(() => {
-    fetch("/api/me/invite-code")
-      .then((r) => r.json())
-      .then((d) => setInviteCode(d.inviteCode ?? null))
-      .catch(() => setInviteCode(null));
     fetch("/api/me/rider")
       .then((r) => r.json())
       .then((d) => setRiderIdCard(d?.id_card_url ?? null))
       .catch(() => setRiderIdCard(null));
   }, []);
+
+  useEffect(() => {
+    if (!profile) return;
+    if (profile.role === "owner") {
+      setInviteCode(null);
+      return;
+    }
+    fetch("/api/me/invite-code")
+      .then((r) => r.json())
+      .then((d) => setInviteCode(d.inviteCode ?? null))
+      .catch(() => setInviteCode(null));
+  }, [profile]);
 
   const idCardUrl = riderIdCard ?? profile?.id_card_url ?? null;
   const loading = profileLoading;
@@ -197,7 +205,7 @@ export default function ProfilePage() {
                 </a>
               </div>
             )}
-            {inviteCode && (
+            {inviteCode && profile.role !== "owner" && (
               <div>
                 <label className={labelClass}>Your personal ID</label>
                 <p className="text-black/50 text-xs mb-2">
