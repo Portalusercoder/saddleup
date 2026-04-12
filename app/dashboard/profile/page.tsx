@@ -19,12 +19,17 @@ export default function ProfilePage() {
   const [inviteCode, setInviteCode] = useState<string | null>(null);
   const [riderIdCard, setRiderIdCard] = useState<string | null>(null);
   const [saving, setSaving] = useState(false);
+  const [emailSubmitting, setEmailSubmitting] = useState(false);
   const [toast, setToast] = useState<string | null>(null);
   const [fullName, setFullName] = useState("");
+  const [emailInput, setEmailInput] = useState("");
   const photoInputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
-    if (profile) setFullName(profile.fullName ?? "");
+    if (profile) {
+      setFullName(profile.fullName ?? "");
+      setEmailInput(profile.email ?? "");
+    }
   }, [profile]);
 
   useEffect(() => {
@@ -107,6 +112,40 @@ export default function ProfilePage() {
     setTimeout(() => setToast(null), 3000);
   };
 
+  const normalizedProfileEmail = (profile?.email ?? "").trim().toLowerCase();
+  const normalizedInputEmail = emailInput.trim().toLowerCase();
+  const emailUnchanged =
+    normalizedInputEmail === normalizedProfileEmail || normalizedInputEmail === "";
+
+  const handleEmailUpdate = async () => {
+    if (!profile || emailUnchanged) return;
+    setEmailSubmitting(true);
+    try {
+      const res = await fetch("/api/profile/email", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email: emailInput.trim() }),
+      });
+      const data = await res.json().catch(() => ({}));
+      if (!res.ok) {
+        setToast(typeof data.error === "string" ? data.error : "Could not update email");
+        setEmailSubmitting(false);
+        setTimeout(() => setToast(null), 5000);
+        return;
+      }
+      await refetch();
+      setToast(
+        typeof data.message === "string"
+          ? data.message
+          : "Email updated. Check your inbox if confirmation is required."
+      );
+    } catch {
+      setToast("Could not update email");
+    }
+    setEmailSubmitting(false);
+    setTimeout(() => setToast(null), 8000);
+  };
+
   if (loading) {
     return <PageLoader minHeight="min-h-[40vh]" message="Loading…" />;
   }
@@ -182,11 +221,30 @@ export default function ProfilePage() {
               />
             </div>
             <div>
-              <label className={labelClass}>Email</label>
-              <p className="text-black/60 text-sm py-2">{profile.email ?? "—"}</p>
-              <p className="text-black/40 text-xs uppercase tracking-wider">
-                Email is managed by your account and cannot be changed here.
+              <label htmlFor="profile-email" className={labelClass}>
+                Email
+              </label>
+              <input
+                id="profile-email"
+                type="email"
+                autoComplete="email"
+                value={emailInput}
+                onChange={(e) => setEmailInput(e.target.value)}
+                className={formInput}
+                placeholder="you@example.com"
+              />
+              <p className="text-black/40 text-xs mt-2">
+                Changing your email updates your sign-in address. Your project may send a confirmation
+                link before it takes effect.
               </p>
+              <button
+                type="button"
+                onClick={handleEmailUpdate}
+                disabled={emailSubmitting || emailUnchanged}
+                className={`${btnSecondary} mt-3 disabled:opacity-50 disabled:cursor-not-allowed`}
+              >
+                {emailSubmitting ? "Updating…" : "Update email"}
+              </button>
             </div>
             <div>
               <label className={labelClass}>Role</label>

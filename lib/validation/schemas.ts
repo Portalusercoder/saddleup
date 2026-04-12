@@ -45,6 +45,18 @@ export const checkSignupEmailSchema = z
   })
   .strip();
 
+/** Change sign-in email (Supabase Auth + profiles.email sync). */
+export const profileEmailChangeSchema = z
+  .object({
+    email: z
+      .string()
+      .max(320)
+      .trim()
+      .pipe(z.string().email())
+      .transform((s) => s.toLowerCase()),
+  })
+  .strip();
+
 export const profileUpdateSchema = z
   .object({
     fullName: z.string().max(200).trim().min(1).optional(),
