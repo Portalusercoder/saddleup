@@ -3,13 +3,14 @@
 import Link from "next/link";
 import { SiGithub, SiInstagram, SiX } from "react-icons/si";
 import TextLogo from "@/components/brand/TextLogo";
+import { useLanguage } from "@/components/providers/LanguageProvider";
 
-const navLinks = [
-  { href: "/#features", label: "Features" },
-  { href: "/#pricing", label: "Pricing" },
-  { href: "/#about", label: "About" },
-  { href: "/blog", label: "Guides" },
-  { href: "/contact", label: "Contact" },
+const navLinkKeys = [
+  { href: "/#features", key: "nav.features" as const },
+  { href: "/#pricing", key: "nav.pricing" as const },
+  { href: "/#about", key: "nav.about" as const },
+  { href: "/blog", key: "footer.guides" as const },
+  { href: "/contact", key: "nav.contact" as const },
 ];
 
 const socialLinks = [
@@ -23,6 +24,7 @@ export default function Footer({
 }: {
   onGetStarted?: () => void;
 }) {
+  const { t } = useLanguage();
   return (
     <footer className="relative bg-base text-black overflow-hidden border-t border-black/[0.06]">
       {/* Very subtle white grid overlay */}
@@ -40,18 +42,18 @@ export default function Footer({
       <div className="relative max-w-4xl mx-auto py-16 sm:py-20 px-6 text-center">
         {/* Logo + Brand */}
         <div className="flex flex-col items-center mb-10">
-          <TextLogo className="text-[0.95rem] text-black/90" subtitle="Stable management" />
+          <TextLogo className="text-[0.95rem] text-black/90" subtitle={t("footer.subtitle")} />
         </div>
 
         {/* Heading + CTA */}
         <h2 className="font-serif text-2xl sm:text-3xl md:text-4xl font-normal mb-6 max-w-xl mx-auto">
-          Ready to manage your stable?
+          {t("footer.ctaTitle")}
         </h2>
         <button
           onClick={onGetStarted}
           className="inline-flex items-center gap-2 px-6 py-3 bg-accent text-white font-medium rounded-full hover:opacity-95 transition uppercase tracking-wider text-sm"
         >
-          Get Started
+          {t("footer.getStarted")}
         </button>
 
         {/* Nav links with subtle separators */}
@@ -59,7 +61,7 @@ export default function Footer({
           className="mt-12 flex flex-wrap items-center justify-center gap-x-4 gap-y-2"
           aria-label="Footer navigation"
         >
-          {navLinks.map((link, i) => (
+          {navLinkKeys.map((link, i) => (
             <span key={link.href} className="flex items-center gap-4">
               {i > 0 && (
                 <span
@@ -71,7 +73,7 @@ export default function Footer({
                 href={link.href}
                 className="text-sm text-black/70 hover:text-black transition uppercase tracking-wider"
               >
-                {link.label}
+                {t(link.key)}
               </Link>
             </span>
           ))}
@@ -82,13 +84,13 @@ export default function Footer({
           aria-label="Legal"
         >
           <Link href="/privacy" className="hover:text-black/80 transition">
-            Privacy
+            {t("footer.privacy")}
           </Link>
           <span className="text-black/20" aria-hidden>
             |
           </span>
           <Link href="/terms" className="hover:text-black/80 transition">
-            Terms
+            {t("footer.terms")}
           </Link>
           <span className="text-black/20" aria-hidden>
             |
@@ -97,7 +99,7 @@ export default function Footer({
             href="/legal/data-compliance"
             className="hover:text-black/80 transition"
           >
-            Data &amp; compliance
+            {t("footer.dataCompliance")}
           </Link>
         </nav>
 

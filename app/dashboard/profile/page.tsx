@@ -8,6 +8,7 @@ import { ProfileAvatar } from "@/components/ProfileAvatar";
 import PageLoader from "@/components/ui/PageLoader";
 import GuidedTourOverlay, { type GuidedTourStep } from "@/components/dashboard/GuidedTourOverlay";
 import { usePageTour } from "@/components/dashboard/usePageTour";
+import { useLanguage } from "@/components/providers/LanguageProvider";
 
 const formInput = "w-full px-4 py-3 bg-base border border-black/10 text-black placeholder-black/40 focus:border-black/30 focus:outline-none";
 const labelClass = "block text-xs uppercase tracking-widest text-black/50 mb-2";
@@ -15,6 +16,7 @@ const btnPrimary = "px-4 py-2.5 bg-accent text-white font-medium text-sm upperca
 const btnSecondary = "px-4 py-2.5 border border-black/10 text-black text-sm uppercase tracking-wider hover:border-black/30 transition";
 
 export default function ProfilePage() {
+  const { t } = useLanguage();
   const { profile, loading: profileLoading, refetch } = useProfile();
   const [inviteCode, setInviteCode] = useState<string | null>(null);
   const [riderIdCard, setRiderIdCard] = useState<string | null>(null);
@@ -59,9 +61,9 @@ export default function ProfilePage() {
   );
 
   const tourSteps: GuidedTourStep[] = [
-    { id: "avatar", title: "Profile Photo", description: "Upload or change your avatar.", selector: '[data-tour="profile-avatar"]' },
-    { id: "details", title: "Profile Details", description: "Review and edit your basic account details.", selector: '[data-tour="profile-details"]' },
-    { id: "save", title: "Save Changes", description: "Save profile updates after editing.", selector: '[data-tour="profile-save"]' },
+    { id: "avatar", title: t("profile.tourAvatarTitle"), description: t("profile.tourAvatarDesc"), selector: '[data-tour="profile-avatar"]' },
+    { id: "details", title: t("profile.tourDetailsTitle"), description: t("profile.tourDetailsDesc"), selector: '[data-tour="profile-details"]' },
+    { id: "save", title: t("profile.tourSaveTitle"), description: t("profile.tourSaveDesc"), selector: '[data-tour="profile-save"]' },
   ];
 
   const handlePhotoUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -76,13 +78,13 @@ export default function ProfilePage() {
       });
       const data = await res.json();
       if (!res.ok) {
-        setToast(data.error || "Upload failed");
+        setToast(data.error || t("profile.uploadFailed"));
         return;
       }
       refetch();
-      setToast("Photo updated");
+      setToast(t("profile.photoUpdated"));
     } catch {
-      setToast("Upload failed");
+      setToast(t("profile.uploadFailed"));
     }
     e.target.value = "";
     setTimeout(() => setToast(null), 3000);
@@ -99,14 +101,14 @@ export default function ProfilePage() {
       });
       const data = await res.json();
       if (!res.ok) {
-        setToast(data.error || "Failed to save");
+        setToast(data.error || t("profile.saveFailed"));
         setSaving(false);
         return;
       }
       refetch();
-      setToast("Profile saved");
+      setToast(t("profile.profileSaved"));
     } catch {
-      setToast("Failed to save");
+      setToast(t("profile.saveFailed"));
     }
     setSaving(false);
     setTimeout(() => setToast(null), 3000);
@@ -128,7 +130,7 @@ export default function ProfilePage() {
       });
       const data = await res.json().catch(() => ({}));
       if (!res.ok) {
-        setToast(typeof data.error === "string" ? data.error : "Could not update email");
+        setToast(typeof data.error === "string" ? data.error : t("profile.emailUpdateFailed"));
         setEmailSubmitting(false);
         setTimeout(() => setToast(null), 5000);
         return;
@@ -137,26 +139,26 @@ export default function ProfilePage() {
       setToast(
         typeof data.message === "string"
           ? data.message
-          : "Email updated. Check your inbox if confirmation is required."
+          : t("profile.emailUpdatedDefault")
       );
     } catch {
-      setToast("Could not update email");
+      setToast(t("profile.emailUpdateFailed"));
     }
     setEmailSubmitting(false);
     setTimeout(() => setToast(null), 8000);
   };
 
   if (loading) {
-    return <PageLoader minHeight="min-h-[40vh]" message="Loading…" />;
+    return <PageLoader minHeight="min-h-[40vh]" message={t("common.loading")} />;
   }
 
   if (!profile) {
     return (
       <div className="space-y-4">
         <Link href="/dashboard" className="text-black/60 hover:text-black text-sm uppercase tracking-wider">
-          ← Back to Dashboard
+          {t("profile.back")}
         </Link>
-        <p className="text-black/50">Profile not found.</p>
+        <p className="text-black/50">{t("profile.profileNotFound")}</p>
       </div>
     );
   }
@@ -171,12 +173,12 @@ export default function ProfilePage() {
       />
       <div>
         <Link href="/dashboard" className="text-black/60 hover:text-black text-sm uppercase tracking-wider">
-          ← Back to Dashboard
+          {t("profile.back")}
         </Link>
       </div>
 
       <h1 className="font-serif text-3xl md:text-4xl font-normal text-black">
-        Profile
+        {t("profile.title")}
       </h1>
 
       {toast && (
@@ -205,24 +207,24 @@ export default function ProfilePage() {
               onClick={() => photoInputRef.current?.click()}
               className={btnSecondary}
             >
-              Change photo
+              {t("profile.changePhoto")}
             </button>
           </div>
 
           <div className="flex-1 space-y-4 min-w-0" data-tour="profile-details">
             <div>
-              <label className={labelClass}>Full name</label>
+              <label className={labelClass}>{t("common.fullName")}</label>
               <input
                 type="text"
                 value={fullName}
                 onChange={(e) => setFullName(e.target.value)}
                 className={formInput}
-                placeholder="Your name"
+                placeholder={t("common.yourName")}
               />
             </div>
             <div>
               <label htmlFor="profile-email" className={labelClass}>
-                Email
+                {t("common.email")}
               </label>
               <input
                 id="profile-email"
@@ -231,11 +233,10 @@ export default function ProfilePage() {
                 value={emailInput}
                 onChange={(e) => setEmailInput(e.target.value)}
                 className={formInput}
-                placeholder="you@example.com"
+                placeholder={t("common.placeholderEmail")}
               />
               <p className="text-black/40 text-xs mt-2">
-                Changing your email updates your sign-in address. Your project may send a confirmation
-                link before it takes effect.
+                {t("profile.emailHelp")}
               </p>
               <button
                 type="button"
@@ -243,31 +244,38 @@ export default function ProfilePage() {
                 disabled={emailSubmitting || emailUnchanged}
                 className={`${btnSecondary} mt-3 disabled:opacity-50 disabled:cursor-not-allowed`}
               >
-                {emailSubmitting ? "Updating…" : "Update email"}
+                {emailSubmitting ? t("profile.updatingEmail") : t("profile.updateEmail")}
               </button>
             </div>
             <div>
-              <label className={labelClass}>Role</label>
-              <p className="text-black/60 text-sm py-2 capitalize">{profile.role}</p>
+              <label className={labelClass}>{t("common.role")}</label>
+              <p className="text-black/60 text-sm py-2 capitalize">
+                {profile.role === "owner" ||
+                profile.role === "trainer" ||
+                profile.role === "student" ||
+                profile.role === "guardian"
+                  ? t(`auth.signup.roles.${profile.role}`)
+                  : profile.role}
+              </p>
             </div>
             {idCardUrl && (
               <div>
-                <label className={labelClass}>ID card</label>
+                <label className={labelClass}>{t("profile.idCard")}</label>
                 <a
                   href={idCardUrl}
                   target="_blank"
                   rel="noopener noreferrer"
                   className="text-black hover:underline text-sm uppercase tracking-wider"
                 >
-                  View ID card
+                  {t("profile.viewIdCard")}
                 </a>
               </div>
             )}
             {inviteCode && profile.role !== "owner" && (
               <div>
-                <label className={labelClass}>Your personal ID</label>
+                <label className={labelClass}>{t("profile.personalId")}</label>
                 <p className="text-black/50 text-xs mb-2">
-                  Share this with your stable owner if the join code didn&apos;t work.
+                  {t("profile.personalIdHelp")}
                 </p>
                 <div className="flex items-center gap-2">
                   <code className="flex-1 px-3 py-2 bg-base border border-black/10 font-mono text-sm text-black">
@@ -277,12 +285,12 @@ export default function ProfilePage() {
                     type="button"
                     onClick={() => {
                       navigator.clipboard.writeText(inviteCode);
-                      setToast("Copied!");
+                      setToast(t("common.copied"));
                       setTimeout(() => setToast(null), 2000);
                     }}
                     className={btnSecondary}
                   >
-                    Copy
+                    {t("common.copy")}
                   </button>
                 </div>
               </div>
@@ -293,7 +301,7 @@ export default function ProfilePage() {
               className={`${btnPrimary} disabled:opacity-50`}
               data-tour="profile-save"
             >
-              {saving ? "Saving..." : "Save changes"}
+              {saving ? t("profile.saving") : t("profile.saveChanges")}
             </button>
           </div>
         </div>
@@ -301,11 +309,13 @@ export default function ProfilePage() {
 
       {profile.role === "owner" && (
         <div className="border border-black/10 p-6 max-w-md border-amber-500/30">
-          <h2 className="font-serif text-lg text-black mb-2">Delete account</h2>
+          <h2 className="font-serif text-lg text-black mb-2">{t("profile.deleteTitle")}</h2>
           <p className="text-black/60 text-sm mb-4">
-            This will schedule your stable and all its data for permanent deletion in 30 days. You can reactivate by signing in before then.
+            {t("profile.deleteLead")}
           </p>
-          <DeleteAccountButton onScheduled={() => setToast("Deletion scheduled. You have been signed out.")} />
+          <DeleteAccountButton
+            onScheduled={() => setToast(t("profile.deletionScheduled"))}
+          />
         </div>
       )}
     </div>
@@ -313,6 +323,7 @@ export default function ProfilePage() {
 }
 
 function DeleteAccountButton({ onScheduled }: { onScheduled: () => void }) {
+  const { t } = useLanguage();
   const router = useRouter();
   const [loading, setLoading] = useState(false);
   const [confirm, setConfirm] = useState(false);
@@ -340,7 +351,7 @@ function DeleteAccountButton({ onScheduled }: { onScheduled: () => void }) {
         onClick={() => setConfirm(true)}
         className="px-4 py-2.5 border border-black/30 text-black text-sm uppercase tracking-wider hover:bg-black/5 transition"
       >
-        Schedule account deletion
+        {t("profile.scheduleDeletion")}
       </button>
     );
   }
@@ -352,7 +363,7 @@ function DeleteAccountButton({ onScheduled }: { onScheduled: () => void }) {
         disabled={loading}
         className="px-4 py-2.5 bg-amber-600 text-black text-sm uppercase tracking-wider hover:bg-amber-500 transition disabled:opacity-50"
       >
-        {loading ? "Scheduling..." : "Yes, schedule deletion"}
+        {loading ? t("profile.scheduling") : t("profile.confirmDeletion")}
       </button>
       <button
         type="button"
@@ -360,7 +371,7 @@ function DeleteAccountButton({ onScheduled }: { onScheduled: () => void }) {
         disabled={loading}
         className="px-4 py-2.5 border border-black/20 text-black/80 text-sm uppercase tracking-wider hover:bg-black/5 transition"
       >
-        Cancel
+        {t("common.cancel")}
       </button>
     </div>
   );

@@ -7,7 +7,7 @@ import { LanguageProvider } from "@/components/providers/LanguageProvider"
 import { ThemeProvider } from "@/components/providers/ThemeProvider"
 import AnalyticsProvider from "@/components/providers/AnalyticsProvider"
 import GoogleAnalyticsProvider from "@/components/providers/GoogleAnalyticsProvider"
-import { Playfair_Display, Inter } from "next/font/google"
+import { Playfair_Display, Inter, Tajawal } from "next/font/google"
 import Script from "next/script"
 import type { Metadata } from "next"
 import { Suspense } from "react"
@@ -21,6 +21,13 @@ const playfair = Playfair_Display({
 const inter = Inter({
   subsets: ["latin"],
   variable: "--font-inter",
+  display: "swap",
+})
+
+const tajawal = Tajawal({
+  subsets: ["arabic"],
+  variable: "--font-tajawal",
+  weight: ["400", "500", "700"],
   display: "swap",
 })
 
@@ -76,7 +83,11 @@ export default function RootLayout({
   const supabaseOrigin = supabasePreconnectOrigin()
 
   return (
-    <html lang="en" className={`${playfair.variable} ${inter.variable}`} suppressHydrationWarning>
+    <html
+      lang="en"
+      className={`${playfair.variable} ${inter.variable} ${tajawal.variable}`}
+      suppressHydrationWarning
+    >
       <head>
         {supabaseOrigin ? (
           <link rel="preconnect" href={supabaseOrigin} crossOrigin="anonymous" />

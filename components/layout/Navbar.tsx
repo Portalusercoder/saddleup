@@ -13,43 +13,43 @@ import ThemeToggle from "@/components/layout/ThemeToggle";
 
 const HERO_SCROLL_THRESHOLD = 0.6; // show solid nav after scrolling 60% of viewport
 
-const navItemsByRole: Record<string, { href: string; label: string }[]> = {
-  guardian: [
-    { href: "/dashboard/guardian", label: "Parent Portal" },
-    { href: "/dashboard/profile", label: "Profile" },
-  ],
-  student: [
-    { href: "/dashboard", label: "Dashboard" },
-    { href: "/dashboard/my-horses", label: "My Horses" },
-    { href: "/dashboard/bookings", label: "My Bookings" },
-    { href: "/dashboard/training-history", label: "Training History" },
-    { href: "/dashboard/competitions", label: "Competitions" },
-    { href: "/dashboard/profile", label: "Profile" },
-  ],
-  trainer: [
-    { href: "/dashboard", label: "Dashboard" },
-    { href: "/dashboard/horses", label: "Horses" },
-    { href: "/dashboard/team", label: "Team Management" },
-    { href: "/dashboard/bookings", label: "Bookings" },
-    { href: "/dashboard/schedule", label: "Schedule" },
-    { href: "/dashboard/analytics", label: "Analytics" },
-    { href: "/dashboard/matching", label: "Matching" },
-    { href: "/dashboard/incidents", label: "Incidents" },
-    { href: "/dashboard/profile", label: "Profile" },
-  ],
-  owner: [
-    { href: "/dashboard", label: "Dashboard" },
-    { href: "/dashboard/horses", label: "Horses" },
-    { href: "/dashboard/team", label: "Team Management" },
-    { href: "/dashboard/bookings", label: "Bookings" },
-    { href: "/dashboard/schedule", label: "Schedule" },
-    { href: "/dashboard/analytics", label: "Analytics" },
-    { href: "/dashboard/matching", label: "Matching" },
-    { href: "/dashboard/incidents", label: "Incidents" },
-    { href: "/dashboard/settings", label: "Billing & Plan" },
-    { href: "/dashboard/profile", label: "Profile" },
-  ],
-};
+const navItemsByRole: Record<string, { href: string; labelKey: string }[]> = {
+    guardian: [
+      { href: "/dashboard/guardian", labelKey: "parentPortal" },
+      { href: "/dashboard/profile", labelKey: "profile" },
+    ],
+    student: [
+      { href: "/dashboard", labelKey: "dashboard" },
+      { href: "/dashboard/my-horses", labelKey: "myHorses" },
+      { href: "/dashboard/bookings", labelKey: "myBookings" },
+      { href: "/dashboard/training-history", labelKey: "trainingHistory" },
+      { href: "/dashboard/competitions", labelKey: "competitions" },
+      { href: "/dashboard/profile", labelKey: "profile" },
+    ],
+    trainer: [
+      { href: "/dashboard", labelKey: "dashboard" },
+      { href: "/dashboard/horses", labelKey: "horses" },
+      { href: "/dashboard/team", labelKey: "teamManagement" },
+      { href: "/dashboard/bookings", labelKey: "bookings" },
+      { href: "/dashboard/schedule", labelKey: "schedule" },
+      { href: "/dashboard/analytics", labelKey: "analytics" },
+      { href: "/dashboard/matching", labelKey: "matching" },
+      { href: "/dashboard/incidents", labelKey: "incidents" },
+      { href: "/dashboard/profile", labelKey: "profile" },
+    ],
+    owner: [
+      { href: "/dashboard", labelKey: "dashboard" },
+      { href: "/dashboard/horses", labelKey: "horses" },
+      { href: "/dashboard/team", labelKey: "teamManagement" },
+      { href: "/dashboard/bookings", labelKey: "bookings" },
+      { href: "/dashboard/schedule", labelKey: "schedule" },
+      { href: "/dashboard/analytics", labelKey: "analytics" },
+      { href: "/dashboard/matching", labelKey: "matching" },
+      { href: "/dashboard/incidents", labelKey: "incidents" },
+      { href: "/dashboard/settings", labelKey: "billingPlan" },
+      { href: "/dashboard/profile", labelKey: "profile" },
+    ],
+  };
 
 export default function Navbar() {
   const pathname = usePathname();
@@ -58,7 +58,7 @@ export default function Navbar() {
   const [profileMenuOpen, setProfileMenuOpen] = useState(false);
   const profileMenuRef = useRef<HTMLDivElement>(null);
   const { profile, loading: profileLoading, userId } = useProfile();
-  const { lang } = useLanguage();
+  const { lang, t } = useLanguage();
 
   const user = userId ? { id: userId, email: profile?.email } : null;
   const authChecked = !profileLoading;
@@ -109,7 +109,7 @@ export default function Navbar() {
             : "text-black/60 hover:text-black hover:bg-black/5"
         }`}
       >
-        {item.label}
+        {t(`navRole.${item.labelKey}`)}
       </Link>
     );
   };
@@ -162,16 +162,16 @@ export default function Navbar() {
             }`}
           >
             <Link href="/#features" className={isOverHero ? "hover:text-white transition" : "hover:text-black transition"}>
-              {lang === "ar" ? "المزايا" : "Features"}
+              {t("nav.features")}
             </Link>
             <Link href="/#pricing" className={isOverHero ? "hover:text-white transition" : "hover:text-black transition"}>
-              {lang === "ar" ? "الأسعار" : "Pricing"}
+              {t("nav.pricing")}
             </Link>
             <Link href="/#about" className={isOverHero ? "hover:text-white transition" : "hover:text-black transition"}>
-              {lang === "ar" ? "عن المنصة" : "About"}
+              {t("nav.about")}
             </Link>
             <Link href="/contact" className={isOverHero ? "hover:text-white transition" : "hover:text-black transition"}>
-              {lang === "ar" ? "تواصل" : "Contact"}
+              {t("nav.contact")}
             </Link>
           </div>
         )}
@@ -187,7 +187,7 @@ export default function Navbar() {
                 className={`flex items-center hover:opacity-90 transition rounded-full focus:outline-none focus:ring-2 ${isOverHero ? "focus:ring-white/40" : "focus:ring-black/30"}`}
                 aria-expanded={profileMenuOpen}
                 aria-haspopup="true"
-                title="Profile menu"
+                title={t("nav.profileMenu")}
               >
                 <ProfileAvatar
                   avatarUrl={profile?.avatarUrl}
@@ -202,7 +202,7 @@ export default function Navbar() {
                     onClick={() => setProfileMenuOpen(false)}
                     className="block px-4 py-2.5 text-sm text-black hover:bg-black/10 uppercase tracking-wider"
                   >
-                    Go to profile
+                    {t("nav.goToProfile")}
                   </Link>
                   {profile?.role === "owner" && (
                     <>
@@ -211,14 +211,14 @@ export default function Navbar() {
                         onClick={() => setProfileMenuOpen(false)}
                         className="block px-4 py-2.5 text-sm text-black hover:bg-black/10 uppercase tracking-wider"
                       >
-                        Plans
+                        {t("nav.plans")}
                       </Link>
                       <Link
                         href="/dashboard/settings"
                         onClick={() => setProfileMenuOpen(false)}
                         className="block px-4 py-2.5 text-sm text-black hover:bg-black/10 uppercase tracking-wider"
                       >
-                        Settings
+                        {t("nav.settings")}
                       </Link>
                     </>
                   )}
@@ -229,7 +229,7 @@ export default function Navbar() {
                     }}
                     className="block w-full text-left px-4 py-2.5 text-sm text-black/60 hover:bg-black/10 hover:text-black uppercase tracking-wider"
                   >
-                    Sign out
+                    {t("nav.signOut")}
                   </button>
                 </div>
               )}
@@ -246,13 +246,13 @@ export default function Navbar() {
                       : "border-black/30 text-black hover:bg-black/10"
                   }`}
                 >
-                  {lang === "ar" ? "تسجيل الدخول" : "Sign in"}
+                  {t("nav.signIn")}
                 </Link>
                 <Link
                   href="/signup"
                   className="px-4 py-2.5 bg-accent text-white font-medium hover:opacity-95 transition uppercase tracking-[0.2em] text-[0.7rem]"
                 >
-                  {lang === "ar" ? "إنشاء حساب" : "Sign up"}
+                  {t("nav.signUp")}
                 </Link>
               </div>
             )
@@ -264,7 +264,7 @@ export default function Navbar() {
           <button
             onClick={() => setMobileOpen(!mobileOpen)}
             className={`md:hidden p-2 rounded-lg ${isOverHero ? "hover:bg-white/10" : "hover:bg-black/10"}`}
-            aria-label="Menu"
+            aria-label={t("nav.menu")}
           >
             <svg
               className="w-6 h-6"
@@ -308,11 +308,11 @@ export default function Navbar() {
             aria-hidden={!mobileOpen}
           >
             <div className="h-20 px-4 flex items-center justify-between border-b border-black/10">
-              <p className="text-xs uppercase tracking-[0.22em] text-black/60">Menu</p>
+              <p className="text-xs uppercase tracking-[0.22em] text-black/60">{t("nav.menu")}</p>
               <button
                 onClick={() => setMobileOpen(false)}
                 className="p-2 hover:bg-black/10 transition"
-                aria-label="Close menu"
+                aria-label={t("nav.closeMenu")}
               >
                 <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
@@ -328,7 +328,7 @@ export default function Navbar() {
               <div className="mt-4 border-t border-black/10 pt-4 px-1">
                 <div className="flex items-center justify-between">
                   <span className="text-xs uppercase tracking-[0.2em] text-black/60">
-                    Theme
+                    {t("nav.theme")}
                   </span>
                   <ThemeToggle />
                 </div>
@@ -339,7 +339,7 @@ export default function Navbar() {
                   }}
                   className="mt-4 block w-full text-left px-4 py-3 text-sm border border-black/15 text-black/80 hover:bg-black/5 transition uppercase tracking-wider"
                 >
-                  Sign out
+                  {t("nav.signOut")}
                 </button>
               </div>
             </div>

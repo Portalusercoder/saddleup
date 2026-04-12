@@ -5,6 +5,7 @@ import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
 import { trackEvent } from "@/lib/analytics/mixpanel-client";
+import { useLanguage } from "@/components/providers/LanguageProvider";
 
 type Role = "owner" | "trainer" | "student" | "guardian";
 
@@ -15,6 +16,7 @@ const btnPrimary = "w-full py-3 bg-accent text-white font-medium uppercase track
 type Step = "form" | "code" | "confirm_join";
 
 export default function SignupPage() {
+  const { t } = useLanguage();
   const router = useRouter();
   const searchParams = useSearchParams();
   const [step, setStep] = useState<Step>("form");
@@ -132,7 +134,7 @@ export default function SignupPage() {
       body: JSON.stringify({ email: emailValue.trim() }),
     });
     if (!res.ok) {
-      let message = "Could not verify email availability. Please try again.";
+      let message = t("auth.signup.errEmailCheck");
       try {
         const data = (await res.json()) as { error?: string };
         if (data?.error) message = data.error;
@@ -186,7 +188,7 @@ export default function SignupPage() {
       const exists = await checkEmailAlreadyExists(email);
       if (exists) {
         trackEvent("signup_code_request_failed", { reason: "email_exists" });
-        setError("This email is already in use. Please sign in instead.");
+        setError(t("auth.signup.errEmailExists"));
         setLoading(false);
         return;
       }
@@ -204,7 +206,7 @@ export default function SignupPage() {
       setError(null);
     } catch (err) {
       trackEvent("signup_code_request_failed", { reason: "unknown" });
-      setError(err instanceof Error ? err.message : "Something went wrong");
+      setError(err instanceof Error ? err.message : t("auth.signup.errGeneric"));
     } finally {
       setLoading(false);
     }
@@ -225,9 +227,9 @@ export default function SignupPage() {
       }
       trackEvent("signup_code_resent");
       setResendCooldownSec(60);
-      setResendHint("We sent another code to your email.");
+      setResendHint(t("auth.signup.resendAnother"));
     } catch {
-      setError("Something went wrong");
+      setError(t("auth.signup.errGeneric"));
     } finally {
       setResendLoading(false);
     }
@@ -236,7 +238,7 @@ export default function SignupPage() {
   const verifyAndComplete = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!code.trim() || code.trim().length < 8) {
-      setError("Please enter the 8-digit code from your email");
+      setError(t("auth.signup.errEnter8"));
       return;
     }
     setError(null);
@@ -257,7 +259,7 @@ export default function SignupPage() {
       }
       if (!vData.user) {
         trackEvent("signup_verify_failed", { reason: "missing_user" });
-        setError("Verification failed");
+        setError(t("auth.signup.errVerificationFailed"));
         setLoading(false);
         return;
       }
@@ -292,7 +294,7 @@ export default function SignupPage() {
         } catch {
           if (!res.ok) {
             setLoading(false);
-            await abortVerifiedSignup("Failed to complete signup");
+            await abortVerifiedSignup(t("auth.signup.errFailedComplete"));
             return;
           }
         }
@@ -301,8 +303,8 @@ export default function SignupPage() {
           setLoading(false);
           await abortVerifiedSignup(
             result.inviteCode
-              ? `${result.error ?? "Failed to complete signup"} ${result.inviteCode}`
-              : result.error || "Failed to complete signup"
+              ? `${result.error ?? t("auth.signup.errFailedComplete")} ${result.inviteCode}`
+              : result.error || t("auth.signup.errFailedComplete")
           );
           return;
         }
@@ -319,9 +321,7 @@ export default function SignupPage() {
           reason: "invalid_join_code",
         });
         setLoading(false);
-        await abortVerifiedSignup(
-          "Invalid join code. Please check the code and try again."
-        );
+        await abortVerifiedSignup(t("auth.signup.errInvalidJoin"));
         return;
       }
       setStablePreview({ name: preview.name, logoUrl: preview.logoUrl ?? null });
@@ -331,7 +331,7 @@ export default function SignupPage() {
     } catch {
       trackEvent("signup_verify_failed", { reason: "unknown" });
       setLoading(false);
-      await abortVerifiedSignup("Something went wrong");
+      await abortVerifiedSignup(t("auth.signup.errGeneric"));
       return;
     } finally {
       setLoading(false);
@@ -363,7 +363,7 @@ export default function SignupPage() {
       } catch {
         if (!res.ok) {
           setLoading(false);
-          await abortVerifiedSignup("Failed to complete signup");
+          await abortVerifiedSignup(t("auth.signup.errFailedComplete"));
           return;
         }
       }
@@ -372,8 +372,8 @@ export default function SignupPage() {
         setLoading(false);
         await abortVerifiedSignup(
           result.inviteCode
-            ? `${result.error ?? "Failed to complete signup"} ${result.inviteCode}. Share this ID with your stable owner.`
-            : result.error || "Failed to complete signup"
+            ? `${result.error ?? t("auth.signup.errFailedComplete")} ${result.inviteCode}. ${t("auth.signup.shareIdWithOwner")}`
+            : result.error || t("auth.signup.errFailedComplete")
         );
         return;
       }
@@ -382,7 +382,7 @@ export default function SignupPage() {
       router.refresh();
     } catch {
       setLoading(false);
-      await abortVerifiedSignup("Something went wrong");
+      await abortVerifiedSignup(t("auth.signup.errGeneric"));
     }
   };
 
@@ -411,10 +411,10 @@ export default function SignupPage() {
         <div className="w-full max-w-md">
           <div className="border border-black/10 p-6 sm:p-8 md:p-10 text-center">
             <h1 className="font-serif text-2xl md:text-3xl font-normal text-black mb-2">
-              Is this the stable you want to join?
+              {t("auth.signup.confirmJoinTitle")}
             </h1>
             <p className="text-black/60 text-sm mb-6">
-              Confirm before we add you to this stable.
+              {t("auth.signup.confirmJoinSubtitle")}
             </p>
             <div className="mb-6 flex flex-col items-center gap-4">
               {stablePreview.logoUrl ? (
@@ -438,7 +438,7 @@ export default function SignupPage() {
                 disabled={loading}
                 className={`${btnPrimary} disabled:opacity-50`}
               >
-                {loading ? "Joining..." : "Yes, join this stable"}
+                {loading ? t("auth.signup.joining") : t("auth.signup.yesJoin")}
               </button>
               <button
                 type="button"
@@ -446,13 +446,13 @@ export default function SignupPage() {
                 disabled={loading}
                 className="w-full py-3 border border-black/20 text-red-600 text-sm hover:bg-black/5 transition"
               >
-                No, take me back
+                {t("auth.signup.noBack")}
               </button>
             </div>
           </div>
           <p className="mt-6 text-center">
             <Link href="/" className="text-black/50 hover:text-black/70 text-xs uppercase tracking-wider">
-              ← Back to home
+              {t("auth.signup.backHome")}
             </Link>
           </p>
         </div>
@@ -466,15 +466,15 @@ export default function SignupPage() {
         <div className="w-full max-w-md">
           <div className="border border-black/10 p-6 sm:p-8 md:p-10">
             <h1 className="font-serif text-2xl md:text-3xl font-normal text-black mb-2">
-              Check your email
+              {t("auth.signup.checkEmailTitle")}
             </h1>
             <p className="text-black/60 text-sm mb-6">
-              We sent an 8-digit code to <strong className="text-black">{email}</strong>. Enter it below. You can open your email on any device.
+              {t("auth.signup.checkEmailBody", { email })}
             </p>
             <form onSubmit={verifyAndComplete} className="space-y-5">
               <div>
                 <label htmlFor="code" className={labelClass}>
-                  Verification code
+                  {t("auth.signup.verificationCode")}
                 </label>
                 <input
                   id="code"
@@ -494,7 +494,7 @@ export default function SignupPage() {
                 disabled={loading || code.trim().length !== 8}
                 className={`${btnPrimary} disabled:opacity-50`}
               >
-                {loading ? "Verifying..." : "Verify and create account"}
+                {loading ? t("auth.signup.verifying") : t("auth.signup.verifyAndCreate")}
               </button>
               <button
                 type="button"
@@ -507,7 +507,7 @@ export default function SignupPage() {
                 }}
                 className="w-full py-3 border border-black/20 text-red-600 text-sm hover:bg-black/5 transition"
               >
-                Use a different email
+                {t("auth.signup.useDifferentEmail")}
               </button>
             </form>
             <div className="mt-5 pt-5 border-t border-black/10 text-center">
@@ -516,7 +516,7 @@ export default function SignupPage() {
               )}
               {resendCooldownSec > 0 ? (
                 <p className="text-black/50 text-xs uppercase tracking-wider">
-                  Resend email in {resendCooldownSec}s
+                  {t("auth.signup.resendEmailIn", { seconds: String(resendCooldownSec) })}
                 </p>
               ) : (
                 <button
@@ -525,14 +525,14 @@ export default function SignupPage() {
                   disabled={resendLoading}
                   className="text-black font-medium text-sm uppercase tracking-wider underline-offset-2 hover:underline disabled:opacity-50"
                 >
-                  {resendLoading ? "Sending…" : "Resend verification email"}
+                  {resendLoading ? t("auth.forgot.sending") : t("auth.signup.resendVerification")}
                 </button>
               )}
             </div>
           </div>
           <p className="mt-6 text-center">
             <Link href="/" className="text-black/50 hover:text-black/70 text-xs uppercase tracking-wider">
-              ← Back to home
+              {t("auth.signup.backHome")}
             </Link>
           </p>
         </div>
@@ -545,15 +545,15 @@ export default function SignupPage() {
       <div className="w-full max-w-md">
         <div className="border border-black/10 p-6 sm:p-8 md:p-10">
           <h1 className="font-serif text-2xl md:text-3xl font-normal text-black mb-2">
-            Create account
+            {t("auth.signup.title")}
           </h1>
           <p className="text-black/60 text-sm mb-8">
-            We&apos;ll send an 8-digit code to your email to verify it. No links to click — works on any device.
+            {t("auth.signup.subtitle")}
           </p>
 
           <form onSubmit={sendCode} className="space-y-5">
             <div>
-              <label className={labelClass}>I am a</label>
+              <label className={labelClass}>{t("auth.signup.iamRole")}</label>
               <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
                 {(["owner", "trainer", "student", "guardian"] as const).map((r) => (
                   <button
@@ -566,21 +566,21 @@ export default function SignupPage() {
                         : "bg-base text-black/60 hover:text-black border border-black/10"
                     }`}
                   >
-                    {r}
+                    {t(`auth.signup.roles.${r}`)}
                   </button>
                 ))}
               </div>
               <p className="text-black/40 text-xs mt-2 uppercase tracking-wider">
-                {role === "owner" && "Create and manage your stable"}
-                {role === "trainer" && "Teach lessons, log training"}
-                {role === "student" && "Take lessons, track progress"}
-                {role === "guardian" && "View your child's lessons and progress"}
+                {role === "owner" && t("auth.signup.roleHelpOwner")}
+                {role === "trainer" && t("auth.signup.roleHelpTrainer")}
+                {role === "student" && t("auth.signup.roleHelpStudent")}
+                {role === "guardian" && t("auth.signup.roleHelpGuardian")}
               </p>
             </div>
 
             <div>
               <label htmlFor="fullName" className={labelClass}>
-                Full name
+                {t("common.fullName")}
               </label>
               <input
                 id="fullName"
@@ -595,7 +595,7 @@ export default function SignupPage() {
 
             <div>
               <label htmlFor="email" className={labelClass}>
-                Email
+                {t("common.email")}
               </label>
               <input
                 id="email"
@@ -604,13 +604,13 @@ export default function SignupPage() {
                 onChange={(e) => setEmail(e.target.value)}
                 required
                 className={formClass}
-                placeholder="you@example.com"
+                placeholder={t("common.placeholderEmail")}
               />
             </div>
 
             <div>
               <label htmlFor="password" className={labelClass}>
-                Password
+                {t("common.password")}
               </label>
               <input
                 id="password"
@@ -628,7 +628,7 @@ export default function SignupPage() {
               <>
                 <div>
                   <label htmlFor="enterpriseCode" className={labelClass}>
-                    Enterprise invite code (optional)
+                    {t("auth.signup.enterpriseInvite")}
                   </label>
                   <input
                     id="enterpriseCode"
@@ -636,15 +636,16 @@ export default function SignupPage() {
                     value={enterpriseInviteCode}
                     onChange={(e) => setEnterpriseInviteCode(e.target.value.toUpperCase().replace(/\s/g, ""))}
                     className={formClass}
-                    placeholder="e.g. ABC12XYZ — from your admin"
+                    placeholder={t("auth.signup.enterprisePlaceholder")}
                   />
                   <p className="text-black/40 text-xs mt-2 uppercase tracking-wider">
-                    If Saddle Up set up a stable for you, enter the code they sent. Otherwise leave blank and enter a stable name below.
+                    {t("auth.signup.enterpriseHint")}
                   </p>
                 </div>
                 <div>
                   <label htmlFor="stableName" className={labelClass}>
-                    Stable name {enterpriseInviteCode.trim() ? "(not needed when using invite code)" : ""}
+                    {t("auth.signup.stableName")}{" "}
+                    {enterpriseInviteCode.trim() ? t("auth.signup.stableNameNotNeeded") : ""}
                   </label>
                   <input
                     id="stableName"
@@ -654,11 +655,11 @@ export default function SignupPage() {
                     required={!enterpriseInviteCode.trim()}
                     disabled={!!enterpriseInviteCode.trim()}
                     className={formClass}
-                    placeholder="My Riding School"
+                    placeholder={t("auth.signup.stablePlaceholder")}
                   />
                   {!enterpriseInviteCode.trim() && (
                     <p className="text-black/40 text-xs mt-2 uppercase tracking-wider">
-                      A unique 8-character join code will be generated for your stable. Share it with trainers and students.
+                      {t("auth.signup.stableHint")}
                     </p>
                   )}
                 </div>
@@ -668,7 +669,7 @@ export default function SignupPage() {
             {(role === "trainer" || role === "student" || role === "guardian") && (
               <div>
                 <label htmlFor="joinCode" className={labelClass}>
-                  Stable join code
+                  {t("auth.signup.joinCodeLabel")}
                 </label>
                 <input
                   id="joinCode"
@@ -677,11 +678,14 @@ export default function SignupPage() {
                   onChange={(e) => setJoinCode(e.target.value.toUpperCase().replace(/\s/g, ""))}
                   required
                   className={formClass}
-                  placeholder="ABC12XYZ"
+                  placeholder={t("auth.signup.joinCodePlaceholder")}
                 />
                 <p className="text-black/40 text-xs mt-2 uppercase tracking-wider">
-                  Ask your stable owner for the 8-character code. If it doesn&apos;t work, get your personal ID at{" "}
-                  <Link href="/get-my-id" className="text-black font-medium hover:underline">/get-my-id</Link> and share it with them.
+                  {t("auth.signup.joinCodeHelpBefore")}{" "}
+                  <Link href={t("auth.signup.joinCodeHelpLink")} className="text-black font-medium hover:underline">
+                    {t("auth.signup.joinCodeHelpLink")}
+                  </Link>{" "}
+                  {t("auth.signup.joinCodeHelpAfter")}
                 </p>
               </div>
             )}
@@ -695,21 +699,21 @@ export default function SignupPage() {
               disabled={loading}
               className={`${btnPrimary} disabled:opacity-50`}
             >
-              {loading ? "Sending code..." : "Send verification code"}
+              {loading ? t("auth.signup.sendingCode") : t("auth.signup.sendVerificationCode")}
             </button>
           </form>
 
           <p className="mt-8 text-center text-black/60 text-sm">
-            Already have an account?{" "}
+            {t("auth.signup.alreadyHave")}{" "}
             <Link href="/login" className="text-black font-medium hover:underline">
-              Sign in
+              {t("auth.signup.signIn")}
             </Link>
           </p>
         </div>
 
         <p className="mt-6 text-center">
           <Link href="/" className="text-black/50 hover:text-black/70 text-xs uppercase tracking-wider">
-            ← Back to home
+            {t("auth.signup.backHome")}
           </Link>
         </p>
       </div>

@@ -6,10 +6,8 @@ import { useSearchParams } from "next/navigation";
 import LoadingScreen from "@/components/ui/LoadingScreen";
 import { trackEvent } from "@/lib/analytics/mixpanel-client";
 import TurnstileWidget from "@/components/security/TurnstileWidget";
-import {
-  hasTurnstileToken,
-  TURNSTILE_REQUIRED_MESSAGE,
-} from "@/lib/security/turnstile-client";
+import { hasTurnstileToken } from "@/lib/security/turnstile-client";
+import { useLanguage } from "@/components/providers/LanguageProvider";
 
 const MIN_PASSWORD_LENGTH = 8;
 
@@ -22,6 +20,7 @@ const btnPrimary =
 type Step = "email" | "reset" | "done";
 
 function ForgotPasswordForm() {
+  const { t } = useLanguage();
   const searchParams = useSearchParams();
   const [step, setStep] = useState<Step>("email");
   const [email, setEmail] = useState("");
@@ -51,7 +50,7 @@ function ForgotPasswordForm() {
     setError(null);
     setInfo(null);
     if (!hasTurnstileToken(turnstileToken)) {
-      setError(TURNSTILE_REQUIRED_MESSAGE);
+      setError(t("auth.forgot.turnstileRequired"));
       return;
     }
     setLoading(true);
@@ -68,7 +67,7 @@ function ForgotPasswordForm() {
       const data = await res.json().catch(() => ({}));
       if (!res.ok) {
         trackEvent("password_reset_code_request_failed");
-        setError(typeof data.error === "string" ? data.error : "Something went wrong");
+        setError(typeof data.error === "string" ? data.error : t("auth.forgot.errorGeneric"));
         setLoading(false);
         return;
       }
@@ -80,7 +79,7 @@ function ForgotPasswordForm() {
       setConfirmPassword("");
       setResendCooldownSec(60);
     } catch {
-      setError("Something went wrong");
+      setError(t("auth.forgot.errorGeneric"));
     } finally {
       setLoading(false);
     }
@@ -89,7 +88,7 @@ function ForgotPasswordForm() {
   const resendCode = async () => {
     if (resendCooldownSec > 0 || resendLoading || !email.trim()) return;
     if (!hasTurnstileToken(turnstileToken)) {
-      setError(TURNSTILE_REQUIRED_MESSAGE);
+      setError(t("auth.forgot.turnstileRequired"));
       return;
     }
     setResendLoading(true);
@@ -107,14 +106,14 @@ function ForgotPasswordForm() {
       const data = await res.json().catch(() => ({}));
       if (!res.ok) {
         trackEvent("password_reset_code_resend_failed");
-        setError(typeof data.error === "string" ? data.error : "Could not resend");
+        setError(typeof data.error === "string" ? data.error : t("auth.forgot.errorResend"));
         return;
       }
       trackEvent("password_reset_code_resent");
       setResendCooldownSec(60);
-      setInfo("We sent another code to your email.");
+      setInfo(t("auth.forgot.anotherCodeSent"));
     } catch {
-      setError("Something went wrong");
+      setError(t("auth.forgot.errorGeneric"));
     } finally {
       setResendLoading(false);
     }
@@ -124,16 +123,16 @@ function ForgotPasswordForm() {
     e.preventDefault();
     setError(null);
     if (newPassword !== confirmPassword) {
-      setError("Passwords do not match");
+      setError(t("auth.forgot.passwordMismatch"));
       return;
     }
     if (newPassword.length < MIN_PASSWORD_LENGTH) {
-      setError(`Password must be at least ${MIN_PASSWORD_LENGTH} characters`);
+      setError(t("auth.forgot.passwordMin", { n: String(MIN_PASSWORD_LENGTH) }));
       return;
     }
     const digits = code.replace(/\D/g, "");
     if (digits.length !== 4) {
-      setError("Enter the 4-digit code from your email");
+      setError(t("auth.forgot.enterCode4"));
       return;
     }
     setLoading(true);
@@ -151,7 +150,7 @@ function ForgotPasswordForm() {
       const data = await res.json().catch(() => ({}));
       if (!res.ok) {
         trackEvent("password_reset_confirm_failed");
-        setError(typeof data.error === "string" ? data.error : "Could not reset password");
+        setError(typeof data.error === "string" ? data.error : t("auth.forgot.errorReset"));
         setLoading(false);
         return;
       }
@@ -163,7 +162,7 @@ function ForgotPasswordForm() {
       setNewPassword("");
       setConfirmPassword("");
     } catch {
-      setError("Something went wrong");
+      setError(t("auth.forgot.errorGeneric"));
     } finally {
       setLoading(false);
     }
@@ -174,10 +173,10 @@ function ForgotPasswordForm() {
       <div className="w-full max-w-md">
         <div className="border border-black/10 p-8 md:p-10">
           <h1 className="font-serif text-2xl md:text-3xl font-normal text-black mb-2">
-            Reset password
+            {t("auth.forgot.title")}
           </h1>
           <p className="text-black/60 text-sm mb-8">
-            We’ll email you a 4-digit code. Then choose a new password.
+            {t("auth.forgot.subtitle")}
           </p>
 
           {info && step !== "done" && (
@@ -189,13 +188,13 @@ function ForgotPasswordForm() {
           {step === "done" ? (
             <div className="space-y-5">
               <p className="text-black/80 text-sm">
-                Your password was updated. You can sign in with your new password.
+                {t("auth.forgot.passwordUpdated")}
               </p>
               <Link
                 href="/login"
                 className={`${btnPrimary} inline-flex w-full items-center justify-center no-underline`}
               >
-                Sign in
+                {t("auth.forgot.signIn")}
               </Link>
             </div>
           ) : step === "email" ? (
@@ -205,7 +204,7 @@ function ForgotPasswordForm() {
               </div>
               <div>
                 <label htmlFor="email" className={labelClass}>
-                  Email
+                  {t("common.email")}
                 </label>
                 <input
                   id="email"
@@ -215,22 +214,22 @@ function ForgotPasswordForm() {
                   required
                   autoComplete="email"
                   className={formClass}
-                  placeholder="you@example.com"
+                  placeholder={t("common.placeholderEmail")}
                 />
               </div>
               {error && <p className="text-red-600 text-sm">{error}</p>}
               <button type="submit" disabled={loading} className={`${btnPrimary} disabled:opacity-50`}>
-                {loading ? "Sending…" : "Send code"}
+                {loading ? t("auth.forgot.sending") : t("auth.forgot.sendCode")}
               </button>
             </form>
           ) : (
             <form onSubmit={confirmReset} className="space-y-5">
               <p className="text-sm text-black/60">
-                Code sent to <span className="text-black font-medium">{email}</span>
+                {t("auth.forgot.codeSentTo", { email })}
               </p>
               <div>
                 <label htmlFor="code" className={labelClass}>
-                  4-digit code
+                  {t("auth.forgot.code4Label")}
                 </label>
                 <input
                   id="code"
@@ -247,7 +246,7 @@ function ForgotPasswordForm() {
               </div>
               <div>
                 <label htmlFor="newPassword" className={labelClass}>
-                  New password
+                  {t("auth.forgot.newPassword")}
                 </label>
                 <input
                   id="newPassword"
@@ -263,7 +262,7 @@ function ForgotPasswordForm() {
               </div>
               <div>
                 <label htmlFor="confirmPassword" className={labelClass}>
-                  Confirm new password
+                  {t("auth.forgot.confirmNewPassword")}
                 </label>
                 <input
                   id="confirmPassword"
@@ -279,7 +278,7 @@ function ForgotPasswordForm() {
               </div>
               {error && <p className="text-red-600 text-sm">{error}</p>}
               <button type="submit" disabled={loading} className={`${btnPrimary} disabled:opacity-50`}>
-                {loading ? "Updating…" : "Update password"}
+                {loading ? t("auth.forgot.updating") : t("auth.forgot.updatePassword")}
               </button>
               <div className="flex flex-wrap items-center gap-2 text-sm text-black/60">
                 <TurnstileWidget onTokenChange={setTurnstileToken} className="w-full" />
@@ -293,11 +292,11 @@ function ForgotPasswordForm() {
                   }}
                   className="text-black underline hover:no-underline"
                 >
-                  Use a different email
+                  {t("auth.forgot.useDifferentEmail")}
                 </button>
                 <span className="text-black/40">·</span>
                 {resendCooldownSec > 0 ? (
-                  <span>Resend code in {resendCooldownSec}s</span>
+                  <span>{t("auth.forgot.resendIn", { seconds: String(resendCooldownSec) })}</span>
                 ) : (
                   <button
                     type="button"
@@ -305,7 +304,7 @@ function ForgotPasswordForm() {
                     disabled={resendLoading}
                     className="text-black underline hover:no-underline disabled:opacity-50"
                   >
-                    {resendLoading ? "Sending…" : "Resend code"}
+                    {resendLoading ? t("auth.forgot.sending") : t("auth.forgot.resendCode")}
                   </button>
                 )}
               </div>
@@ -314,14 +313,14 @@ function ForgotPasswordForm() {
 
           <p className="mt-8 text-center text-black/60 text-sm">
             <Link href="/login" className="text-black font-medium hover:underline">
-              Back to sign in
+              {t("auth.forgot.backToSignIn")}
             </Link>
           </p>
         </div>
 
         <p className="mt-6 text-center">
           <Link href="/" className="text-black/50 hover:text-black/70 text-xs uppercase tracking-wider">
-            ← Back to home
+            {t("auth.forgot.backHome")}
           </Link>
         </p>
       </div>
@@ -329,9 +328,14 @@ function ForgotPasswordForm() {
   );
 }
 
+function ForgotPasswordLoading() {
+  const { t } = useLanguage();
+  return <LoadingScreen fullPage message={t("common.loading")} />;
+}
+
 export default function ForgotPasswordPage() {
   return (
-    <Suspense fallback={<LoadingScreen fullPage message="Loading…" />}>
+    <Suspense fallback={<ForgotPasswordLoading />}>
       <ForgotPasswordForm />
     </Suspense>
   );

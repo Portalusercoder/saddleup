@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { useLanguage } from "@/components/providers/LanguageProvider";
 
 type PartnerPayload = {
   slug: string;
@@ -12,6 +13,7 @@ type PartnerPayload = {
 };
 
 export default function PartnerSpotlight() {
+  const { t } = useLanguage();
   const [partner, setPartner] = useState<PartnerPayload | null>(null);
 
   useEffect(() => {
@@ -42,14 +44,16 @@ export default function PartnerSpotlight() {
     >
       <div className="max-w-4xl mx-auto border border-black/15">
         <div className="p-6 sm:p-8 bg-black text-white">
-          <p className="text-xs uppercase tracking-[0.28em] text-white/70">Partner spotlight</p>
+          <p className="text-xs uppercase tracking-[0.28em] text-white/70">{t("home.partnerSpotlightLabel")}</p>
           <h3 className="font-serif text-2xl md:text-3xl mt-2">{partner.name}</h3>
           <p className="text-white/85 mt-3">
-            Recommended tack partner for SaddleUp stables and riders in Saudi Arabia.
+            {t("home.partnerSpotlightDesc")}
           </p>
           {partner.promoCode ? (
             <p className="mt-3 text-sm text-white/90">
-              Use code <span className="font-semibold">{partner.promoCode}</span> at checkout.
+              {t("home.partnerPromoPrefix")}{" "}
+              <span className="font-semibold">{partner.promoCode}</span>{" "}
+              {t("home.partnerPromoSuffix")}
             </p>
           ) : null}
           <a
@@ -58,7 +62,7 @@ export default function PartnerSpotlight() {
             rel="noopener noreferrer sponsored"
             className="inline-block mt-6 px-6 py-2.5 bg-accent text-white uppercase tracking-wider text-sm hover:opacity-95 transition"
           >
-            {partner.ctaText || "Visit partner"}
+            {partner.ctaText || t("home.partnerCtaDefault")}
           </a>
         </div>
       </div>

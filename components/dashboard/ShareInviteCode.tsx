@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { useLanguage } from "@/components/providers/LanguageProvider";
 
 type StableInvite = {
   name: string;
@@ -13,6 +14,7 @@ interface ShareInviteCodeProps {
 }
 
 export default function ShareInviteCode({ stable: initialStable = null }: ShareInviteCodeProps) {
+  const { t } = useLanguage();
   const [stable, setStable] = useState<StableInvite | null>(initialStable);
   const [copied, setCopied] = useState(false);
 
@@ -26,14 +28,14 @@ export default function ShareInviteCode({ stable: initialStable = null }: ShareI
       .then((data) => {
         if (data.joinCode) {
           setStable({
-            name: data.name || "Your Stable",
+            name: data.name || t("dashboard.shareInvite.defaultStableName"),
             joinCode: data.joinCode,
             role: data.role,
           });
         }
       })
       .catch(() => {});
-  }, [initialStable]);
+  }, [initialStable, t]);
 
   const copyCode = () => {
     if (!stable) return;
@@ -46,9 +48,9 @@ export default function ShareInviteCode({ stable: initialStable = null }: ShareI
 
   return (
     <div className="border border-black/10 p-6" data-tour="invite-code">
-      <h2 className="font-serif text-lg text-black mb-2">Invite trainers & students</h2>
+      <h2 className="font-serif text-lg text-black mb-2">{t("dashboard.shareInvite.title")}</h2>
       <p className="text-black/60 text-sm mb-4">
-        Share this code so trainers and students can join {stable.name}.
+        {t("dashboard.shareInvite.lead", { name: stable.name })}
       </p>
       <div className="flex items-center gap-3">
         <code className="flex-1 px-4 py-3 bg-base border border-black/10 font-mono text-lg text-black">
@@ -58,11 +60,11 @@ export default function ShareInviteCode({ stable: initialStable = null }: ShareI
           onClick={copyCode}
           className="px-4 py-3 bg-accent text-white font-medium text-sm uppercase tracking-wider hover:opacity-95 transition whitespace-nowrap"
         >
-          {copied ? "Copied!" : "Copy"}
+          {copied ? t("common.copied") : t("common.copy")}
         </button>
       </div>
       <p className="text-black/40 text-xs mt-3 uppercase tracking-wider">
-        New users sign up at /signup and enter this code when choosing Trainer or Student. If it doesn&apos;t work, they can share their personal ID from /get-my-id and you can add them in &quot;Add member by ID&quot; below.
+        {t("dashboard.shareInvite.hint")}
       </p>
     </div>
   );

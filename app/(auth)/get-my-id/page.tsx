@@ -3,8 +3,10 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import PageLoader from "@/components/ui/PageLoader";
+import { useLanguage } from "@/components/providers/LanguageProvider";
 
 export default function GetMyIdPage() {
+  const { t } = useLanguage();
   const [inviteCode, setInviteCode] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -19,9 +21,9 @@ export default function GetMyIdPage() {
         }
         setInviteCode(d.inviteCode);
       })
-      .catch(() => setError("Failed to load"))
+      .catch(() => setError(t("auth.getMyId.loadError")))
       .finally(() => setLoading(false));
-  }, []);
+  }, [t]);
 
   const copyCode = () => {
     if (!inviteCode) return;
@@ -33,14 +35,14 @@ export default function GetMyIdPage() {
       <div className="w-full max-w-md">
         <div className="border border-black/10 p-8 md:p-10">
           <h1 className="font-serif text-2xl md:text-3xl font-normal text-black mb-2">
-            Your personal ID
+            {t("profile.personalId")}
           </h1>
           <p className="text-black/60 text-sm mb-6">
-            Share this ID with your stable owner or trainer if the join code didn&apos;t work. They can add you manually.
+            {t("auth.getMyId.subtitle")}
           </p>
 
           {loading ? (
-            <PageLoader message="Loading…" minHeight="min-h-[12rem]" />
+            <PageLoader message={t("common.loading")} minHeight="min-h-[12rem]" />
           ) : error ? (
             <p className="text-red-600">{error}</p>
           ) : inviteCode ? (
@@ -53,11 +55,11 @@ export default function GetMyIdPage() {
                   onClick={copyCode}
                   className="px-4 py-3 bg-accent text-white font-medium text-sm uppercase tracking-wider hover:opacity-95 transition whitespace-nowrap"
                 >
-                  Copy
+                  {t("common.copy")}
                 </button>
               </div>
               <p className="text-black/40 text-xs">
-                Your owner or trainer can add you in Team Management → Add member by personal ID.
+                {t("auth.getMyId.teamHint")}
               </p>
             </div>
           ) : null}
@@ -67,13 +69,13 @@ export default function GetMyIdPage() {
               href="/dashboard"
               className="block w-full py-3 border border-black/10 text-black font-medium uppercase tracking-wider text-sm hover:border-black/30 transition text-center"
             >
-              Go to dashboard
+              {t("auth.getMyId.goDashboard")}
             </Link>
             <Link
               href="/"
               className="block mt-3 text-center text-black/50 hover:text-black/70 text-xs uppercase tracking-wider"
             >
-              ← Back to home
+              {t("auth.signup.backHome")}
             </Link>
           </div>
         </div>

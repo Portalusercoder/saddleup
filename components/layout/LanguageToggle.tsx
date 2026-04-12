@@ -8,7 +8,7 @@ interface LanguageToggleProps {
 }
 
 export default function LanguageToggle({ variant = "dark" }: LanguageToggleProps) {
-  const { lang, toggle } = useLanguage();
+  const { lang, toggle, t } = useLanguage();
   const isLight = variant === "light";
 
   return (
@@ -20,7 +20,7 @@ export default function LanguageToggle({ variant = "dark" }: LanguageToggleProps
           ? "border-white/40 text-white/80 hover:text-white hover:border-white/60"
           : "border-black/20 text-black/70 hover:text-black hover:border-black/40"
       }`}
-      aria-label={lang === "en" ? "Switch to Arabic" : "Switch to English"}
+      aria-label={lang === "en" ? t("languageToggle.toArabic") : t("languageToggle.toEnglish")}
     >
       <span className={lang === "en" ? "font-semibold" : isLight ? "text-white/70" : "text-black/60"}>
         EN

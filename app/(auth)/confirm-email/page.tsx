@@ -4,10 +4,12 @@ import Link from "next/link";
 import { useSearchParams } from "next/navigation";
 import { Suspense } from "react";
 import LoadingScreen from "@/components/ui/LoadingScreen";
+import { useLanguage } from "@/components/providers/LanguageProvider";
 
 function ConfirmEmailContent() {
+  const { t } = useLanguage();
   const searchParams = useSearchParams();
-  const email = searchParams.get("email") || "your email";
+  const email = searchParams.get("email") || t("auth.confirmEmail.defaultEmail");
 
   return (
     <div className="min-h-screen bg-base flex text-black items-center justify-center p-6">
@@ -30,36 +32,35 @@ function ConfirmEmailContent() {
           </div>
 
           <h1 className="font-serif text-2xl md:text-3xl font-normal text-black mb-2">
-            Confirm your email to set up
+            {t("auth.confirmEmail.title")}
           </h1>
           <p className="text-black/60 text-sm mb-2">
-            We&apos;ve sent a confirmation link to
+            {t("auth.confirmEmail.sentTo")}
           </p>
           <p className="text-black font-medium mb-6 break-all">{email}</p>
           <p className="text-black/60 text-sm mb-8">
-            Click the link in the email to complete your signup. You can then
-            sign in and access your dashboard.
+            {t("auth.confirmEmail.body")}
           </p>
 
           <div className="space-y-4">
             <p className="text-black/40 text-xs uppercase tracking-wider">
-              Didn&apos;t receive the email? Check your spam folder or{" "}
+              {t("auth.confirmEmail.spamHint")}{" "}
               <Link href="/signup" className="text-black font-medium hover:underline">
-                try again
+                {t("auth.confirmEmail.tryAgain")}
               </Link>
             </p>
             <Link
               href="/login"
               className="block w-full py-3 bg-accent text-white font-medium uppercase tracking-wider text-sm hover:opacity-95 transition text-center"
             >
-              Go to sign in
+              {t("auth.confirmEmail.goSignIn")}
             </Link>
           </div>
         </div>
 
         <p className="mt-6 text-center">
           <Link href="/" className="text-black/50 hover:text-black/70 text-xs uppercase tracking-wider">
-            ← Back to home
+            {t("auth.signup.backHome")}
           </Link>
         </p>
       </div>
@@ -67,9 +68,14 @@ function ConfirmEmailContent() {
   );
 }
 
+function ConfirmEmailLoading() {
+  const { t } = useLanguage();
+  return <LoadingScreen fullPage message={t("common.loading")} />;
+}
+
 export default function ConfirmEmailPage() {
   return (
-    <Suspense fallback={<LoadingScreen fullPage message="Loading…" />}>
+    <Suspense fallback={<ConfirmEmailLoading />}>
       <ConfirmEmailContent />
     </Suspense>
   );

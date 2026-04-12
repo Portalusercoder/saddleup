@@ -23,8 +23,10 @@ import ThemeToggle from "@/components/layout/ThemeToggle";
 import { HORSE_NEWS_HEADLINES } from "@/lib/horseNewsHeadlines";
 import PartnerSpotlight from "@/components/landing/PartnerSpotlight";
 import TextLogo from "@/components/brand/TextLogo";
+import { useLanguage } from "@/components/providers/LanguageProvider";
 
 export default function Home() {
+  const { t } = useLanguage();
   const [authModalOpen, setAuthModalOpen] = useState(false);
   const [selectedPlan, setSelectedPlan] = useState<string | undefined>();
 
@@ -67,14 +69,14 @@ export default function Home() {
             {/* Main headline - Playfair Display (previous fonts) */}
             <div role="heading" aria-level={1} className="[&>p]:flex [&>p]:flex-col [&>p]:items-start">
               <BlurText
-                text="Your home"
+                text={t("home.heroLine1")}
                 delay={100}
                 animateBy="words"
                 direction="top"
                 className="font-serif text-[3.25rem] sm:text-[4.5rem] md:text-[6rem] lg:text-[7.5rem] font-extrabold tracking-tight text-white leading-[0.92] uppercase"
               />
               <BlurText
-                text="for the barn."
+                text={t("home.heroLine2")}
                 delay={150}
                 animateBy="words"
                 direction="top"
@@ -84,7 +86,7 @@ export default function Home() {
 
             {/* Sub-headline - Inter */}
             <p className="mt-5 font-sans text-sm sm:text-base uppercase tracking-[0.18em] text-white/90 max-w-xl">
-              Modern horse & stable management for riding schools, trainers, and horse owners.
+              {t("home.heroSub")}
             </p>
 
             {/* Two CTAs at bottom - FASTRACK style */}
@@ -94,24 +96,24 @@ export default function Home() {
                 className="group flex flex-col items-start text-left"
               >
                 <span className="font-sans text-sm uppercase tracking-[0.25em] text-[#d4a574] group-hover:text-[#e5b685] transition flex items-center gap-2">
-                  Get in the race
+                  {t("home.ctaRace")}
                   <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 17L17 7M17 7h-10v10" />
                   </svg>
                 </span>
-                <span className="mt-1 font-sans text-xs text-white/70">Create your account</span>
+                <span className="mt-1 font-sans text-xs text-white/70">{t("home.ctaRaceSub")}</span>
               </button>
               <a
                 href="#features"
                 className="group flex flex-col items-start text-left"
               >
                 <span className="font-sans text-sm uppercase tracking-[0.25em] text-[#d4a574] group-hover:text-[#e5b685] transition flex items-center gap-2">
-                  Get ready
+                  {t("home.ctaReady")}
                   <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 17L17 7M17 7h-10v10" />
                   </svg>
                 </span>
-                <span className="mt-1 font-sans text-xs text-white/70">See features</span>
+                <span className="mt-1 font-sans text-xs text-white/70">{t("home.ctaReadySub")}</span>
               </a>
             </div>
           </div>
@@ -120,7 +122,7 @@ export default function Home() {
         {/* Scroll indicator */}
         <a
           href="#features"
-          aria-label="Scroll to features"
+          aria-label={t("home.scrollFeatures")}
           className="absolute bottom-6 left-1/2 -translate-x-1/2 flex items-center justify-center text-white/40 hover:text-white/70 transition"
         >
           <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden>
@@ -132,7 +134,7 @@ export default function Home() {
         <ScrollReveal className="relative border-t border-white/10 py-5 px-8 md:px-14 lg:px-20 min-h-[6.5rem]">
           <div className="flex flex-wrap justify-between gap-x-8 gap-y-6 items-start uppercase text-[0.65rem] md:text-[0.7rem] tracking-[0.25em] text-white/80 font-sans">
             <div className="shrink-0">
-              <p className="text-white/50">Established</p>
+              <p className="text-white/50">{t("home.statEstablished")}</p>
               <div className="mt-1 h-[3.75rem] md:h-[4rem] flex items-start overflow-hidden">
                 <p className="text-white/90 font-normal leading-snug line-clamp-3">
                   2024
@@ -140,21 +142,21 @@ export default function Home() {
               </div>
             </div>
             <div className="shrink-0 w-[min(100%,18rem)] sm:w-[16rem] md:w-[18rem]">
-              <p className="text-white/50">Plan</p>
+              <p className="text-white/50">{t("home.statPlan")}</p>
               <div className="mt-1 h-[3.75rem] md:h-[4rem] flex items-start overflow-hidden">
                 <HeroRotatingPlan />
               </div>
             </div>
             <div className="shrink-0 max-w-[11rem] sm:max-w-none">
-              <p className="text-white/50">Built for</p>
+              <p className="text-white/50">{t("home.statBuiltFor")}</p>
               <div className="mt-1 h-[3.75rem] md:h-[4rem] flex items-start overflow-hidden">
                 <p className="text-white/90 font-normal leading-snug line-clamp-3">
-                  Schools, trainers & owners
+                  {t("home.statBuiltForValue")}
                 </p>
               </div>
             </div>
             <div className="min-w-0 w-full sm:w-[min(100%,18rem)] md:w-[min(100%,22rem)] shrink-0 basis-full sm:basis-auto">
-              <p className="text-white/50">News</p>
+              <p className="text-white/50">{t("home.statNews")}</p>
               <div className="mt-1 h-[3.75rem] md:h-[4rem] w-full flex items-start overflow-hidden">
                 <HeroRotatingHorseNews />
               </div>
@@ -171,44 +173,44 @@ export default function Home() {
         <div className="max-w-6xl mx-auto">
           <ScrollReveal>
             <h2 className="font-serif text-3xl md:text-4xl font-normal mb-12">
-              Built for the barn
+              {t("home.featuresTitle")}
             </h2>
           </ScrollReveal>
           <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
             <ScrollReveal delay={0.05}>
               <FeatureCard
-                title="Horse Profiles"
-                description="Digital passport for each horse: temperament, skill level, training status, riding suitability."
+                title={t("home.feat1Title")}
+                description={t("home.feat1Desc")}
               />
             </ScrollReveal>
             <ScrollReveal delay={0.1}>
               <FeatureCard
-                title="Training Punches"
-                description="Log sessions, lessons, rest days. Build workload intelligence and avoid overworking horses."
+                title={t("home.feat2Title")}
+                description={t("home.feat2Desc")}
               />
             </ScrollReveal>
             <ScrollReveal delay={0.15}>
               <FeatureCard
-                title="Workload Alerts"
-                description="Get warned when a horse needs rest. Weekly workload, overuse risk, recommended rest days."
+                title={t("home.feat3Title")}
+                description={t("home.feat3Desc")}
               />
             </ScrollReveal>
             <ScrollReveal delay={0.2}>
               <FeatureCard
-                title="Rider Management"
-                description="Student profiles, riding levels, progress notes, instructor feedback."
+                title={t("home.feat4Title")}
+                description={t("home.feat4Desc")}
               />
             </ScrollReveal>
             <ScrollReveal delay={0.25}>
               <FeatureCard
-                title="Health & Care Logs"
-                description="Vet visits, vaccinations, deworming, farrier. Track costs and catch issues early."
+                title={t("home.feat5Title")}
+                description={t("home.feat5Desc")}
               />
             </ScrollReveal>
             <ScrollReveal delay={0.3}>
               <FeatureCard
-                title="Schedule & Availability"
-                description="Horse workload calendar. Avoid overworking. Plan lessons and training."
+                title={t("home.feat6Title")}
+                description={t("home.feat6Desc")}
               />
             </ScrollReveal>
           </div>
@@ -222,12 +224,10 @@ export default function Home() {
       >
         <ScrollReveal className="max-w-3xl mx-auto text-center">
           <h2 className="font-serif text-3xl md:text-4xl font-normal mb-6">
-            One place for everything
+            {t("home.aboutTitle")}
           </h2>
           <p className="text-black/60 text-lg leading-relaxed">
-            Saddle Up brings together horse profiles, rider management, training
-            logs, and health records. No more scattered spreadsheets or
-            WhatsApp threads. Built for stables that take their craft seriously.
+            {t("home.aboutBody")}
           </p>
         </ScrollReveal>
       </section>
@@ -240,10 +240,10 @@ export default function Home() {
         <div className="max-w-6xl mx-auto">
           <ScrollReveal>
             <h2 className="font-serif text-3xl md:text-4xl font-normal mb-4">
-              Simple pricing
+              {t("home.pricingTitle")}
             </h2>
             <p className="text-black/60 mb-12 max-w-xl">
-              Start free, upgrade as you grow. No hidden fees.
+              {t("home.pricingSub")}
             </p>
           </ScrollReveal>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
@@ -258,28 +258,35 @@ export default function Home() {
                 >
                   <div className="absolute inset-0 p-6 flex flex-col z-10">
                     <h3 className="font-serif text-lg text-black uppercase tracking-wider">
-                      {plan.name}
+                      {t(`pricing.${plan.id}.name`)}
                     </h3>
                     <div className="mt-2">
                       {plan.price === 0 ? (
-                        <span className="text-2xl font-bold">Free</span>
+                        <span className="text-2xl font-bold">{t("home.priceFree")}</span>
                       ) : plan.price === null ? (
-                        <span className="text-xl font-semibold">Contact us</span>
+                        <span className="text-xl font-semibold">{t("home.priceContact")}</span>
                       ) : (
                         <>
                           <span className="text-2xl font-bold text-black">${plan.price}</span>
-                          <span className="text-black/60 text-sm">/mo</span>
+                          <span className="text-black/60 text-sm">{t("home.pricePerMo")}</span>
                         </>
                       )}
                     </div>
                     <ul className="mt-4 space-y-2 flex-1">
-                      {plan.features.map((f) => (
+                      {(plan.id === "free"
+                        ? (["f0", "f1", "f2"] as const)
+                        : plan.id === "starter"
+                          ? (["f0", "f1", "f2", "f3"] as const)
+                          : plan.id === "stable"
+                            ? (["f0", "f1", "f2", "f3", "f4"] as const)
+                            : (["f0", "f1", "f2"] as const)
+                      ).map((fk) => (
                         <li
-                          key={f}
+                          key={fk}
                           className="text-sm text-black/60 flex items-center gap-2"
                         >
                           <span className="text-black/60">✓</span>
-                          {f}
+                          {t(`pricing.${plan.id}.${fk}`)}
                         </li>
                       ))}
                     </ul>
@@ -288,7 +295,7 @@ export default function Home() {
                         href="/contact?type=enterprise"
                         className="mt-6 w-full py-2.5 font-medium transition uppercase tracking-wider text-sm border border-black/20 hover:bg-black/5 text-black block text-center"
                       >
-                        Contact sales
+                        {t("home.contactSales")}
                       </Link>
                     ) : (
                       <button
@@ -304,8 +311,8 @@ export default function Home() {
                         }`}
                       >
                         {plan.id === "free"
-                          ? "Get started free"
-                          : "Get started"}
+                          ? t("home.getStartedFree")
+                          : t("home.getStarted")}
                       </button>
                     )}
                   </div>
@@ -322,7 +329,7 @@ export default function Home() {
       <section className="bg-base border-t border-black/10 py-12 overflow-hidden text-black dark:border-white/10">
         <ScrollReveal>
           <p className="text-center text-black/70 dark:text-white/90 text-xs uppercase tracking-[0.3em] mb-8">
-            Built with
+            {t("home.techTitle")}
           </p>
         </ScrollReveal>
         <ScrollReveal delay={0.1}>
@@ -445,6 +452,7 @@ function HeroRotatingHorseNews() {
 }
 
 function HeroRotatingPlan() {
+  const { t } = useLanguage();
   const [index, setIndex] = useState(0);
 
   useEffect(() => {
@@ -457,12 +465,19 @@ function HeroRotatingPlan() {
   const plan = SUBSCRIPTION_PLANS[index];
   if (!plan) return null;
 
+  const name = t(`pricing.${plan.id}.name`);
   const line =
     plan.price === null
-      ? `${plan.name} · Unlimited horses & riders`
+      ? `${name} · ${t("home.planHeroUnlimited")}`
       : plan.price === 0
-      ? `${plan.name} · ${plan.horses} horses · ${plan.riders} riders free`
-      : `${plan.name} · ${plan.horses} horses · ${plan.riders} riders`;
+        ? `${name} · ${t("home.planHeroFree", {
+            horses: String(plan.horses),
+            riders: String(plan.riders),
+          })}`
+        : `${name} · ${t("home.planHeroPaid", {
+            horses: String(plan.horses),
+            riders: String(plan.riders),
+          })}`;
 
   return (
     <p

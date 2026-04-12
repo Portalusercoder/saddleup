@@ -8,13 +8,16 @@ import {
   useState,
   type ReactNode,
 } from "react";
+import { translate, type AppLocale } from "@/lib/i18n";
 
-type Language = "en" | "ar";
+type Language = AppLocale;
 
 interface LanguageContextValue {
   lang: Language;
   setLang: (lang: Language) => void;
   toggle: () => void;
+  /** Dot-path UI string, e.g. `nav.signIn`. Optional `{key}` interpolation. */
+  t: (path: string, vars?: Record<string, string>) => string;
 }
 
 const LanguageContext = createContext<LanguageContextValue | null>(null);
@@ -60,8 +63,13 @@ export function LanguageProvider({ children }: { children: ReactNode }) {
     setLang(lang === "en" ? "ar" : "en");
   }, [lang, setLang]);
 
+  const t = useCallback(
+    (path: string, vars?: Record<string, string>) => translate(lang, path, vars),
+    [lang]
+  );
+
   return (
-    <LanguageContext.Provider value={{ lang, setLang, toggle }}>
+    <LanguageContext.Provider value={{ lang, setLang, toggle, t }}>
       {children}
     </LanguageContext.Provider>
   );

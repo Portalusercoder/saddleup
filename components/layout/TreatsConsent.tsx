@@ -7,8 +7,10 @@ import {
   writeTreatsConsent,
   type TreatsChoice,
 } from "@/lib/treatsConsent";
+import { useLanguage } from "@/components/providers/LanguageProvider";
 
 export default function TreatsConsent() {
+  const { t } = useLanguage();
   const [open, setOpen] = useState(false);
 
   useEffect(() => {
@@ -48,25 +50,20 @@ export default function TreatsConsent() {
               id="treats-consent-title"
               className="font-serif text-lg font-medium text-black dark:text-white mb-2"
             >
-              Treats
+              {t("treats.title")}
             </h2>
             <p
               id="treats-consent-desc"
               className="text-sm text-black/70 dark:text-white/70 leading-relaxed"
             >
-              We give your browser small &quot;treats&quot; (the kind people
-              usually call{" "}
-              <span className="text-black/85 dark:text-white/85">cookies</span>
-              ) so you can stay signed in and we can remember things like your
-              preferences. You can accept all treats or only the essentials
-              needed to run the app.{" "}
+              {t("treats.description")}{" "}
               <Link
                 href="/contact"
                 className="underline underline-offset-2 text-black/80 dark:text-white/80 hover:opacity-90"
               >
-                Contact us
+                {t("treats.contactUs")}
               </Link>{" "}
-              if you have questions.
+              {t("treats.questions")}
             </p>
           </div>
           <div className="flex flex-col gap-2 shrink-0 w-full sm:w-auto">
@@ -76,7 +73,7 @@ export default function TreatsConsent() {
               className="w-full sm:w-44 px-4 py-2.5 text-sm font-medium border border-black/20 dark:border-white/25 text-black dark:text-white hover:bg-black/[0.04] dark:hover:bg-white/[0.06] transition-colors uppercase tracking-wide"
               style={{ borderRadius: "var(--radius-sm)" }}
             >
-              Essentials only
+              {t("treats.essentialsOnly")}
             </button>
             <button
               type="button"
@@ -84,7 +81,7 @@ export default function TreatsConsent() {
               className="w-full sm:w-44 px-4 py-2.5 text-sm font-medium bg-accent text-white hover:opacity-95 transition-opacity uppercase tracking-wide"
               style={{ borderRadius: "var(--radius-sm)" }}
             >
-              Accept all treats
+              {t("treats.acceptAll")}
             </button>
           </div>
         </div>
