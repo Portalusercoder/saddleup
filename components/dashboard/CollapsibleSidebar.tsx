@@ -111,8 +111,8 @@ export default function CollapsibleSidebar() {
                 {item.icon}
               </span>
               <span
-                className={`ml-3 whitespace-nowrap text-sm font-medium uppercase tracking-wider overflow-hidden transition-all duration-300 ${
-                  isHovered ? "opacity-100 max-w-[10rem]" : "opacity-0 max-w-0 ml-0"
+                className={`ms-2 whitespace-nowrap text-sm font-medium uppercase tracking-wider overflow-hidden transition-all duration-300 ${
+                  isHovered ? "opacity-100 max-w-[10rem]" : "opacity-0 max-w-0 ms-0"
                 }`}
               >
                 {t(item.labelPath)}
