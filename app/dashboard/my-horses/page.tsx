@@ -58,9 +58,9 @@ export default function MyHorsesPage() {
         <TableSkeleton rows={6} cols={3} showBottomBar={false} />
       ) : horses.length === 0 ? (
         <div className="border border-black/10 p-8 text-center">
-          <p className="text-black/60 mb-2">No horses assigned yet</p>
+          <p className="text-black/60 mb-2">{t("dashboard.myHorsesEmptyTitle")}</p>
           <p className="text-black/40 text-sm">
-            Ask your trainer to assign horses to your rider profile.
+            {t("dashboard.myHorsesEmptyBody")}
           </p>
         </div>
       ) : (
@@ -80,14 +80,17 @@ export default function MyHorsesPage() {
                 <div className="flex-1 min-w-0">
                   <h2 className="font-serif text-lg text-black">{horse.name}</h2>
                   <p className="text-black/60 text-sm mt-1">
-                    {horse.breed || horse.gender} {horse.age ? `• ${horse.age}y` : ""}
+                    {horse.breed || horse.gender}{" "}
+                    {horse.age
+                      ? `• ${t("dashboard.trainingHistoryDurationMin", { minutes: String(horse.age) })}`
+                      : ""}
                   </p>
                   <p className="text-black/50 text-xs mt-2 uppercase tracking-wider">
                     {horse.skillLevel || "—"} • {horse.temperament || "—"}
                   </p>
                   {horse.ridingSuitability && (
                     <p className="text-black/40 text-xs mt-1">
-                      Suitability: {horse.ridingSuitability}
+                      {t("dashboard.myHorsesSuitabilityPrefix")} {horse.ridingSuitability}
                     </p>
                   )}
                 </div>

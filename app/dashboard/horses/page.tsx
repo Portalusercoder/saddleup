@@ -47,13 +47,13 @@ interface Horse {
 }
 
 const PUNCH_TYPES = [
-  { value: "training", label: "Training" },
-  { value: "lesson", label: "Lesson" },
-  { value: "free_ride", label: "Free Ride" },
-  { value: "competition", label: "Competition" },
-  { value: "rest", label: "Rest Day" },
-  { value: "medical_rest", label: "Medical Rest" },
-];
+  "training",
+  "lesson",
+  "free_ride",
+  "competition",
+  "rest",
+  "medical_rest",
+] as const;
 
 interface RiderOption {
   id: string;
@@ -62,6 +62,18 @@ interface RiderOption {
 
 export default function HorsesPage() {
   const { t } = useLanguage();
+  const punchLabel = (type?: string | null) => {
+    const map: Record<string, string> = {
+      training: t("dashboard.punchTraining"),
+      lesson: t("dashboard.punchLesson"),
+      free_ride: t("dashboard.punchFreeRide"),
+      competition: t("dashboard.punchCompetition"),
+      rest: t("dashboard.punchRest"),
+      medical_rest: t("dashboard.punchMedicalRest"),
+      medical: t("dashboard.punchMedicalRest"),
+    };
+    return map[type || ""] ?? (type || "—");
+  };
   const router = useRouter();
   const [horses, setHorses] = useState<Horse[]>([]);
   const [riders, setRiders] = useState<RiderOption[]>([]);
@@ -77,26 +89,26 @@ export default function HorsesPage() {
   const tourSteps: GuidedTourStep[] = [
     {
       id: "add",
-      title: "Add Horse",
-      description: "Start by adding horse profiles with details and photo.",
+      title: t("dashboard.horsesTourAddTitle"),
+      description: t("dashboard.horsesTourAddDesc"),
       selector: '[data-tour="horses-add"]',
     },
     {
       id: "search",
-      title: "Search Horses",
-      description: "Quickly find any horse by name.",
+      title: t("dashboard.horsesTourSearchTitle"),
+      description: t("dashboard.horsesTourSearchDesc"),
       selector: '[data-tour="horses-search"]',
     },
     {
       id: "table",
-      title: "Horse List",
-      description: "View key horse info, workload warning, and actions here.",
+      title: t("dashboard.horsesTourListTitle"),
+      description: t("dashboard.horsesTourListDesc"),
       selector: '[data-tour="horses-table"]',
     },
     {
       id: "log",
-      title: "Log Session",
-      description: "Log training sessions directly from this table.",
+      title: t("dashboard.horsesTourLogTitle"),
+      description: t("dashboard.horsesTourLogDesc"),
       selector: '[data-tour="horses-log-session"]',
     },
   ];
@@ -253,15 +265,15 @@ export default function HorsesPage() {
       const data = await res.json();
       if (!res.ok) {
         trackEvent("horse_photo_upload_failed");
-        showToast(data.error || "Upload failed");
+        showToast(data.error || t("dashboard.horseToastUploadFailed"));
         return;
       }
       setForm((f) => ({ ...f, photoUrl: data.url }));
       trackEvent("horse_photo_uploaded");
-      showToast("Photo uploaded");
+      showToast(t("dashboard.horseToastPhotoUploaded"));
     } catch {
       trackEvent("horse_photo_upload_failed");
-      showToast("Upload failed");
+      showToast(t("dashboard.horseToastUploadFailed"));
     }
     e.target.value = "";
   };
@@ -313,7 +325,7 @@ export default function HorsesPage() {
           setShowModal(false);
           setShowUpgradeModal(true);
         } else {
-          showToast(data.error || "Failed to add horse");
+          showToast(data.error || t("dashboard.horsesAddFailed"));
         }
         trackEvent("horse_add_failed");
         return;
@@ -349,7 +361,7 @@ export default function HorsesPage() {
         ridingSuitability: "adults",
       });
 
-      showToast("Horse added successfully");
+      showToast(t("dashboard.horsesAdded"));
     } catch (err) {
       trackEvent("horse_add_failed");
       console.error(err);
@@ -365,7 +377,7 @@ export default function HorsesPage() {
     lastDeleted.current = horseToDelete;
     setHorses((prev) => prev.filter((h) => h.id !== id));
     trackEvent("horse_delete_soft", { horse_id: String(id) });
-    setToast("Horse deleted");
+    setToast(t("dashboard.horsesDeleted"));
 
     deleteTimer.current = setTimeout(async () => {
       await fetch(`/api/horses/${id}`, { method: "DELETE" });
@@ -413,7 +425,7 @@ export default function HorsesPage() {
       if (!res.ok) {
         const data = await res.json().catch(() => ({}));
         trackEvent("horse_session_log_failed", { horse_id: String(selectedHorse.id) });
-        throw new Error(typeof data.error === "string" ? data.error : "Failed to log session");
+        throw new Error(typeof data.error === "string" ? data.error : t("dashboard.horsesSessionLogFailed"));
       }
 
       setShowSessionModal(false);
@@ -430,12 +442,12 @@ export default function HorsesPage() {
         horse_id: String(selectedHorse.id),
         punch_type: sessionForm.punchType,
       });
-      showToast("Session logged successfully");
+      showToast(t("dashboard.horsesSessionLogged"));
       fetchHorses();
     } catch (err) {
       trackEvent("horse_session_log_failed", { horse_id: String(selectedHorse.id) });
       console.error(err);
-      showToast(err instanceof Error ? err.message : "Failed to log session");
+      showToast(err instanceof Error ? err.message : t("dashboard.horsesSessionLogFailed"));
     } finally {
       setLogSessionLoading(false);
     }
@@ -478,7 +490,7 @@ export default function HorsesPage() {
               href="/dashboard/settings"
               className="text-black/60 hover:text-black text-xs uppercase tracking-wider"
             >
-              Upgrade to add more →
+              {t("dashboard.horsesUpgradeToAddMore")}
             </Link>
           )}
           <button
@@ -492,7 +504,7 @@ export default function HorsesPage() {
             data-tour="horses-add"
             className={btnPrimary}
           >
-            + Add Horse
+            {t("dashboard.addHorse")}
           </button>
         </div>
       </div>
@@ -502,7 +514,7 @@ export default function HorsesPage() {
       ) : (
         <>
       <input
-        placeholder="Search horses..."
+        placeholder={t("dashboard.horsesSearchPlaceholder")}
         value={search}
         onChange={(e) => setSearch(e.target.value)}
         data-tour="horses-search"
@@ -514,12 +526,12 @@ export default function HorsesPage() {
           <table className="w-full text-sm">
             <thead className="border-b border-black/10 text-black/50 text-xs uppercase tracking-widest">
               <tr>
-                <th className="px-6 py-4 text-left">Name</th>
-                <th className="px-6 py-4 text-left">Gender</th>
-                <th className="px-6 py-4 text-left">Age</th>
-                <th className="px-6 py-4 text-left">Level</th>
-                <th className="px-6 py-4 text-left">Owner</th>
-                <th className="px-6 py-4 text-right">Actions</th>
+                <th className="px-6 py-4 text-left">{t("dashboard.horsesColName")}</th>
+                <th className="px-6 py-4 text-left">{t("dashboard.horsesColGender")}</th>
+                <th className="px-6 py-4 text-left">{t("dashboard.horsesColAge")}</th>
+                <th className="px-6 py-4 text-left">{t("dashboard.horsesColLevel")}</th>
+                <th className="px-6 py-4 text-left">{t("dashboard.horsesColOwner")}</th>
+                <th className="px-6 py-4 text-right">{t("dashboard.horsesColActions")}</th>
               </tr>
             </thead>
 
@@ -544,7 +556,7 @@ export default function HorsesPage() {
                           </Link>
                           {workload.warning && (
                             <span className="text-xs border border-black/30 text-black/80 px-2 py-0.5 uppercase tracking-wider">
-                              Overworked
+                              {t("dashboard.horsesOverworked")}
                             </span>
                           )}
                         </div>
@@ -561,13 +573,13 @@ export default function HorsesPage() {
                           data-tour="horses-log-session"
                           className="text-black hover:underline text-sm uppercase tracking-wider"
                         >
-                          Log Session
+                          {t("dashboard.scheduleLogSession")}
                         </button>
                         <button
                           onClick={() => deleteHorse(horse.id)}
                           className="text-black/60 hover:text-black hover:underline text-sm uppercase tracking-wider"
                         >
-                          Delete
+                          {t("dashboard.teamRidersDelete")}
                         </button>
                       </td>
                     </tr>
@@ -590,20 +602,20 @@ export default function HorsesPage() {
             className="bg-base border border-black/10 p-4 sm:p-6 w-full max-w-2xl max-h-[90vh] overflow-y-auto modal-enter my-auto"
             onClick={(e) => e.stopPropagation()}
           >
-            <h2 className="font-serif text-xl text-black mb-6">Add Horse</h2>
+            <h2 className="font-serif text-xl text-black mb-6">{t("dashboard.addHorse")}</h2>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <HorseIdentificationFields form={form} onChange={handleChange} formInput={formInput} />
               <p className="sm:col-span-2 text-xs uppercase tracking-widest text-black/50 mb-0">
-                Profile & training
+                {t("dashboard.horsesProfileTraining")}
               </p>
               <div className="sm:col-span-2">
                 <label className="text-xs text-black/50 uppercase tracking-widest block mb-2">
-                  Profile picture
+                  {t("dashboard.horsesProfilePicture")}
                 </label>
                 <div className="flex items-center gap-4">
                   <HorseAvatar
                     photoUrl={form.photoUrl || null}
-                    name={form.name || "Horse"}
+                    name={form.name || t("dashboard.horsesHorseFallback")}
                     size="lg"
                   />
                   <div className="flex-1 space-y-2">
@@ -619,11 +631,11 @@ export default function HorsesPage() {
                       onClick={() => photoInputRef.current?.click()}
                       className="block px-4 py-2.5 border border-black/10 text-black text-sm uppercase tracking-wider hover:border-black/30 transition"
                     >
-                      Upload photo
+                      {t("dashboard.horsesUploadPhoto")}
                     </button>
                     <input
                       name="photoUrl"
-                      placeholder="Or paste image URL"
+                      placeholder={t("dashboard.horsesImageUrlPlaceholder")}
                       value={form.photoUrl}
                       onChange={handleChange}
                       className={`w-full ${formInput} text-sm`}
@@ -637,10 +649,10 @@ export default function HorsesPage() {
                 onChange={handleChange}
                 className={formInput}
               >
-                <option value="calm">Calm</option>
-                <option value="energetic">Energetic</option>
-                <option value="sensitive">Sensitive</option>
-                <option value="beginner-safe">Beginner-safe</option>
+                <option value="calm">{t("dashboard.horsesTemperamentCalm")}</option>
+                <option value="energetic">{t("dashboard.horsesTemperamentEnergetic")}</option>
+                <option value="sensitive">{t("dashboard.horsesTemperamentSensitive")}</option>
+                <option value="beginner-safe">{t("dashboard.horsesTemperamentBeginnerSafe")}</option>
               </select>
               <select
                 name="skillLevel"
@@ -648,9 +660,9 @@ export default function HorsesPage() {
                 onChange={handleChange}
                 className={formInput}
               >
-                <option value="beginner">Beginner</option>
-                <option value="intermediate">Intermediate</option>
-                <option value="advanced">Advanced</option>
+                <option value="beginner">{t("dashboard.horsesLevelBeginner")}</option>
+                <option value="intermediate">{t("dashboard.horsesLevelIntermediate")}</option>
+                <option value="advanced">{t("dashboard.horsesLevelAdvanced")}</option>
               </select>
               <select
                 name="trainingStatus"
@@ -658,9 +670,9 @@ export default function HorsesPage() {
                 onChange={handleChange}
                 className={formInput}
               >
-                <option value="green">Green</option>
-                <option value="schooling">Schooling</option>
-                <option value="competition-ready">Competition-ready</option>
+                <option value="green">{t("dashboard.horsesTrainingGreen")}</option>
+                <option value="schooling">{t("dashboard.horsesTrainingSchooling")}</option>
+                <option value="competition-ready">{t("dashboard.horsesTrainingCompetitionReady")}</option>
               </select>
               <select
                 name="ridingSuitability"
@@ -668,11 +680,11 @@ export default function HorsesPage() {
                 onChange={handleChange}
                 className={formInput}
               >
-                <option value="kids">Kids</option>
-                <option value="adults">Adults</option>
-                <option value="jumping">Jumping</option>
-                <option value="dressage">Dressage</option>
-                <option value="trail">Trail</option>
+                <option value="kids">{t("dashboard.horsesSuitabilityKids")}</option>
+                <option value="adults">{t("dashboard.horsesSuitabilityAdults")}</option>
+                <option value="jumping">{t("dashboard.horsesSuitabilityJumping")}</option>
+                <option value="dressage">{t("dashboard.horsesSuitabilityDressage")}</option>
+                <option value="trail">{t("dashboard.horsesSuitabilityTrail")}</option>
               </select>
             </div>
             <div className="flex gap-3 mt-6">
@@ -680,7 +692,7 @@ export default function HorsesPage() {
                 onClick={() => setShowModal(false)}
                 className={`flex-1 ${btnSecondary}`}
               >
-                Cancel
+                {t("dashboard.bookingsCancel")}
               </button>
               <button
                 onClick={addHorse}
@@ -690,10 +702,10 @@ export default function HorsesPage() {
                 {addHorseLoading ? (
                   <>
                     <LoadingSpinner size={16} className="text-black" />
-                    Adding…
+                    {t("dashboard.horsesAdding")}
                   </>
                 ) : (
-                  "Add Horse"
+                  t("dashboard.addHorse")
                 )}
               </button>
             </div>
@@ -717,15 +729,15 @@ export default function HorsesPage() {
                 name={selectedHorse.name}
                 size="sm"
               />
-              Log Session — {selectedHorse.name}
+              {t("dashboard.horsesLogSessionTitle")} — {selectedHorse.name}
             </h2>
             <p className="text-sm text-black/60 mb-4">
-              One-tap training punch for workload intelligence
+              {t("dashboard.horsesLogSessionLead")}
             </p>
             <div className="space-y-4">
               <div>
                 <label className="text-xs text-black/50 uppercase tracking-widest block mb-2">
-                  Session Type
+                  {t("dashboard.horsesSessionType")}
                 </label>
                 <select
                   name="punchType"
@@ -734,8 +746,8 @@ export default function HorsesPage() {
                   className={formInput}
                 >
                   {PUNCH_TYPES.map((p) => (
-                    <option key={p.value} value={p.value}>
-                      {p.label}
+                    <option key={p} value={p}>
+                      {punchLabel(p)}
                     </option>
                   ))}
                 </select>
@@ -745,7 +757,7 @@ export default function HorsesPage() {
                   <>
                     <div>
                       <label className="text-xs text-black/50 uppercase tracking-widest block mb-2">
-                        Duration (min)
+                        {t("dashboard.horsesDurationMin")}
                       </label>
                       <input
                         name="duration"
@@ -759,7 +771,7 @@ export default function HorsesPage() {
                     </div>
                     <div>
                       <label className="text-xs text-black/50 uppercase tracking-widest block mb-2">
-                        Intensity
+                        {t("dashboard.horsesIntensity")}
                       </label>
                       <select
                         name="intensity"
@@ -767,14 +779,14 @@ export default function HorsesPage() {
                         onChange={handleSessionChange}
                         className={formInput}
                       >
-                        <option value="Light">Light</option>
-                        <option value="Medium">Medium</option>
-                        <option value="Hard">Hard</option>
+                        <option value="Light">{t("dashboard.horsesIntensityLight")}</option>
+                        <option value="Medium">{t("dashboard.horsesIntensityMedium")}</option>
+                        <option value="Hard">{t("dashboard.horsesIntensityHard")}</option>
                       </select>
                     </div>
                     <div>
                       <label className="text-xs text-black/50 uppercase tracking-widest block mb-2">
-                        Discipline
+                        {t("dashboard.horsesDiscipline")}
                       </label>
                       <select
                         name="discipline"
@@ -782,17 +794,17 @@ export default function HorsesPage() {
                         onChange={handleSessionChange}
                         className={formInput}
                       >
-                        <option value="Flatwork">Flatwork</option>
-                        <option value="Jumping">Jumping</option>
-                        <option value="Trail">Trail</option>
-                        <option value="Dressage">Dressage</option>
+                        <option value="Flatwork">{t("dashboard.horsesDisciplineFlatwork")}</option>
+                        <option value="Jumping">{t("dashboard.horsesDisciplineJumping")}</option>
+                        <option value="Trail">{t("dashboard.horsesDisciplineTrail")}</option>
+                        <option value="Dressage">{t("dashboard.horsesDisciplineDressage")}</option>
                       </select>
                     </div>
                   </>
                 )}
               <div>
                 <label className="text-xs text-black/50 uppercase tracking-widest block mb-2">
-                  Rider
+                  {t("dashboard.incidentsLabelRiderOptional")}
                 </label>
                 <select
                   name="rider"
@@ -800,7 +812,7 @@ export default function HorsesPage() {
                   onChange={handleSessionChange}
                   className={formInput}
                 >
-                  <option value="">No rider</option>
+                  <option value="">{t("dashboard.horsesNoRider")}</option>
                   {riders.map((r) => (
                     <option key={r.id} value={r.name}>
                       {r.name}
@@ -810,7 +822,7 @@ export default function HorsesPage() {
               </div>
               <textarea
                 name="notes"
-                placeholder="Notes (behavior, progress, issues)"
+                placeholder={t("dashboard.horsesNotesPlaceholder")}
                 value={sessionForm.notes}
                 onChange={handleSessionChange}
                 rows={2}
@@ -822,7 +834,7 @@ export default function HorsesPage() {
                 onClick={() => setShowSessionModal(false)}
                 className={`flex-1 ${btnSecondary}`}
               >
-                Cancel
+                {t("dashboard.bookingsCancel")}
               </button>
               <button
                 onClick={saveSession}
@@ -832,10 +844,10 @@ export default function HorsesPage() {
                 {logSessionLoading ? (
                   <>
                     <LoadingSpinner size={16} className="text-black" />
-                    Logging…
+                    {t("dashboard.horsesLogging")}
                   </>
                 ) : (
-                  "Log Session"
+                  t("dashboard.scheduleLogSession")
                 )}
               </button>
             </div>
@@ -848,7 +860,7 @@ export default function HorsesPage() {
           <span className="text-black text-sm">{toast}</span>
           {lastDeleted.current && (
             <button onClick={undoDelete} className="text-black text-sm uppercase tracking-wider hover:underline">
-              Undo
+              {t("dashboard.horsesUndo")}
             </button>
           )}
         </div>

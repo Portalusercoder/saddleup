@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import PixelCard from "@/components/ui/PixelCard";
+import { useLanguage } from "@/components/providers/LanguageProvider";
 
 interface SubscriptionData {
   tier: string;
@@ -13,6 +14,7 @@ interface SubscriptionData {
 }
 
 export default function SubscriptionBilling() {
+  const { t } = useLanguage();
   const [data, setData] = useState<SubscriptionData | null>(null);
   const [loading, setLoading] = useState(true);
   const [checkoutLoading, setCheckoutLoading] = useState<string | null>(null);
@@ -77,12 +79,12 @@ export default function SubscriptionBilling() {
       });
       const data = await res.json();
       if (!res.ok) {
-        setChangePlanError(data.error || "Failed to change plan");
+        setChangePlanError(data.error || t("dashboard.billingChangePlanFailed"));
         return;
       }
       window.location.reload();
     } catch {
-      setChangePlanError("Failed to change plan");
+      setChangePlanError(t("dashboard.billingChangePlanFailed"));
     } finally {
       setChangePlanLoading(null);
     }
@@ -105,11 +107,11 @@ export default function SubscriptionBilling() {
             <div className="skeleton h-12 w-full rounded-md" />
             <div className="skeleton h-3 w-1/2" />
             <p className="text-xs uppercase tracking-[0.28em] text-black/45 pt-2">
-              Loading…
+              {t("common.loading")}
             </p>
           </div>
         ) : (
-          <p className="text-black/50">Could not load subscription details.</p>
+          <p className="text-black/50">{t("dashboard.billingLoadFailed")}</p>
         )}
       </div>
     );
@@ -117,14 +119,21 @@ export default function SubscriptionBilling() {
 
   return (
     <div className="border border-black/10 p-6">
-      <h2 className="font-serif text-lg text-black mb-4">Billing & Plan</h2>
+      <h2 className="font-serif text-lg text-black mb-4">{t("dashboard.settingsTitle")}</h2>
 
       <div className="space-y-4">
         <div className="flex items-center justify-between">
           <div>
-            <p className="font-medium text-black capitalize">{data.tier} Plan</p>
+            <p className="font-medium text-black capitalize">
+              {t("dashboard.billingTierPlan", { tier: data.tier })}
+            </p>
             <p className="text-sm text-black/60 mt-1">
-              {data.usage?.horses ?? 0} / {data.limits?.horses ?? 0} horses • {data.usage?.riders ?? 0} / {data.limits?.riders ?? 0} riders
+              {t("dashboard.billingUsageLine", {
+                horsesUsed: String(data.usage?.horses ?? 0),
+                horsesLimit: String(data.limits?.horses ?? 0),
+                ridersUsed: String(data.usage?.riders ?? 0),
+                ridersLimit: String(data.limits?.riders ?? 0),
+              })}
             </p>
           </div>
           {data.tier !== "free" && (
@@ -151,12 +160,12 @@ export default function SubscriptionBilling() {
 
         {!data.canAddHorse && (
           <p className="text-black/80 text-sm">
-            Horse limit reached. Upgrade to add more.
+            {t("dashboard.billingHorseLimitReached")}
           </p>
         )}
         {!data.canAddRider && (
           <p className="text-black/80 text-sm">
-            Rider limit reached. Upgrade to add more.
+            {t("dashboard.billingRiderLimitReached")}
           </p>
         )}
 
@@ -172,7 +181,7 @@ export default function SubscriptionBilling() {
                 disabled={portalLoading}
                 className={btnSecondary}
               >
-                {portalLoading ? "Opening..." : "Manage billing"}
+                {portalLoading ? t("dashboard.billingOpening") : t("dashboard.billingManage")}
               </button>
             )}
 
@@ -183,14 +192,18 @@ export default function SubscriptionBilling() {
                   disabled={!!checkoutLoading}
                   className={btnPrimary}
                 >
-                  {checkoutLoading === "starter" ? "Redirecting..." : "Upgrade to Starter ($19.99/mo)"}
+                  {checkoutLoading === "starter"
+                    ? t("dashboard.billingRedirecting")
+                    : t("dashboard.billingUpgradeStarter")}
                 </button>
                 <button
                   onClick={() => handleCheckout("stable")}
                   disabled={!!checkoutLoading}
                   className={btnSecondary}
                 >
-                  {checkoutLoading === "stable" ? "Redirecting..." : "Upgrade to Stable ($49.99/mo)"}
+                  {checkoutLoading === "stable"
+                    ? t("dashboard.billingRedirecting")
+                    : t("dashboard.billingUpgradeStable")}
                 </button>
               </>
             )}
@@ -201,7 +214,9 @@ export default function SubscriptionBilling() {
                 disabled={!!changePlanLoading}
                 className={btnPrimary}
               >
-                {changePlanLoading === "stable" ? "Changing..." : "Change to Stable ($49.99/mo)"}
+                {changePlanLoading === "stable"
+                  ? t("dashboard.billingChanging")
+                  : t("dashboard.billingChangeToStable")}
               </button>
             )}
 
@@ -211,7 +226,9 @@ export default function SubscriptionBilling() {
                 disabled={!!changePlanLoading}
                 className={btnSecondary}
               >
-                {changePlanLoading === "starter" ? "Changing..." : "Change to Starter ($19.99/mo)"}
+                {changePlanLoading === "starter"
+                  ? t("dashboard.billingChanging")
+                  : t("dashboard.billingChangeToStarter")}
               </button>
             )}
           </div>
@@ -219,29 +236,31 @@ export default function SubscriptionBilling() {
 
         {!isOwner && (
           <p className="text-sm text-black/60">
-            Only the stable owner can manage billing and subscriptions.
+            {t("dashboard.billingOwnerOnly")}
           </p>
         )}
       </div>
 
       {isOwner && (
         <div className="mt-6 pt-6 border-t border-black/10">
-          <h3 className="text-sm font-medium text-black mb-3 uppercase tracking-wider">Plans</h3>
+          <h3 className="text-sm font-medium text-black mb-3 uppercase tracking-wider">
+            {t("dashboard.plansTitle")}
+          </h3>
           <div className="grid gap-3 sm:grid-cols-2">
             <PixelCard
               variant="white"
               className={`!min-h-[140px] ${data.tier === "starter" ? "border-black/30" : ""}`}
             >
               <div className="absolute inset-0 p-4 z-10 flex flex-col">
-                <p className="font-medium text-black">Starter — $19.99/mo</p>
-                <p className="text-sm text-black/60 mt-1">5 horses, 25 riders, analytics</p>
+                <p className="font-medium text-black">{t("dashboard.billingStarterPrice")}</p>
+                <p className="text-sm text-black/60 mt-1">{t("dashboard.billingStarterFeatures")}</p>
                 {data.tier === "free" && (
                   <button
                     onClick={() => handleCheckout("starter")}
                     disabled={!!checkoutLoading}
                     className="mt-3 text-sm text-black/80 hover:text-black underline disabled:opacity-50 text-left"
                   >
-                    Upgrade to Starter
+                    {t("dashboard.billingUpgradeStarterShort")}
                   </button>
                 )}
                 {data.tier === "stable" && (
@@ -250,7 +269,7 @@ export default function SubscriptionBilling() {
                     disabled={!!changePlanLoading}
                     className="mt-3 text-sm text-black/80 hover:text-black underline disabled:opacity-50 text-left"
                   >
-                    Change to Starter
+                    {t("dashboard.billingChangeToStarterShort")}
                   </button>
                 )}
               </div>
@@ -260,15 +279,15 @@ export default function SubscriptionBilling() {
               className={`!min-h-[140px] ${data.tier === "stable" ? "border-black/30" : ""}`}
             >
               <div className="absolute inset-0 p-4 z-10 flex flex-col">
-                <p className="font-medium text-black">Stable — $49.99/mo</p>
-                <p className="text-sm text-black/60 mt-1">50 horses, 200 riders, matching</p>
+                <p className="font-medium text-black">{t("dashboard.billingStablePrice")}</p>
+                <p className="text-sm text-black/60 mt-1">{t("dashboard.billingStableFeatures")}</p>
                 {data.tier === "free" && (
                   <button
                     onClick={() => handleCheckout("stable")}
                     disabled={!!checkoutLoading}
                     className="mt-3 text-sm text-black/80 hover:text-black underline disabled:opacity-50 text-left"
                   >
-                    Upgrade to Stable
+                    {t("dashboard.billingUpgradeStableShort")}
                   </button>
                 )}
                 {data.tier === "starter" && (
@@ -277,7 +296,7 @@ export default function SubscriptionBilling() {
                     disabled={!!changePlanLoading}
                     className="mt-3 text-sm text-black/80 hover:text-black underline disabled:opacity-50 text-left"
                   >
-                    Change to Stable
+                    {t("dashboard.billingChangeToStableShort")}
                   </button>
                 )}
               </div>

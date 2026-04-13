@@ -5,6 +5,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import type { AdminStable, AdminOwner } from "@/app/api/admin/overview/route";
 import PageLoader from "@/components/ui/PageLoader";
+import { useLanguage } from "@/components/providers/LanguageProvider";
 
 type Overview = {
   stables: AdminStable[];
@@ -37,6 +38,8 @@ function downloadCsv(filename: string, rows: string[][], headers: string[]) {
 
 export default function AdminPage() {
   const router = useRouter();
+  const { t, lang } = useLanguage();
+  const dateLocale = lang === "ar" ? "ar-SA" : "en-US";
   const [data, setData] = useState<Overview | null>(null);
   const [auditLogs, setAuditLogs] = useState<AuditLogRow[]>([]);
   const [loading, setLoading] = useState(true);
@@ -47,6 +50,16 @@ export default function AdminPage() {
   const [createLoading, setCreateLoading] = useState(false);
   const [createError, setCreateError] = useState<string | null>(null);
   const [createResult, setCreateResult] = useState<{ name: string; inviteCode: string; inviteUrl: string } | null>(null);
+  const statusLabel = (status: string) => {
+    const map: Record<string, string> = {
+      trialing: t("dashboard.adminStatusTrialing"),
+      active: t("dashboard.adminStatusActive"),
+      expired: t("dashboard.adminStatusExpired"),
+      past_due: t("dashboard.adminStatusPastDue"),
+      cancelled: t("dashboard.adminStatusCancelled"),
+    };
+    return map[status] ?? status;
+  };
 
   useEffect(() => {
     fetch("/api/admin/overview")
@@ -56,7 +69,7 @@ export default function AdminPage() {
           return null;
         }
         if (res.status === 403) {
-          setError("Access denied. Only admins can view this page.");
+          setError(t("dashboard.adminAccessDenied"));
           return null;
         }
         return res.json();
@@ -66,10 +79,10 @@ export default function AdminPage() {
         setLoading(false);
       })
       .catch(() => {
-        setError("Failed to load");
+        setError(t("dashboard.adminLoadFailed"));
         setLoading(false);
       });
-  }, [router]);
+  }, [router, t]);
 
   useEffect(() => {
     if (!data) return;
@@ -99,15 +112,24 @@ export default function AdminPage() {
 
   const exportStablesCsv = () => {
     if (!data) return;
-    const headers = ["Name", "Tier", "Status", "Trial ends", "Members", "Horses", "Created", "Stripe ID"];
+    const headers = [
+      t("dashboard.adminColName"),
+      t("dashboard.adminColTier"),
+      t("dashboard.adminColStatus"),
+      t("dashboard.adminColTrialEnds"),
+      t("dashboard.adminColMembers"),
+      t("dashboard.adminColHorses"),
+      t("dashboard.adminColCreated"),
+      t("dashboard.adminColStripeId"),
+    ];
     const rows = data.stables.map((s) => [
       s.name,
       s.subscription_tier,
       s.subscription_status,
-      s.trial_ends_at ? new Date(s.trial_ends_at).toLocaleDateString() : "",
+      s.trial_ends_at ? new Date(s.trial_ends_at).toLocaleDateString(dateLocale) : "",
       String(s.member_count),
       String(s.horse_count),
-      new Date(s.created_at).toLocaleDateString(),
+      new Date(s.created_at).toLocaleDateString(dateLocale),
       s.stripe_customer_id ?? "",
     ]);
     downloadCsv("stables.csv", rows, headers);
@@ -115,7 +137,11 @@ export default function AdminPage() {
 
   const exportOwnersCsv = () => {
     if (!data) return;
-    const headers = ["Stable", "Owner name", "Owner email"];
+    const headers = [
+      t("dashboard.adminColStable"),
+      t("dashboard.adminColOwnerName"),
+      t("dashboard.adminColOwnerEmail"),
+    ];
     const rows = data.owners.map((o) => [
       o.stable_name,
       o.owner_name ?? "",
@@ -138,7 +164,7 @@ export default function AdminPage() {
       });
       const json = await res.json().catch(() => ({}));
       if (!res.ok) {
-        setCreateError(json.error || "Failed to create stable");
+        setCreateError(json.error || t("dashboard.adminCreateFailed"));
         setCreateLoading(false);
         return;
       }
@@ -155,7 +181,7 @@ export default function AdminPage() {
           .catch(() => {});
       }
     } catch {
-      setCreateError("Something went wrong");
+      setCreateError(t("dashboard.noticeEmailsSomethingWrong"));
     } finally {
       setCreateLoading(false);
     }
@@ -168,7 +194,7 @@ export default function AdminPage() {
   if (loading) {
     return (
       <div className="p-8">
-        <PageLoader minHeight="min-h-[55vh]" message="Loading…" />
+        <PageLoader minHeight="min-h-[55vh]" message={t("common.loading")} />
       </div>
     );
   }
@@ -178,7 +204,7 @@ export default function AdminPage() {
       <div className="p-8">
         <p className="text-red-600">{error}</p>
         <Link href="/dashboard" className="mt-4 inline-block text-sm underline">
-          Back to dashboard
+          {t("dashboard.adminBackToDashboard")}
         </Link>
       </div>
     );
@@ -186,59 +212,59 @@ export default function AdminPage() {
 
   if (!data) return null;
 
-  const { stables, owners, subscriptionCounts, totalStables } = data;
+  const { subscriptionCounts, totalStables } = data;
 
   return (
     <div className="p-6 md:p-10 max-w-6xl mx-auto">
       <div className="flex items-center justify-between gap-4 mb-8 flex-wrap">
         <h1 className="font-serif text-2xl md:text-3xl text-black">
-          Admin dashboard
+          {t("dashboard.adminPageTitle")}
         </h1>
         <Link
           href="/dashboard"
           className="text-sm uppercase tracking-wider text-black/60 hover:text-black"
         >
-          ← Dashboard
+          {t("dashboard.adminBackDashboardShort")}
         </Link>
       </div>
 
       {/* Summary cards */}
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-10">
         <div className="border border-black/10 p-4">
-          <p className="text-xs uppercase tracking-wider text-black/50">Stables</p>
+          <p className="text-xs uppercase tracking-wider text-black/50">{t("dashboard.adminCardStables")}</p>
           <p className="text-2xl font-semibold text-black">{totalStables}</p>
         </div>
         <div className="border border-black/10 p-4">
-          <p className="text-xs uppercase tracking-wider text-black/50">Past due</p>
+          <p className="text-xs uppercase tracking-wider text-black/50">{t("dashboard.adminCardPastDue")}</p>
           <p className="text-2xl font-semibold text-black">{subscriptionCounts.past_due ?? 0}</p>
         </div>
         <div className="border border-black/10 p-4">
-          <p className="text-xs uppercase tracking-wider text-black/50">Trialing</p>
+          <p className="text-xs uppercase tracking-wider text-black/50">{t("dashboard.adminCardTrialing")}</p>
           <p className="text-2xl font-semibold text-black">{subscriptionCounts.trialing ?? 0}</p>
         </div>
         <div className="border border-black/10 p-4">
-          <p className="text-xs uppercase tracking-wider text-black/50">Active</p>
+          <p className="text-xs uppercase tracking-wider text-black/50">{t("dashboard.adminCardActive")}</p>
           <p className="text-2xl font-semibold text-black">{subscriptionCounts.active ?? 0}</p>
         </div>
       </div>
 
       {/* Create enterprise stable */}
       <section className="mb-12 border border-black/10 p-6">
-        <h2 className="font-serif text-lg text-black mb-2">Create enterprise stable</h2>
+        <h2 className="font-serif text-lg text-black mb-2">{t("dashboard.adminCreateTitle")}</h2>
         <p className="text-black/60 text-sm mb-4">
-          Create a personalised stable for an enterprise customer. They get unlimited horses and riders. Send them the invite link to sign up and claim it as owner.
+          {t("dashboard.adminCreateLead")}
         </p>
         <form onSubmit={createEnterpriseStable} className="flex flex-wrap items-end gap-3">
           <div>
             <label htmlFor="createStableName" className="block text-xs uppercase tracking-widest text-black/50 mb-1">
-              Stable name
+              {t("dashboard.adminCreateStableName")}
             </label>
             <input
               id="createStableName"
               type="text"
               value={createStableName}
               onChange={(e) => setCreateStableName(e.target.value)}
-              placeholder="e.g. Acme Riding Academy"
+              placeholder={t("dashboard.adminCreatePlaceholder")}
               className="px-3 py-2 border border-black/20 bg-base text-black text-sm min-w-[220px]"
             />
           </div>
@@ -247,14 +273,14 @@ export default function AdminPage() {
             disabled={createLoading || !createStableName.trim()}
             className="px-4 py-2 bg-accent text-white text-sm font-medium uppercase tracking-wider hover:opacity-95 disabled:opacity-50 disabled:cursor-not-allowed"
           >
-            {createLoading ? "Creating…" : "Create"}
+            {createLoading ? t("dashboard.adminCreating") : t("dashboard.adminCreateButton")}
           </button>
         </form>
         {createError && <p className="text-red-600 text-sm mt-2">{createError}</p>}
         {createResult && (
           <div className="mt-4 p-4 bg-black/5 border border-black/10">
             <p className="text-black/70 text-sm mb-2">
-              <strong>{createResult.name}</strong> created. Send this to your customer:
+              {t("dashboard.adminCreatedForCustomer", { name: createResult.name })}
             </p>
             <div className="flex flex-wrap items-center gap-2">
               <input
@@ -268,17 +294,17 @@ export default function AdminPage() {
                 onClick={() => copyToClipboard(createResult.inviteUrl)}
                 className="px-3 py-2 border border-black/20 text-black text-sm uppercase tracking-wider hover:bg-black/5"
               >
-                Copy link
+                {t("dashboard.adminCopyLink")}
               </button>
             </div>
             <p className="text-black/50 text-xs mt-2">
-              Invite code: <strong className="text-black/70">{createResult.inviteCode}</strong>
+              {t("dashboard.adminInviteCode")} <strong className="text-black/70">{createResult.inviteCode}</strong>
               <button
                 type="button"
                 onClick={() => copyToClipboard(createResult.inviteCode)}
                 className="ml-2 text-black/60 hover:text-black text-xs underline"
               >
-                Copy code
+                {t("dashboard.adminCopyCode")}
               </button>
             </p>
           </div>
@@ -288,26 +314,26 @@ export default function AdminPage() {
       {/* Stables table */}
       <section className="mb-12">
         <div className="flex items-center justify-between gap-4 mb-4 flex-wrap">
-          <h2 className="font-serif text-lg text-black">Stables</h2>
+          <h2 className="font-serif text-lg text-black">{t("dashboard.adminStablesTitle")}</h2>
           <div className="flex items-center gap-3 flex-wrap">
             <select
               value={statusFilter}
               onChange={(e) => setStatusFilter(e.target.value)}
               className="px-3 py-1.5 border border-black/20 bg-base text-black text-sm"
             >
-              <option value="all">All statuses</option>
-              <option value="trialing">Trialing</option>
-              <option value="active">Active</option>
-              <option value="expired">Expired</option>
-              <option value="past_due">Past due</option>
-              <option value="cancelled">Cancelled</option>
+              <option value="all">{t("dashboard.adminStatusAll")}</option>
+              <option value="trialing">{t("dashboard.adminStatusTrialing")}</option>
+              <option value="active">{t("dashboard.adminStatusActive")}</option>
+              <option value="expired">{t("dashboard.adminStatusExpired")}</option>
+              <option value="past_due">{t("dashboard.adminStatusPastDue")}</option>
+              <option value="cancelled">{t("dashboard.adminStatusCancelled")}</option>
             </select>
             <button
               type="button"
               onClick={exportStablesCsv}
               className="px-3 py-1.5 border border-black/20 text-black text-sm hover:bg-black/5 uppercase tracking-wider"
             >
-              Export CSV
+              {t("dashboard.adminExportCsv")}
             </button>
           </div>
         </div>
@@ -315,14 +341,14 @@ export default function AdminPage() {
           <table className="w-full text-sm">
             <thead>
               <tr className="border-b border-black/10 bg-black/5">
-                <th className="text-left p-3 font-medium">Name</th>
-                <th className="text-left p-3 font-medium">Tier</th>
-                <th className="text-left p-3 font-medium">Status</th>
-                <th className="text-left p-3 font-medium">Trial ends</th>
-                <th className="text-right p-3 font-medium">Members</th>
-                <th className="text-right p-3 font-medium">Horses</th>
-                <th className="text-left p-3 font-medium">Created</th>
-                <th className="text-left p-3 font-medium">Stripe</th>
+                <th className="text-left p-3 font-medium">{t("dashboard.adminColName")}</th>
+                <th className="text-left p-3 font-medium">{t("dashboard.adminColTier")}</th>
+                <th className="text-left p-3 font-medium">{t("dashboard.adminColStatus")}</th>
+                <th className="text-left p-3 font-medium">{t("dashboard.adminColTrialEnds")}</th>
+                <th className="text-right p-3 font-medium">{t("dashboard.adminColMembers")}</th>
+                <th className="text-right p-3 font-medium">{t("dashboard.adminColHorses")}</th>
+                <th className="text-left p-3 font-medium">{t("dashboard.adminColCreated")}</th>
+                <th className="text-left p-3 font-medium">{t("dashboard.adminColStripe")}</th>
               </tr>
             </thead>
             <tbody>
@@ -342,18 +368,18 @@ export default function AdminPage() {
                               : "text-black/70"
                       }
                     >
-                      {s.subscription_status}
+                      {statusLabel(s.subscription_status)}
                     </span>
                   </td>
                   <td className="p-3 text-black/70">
                     {s.trial_ends_at
-                      ? new Date(s.trial_ends_at).toLocaleDateString()
+                      ? new Date(s.trial_ends_at).toLocaleDateString(dateLocale)
                       : "—"}
                   </td>
                   <td className="p-3 text-right">{s.member_count}</td>
                   <td className="p-3 text-right">{s.horse_count}</td>
                   <td className="p-3 text-black/60">
-                    {new Date(s.created_at).toLocaleDateString()}
+                    {new Date(s.created_at).toLocaleDateString(dateLocale)}
                   </td>
                   <td className="p-3">
                     {s.stripe_customer_id ? (
@@ -363,7 +389,7 @@ export default function AdminPage() {
                         rel="noopener noreferrer"
                         className="text-black/70 hover:text-black underline"
                       >
-                        View
+                        {t("dashboard.adminView")}
                       </a>
                     ) : (
                       "—"
@@ -376,7 +402,9 @@ export default function AdminPage() {
         </div>
         {filteredStables.length === 0 && (
           <p className="text-black/50 py-6 text-center">
-            {statusFilter === "all" ? "No stables yet." : `No stables with status "${statusFilter}".`}
+            {statusFilter === "all"
+              ? t("dashboard.adminNoStables")
+              : t("dashboard.adminNoStablesWithStatus", { status: statusFilter })}
           </p>
         )}
       </section>
@@ -384,11 +412,11 @@ export default function AdminPage() {
       {/* Stables & owners (contact only – no internal stable data) */}
       <section className="mb-12">
         <div className="flex items-center justify-between gap-4 mb-4 flex-wrap">
-          <h2 className="font-serif text-lg text-black">Stables & owners</h2>
+          <h2 className="font-serif text-lg text-black">{t("dashboard.adminOwnersTitle")}</h2>
           <div className="flex items-center gap-3 flex-wrap">
             <input
               type="search"
-              placeholder="Search by stable or owner…"
+              placeholder={t("dashboard.adminOwnersSearchPlaceholder")}
               value={ownerSearch}
               onChange={(e) => setOwnerSearch(e.target.value)}
               className="px-3 py-1.5 border border-black/20 bg-base text-black text-sm min-w-[200px]"
@@ -398,7 +426,7 @@ export default function AdminPage() {
               onClick={exportOwnersCsv}
               className="px-3 py-1.5 border border-black/20 text-black text-sm hover:bg-black/5 uppercase tracking-wider"
             >
-              Export CSV
+              {t("dashboard.adminExportCsv")}
             </button>
           </div>
         </div>
@@ -406,9 +434,9 @@ export default function AdminPage() {
           <table className="w-full text-sm">
             <thead>
               <tr className="border-b border-black/10 bg-black/5">
-                <th className="text-left p-3 font-medium">Stable</th>
-                <th className="text-left p-3 font-medium">Owner name</th>
-                <th className="text-left p-3 font-medium">Owner email</th>
+                <th className="text-left p-3 font-medium">{t("dashboard.adminColStable")}</th>
+                <th className="text-left p-3 font-medium">{t("dashboard.adminColOwnerName")}</th>
+                <th className="text-left p-3 font-medium">{t("dashboard.adminColOwnerEmail")}</th>
               </tr>
             </thead>
             <tbody>
@@ -424,30 +452,30 @@ export default function AdminPage() {
         </div>
         {filteredOwners.length === 0 && (
           <p className="text-black/50 py-6 text-center">
-            {ownerSearch ? "No stables or owners match your search." : "No stables yet."}
+            {ownerSearch ? t("dashboard.adminNoOwnersMatch") : t("dashboard.adminNoStables")}
           </p>
         )}
       </section>
 
       {/* Platform events only (subscription, deletion, reactivation – no stable-internal data) */}
       <section>
-        <h2 className="font-serif text-lg text-black mb-4">Platform events</h2>
+        <h2 className="font-serif text-lg text-black mb-4">{t("dashboard.adminEventsTitle")}</h2>
         <div className="overflow-x-auto border border-black/10">
           <table className="w-full text-sm">
             <thead>
               <tr className="border-b border-black/10 bg-black/5">
-                <th className="text-left p-3 font-medium">Time</th>
-                <th className="text-left p-3 font-medium">Action</th>
-                <th className="text-left p-3 font-medium">Stable</th>
-                <th className="text-left p-3 font-medium">Entity</th>
-                <th className="text-left p-3 font-medium">Details</th>
+                <th className="text-left p-3 font-medium">{t("dashboard.adminColTime")}</th>
+                <th className="text-left p-3 font-medium">{t("dashboard.adminColAction")}</th>
+                <th className="text-left p-3 font-medium">{t("dashboard.adminColStable")}</th>
+                <th className="text-left p-3 font-medium">{t("dashboard.adminColEntity")}</th>
+                <th className="text-left p-3 font-medium">{t("dashboard.adminColDetails")}</th>
               </tr>
             </thead>
             <tbody>
               {auditLogs.map((l) => (
                 <tr key={l.id} className="border-b border-black/5 hover:bg-black/5">
                   <td className="p-3 text-black/60 whitespace-nowrap">
-                    {new Date(l.created_at).toLocaleString()}
+                    {new Date(l.created_at).toLocaleString(dateLocale)}
                   </td>
                   <td className="p-3 font-medium">{l.action}</td>
                   <td className="p-3 text-black/70">{l.stable_name || "—"}</td>
@@ -467,7 +495,7 @@ export default function AdminPage() {
           </table>
         </div>
         {auditLogs.length === 0 && (
-          <p className="text-black/50 py-6 text-center">No audit entries yet.</p>
+          <p className="text-black/50 py-6 text-center">{t("dashboard.adminNoAuditEntries")}</p>
         )}
       </section>
     </div>

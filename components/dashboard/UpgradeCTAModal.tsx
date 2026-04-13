@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import Image from "next/image";
 import { motion } from "framer-motion";
 import { useProfile } from "@/components/providers/ProfileProvider";
+import { useLanguage } from "@/components/providers/LanguageProvider";
 
 const TRIAL_SEEN_KEY = "saddleup_trial_cta_seen";
 const UPGRADE_LAST_SHOWN_KEY = "saddleup_upgrade_cta_last_shown";
@@ -23,6 +24,7 @@ function shouldShowUpgrade(): boolean {
 
 export default function UpgradeCTAModal() {
   const { profile, loading } = useProfile();
+  const { t } = useLanguage();
   const [open, setOpen] = useState(false);
   const [mounted, setMounted] = useState(false);
 
@@ -71,7 +73,7 @@ export default function UpgradeCTAModal() {
             type="button"
             onClick={handleClose}
             className="absolute top-4 right-4 z-10 p-2 text-black/60 hover:text-black transition"
-            aria-label="Close"
+            aria-label={t("common.close")}
           >
             <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
@@ -90,24 +92,24 @@ export default function UpgradeCTAModal() {
             </div>
             <div className="flex flex-col justify-center p-8 md:p-10 text-black">
               <h2 id="upgrade-cta-title" className="font-serif text-2xl md:text-3xl font-normal">
-                Upgrade your plan
+                {t("dashboard.upgradeCtaTitle")}
               </h2>
               <p className="mt-3 text-sm text-black/70 leading-relaxed">
-                Get more horses and riders, unlock full features, and grow your stable. Upgrade when you’re ready — we’re here whenever you need more.
+                {t("dashboard.upgradeCtaBody")}
               </p>
               <div className="mt-6 flex flex-col sm:flex-row gap-3">
                 <a
                   href="/dashboard/settings"
                   className="w-full sm:w-auto px-6 py-3 bg-accent text-white font-medium text-sm uppercase tracking-wider hover:opacity-95 transition text-center"
                 >
-                  View plans
+                  {t("dashboard.upgradeCtaViewPlans")}
                 </a>
                 <button
                   type="button"
                   onClick={handleClose}
                   className="w-full sm:w-auto px-6 py-3 border border-black/25 text-black text-sm uppercase tracking-wider hover:bg-black/5 transition"
                 >
-                  Maybe later
+                  {t("dashboard.upgradeCtaMaybeLater")}
                 </button>
               </div>
             </div>

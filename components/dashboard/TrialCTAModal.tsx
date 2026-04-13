@@ -4,11 +4,13 @@ import { useEffect, useState } from "react";
 import Image from "next/image";
 import { motion } from "framer-motion";
 import { useProfile } from "@/components/providers/ProfileProvider";
+import { useLanguage } from "@/components/providers/LanguageProvider";
 
 const STORAGE_KEY = "saddleup_trial_cta_seen";
 
 export default function TrialCTAModal() {
   const { profile, loading } = useProfile();
+  const { t } = useLanguage();
   const [open, setOpen] = useState(false);
   const [mounted, setMounted] = useState(false);
 
@@ -60,7 +62,7 @@ export default function TrialCTAModal() {
             type="button"
             onClick={handleClose}
             className="absolute top-4 right-4 z-10 p-2 text-black/60 hover:text-black transition"
-            aria-label="Close"
+            aria-label={t("common.close")}
           >
             <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
@@ -81,10 +83,10 @@ export default function TrialCTAModal() {
             {/* Right: copy */}
             <div className="flex flex-col justify-center p-8 md:p-10 text-black">
               <h2 id="trial-cta-title" className="font-serif text-2xl md:text-3xl font-normal">
-                Starting a free trial
+                {t("dashboard.trialCtaTitle")}
               </h2>
               <p className="mt-3 text-sm text-black/70 leading-relaxed">
-                You’re all set. Manage your stable, horses, and riders in one place. Your trial includes 2 horses and 10 riders — upgrade anytime when you’re ready for more.
+                {t("dashboard.trialCtaBody")}
               </p>
               <div className="mt-6 flex flex-col sm:flex-row gap-3">
                 <button
@@ -92,13 +94,13 @@ export default function TrialCTAModal() {
                   onClick={handleClose}
                   className="w-full sm:w-auto px-6 py-3 bg-accent text-white font-medium text-sm uppercase tracking-wider hover:opacity-95 transition"
                 >
-                  Get started
+                  {t("dashboard.trialCtaGetStarted")}
                 </button>
                 <a
                   href="/dashboard/settings"
                   className="w-full sm:w-auto px-6 py-3 border border-black/25 text-black text-sm uppercase tracking-wider hover:bg-black/5 transition text-center"
                 >
-                  View plans
+                  {t("dashboard.upgradeCtaViewPlans")}
                 </a>
               </div>
             </div>

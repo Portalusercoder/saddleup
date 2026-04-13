@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import { useProfile } from "@/components/providers/ProfileProvider";
+import { useLanguage } from "@/components/providers/LanguageProvider";
 
 type SubscriptionInfo = {
   status: string;
@@ -14,6 +15,7 @@ type SubscriptionInfo = {
 
 export default function TrialBanner() {
   const { profile } = useProfile();
+  const { t } = useLanguage();
   const [data, setData] = useState<SubscriptionInfo | null>(null);
   const [loading, setLoading] = useState(true);
 
@@ -52,10 +54,9 @@ export default function TrialBanner() {
   let tone: "warning" | "info" = "warning";
 
   if (readOnly || status === "expired" || status === "suspended") {
-    message =
-      "Your free trial has ended. Your stable is now in read-only mode. Upgrade to continue managing bookings, horses, and riders.";
+    message = t("dashboard.trialBannerExpired");
   } else if (status === "trialing" && daysLeft <= 7) {
-    message = `Your free trial ends in ${daysLeft} day${daysLeft === 1 ? "" : "s"}. Upgrade to keep full access to Saddle Up.`;
+    message = t("dashboard.trialBannerEnding", { days: String(daysLeft) });
     tone = "info";
   }
 
@@ -74,7 +75,7 @@ export default function TrialBanner() {
         href="/dashboard/settings"
         className="inline-flex items-center justify-center px-4 py-2 bg-accent text-white text-xs font-semibold uppercase tracking-[0.18em] hover:opacity-90 transition"
       >
-        Upgrade to continue
+        {t("dashboard.trialBannerCta")}
       </Link>
     </div>
   );
