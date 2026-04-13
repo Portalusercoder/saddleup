@@ -1,8 +1,10 @@
 "use client";
 
 import { useState } from "react";
+import { useLanguage } from "@/components/providers/LanguageProvider";
 
 export default function AddMemberById({ onSuccess }: { onSuccess?: () => void }) {
+  const { t } = useLanguage();
   const [inviteCode, setInviteCode] = useState("");
   const [memberRole, setMemberRole] = useState<"student" | "trainer" | "guardian">("student");
   const [loading, setLoading] = useState(false);
@@ -23,25 +25,35 @@ export default function AddMemberById({ onSuccess }: { onSuccess?: () => void })
       });
       const data = await res.json();
       if (!res.ok) {
-        const errText = data.error || "Failed";
+        const errText = data.error || t("dashboard.addMemberFailed");
       setMessage({
         type: "error",
         text: errText.includes("already in your stable")
-            ? "They're already in your stable. Check Riders or Trainers."
+            ? t("dashboard.addMemberAlreadyInStable")
             : errText,
       });
         return;
       }
-      const roleLabel = memberRole === "student" ? "Student" : memberRole === "guardian" ? "Guardian" : "Trainer";
-      const location = memberRole === "student" ? "Riders" : memberRole === "guardian" ? "Parent Portal" : "Trainers";
+      const roleLabel =
+        memberRole === "student"
+          ? t("dashboard.addMemberRoleStudent")
+          : memberRole === "guardian"
+            ? t("dashboard.addMemberRoleGuardian")
+            : t("dashboard.addMemberRoleTrainer");
+      const location =
+        memberRole === "student"
+          ? t("dashboard.ridersTitle")
+          : memberRole === "guardian"
+            ? t("dashboard.guardianTitle")
+            : t("dashboard.trainersTitle");
       setMessage({
         type: "success",
-        text: `${roleLabel} added. They appear in ${location}.`,
+        text: t("dashboard.addMemberSuccess", { role: roleLabel, location }),
       });
       setInviteCode("");
       onSuccess?.();
     } catch {
-      setMessage({ type: "error", text: "Something went wrong" });
+      setMessage({ type: "error", text: t("dashboard.noticeEmailsSomethingWrong") });
     } finally {
       setLoading(false);
     }
@@ -53,33 +65,34 @@ export default function AddMemberById({ onSuccess }: { onSuccess?: () => void })
 
   return (
     <div className="border border-black/10 p-6">
-      <h2 className="font-serif text-lg text-black mb-2">Add member by personal ID</h2>
+      <h2 className="font-serif text-lg text-black mb-2">{t("dashboard.addMemberTitle")}</h2>
       <p className="text-black/60 text-sm mb-4">
-        If the join code didn&apos;t work, ask the person for their personal ID. They can get it at{" "}
-        <a href="/get-my-id" className="text-black hover:underline">/get-my-id</a> after signing up.
+        {t("dashboard.addMemberLead")}{" "}
+        <a href="/get-my-id" className="text-black hover:underline">/get-my-id</a>{" "}
+        {t("dashboard.addMemberLeadSuffix")}
       </p>
       <form onSubmit={handleSubmit} className="space-y-4">
         <div>
-          <label className={labelClass}>Personal ID</label>
+          <label className={labelClass}>{t("dashboard.addMemberPersonalId")}</label>
           <input
             type="text"
             value={inviteCode}
             onChange={(e) => setInviteCode(e.target.value.toUpperCase().replace(/\s/g, ""))}
-            placeholder="ABC12XYZ"
+            placeholder={t("dashboard.addMemberPersonalIdPlaceholder")}
             className={formInput}
             required
           />
         </div>
         <div>
-          <label className={labelClass}>Role</label>
+          <label className={labelClass}>{t("common.role")}</label>
           <select
             value={memberRole}
             onChange={(e) => setMemberRole(e.target.value as "student" | "trainer" | "guardian")}
             className={formInput}
           >
-            <option value="student">Student</option>
-            <option value="trainer">Trainer</option>
-            <option value="guardian">Guardian (Parent)</option>
+            <option value="student">{t("dashboard.addMemberRoleStudent")}</option>
+            <option value="trainer">{t("dashboard.addMemberRoleTrainer")}</option>
+            <option value="guardian">{t("dashboard.addMemberRoleGuardianParent")}</option>
           </select>
         </div>
         {message && (
@@ -96,7 +109,7 @@ export default function AddMemberById({ onSuccess }: { onSuccess?: () => void })
           disabled={loading}
           className="px-4 py-2.5 bg-accent text-white font-medium text-sm uppercase tracking-wider hover:opacity-95 transition disabled:opacity-50"
         >
-          {loading ? "Adding..." : "Add member"}
+          {loading ? t("dashboard.addMemberAdding") : t("dashboard.addMemberButton")}
         </button>
       </form>
     </div>

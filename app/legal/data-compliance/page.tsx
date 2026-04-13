@@ -5,9 +5,9 @@ import { LEGAL_CONTACT_EMAIL } from "@/lib/legal/contact";
 const appUrl = process.env.NEXT_PUBLIC_APP_URL ?? "https://www.saddleup-sa.com";
 
 export const metadata: Metadata = {
-  title: "Data protection & compliance (KSA)",
+  title: "Data protection & compliance (KSA) | حماية البيانات والامتثال (السعودية)",
   description:
-    "PDPL-oriented compliance overview, retention, subprocessors, and security practices for Saddle Up.",
+    "PDPL-oriented compliance overview, retention, subprocessors, and security practices for Saddle Up. | نظرة عامة على الامتثال لنظام حماية البيانات الشخصية وسياسات الاحتفاظ والمعالِجين الفرعيين وممارسات الأمان في Saddle Up.",
   alternates: { canonical: `${appUrl}/legal/data-compliance` },
 };
 
@@ -18,6 +18,26 @@ export default function DataCompliancePage() {
     <LegalPageShell
       titleKey="legal.dataComplianceDocumentTitle"
       lastUpdated="5 April 2026"
+      arabicSummary={
+        <>
+          <p>
+            يوضح هذا المستند نهجنا في حماية البيانات والامتثال في المملكة، بما
+            يشمل مبادئ نظام حماية البيانات الشخصية (PDPL)، إدارة المخاطر، وحوكمة
+            المعالجة مع العملاء والموردين.
+          </p>
+          <p>
+            نطبق مبادئ المشروعية، تحديد الغرض، تقليل البيانات، الدقة، تحديد مدة
+            الاحتفاظ، والأمان التقني والتنظيمي. كما نحتفظ بإجراءات للاستجابة
+            للحوادث وطلبات أصحاب البيانات وفق المتطلبات النظامية.
+          </p>
+          <p>
+            لطلبات الخصوصية أو الامتثال تواصل عبر{" "}
+            <a href={`mailto:${contact}`}>{contact}</a>. هذا ملخص عربي تشغيلي،
+            بينما تبقى الصياغة القانونية التفصيلية في النص الإنجليزي حتى اعتماد
+            مراجعة قانونية عربية نهائية.
+          </p>
+        </>
+      }
     >
       <section>
         <h2>1. Purpose of this page</h2>

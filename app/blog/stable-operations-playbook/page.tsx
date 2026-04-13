@@ -5,13 +5,15 @@ import { SeoArticle } from "@/components/landing/SeoArticle";
 const appUrl = process.env.NEXT_PUBLIC_APP_URL || "https://www.saddleup-sa.com";
 
 export const metadata: Metadata = {
-  title: "How to run a modern riding stable — operations playbook",
+  title:
+    "How to run a modern riding stable — operations playbook | كيفية تشغيل إسطبل حديث",
   description:
-    "Daily, weekly, and monthly checklist for professional stable operations at riding schools in KSA and GCC.",
+    "Daily, weekly, and monthly checklist for professional stable operations at riding schools in KSA and GCC. | قائمة يومية وأسبوعية وشهرية لتشغيل احترافي لإسطبلات مدارس الفروسية في السعودية والخليج.",
   alternates: { canonical: `${appUrl}/blog/stable-operations-playbook` },
   openGraph: {
-    title: "Stable operations playbook | Saddle Up",
-    description: "Rhythms for lessons, horse care, staff, and reporting.",
+    title: "Stable operations playbook | Saddle Up | دليل تشغيل الإسطبل",
+    description:
+      "Rhythms for lessons, horse care, staff, and reporting. | إيقاع عملي للدروس ورعاية الخيل والطاقم والتقارير.",
     url: "/blog/stable-operations-playbook",
     type: "article",
   },

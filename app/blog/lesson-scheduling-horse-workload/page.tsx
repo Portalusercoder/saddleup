@@ -5,14 +5,16 @@ import { SeoArticle } from "@/components/landing/SeoArticle";
 const appUrl = process.env.NEXT_PUBLIC_APP_URL || "https://www.saddleup-sa.com";
 
 export const metadata: Metadata = {
-  title: "Lesson scheduling & horse workload for stables",
+  title:
+    "Lesson scheduling & horse workload for stables | جدولة الدروس وحمل عمل الخيول",
   description:
-    "Why lesson scheduling and workload tracking matter for horse welfare and stable reputation — and how to structure it for riding schools in KSA & GCC.",
+    "Why lesson scheduling and workload tracking matter for horse welfare and stable reputation — and how to structure it for riding schools in KSA & GCC. | لماذا تهم جدولة الدروس وتتبع حمل العمل لرفاه الخيل وسمعة الإسطبل، وكيف تُنظَّم لمدارس الفروسية في السعودية والخليج.",
   alternates: { canonical: `${appUrl}/blog/lesson-scheduling-horse-workload` },
   openGraph: {
-    title: "Lesson scheduling & horse workload | Saddle Up",
+    title:
+      "Lesson scheduling & horse workload | Saddle Up | جدولة الدروس وحمل العمل",
     description:
-      "Reduce overtraining risk with clearer scheduling and workload visibility.",
+      "Reduce overtraining risk with clearer scheduling and workload visibility. | تقليل مخاطر الإفراط في التدريب عبر وضوح الجدولة ورؤية حمل العمل.",
     url: "/blog/lesson-scheduling-horse-workload",
     type: "article",
   },

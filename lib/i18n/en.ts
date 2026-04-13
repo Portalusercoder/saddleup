@@ -388,6 +388,8 @@ export const en = {
     postLessonTitle: "Lesson scheduling and horse workload",
     postLessonBlurb:
       "Protect horse welfare and reputation with clearer scheduling.",
+    footerLead:
+      "Run your stable with Saddle Up - horses, riders, bookings, and operations in one place.",
   },
   notifications: {
     ariaLabel: "Notifications",
@@ -675,6 +677,69 @@ export const en = {
     billingUpgradeStableShort: "Upgrade to Stable",
     billingChangeToStarterShort: "Change to Starter",
     billingChangeToStableShort: "Change to Stable",
+    addMemberTitle: "Add member by personal ID",
+    addMemberLead:
+      "If the join code didn't work, ask the person for their personal ID. They can get it at",
+    addMemberLeadSuffix: "after signing up.",
+    addMemberPersonalId: "Personal ID",
+    addMemberPersonalIdPlaceholder: "ABC12XYZ",
+    addMemberRoleStudent: "Student",
+    addMemberRoleTrainer: "Trainer",
+    addMemberRoleGuardian: "Guardian",
+    addMemberRoleGuardianParent: "Guardian (Parent)",
+    addMemberButton: "Add member",
+    addMemberAdding: "Adding...",
+    addMemberFailed: "Failed",
+    addMemberAlreadyInStable:
+      "They're already in your stable. Check Riders or Trainers.",
+    addMemberSuccess: "{role} added. They appear in {location}.",
+    stableLogoTitle: "Stable logo",
+    stableLogoLead:
+      "Upload your stable's logo for use on your stable materials.",
+    stableLogoNoLogo: "No logo",
+    stableLogoUpload: "Upload logo",
+    stableLogoChange: "Change logo",
+    stableLogoUpdated: "Logo updated",
+    stableLogoHint: "JPEG, PNG or WebP. Max 1MB.",
+    monthlyReportTitle: "Monthly Report",
+    monthlyReportLead:
+      "Download a PDF report for any month including classes, new members, riders, training sessions, horses, incidents, and competitions.",
+    monthlyReportMonth: "Month",
+    monthlyReportYear: "Year",
+    monthlyReportGenerating: "Generating…",
+    monthlyReportDownload: "Download PDF",
+    monthlyReportDownloadFailed: "Failed to download report",
+    tutorialQuickTour: "Quick tour",
+    tutorialOwnerWelcomeTitle: "Welcome to Saddle Up",
+    tutorialOwnerWelcomeDesc:
+      "This dashboard gives you a quick view of horses, sessions, reminders, and team activity.",
+    tutorialOwnerInviteTitle: "Invite Your Team",
+    tutorialOwnerInviteDesc:
+      "Use the invite code card to let trainers and students join your stable during signup.",
+    tutorialOwnerHorseTitle: "Add Your First Horse",
+    tutorialOwnerHorseDesc:
+      "Go to Horses and create horse profiles to unlock sessions, reminders, and workload tracking.",
+    tutorialOwnerSessionsTitle: "Log Sessions Regularly",
+    tutorialOwnerSessionsDesc:
+      "Add training sessions often. The app uses this data for weekly metrics and workload alerts.",
+    tutorialTrainerWelcomeTitle: "Welcome to Saddle Up",
+    tutorialTrainerWelcomeDesc:
+      "Your dashboard shows recent sessions, care reminders, and quick actions for daily work.",
+    tutorialTrainerHorseTitle: "Start with Horse Profiles",
+    tutorialTrainerHorseDesc:
+      "Add horse details first so you can track workload, care reminders, and training quality.",
+    tutorialTrainerSessionsTitle: "Log Sessions Every Day",
+    tutorialTrainerSessionsDesc:
+      "Each session updates weekly metrics and helps detect horses that may need rest.",
+    tutorialStudentWelcomeTitle: "Welcome to Your Dashboard",
+    tutorialStudentWelcomeDesc:
+      "You can view assigned horses, upcoming lessons, and your recent training sessions here.",
+    tutorialStudentBookingsTitle: "Check Upcoming Bookings",
+    tutorialStudentBookingsDesc:
+      "Use My Bookings to track lesson dates and times and stay ready for your next ride.",
+    tutorialStudentProgressTitle: "Review Progress",
+    tutorialStudentProgressDesc:
+      "Use My Horses and Training History to follow your recent sessions and consistency.",
     trainingHistoryIntro:
       "Sessions logged by your trainer for horses you're assigned to.",
     trainingHistoryEmptyTitle: "No training sessions yet",

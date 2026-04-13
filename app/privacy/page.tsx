@@ -5,9 +5,9 @@ import { LEGAL_CONTACT_EMAIL } from "@/lib/legal/contact";
 const appUrl = process.env.NEXT_PUBLIC_APP_URL ?? "https://www.saddleup-sa.com";
 
 export const metadata: Metadata = {
-  title: "Privacy Policy",
+  title: "Privacy Policy | سياسة الخصوصية",
   description:
-    "How Saddle Up collects, uses, and protects personal data in line with Saudi PDPL expectations.",
+    "How Saddle Up collects, uses, and protects personal data in line with Saudi PDPL expectations. | كيف يجمع Saddle Up البيانات الشخصية ويستخدمها ويحميها وفق متطلبات نظام حماية البيانات الشخصية في السعودية.",
   alternates: { canonical: `${appUrl}/privacy` },
 };
 
@@ -15,7 +15,29 @@ export default function PrivacyPage() {
   const contact = LEGAL_CONTACT_EMAIL;
 
   return (
-    <LegalPageShell titleKey="legal.privacyDocumentTitle" lastUpdated="5 April 2026">
+    <LegalPageShell
+      titleKey="legal.privacyDocumentTitle"
+      lastUpdated="5 April 2026"
+      arabicSummary={
+        <>
+          <p>
+            يوضّح هذا الملخص كيف نجمع البيانات الشخصية ونستخدمها ونحميها في
+            منصة Saddle Up وفق متطلبات نظام حماية البيانات الشخصية في المملكة.
+          </p>
+          <p>
+            نستخدم البيانات لتشغيل الحسابات، إدارة الحجوزات والفرق، الأمان،
+            الدعم، والتواصل التشغيلي. لا نبيع بياناتك الشخصية، ونطبّق مبدأ
+            الحد الأدنى من البيانات والاحتفاظ لفترات مبررة.
+          </p>
+          <p>
+            يمكنك طلب الوصول إلى بياناتك أو تصحيحها أو حذفها - حيث ينطبق ذلك -
+            عبر التواصل على{" "}
+            <a href={`mailto:${contact}`}>{contact}</a>. بعض الطلبات المتعلقة
+            ببيانات الإسطبل قد تتطلب تنسيقًا مع إدارة الإسطبل نفسها.
+          </p>
+        </>
+      }
+    >
       <section>
         <h2>1. Who we are</h2>
         <p>

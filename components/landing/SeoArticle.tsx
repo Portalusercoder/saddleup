@@ -1,4 +1,7 @@
+"use client";
+
 import Link from "next/link";
+import { useLanguage } from "@/components/providers/LanguageProvider";
 
 const linkClass =
   "text-accent underline underline-offset-2 hover:opacity-90";
@@ -12,6 +15,7 @@ export function SeoArticle({
   description: string;
   children: React.ReactNode;
 }) {
+  const { t } = useLanguage();
   return (
     <article className="max-w-3xl mx-auto px-4 sm:px-6 md:px-8 py-12 sm:py-16 md:py-20">
       <nav className="mb-8">
@@ -19,7 +23,7 @@ export function SeoArticle({
           href="/"
           className="text-xs uppercase tracking-[0.2em] text-black/50 hover:text-black dark:text-white/55 dark:hover:text-white transition"
         >
-          ← Home
+          {t("nav.backToHome")}
         </Link>
       </nav>
       <header className="mb-10">
@@ -37,17 +41,17 @@ export function SeoArticle({
       </div>
       <footer className="mt-14 border-t border-black/10 pt-10 dark:border-white/10">
         <p className="mb-4 text-sm text-black/60 dark:text-white/65">
-          Run your stable with Saddle Up — horses, riders, bookings, and operations in one place.
+          {t("blog.footerLead")}
         </p>
         <div className="flex flex-wrap gap-4">
           <Link href="/signup" className={linkClass}>
-            Get started
+            {t("hero.ctaPrimary")}
           </Link>
           <Link href="/contact" className={linkClass}>
-            Contact sales
+            {t("hero.ctaSecondary")}
           </Link>
           <Link href="/#features" className={linkClass}>
-            Features
+            {t("nav.features")}
           </Link>
         </div>
       </footer>

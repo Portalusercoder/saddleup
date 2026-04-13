@@ -10,10 +10,12 @@ const defaultContact = LEGAL_CONTACT_EMAIL;
 export default function LegalPageShell({
   titleKey,
   lastUpdated,
+  arabicSummary,
   children,
 }: {
   titleKey: string;
   lastUpdated: string;
+  arabicSummary?: ReactNode;
   children: ReactNode;
 }) {
   const { t, lang } = useLanguage();
@@ -47,9 +49,19 @@ export default function LegalPageShell({
         </div>
 
         {lang === "ar" ? (
-          <p className="mb-6 text-sm text-black/65 dark:text-white/70 border border-black/10 dark:border-white/10 px-3 py-2">
-            {t("legal.bodyEnglishNote")}
-          </p>
+          <div className="mb-6 space-y-3">
+            <p className="text-sm text-black/65 dark:text-white/70 border border-black/10 dark:border-white/10 px-3 py-2">
+              {t("legal.bodyEnglishNote")}
+            </p>
+            {arabicSummary ? (
+              <div
+                dir="rtl"
+                className="border border-black/10 dark:border-white/10 p-4 text-sm leading-relaxed text-black/80 dark:text-white/85 space-y-3"
+              >
+                {arabicSummary}
+              </div>
+            ) : null}
+          </div>
         ) : null}
 
         <div className="space-y-6 text-[15px] leading-relaxed text-black/85 dark:text-white/85 [&_h2]:mt-12 [&_h2]:scroll-mt-24 [&_h2]:font-serif [&_h2]:text-2xl [&_h2]:font-normal [&_h2]:text-black [&_h2]:first:mt-0 dark:[&_h2]:text-white [&_h3]:mt-8 [&_h3]:font-medium [&_h3]:text-black dark:[&_h3]:text-white [&_ul]:mt-3 [&_ul]:list-disc [&_ul]:space-y-2 [&_ul]:pl-5 [&_ol]:mt-3 [&_ol]:list-decimal [&_ol]:space-y-2 [&_ol]:pl-5 [&_strong]:font-medium [&_strong]:text-black dark:[&_strong]:text-white [&_a]:text-accent [&_a]:underline-offset-2 hover:[&_a]:underline">

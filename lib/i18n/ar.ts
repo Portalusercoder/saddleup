@@ -389,6 +389,8 @@ const arInner = {
     postPlaybookBlurb: "إيقاع يومي وأسبوعي وشهري للإسابطل الاحترافية.",
     postLessonTitle: "جدولة الدروس وحصان الحمولة",
     postLessonBlurb: "احمِ رفاهية الخيول وسمعتك بجدولة أوضح.",
+    footerLead:
+      "أدر إسطبلك عبر Saddle Up - الخيول والفرسان والحجوزات والعمليات في مكان واحد.",
   },
   notifications: {
     ariaLabel: "الإشعارات",
@@ -673,6 +675,67 @@ const arInner = {
     billingUpgradeStableShort: "الترقية إلى Stable",
     billingChangeToStarterShort: "التبديل إلى Starter",
     billingChangeToStableShort: "التبديل إلى Stable",
+    addMemberTitle: "إضافة عضو بالمعرّف الشخصي",
+    addMemberLead:
+      "إذا لم يعمل رمز الانضمام، اطلب من الشخص معرّفه الشخصي. يمكنه الحصول عليه من",
+    addMemberLeadSuffix: "بعد التسجيل.",
+    addMemberPersonalId: "المعرّف الشخصي",
+    addMemberPersonalIdPlaceholder: "ABC12XYZ",
+    addMemberRoleStudent: "طالب",
+    addMemberRoleTrainer: "مدرب",
+    addMemberRoleGuardian: "ولي أمر",
+    addMemberRoleGuardianParent: "ولي أمر (والد/والدة)",
+    addMemberButton: "إضافة عضو",
+    addMemberAdding: "جارٍ الإضافة...",
+    addMemberFailed: "فشل",
+    addMemberAlreadyInStable: "هو بالفعل ضمن إسطبلك. تحقق من الفرسان أو المدربين.",
+    addMemberSuccess: "تمت إضافة {role}. سيظهر في {location}.",
+    stableLogoTitle: "شعار الإسطبل",
+    stableLogoLead: "ارفع شعار إسطبلك لاستخدامه في مواد الإسطبل.",
+    stableLogoNoLogo: "لا يوجد شعار",
+    stableLogoUpload: "رفع شعار",
+    stableLogoChange: "تغيير الشعار",
+    stableLogoUpdated: "تم تحديث الشعار",
+    stableLogoHint: "JPEG أو PNG أو WebP. الحد الأقصى 1MB.",
+    monthlyReportTitle: "التقرير الشهري",
+    monthlyReportLead:
+      "نزّل تقرير PDF لأي شهر يشمل الحصص، الأعضاء الجدد، الفرسان، جلسات التدريب، الخيول، الحوادث، والمسابقات.",
+    monthlyReportMonth: "الشهر",
+    monthlyReportYear: "السنة",
+    monthlyReportGenerating: "جارٍ الإنشاء…",
+    monthlyReportDownload: "تنزيل PDF",
+    monthlyReportDownloadFailed: "فشل تنزيل التقرير",
+    tutorialQuickTour: "جولة سريعة",
+    tutorialOwnerWelcomeTitle: "مرحبًا بك في Saddle Up",
+    tutorialOwnerWelcomeDesc:
+      "تعرض لك لوحة التحكم نظرة سريعة على الخيول والجلسات والتذكيرات ونشاط الفريق.",
+    tutorialOwnerInviteTitle: "ادعُ فريقك",
+    tutorialOwnerInviteDesc:
+      "استخدم بطاقة رمز الدعوة للسماح للمدربين والطلاب بالانضمام إلى إسطبلك أثناء التسجيل.",
+    tutorialOwnerHorseTitle: "أضف حصانك الأول",
+    tutorialOwnerHorseDesc:
+      "اذهب إلى الخيول وأنشئ ملفاتها لفتح الجلسات والتذكيرات وتتبع عبء العمل.",
+    tutorialOwnerSessionsTitle: "سجّل الجلسات بانتظام",
+    tutorialOwnerSessionsDesc:
+      "أضف جلسات التدريب باستمرار. يستخدم التطبيق هذه البيانات لمؤشرات الأسبوع وتنبيهات العبء.",
+    tutorialTrainerWelcomeTitle: "مرحبًا بك في Saddle Up",
+    tutorialTrainerWelcomeDesc:
+      "تعرض لوحتك الجلسات الأخيرة وتذكيرات الرعاية والإجراءات السريعة للعمل اليومي.",
+    tutorialTrainerHorseTitle: "ابدأ بملفات الخيول",
+    tutorialTrainerHorseDesc:
+      "أضف تفاصيل الخيل أولًا لتتبع عبء العمل وتذكيرات الرعاية وجودة التدريب.",
+    tutorialTrainerSessionsTitle: "سجّل الجلسات يوميًا",
+    tutorialTrainerSessionsDesc:
+      "كل جلسة تحدّث مؤشرات الأسبوع وتساعد في اكتشاف الخيول التي قد تحتاج راحة.",
+    tutorialStudentWelcomeTitle: "مرحبًا بك في لوحتك",
+    tutorialStudentWelcomeDesc:
+      "يمكنك عرض الخيول المعيّنة، الدروس القادمة، وجلسات تدريبك الأخيرة هنا.",
+    tutorialStudentBookingsTitle: "تحقق من الحجوزات القادمة",
+    tutorialStudentBookingsDesc:
+      "استخدم حجوزاتي لمتابعة مواعيد الدروس والبقاء مستعدًا لركوبك القادم.",
+    tutorialStudentProgressTitle: "راجع تقدمك",
+    tutorialStudentProgressDesc:
+      "استخدم خيولي وسجل التدريب لمتابعة جلساتك الأخيرة واستمراريتك.",
     trainingHistoryIntro:
       "الجلسات التي سجّلها مدربك للخيول المعيّنة لك.",
     trainingHistoryEmptyTitle: "لا توجد جلسات تدريب بعد",

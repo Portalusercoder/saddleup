@@ -5,9 +5,9 @@ import { LEGAL_CONTACT_EMAIL } from "@/lib/legal/contact";
 const appUrl = process.env.NEXT_PUBLIC_APP_URL ?? "https://www.saddleup-sa.com";
 
 export const metadata: Metadata = {
-  title: "Terms & Conditions",
+  title: "Terms & Conditions | الشروط والأحكام",
   description:
-    "Terms of use for the Saddle Up stable management platform, governed by the laws of the Kingdom of Saudi Arabia.",
+    "Terms of use for the Saddle Up stable management platform, governed by the laws of the Kingdom of Saudi Arabia. | شروط استخدام منصة Saddle Up لإدارة الإسطبلات وفق أنظمة المملكة العربية السعودية.",
   alternates: { canonical: `${appUrl}/terms` },
 };
 
@@ -15,7 +15,29 @@ export default function TermsPage() {
   const contact = LEGAL_CONTACT_EMAIL;
 
   return (
-    <LegalPageShell titleKey="legal.termsDocumentTitle" lastUpdated="5 April 2026">
+    <LegalPageShell
+      titleKey="legal.termsDocumentTitle"
+      lastUpdated="5 April 2026"
+      arabicSummary={
+        <>
+          <p>
+            باستخدامك للمنصة فإنك توافق على شروط الاستخدام. الخدمة مخصصة لإدارة
+            عمليات الإسطبلات ومدارس الفروسية، ويجب استخدام الحسابات بطريقة نظامية
+            وآمنة.
+          </p>
+          <p>
+            يلتزم المستخدم بصحة البيانات المدخلة واحترام صلاحيات الأدوار داخل
+            المنصة. نحن نحتفظ بحق تعليق أو إنهاء الوصول عند إساءة الاستخدام أو
+            مخالفة الشروط.
+          </p>
+          <p>
+            للاستفسارات القانونية أو التعاقدية تواصل معنا عبر{" "}
+            <a href={`mailto:${contact}`}>{contact}</a>. النسخة الإنجليزية هي
+            المرجع الأساسي إلى حين اعتماد ترجمة قانونية رسمية كاملة.
+          </p>
+        </>
+      }
+    >
       <section>
         <h2>1. Agreement</h2>
         <p>

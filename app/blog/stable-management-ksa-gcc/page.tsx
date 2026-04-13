@@ -5,14 +5,16 @@ import { SeoArticle } from "@/components/landing/SeoArticle";
 const appUrl = process.env.NEXT_PUBLIC_APP_URL || "https://www.saddleup-sa.com";
 
 export const metadata: Metadata = {
-  title: "Stable management software for riding schools in KSA and GCC",
+  title:
+    "Stable management software for riding schools in KSA and GCC | برنامج إدارة الإسطبلات لمدارس الفروسية في السعودية والخليج",
   description:
-    "How stables in Saudi Arabia and the Gulf run operations: horses, riders, bookings, and team coordination with Saddle Up.",
+    "How stables in Saudi Arabia and the Gulf run operations: horses, riders, bookings, and team coordination with Saddle Up. | كيف تدير الإسطبلات في السعودية والخليج العمليات: الخيول، الفرسان، الحجوزات، وتنسيق الفريق عبر Saddle Up.",
   alternates: { canonical: `${appUrl}/blog/stable-management-ksa-gcc` },
   openGraph: {
-    title: "Stable management software for KSA and GCC | Saddle Up",
+    title:
+      "Stable management software for KSA and GCC | Saddle Up | إدارة الإسطبلات",
     description:
-      "Modern stable operations for riding schools across Saudi Arabia and the GCC.",
+      "Modern stable operations for riding schools across Saudi Arabia and the GCC. | تشغيل حديث للإسطبلات في مدارس الفروسية بالسعودية والخليج.",
     url: "/blog/stable-management-ksa-gcc",
     type: "article",
   },

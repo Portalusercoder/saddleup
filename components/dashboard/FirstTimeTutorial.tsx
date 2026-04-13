@@ -1,70 +1,12 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { useLanguage } from "@/components/providers/LanguageProvider";
 
 type TutorialStep = {
   title: string;
   description: string;
 };
-
-const OWNER_STEPS: TutorialStep[] = [
-  {
-    title: "Welcome to Saddle Up",
-    description:
-      "This dashboard gives you a quick view of horses, sessions, reminders, and team activity.",
-  },
-  {
-    title: "Invite Your Team",
-    description:
-      "Use the invite code card to let trainers and students join your stable during signup.",
-  },
-  {
-    title: "Add Your First Horse",
-    description:
-      "Go to Horses and create horse profiles to unlock sessions, reminders, and workload tracking.",
-  },
-  {
-    title: "Log Sessions Regularly",
-    description:
-      "Add training sessions often. The app uses this data for weekly metrics and workload alerts.",
-  },
-];
-
-const TRAINER_STEPS: TutorialStep[] = [
-  {
-    title: "Welcome to Saddle Up",
-    description:
-      "Your dashboard shows recent sessions, care reminders, and quick actions for daily work.",
-  },
-  {
-    title: "Start with Horse Profiles",
-    description:
-      "Add horse details first so you can track workload, care reminders, and training quality.",
-  },
-  {
-    title: "Log Sessions Every Day",
-    description:
-      "Each session updates weekly metrics and helps detect horses that may need rest.",
-  },
-];
-
-const STUDENT_STEPS: TutorialStep[] = [
-  {
-    title: "Welcome to Your Dashboard",
-    description:
-      "You can view assigned horses, upcoming lessons, and your recent training sessions here.",
-  },
-  {
-    title: "Check Upcoming Bookings",
-    description:
-      "Use My Bookings to track lesson dates and times and stay ready for your next ride.",
-  },
-  {
-    title: "Review Progress",
-    description:
-      "Use My Horses and Training History to follow your recent sessions and consistency.",
-  },
-];
 
 interface FirstTimeTutorialProps {
   role: string | undefined;
@@ -74,10 +16,29 @@ interface FirstTimeTutorialProps {
   onSkip: () => void;
 }
 
-function getSteps(role: string | undefined): TutorialStep[] {
-  if (role === "owner") return OWNER_STEPS;
-  if (role === "trainer") return TRAINER_STEPS;
-  if (role === "student") return STUDENT_STEPS;
+function getSteps(role: string | undefined, t: (path: string) => string): TutorialStep[] {
+  if (role === "owner") {
+    return [
+      { title: t("dashboard.tutorialOwnerWelcomeTitle"), description: t("dashboard.tutorialOwnerWelcomeDesc") },
+      { title: t("dashboard.tutorialOwnerInviteTitle"), description: t("dashboard.tutorialOwnerInviteDesc") },
+      { title: t("dashboard.tutorialOwnerHorseTitle"), description: t("dashboard.tutorialOwnerHorseDesc") },
+      { title: t("dashboard.tutorialOwnerSessionsTitle"), description: t("dashboard.tutorialOwnerSessionsDesc") },
+    ];
+  }
+  if (role === "trainer") {
+    return [
+      { title: t("dashboard.tutorialTrainerWelcomeTitle"), description: t("dashboard.tutorialTrainerWelcomeDesc") },
+      { title: t("dashboard.tutorialTrainerHorseTitle"), description: t("dashboard.tutorialTrainerHorseDesc") },
+      { title: t("dashboard.tutorialTrainerSessionsTitle"), description: t("dashboard.tutorialTrainerSessionsDesc") },
+    ];
+  }
+  if (role === "student") {
+    return [
+      { title: t("dashboard.tutorialStudentWelcomeTitle"), description: t("dashboard.tutorialStudentWelcomeDesc") },
+      { title: t("dashboard.tutorialStudentBookingsTitle"), description: t("dashboard.tutorialStudentBookingsDesc") },
+      { title: t("dashboard.tutorialStudentProgressTitle"), description: t("dashboard.tutorialStudentProgressDesc") },
+    ];
+  }
   return [];
 }
 
@@ -88,7 +49,8 @@ export default function FirstTimeTutorial({
   onComplete,
   onSkip,
 }: FirstTimeTutorialProps) {
-  const steps = getSteps(role);
+  const { t } = useLanguage();
+  const steps = getSteps(role, t);
   const [index, setIndex] = useState(0);
 
   useEffect(() => {
@@ -105,7 +67,7 @@ export default function FirstTimeTutorial({
     <div className="fixed inset-0 z-[80] bg-black/45 flex items-center justify-center p-4">
       <div className="w-full max-w-xl border border-black/20 bg-base text-black p-6 sm:p-8">
         <p className="text-xs uppercase tracking-[0.25em] text-black/45">
-          Quick tour
+          {t("dashboard.tutorialQuickTour")}
         </p>
         <h2 className="mt-2 font-serif text-2xl sm:text-3xl">{current.title}</h2>
         <p className="mt-4 text-black/70 leading-relaxed">{current.description}</p>
@@ -126,7 +88,7 @@ export default function FirstTimeTutorial({
             disabled={saving}
             className="px-4 py-2.5 border border-black/20 text-sm uppercase tracking-wider hover:border-black/35 transition disabled:opacity-50"
           >
-            Skip
+            {t("tour.skip")}
           </button>
           <div className="flex items-center gap-3">
             {index > 0 ? (
@@ -136,7 +98,7 @@ export default function FirstTimeTutorial({
                 disabled={saving}
                 className="px-4 py-2.5 border border-black/20 text-sm uppercase tracking-wider hover:border-black/35 transition disabled:opacity-50"
               >
-                Back
+                {t("tour.back")}
               </button>
             ) : null}
             {atLast ? (
@@ -146,7 +108,7 @@ export default function FirstTimeTutorial({
                 disabled={saving}
                 className="px-4 py-2.5 bg-accent text-white text-sm uppercase tracking-wider hover:opacity-95 transition disabled:opacity-50"
               >
-                {saving ? "Saving..." : "Finish"}
+                {saving ? t("tour.saving") : t("tour.finish")}
               </button>
             ) : (
               <button
@@ -155,7 +117,7 @@ export default function FirstTimeTutorial({
                 disabled={saving}
                 className="px-4 py-2.5 bg-accent text-white text-sm uppercase tracking-wider hover:opacity-95 transition disabled:opacity-50"
               >
-                Next
+                {t("tour.next")}
               </button>
             )}
           </div>

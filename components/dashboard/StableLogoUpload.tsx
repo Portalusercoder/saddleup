@@ -1,8 +1,10 @@
 "use client";
 
 import { useEffect, useState, useRef } from "react";
+import { useLanguage } from "@/components/providers/LanguageProvider";
 
 export default function StableLogoUpload() {
+  const { t } = useLanguage();
   const [logoUrl, setLogoUrl] = useState<string | null>(null);
   const [uploading, setUploading] = useState(false);
   const [toast, setToast] = useState<string | null>(null);
@@ -29,13 +31,13 @@ export default function StableLogoUpload() {
       });
       const data = await res.json();
       if (!res.ok) {
-        setToast(data.error || "Upload failed");
+        setToast(data.error || t("dashboard.horseToastUploadFailed"));
         return;
       }
       setLogoUrl(data.url ?? null);
-      setToast("Logo updated");
+      setToast(t("dashboard.stableLogoUpdated"));
     } catch {
-      setToast("Upload failed");
+      setToast(t("dashboard.horseToastUploadFailed"));
     }
     setUploading(false);
     e.target.value = "";
@@ -44,20 +46,20 @@ export default function StableLogoUpload() {
 
   return (
     <div className="border border-black/10 p-6">
-      <h2 className="font-serif text-lg text-black mb-2">Stable logo</h2>
+      <h2 className="font-serif text-lg text-black mb-2">{t("dashboard.stableLogoTitle")}</h2>
       <p className="text-black/60 text-sm mb-4">
-        Upload your stable&apos;s logo for use on your stable materials.
+        {t("dashboard.stableLogoLead")}
       </p>
       <div className="flex items-center gap-6">
         <div className="w-24 h-24 border border-black/10 bg-base flex items-center justify-center overflow-hidden shrink-0">
           {logoUrl ? (
             <img
               src={logoUrl}
-              alt="Stable logo"
+              alt={t("dashboard.stableLogoTitle")}
               className="w-full h-full object-contain"
             />
           ) : (
-            <span className="text-black/30 text-xs">No logo</span>
+            <span className="text-black/30 text-xs">{t("dashboard.stableLogoNoLogo")}</span>
           )}
         </div>
         <div>
@@ -73,13 +75,17 @@ export default function StableLogoUpload() {
             disabled={uploading}
             className="px-4 py-2.5 bg-accent text-white font-medium text-sm uppercase tracking-wider hover:opacity-95 transition disabled:opacity-50"
           >
-            {uploading ? "Uploading..." : logoUrl ? "Change logo" : "Upload logo"}
+            {uploading
+              ? t("dashboard.idCardUploading")
+              : logoUrl
+                ? t("dashboard.stableLogoChange")
+                : t("dashboard.stableLogoUpload")}
           </button>
-          <p className="text-black/40 text-xs mt-2">JPEG, PNG or WebP. Max 1MB.</p>
+          <p className="text-black/40 text-xs mt-2">{t("dashboard.stableLogoHint")}</p>
         </div>
       </div>
       {toast && (
-        <p className={`mt-3 text-sm ${toast.includes("failed") ? "text-amber-600" : "text-black/60"}`}>
+        <p className={`mt-3 text-sm ${toast === t("dashboard.horseToastUploadFailed") ? "text-amber-600" : "text-black/60"}`}>
           {toast}
         </p>
       )}
