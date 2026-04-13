@@ -404,15 +404,6 @@ export default function Home() {
                 title: "Framer Motion",
                 href: "https://www.framer.com/motion/",
               },
-              {
-                node: (
-                  <span className="text-xs font-semibold tracking-wide uppercase">
-                    Recharts
-                  </span>
-                ),
-                title: "Recharts",
-                href: "https://recharts.org",
-              },
             ]}
             speed={80}
             direction="left"
