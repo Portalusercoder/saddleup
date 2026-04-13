@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
-import LegalPageShell, { legalContactEmail } from "@/components/legal/LegalPageShell";
+import LegalPageShell from "@/components/legal/LegalPageShell";
+import { LEGAL_CONTACT_EMAIL } from "@/lib/legal/contact";
 
 const appUrl = process.env.NEXT_PUBLIC_APP_URL ?? "https://www.saddleup-sa.com";
 
@@ -11,7 +12,7 @@ export const metadata: Metadata = {
 };
 
 export default function TermsPage() {
-  const contact = legalContactEmail();
+  const contact = LEGAL_CONTACT_EMAIL;
 
   return (
     <LegalPageShell titleKey="legal.termsDocumentTitle" lastUpdated="5 April 2026">

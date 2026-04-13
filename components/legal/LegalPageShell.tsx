@@ -3,13 +3,9 @@
 import type { ReactNode } from "react";
 import Link from "next/link";
 import { useLanguage } from "@/components/providers/LanguageProvider";
+import { LEGAL_CONTACT_EMAIL } from "@/lib/legal/contact";
 
-const defaultContact =
-  process.env.NEXT_PUBLIC_LEGAL_EMAIL ?? "contact@saddleup-sa.com";
-
-export function legalContactEmail(): string {
-  return defaultContact;
-}
+const defaultContact = LEGAL_CONTACT_EMAIL;
 
 export default function LegalPageShell({
   titleKey,
