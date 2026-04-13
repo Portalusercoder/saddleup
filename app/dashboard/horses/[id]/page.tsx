@@ -9,6 +9,7 @@ import { HorseAvatar } from "@/components/HorseAvatar";
 import LoadingSpinner from "@/components/ui/LoadingSpinner";
 import PageLoader from "@/components/ui/PageLoader";
 import HorseIdentificationFields from "@/components/ui/HorseIdentificationFields";
+import { useLanguage } from "@/components/providers/LanguageProvider";
 
 interface Session {
   id: number;
@@ -62,23 +63,6 @@ interface Horse {
   notes?: string;
 }
 
-const PUNCH_LABELS: Record<string, string> = {
-  training: "Training",
-  lesson: "Lesson",
-  free_ride: "Free Ride",
-  competition: "Competition",
-  rest: "Rest",
-  medical_rest: "Medical Rest",
-};
-
-const HEALTH_LABELS: Record<string, string> = {
-  vet: "Vet Visit",
-  vaccination: "Vaccination",
-  deworming: "Deworming",
-  farrier: "Farrier",
-  injury: "Injury",
-};
-
 function PassportField({
   label,
   value,
@@ -99,6 +83,8 @@ function PassportField({
 export default function HorseDetailPage() {
   const params = useParams();
   const id = params.id as string;
+  const { t, lang } = useLanguage();
+  const dateLocale = lang === "ar" ? "ar-SA" : "en-US";
   const [horse, setHorse] = useState<Horse | null>(null);
   const [loading, setLoading] = useState(true);
   const { profile } = useProfile();
@@ -145,6 +131,30 @@ export default function HorseDetailPage() {
     nextDue: "",
     recoveryStatus: "",
   });
+
+  const punchLabel = (punchType: string) => {
+    const map: Record<string, string> = {
+      training: t("dashboard.punchTraining"),
+      lesson: t("dashboard.punchLesson"),
+      free_ride: t("dashboard.punchFreeRide"),
+      competition: t("dashboard.punchCompetition"),
+      rest: t("dashboard.punchRest"),
+      medical_rest: t("dashboard.punchMedicalRest"),
+      medical: t("dashboard.punchMedicalRest"),
+    };
+    return map[punchType] ?? punchType;
+  };
+
+  const healthLabel = (type: string) => {
+    const map: Record<string, string> = {
+      vet: t("dashboard.horseHealthVet"),
+      vaccination: t("dashboard.horseHealthVaccination"),
+      deworming: t("dashboard.horseHealthDeworming"),
+      farrier: t("dashboard.horseHealthFarrier"),
+      injury: t("dashboard.horseHealthInjury"),
+    };
+    return map[type] ?? type;
+  };
 
   useEffect(() => {
     fetchHorse();
@@ -214,13 +224,13 @@ export default function HorseDetailPage() {
       const res = await fetch("/api/horses/upload-photo", { method: "POST", body: fd });
       const data = await res.json();
       if (!res.ok) {
-        setToast(data.error || "Upload failed");
+        setToast(data.error || t("dashboard.horseToastUploadFailed"));
         return;
       }
       setEditForm((f) => ({ ...f, photoUrl: data.url }));
-      setToast("Photo uploaded");
+      setToast(t("dashboard.horseToastPhotoUploaded"));
     } catch {
-      setToast("Upload failed");
+      setToast(t("dashboard.horseToastUploadFailed"));
     }
     e.target.value = "";
     setTimeout(() => setToast(null), 3000);
@@ -261,17 +271,17 @@ export default function HorseDetailPage() {
       });
       const data = await res.json();
       if (!res.ok) {
-        setToast(data.error || "Update failed");
+        setToast(data.error || t("dashboard.horseToastUpdateFailed"));
         setTimeout(() => setToast(null), 3000);
         return;
       }
       setShowEditModal(false);
-      setToast("Horse updated");
+      setToast(t("dashboard.horseToastHorseUpdated"));
       fetchHorse();
       setTimeout(() => setToast(null), 3000);
     } catch (err) {
       console.error(err);
-      setToast("Update failed");
+      setToast(t("dashboard.horseToastUpdateFailed"));
       setTimeout(() => setToast(null), 3000);
     }
   };
@@ -336,7 +346,7 @@ export default function HorseDetailPage() {
   };
 
   if (loading) {
-    return <PageLoader minHeight="min-h-[40vh]" message="Loading…" />;
+    return <PageLoader minHeight="min-h-[40vh]" message={t("common.loading")} />;
   }
 
   if (!horse) {
@@ -346,9 +356,9 @@ export default function HorseDetailPage() {
           href="/dashboard/horses"
           className="text-black/60 hover:text-black text-sm uppercase tracking-wider"
         >
-          ← Back to Horses
+          {t("dashboard.horseDetailBackHorses")}
         </Link>
-        <p className="text-black/50">Horse not found.</p>
+        <p className="text-black/50">{t("dashboard.horseDetailNotFound")}</p>
       </div>
     );
   }
@@ -372,7 +382,7 @@ export default function HorseDetailPage() {
           href={role === "student" ? "/dashboard/my-horses" : "/dashboard/horses"}
           className="text-black/60 hover:text-black text-sm uppercase tracking-wider"
         >
-          ← Back to {role === "student" ? "My Horses" : "Horses"}
+          {role === "student" ? t("dashboard.horseDetailBackMy") : t("dashboard.horseDetailBackHorses")}
         </Link>
         <div className="flex items-center gap-2">
           <HorseAvatar
@@ -386,13 +396,13 @@ export default function HorseDetailPage() {
                 onClick={openEditModal}
                 className={btnSecondary}
               >
-                Edit
+                {t("dashboard.horseDetailEdit")}
               </button>
               <Link
                 href="/dashboard/horses"
                 className={btnSecondary}
               >
-                Log Session
+                {t("dashboard.scheduleLogSession")}
               </Link>
             </>
           )}
@@ -403,7 +413,7 @@ export default function HorseDetailPage() {
             <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
             </svg>
-            Download PDF (Health Records)
+            {t("dashboard.horseDetailDownloadPdf")}
           </button>
         </div>
       </div>
@@ -416,14 +426,14 @@ export default function HorseDetailPage() {
             <div className="flex items-center justify-between">
               <div>
                 <h1 className="text-xl font-medium tracking-wider uppercase">
-                  Horse Passport
+                  {t("dashboard.horsePassportTitle")}
                 </h1>
                 <p className="text-black/70 text-xs mt-1">
-                  Digital identification document • Saddle Up
+                  {t("dashboard.horsePassportSubtitle")}
                 </p>
               </div>
               <div className="text-right text-xs text-black/70">
-                <p>Passport ID: {typeof horse.id === "string" ? horse.id.slice(0, 8).toUpperCase() : String(horse.id).padStart(6, "0")}</p>
+                <p>{t("dashboard.horsePassportIdLabel")} {typeof horse.id === "string" ? horse.id.slice(0, 8).toUpperCase() : String(horse.id).padStart(6, "0")}</p>
                 {horse.ueln && <p>UELN: {horse.ueln}</p>}
               </div>
             </div>
@@ -446,42 +456,42 @@ export default function HorseDetailPage() {
                   )}
                 </div>
                 <p className="text-black/50 text-xs mt-2 uppercase tracking-wider">
-                  Photograph
+                  {t("dashboard.horsePassportPhotograph")}
                 </p>
               </div>
 
               {/* Section I: Identification of the animal */}
               <div>
                 <h2 className="text-black font-medium text-sm uppercase tracking-wider mb-4 pb-2 border-b border-black/20">
-                  Section I — Identification of the animal
+                  {t("dashboard.horsePassportSection1")}
                 </h2>
                 <div className="space-y-0">
-                  <PassportField label="1. Barn name" value={horse.name} />
-                  <PassportField label="2. Registered name" value={horse.registeredName} />
-                  <PassportField label="3. Horse type" value={horse.horseCategory} />
-                  <PassportField label="4. Sex" value={horse.gender} />
-                  <PassportField label="5. UELN" value={horse.ueln} />
-                  <PassportField label="6. Microchip" value={horse.microchip} />
-                  <PassportField label="7. Passport №" value={horse.passportNumber} />
-                  <PassportField label="8. FEI ID" value={horse.feiId} />
-                  <PassportField label="9. Studbook / society" value={horse.studbook} />
-                  <PassportField label="10. Breed" value={horse.breed} />
-                  <PassportField label="11. Coat colour" value={horse.color} />
-                  <PassportField label="12. Markings" value={horse.markings} />
+                  <PassportField label={t("dashboard.horsePassportFieldBarnName")} value={horse.name} />
+                  <PassportField label={t("dashboard.horsePassportFieldRegisteredName")} value={horse.registeredName} />
+                  <PassportField label={t("dashboard.horsePassportFieldHorseType")} value={horse.horseCategory} />
+                  <PassportField label={t("dashboard.horsePassportFieldSex")} value={horse.gender} />
+                  <PassportField label={t("dashboard.horsePassportFieldUeln")} value={horse.ueln} />
+                  <PassportField label={t("dashboard.horsePassportFieldMicrochip")} value={horse.microchip} />
+                  <PassportField label={t("dashboard.horsePassportFieldPassportNo")} value={horse.passportNumber} />
+                  <PassportField label={t("dashboard.horsePassportFieldFei")} value={horse.feiId} />
+                  <PassportField label={t("dashboard.horsePassportFieldStudbook")} value={horse.studbook} />
+                  <PassportField label={t("dashboard.horsePassportFieldBreed")} value={horse.breed} />
+                  <PassportField label={t("dashboard.horsePassportFieldCoat")} value={horse.color} />
+                  <PassportField label={t("dashboard.horsePassportFieldMarkings")} value={horse.markings} />
                   <PassportField
-                    label="13. Date of birth"
+                    label={t("dashboard.horsePassportFieldDob")}
                     value={
                       horse.dateOfBirth
-                        ? new Date(horse.dateOfBirth).toLocaleDateString()
+                        ? new Date(horse.dateOfBirth).toLocaleDateString(dateLocale)
                         : horse.age != null
                           ? `~${new Date().getFullYear() - horse.age}`
                           : null
                     }
                   />
-                  <PassportField label="14. Height (cm)" value={horse.height} />
-                  <PassportField label="15. Sire" value={horse.sireName} />
-                  <PassportField label="16. Dam" value={horse.damName} />
-                  <PassportField label="17. Country / place of birth" value={horse.countryOfBirth} />
+                  <PassportField label={t("dashboard.horsePassportFieldHeight")} value={horse.height} />
+                  <PassportField label={t("dashboard.horsePassportFieldSire")} value={horse.sireName} />
+                  <PassportField label={t("dashboard.horsePassportFieldDam")} value={horse.damName} />
+                  <PassportField label={t("dashboard.horsePassportFieldCountryBirth")} value={horse.countryOfBirth} />
                 </div>
               </div>
             </div>
@@ -490,41 +500,41 @@ export default function HorseDetailPage() {
             <div className="grid md:grid-cols-2 gap-8 mb-8">
               <div>
                 <h2 className="text-black font-medium text-sm uppercase tracking-wider mb-4 pb-2 border-b border-black/20">
-                  Owner & Registration
+                  {t("dashboard.horsePassportSectionOwner")}
                 </h2>
                 <div className="space-y-0">
-                  <PassportField label="Registered owner" value={horse.owner} />
-                  <PassportField label="Temperament" value={horse.temperament} />
-                  <PassportField label="Skill level" value={horse.skillLevel} />
+                  <PassportField label={t("dashboard.horsePassportFieldRegOwner")} value={horse.owner} />
+                  <PassportField label={t("dashboard.horsePassportFieldTemperament")} value={horse.temperament} />
+                  <PassportField label={t("dashboard.horsePassportFieldSkillLevel")} value={horse.skillLevel} />
                   <PassportField
-                    label="Training status"
+                    label={t("dashboard.horsePassportFieldTrainingStatus")}
                     value={horse.trainingStatus?.replace(/_/g, " ")}
                   />
-                  <PassportField label="Riding suitability" value={horse.ridingSuitability} />
+                  <PassportField label={t("dashboard.horsePassportFieldRidingSuitability")} value={horse.ridingSuitability} />
                 </div>
               </div>
 
               {/* Workload summary */}
               <div>
                 <h2 className="text-black font-medium text-sm uppercase tracking-wider mb-4 pb-2 border-b border-black/20">
-                  Workload this week
+                  {t("dashboard.horsePassportWorkloadWeek")}
                 </h2>
                 <div className="bg-black/5 border border-black/20 p-4">
                   <p className="text-3xl font-medium text-black">
                     {workload.sessionsCount}
                     <span className="text-lg font-normal text-black/70 ml-1">
-                      sessions
+                      {t("dashboard.horsePassportSessionsWord")}
                     </span>
                   </p>
                   <p className="text-2xl font-medium text-black mt-1">
                     {workload.totalMinutes}
                     <span className="text-sm font-normal text-black/60 ml-1">
-                      minutes
+                      {t("dashboard.horsePassportMinutesWord")}
                     </span>
                   </p>
                   {workload.warning && (
                     <p className="text-black/80 text-sm mt-3 font-medium">
-                      ⚠ Consider a rest day
+                      {t("dashboard.horsePassportConsiderRest")}
                     </p>
                   )}
                 </div>
@@ -533,7 +543,7 @@ export default function HorseDetailPage() {
               {/* Total care cost */}
               <div>
                 <h2 className="text-black font-medium text-sm uppercase tracking-wider mb-4 pb-2 border-b border-black/20">
-                  Total care cost
+                  {t("dashboard.horsePassportCareCost")}
                 </h2>
                 <div className="bg-black/5 border border-black/20 p-4">
                   <p className="text-3xl font-medium text-black">
@@ -543,7 +553,7 @@ export default function HorseDetailPage() {
                       .toFixed(2)}
                   </p>
                   <p className="text-black/60 text-sm mt-1">
-                    Vet, farrier, vaccinations, etc.
+                    {t("dashboard.horsePassportCareCostLead")}
                   </p>
                 </div>
               </div>
@@ -552,7 +562,7 @@ export default function HorseDetailPage() {
               {(role === "owner" || role === "trainer") && (
                 <div className="mt-6">
                   <h2 className="text-black font-medium text-sm uppercase tracking-wider mb-4 pb-2 border-b border-black/20">
-                    AI workload suggestions
+                    {t("dashboard.horsePassportAiTitle")}
                   </h2>
                   {aiSuggestions ? (
                     <div className="bg-black/5 border border-black/20 p-4 text-black/90 text-sm whitespace-pre-wrap">
@@ -561,7 +571,7 @@ export default function HorseDetailPage() {
                   ) : (
                     <div className="bg-black/5 border border-black/20 p-4">
                       <p className="text-black/60 text-sm mb-3">
-                        Get personalized suggestions based on this horse&apos;s recent training and workload.
+                        {t("dashboard.horsePassportAiLead")}
                       </p>
                       <button
                         onClick={async () => {
@@ -573,7 +583,7 @@ export default function HorseDetailPage() {
                             if (!res.ok) {
                               throw new Error(data.error || `Request failed (${res.status})`);
                             }
-                            setAiSuggestions(data.suggestions || "No suggestions generated.");
+                            setAiSuggestions(data.suggestions || t("dashboard.horsePassportAiEmpty"));
                           } catch (err) {
                             const msg = err instanceof Error ? err.message : "Something went wrong";
                             setToast(msg);
@@ -585,7 +595,7 @@ export default function HorseDetailPage() {
                         disabled={aiLoading}
                         className="px-4 py-2 bg-accent text-white text-sm font-medium uppercase tracking-wider hover:opacity-90 disabled:opacity-50 transition"
                       >
-                        {aiLoading ? "Generating..." : "Generate suggestions"}
+                        {aiLoading ? t("dashboard.horsePassportAiGenerating") : t("dashboard.horsePassportAiCta")}
                       </button>
                     </div>
                   )}
@@ -604,7 +614,7 @@ export default function HorseDetailPage() {
                       : "text-black/60 hover:text-black"
                   }`}
                 >
-                  Vaccinations & Health
+                  {t("dashboard.horsePassportTabHealth")}
                 </button>
                 <button
                   onClick={() => setActiveTab("training")}
@@ -614,21 +624,21 @@ export default function HorseDetailPage() {
                       : "text-black/60 hover:text-black"
                   }`}
                 >
-                  Training Record
+                  {t("dashboard.horsePassportTabTraining")}
                 </button>
               </div>
 
               {activeTab === "health" && (
                 <div>
                   <h2 className="text-black font-medium text-sm uppercase tracking-wider mb-4">
-                    Section II — Vaccinations & veterinary treatments
+                    {t("dashboard.horsePassportSectionHealth")}
                   </h2>
                   {role !== "student" && (
                     <button
                       onClick={() => setShowHealthModal(true)}
                       className="mb-4 px-4 py-2.5 bg-accent text-white text-sm font-medium uppercase tracking-wider hover:opacity-90 transition"
                     >
-                      + Add health record
+                      {t("dashboard.horsePassportAddHealth")}
                     </button>
                   )}
                   <div className="space-y-3">
@@ -640,7 +650,7 @@ export default function HorseDetailPage() {
                         >
                           <div>
                             <span className="font-medium text-black">
-                              {HEALTH_LABELS[log.type] || log.type}
+                              {healthLabel(log.type)}
                             </span>
                             {log.description && (
                               <p className="text-sm text-black/70 mt-1">
@@ -652,10 +662,11 @@ export default function HorseDetailPage() {
                             )}
                           </div>
                           <div className="text-right text-sm text-black/60">
-                            <p>{new Date(log.date).toLocaleDateString()}</p>
+                            <p>{new Date(log.date).toLocaleDateString(dateLocale)}</p>
                             {log.nextDue && (
                               <p className="text-black/50">
-                                Next: {new Date(log.nextDue).toLocaleDateString()}
+                                {t("dashboard.horsePassportHealthNext")}{" "}
+                                {new Date(log.nextDue).toLocaleDateString(dateLocale)}
                               </p>
                             )}
                           </div>
@@ -663,7 +674,7 @@ export default function HorseDetailPage() {
                       ))
                     ) : (
                       <p className="text-black/50 text-sm italic">
-                        No health records yet
+                        {t("dashboard.horsePassportHealthEmpty")}
                       </p>
                     )}
                   </div>
@@ -673,7 +684,7 @@ export default function HorseDetailPage() {
               {activeTab === "training" && (
                 <div>
                   <h2 className="text-black font-medium text-sm uppercase tracking-wider mb-4">
-                    Training & work record
+                    {t("dashboard.horsePassportTrainingSection")}
                   </h2>
                   <div className="space-y-4">
                     {horse.sessions?.length ? (
@@ -684,26 +695,28 @@ export default function HorseDetailPage() {
                         >
                           <div>
                             <span className="font-medium text-black">
-                              {PUNCH_LABELS[s.punchType] || s.punchType}
+                              {punchLabel(s.punchType)}
                             </span>
                             <span className="text-black/60 text-sm ml-2">
-                              {s.duration > 0 ? `${s.duration} min` : "Rest"} •{" "}
-                              {s.intensity}
+                              {s.duration > 0
+                                ? t("dashboard.trainingHistoryDurationMin", { minutes: String(s.duration) })
+                                : t("dashboard.scheduleRestLabel")}{" "}
+                              • {s.intensity}
                             </span>
                             {s.rider && (
                               <p className="text-sm text-black/50 mt-1">
-                                Rider: {s.rider}
+                                {t("dashboard.horsePassportRiderLine", { name: s.rider })}
                               </p>
                             )}
                           </div>
                           <span className="text-black/50 text-sm">
-                            {new Date(s.createdAt).toLocaleDateString()}
+                            {new Date(s.createdAt).toLocaleDateString(dateLocale)}
                           </span>
                         </div>
                       ))
                     ) : (
                       <p className="text-black/50 text-sm italic">
-                        No training sessions logged yet
+                        {t("dashboard.horsePassportTrainingEmpty")}
                       </p>
                     )}
                   </div>
@@ -725,55 +738,55 @@ export default function HorseDetailPage() {
             className="bg-base border border-black/10 p-4 sm:p-6 w-full max-w-2xl max-h-[90vh] overflow-y-auto modal-enter my-auto"
             onClick={(e) => e.stopPropagation()}
           >
-            <h2 className="font-serif text-xl text-black mb-6">Edit Horse</h2>
+            <h2 className="font-serif text-xl text-black mb-6">{t("dashboard.horseModalEditTitle")}</h2>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <HorseIdentificationFields form={editForm} onChange={handleEditChange} formInput={formInput} />
               <p className="sm:col-span-2 text-xs uppercase tracking-widest text-black/50 mb-0">
-                Profile & training
+                {t("dashboard.horseModalProfileTraining")}
               </p>
               <div className="sm:col-span-2">
-                <label className="text-xs text-black/50 uppercase tracking-widest block mb-2">Profile picture</label>
+                <label className="text-xs text-black/50 uppercase tracking-widest block mb-2">{t("dashboard.horseModalPhotoLabel")}</label>
                 <div className="flex items-center gap-4">
                   <HorseAvatar photoUrl={editForm.photoUrl || null} name={editForm.name || "Horse"} size="lg" />
                   <div className="flex-1 space-y-2">
                     <input type="file" ref={photoInputRef} accept="image/jpeg,image/png,image/webp" onChange={handleEditPhotoUpload} className="hidden" />
                     <button type="button" onClick={() => photoInputRef.current?.click()} className="block px-4 py-2.5 border border-black/10 text-black text-sm uppercase tracking-wider hover:border-black/30 transition">
-                      Upload photo
+                      {t("dashboard.horseModalUploadPhoto")}
                     </button>
-                    <input name="photoUrl" placeholder="Or paste image URL" value={editForm.photoUrl} onChange={handleEditChange} className={`w-full ${formInput} text-sm`} />
+                    <input name="photoUrl" placeholder={t("dashboard.horseModalPhotoUrlPlaceholder")} value={editForm.photoUrl} onChange={handleEditChange} className={`w-full ${formInput} text-sm`} />
                   </div>
                 </div>
               </div>
               <select name="temperament" value={editForm.temperament} onChange={handleEditChange} className={formInput}>
-                <option value="calm">Calm</option>
-                <option value="energetic">Energetic</option>
-                <option value="sensitive">Sensitive</option>
-                <option value="beginner-safe">Beginner-safe</option>
+                <option value="calm">{t("dashboard.horseTemperamentCalm")}</option>
+                <option value="energetic">{t("dashboard.horseTemperamentEnergetic")}</option>
+                <option value="sensitive">{t("dashboard.horseTemperamentSensitive")}</option>
+                <option value="beginner-safe">{t("dashboard.horseTemperamentBeginnerSafe")}</option>
               </select>
               <select name="skillLevel" value={editForm.skillLevel} onChange={handleEditChange} className={formInput}>
-                <option value="beginner">Beginner</option>
-                <option value="intermediate">Intermediate</option>
-                <option value="advanced">Advanced</option>
+                <option value="beginner">{t("dashboard.teamRidersLevelBeginner")}</option>
+                <option value="intermediate">{t("dashboard.teamRidersLevelIntermediate")}</option>
+                <option value="advanced">{t("dashboard.teamRidersLevelAdvanced")}</option>
               </select>
               <select name="trainingStatus" value={editForm.trainingStatus} onChange={handleEditChange} className={formInput}>
-                <option value="green">Green</option>
-                <option value="schooling">Schooling</option>
-                <option value="competition-ready">Competition-ready</option>
+                <option value="green">{t("dashboard.horseTrainingGreen")}</option>
+                <option value="schooling">{t("dashboard.horseTrainingSchooling")}</option>
+                <option value="competition-ready">{t("dashboard.horseTrainingCompetitionReady")}</option>
               </select>
               <select name="ridingSuitability" value={editForm.ridingSuitability} onChange={handleEditChange} className={formInput}>
-                <option value="kids">Kids</option>
-                <option value="adults">Adults</option>
-                <option value="jumping">Jumping</option>
-                <option value="dressage">Dressage</option>
-                <option value="trail">Trail</option>
+                <option value="kids">{t("dashboard.horseRidingKids")}</option>
+                <option value="adults">{t("dashboard.horseRidingAdults")}</option>
+                <option value="jumping">{t("dashboard.horseRidingJumping")}</option>
+                <option value="dressage">{t("dashboard.horseRidingDressage")}</option>
+                <option value="trail">{t("dashboard.horseRidingTrail")}</option>
               </select>
             </div>
             <div className="flex gap-3 mt-6">
               <button onClick={() => setShowEditModal(false)} className="flex-1 py-2.5 border border-black/10 text-black text-sm uppercase tracking-wider hover:border-black/30 transition">
-                Cancel
+                {t("dashboard.bookingsCancel")}
               </button>
               <button onClick={saveHorse} className="flex-1 py-2.5 bg-accent text-white font-medium text-sm uppercase tracking-wider hover:opacity-95 transition">
-                Save changes
+                {t("dashboard.horseModalSaveChanges")}
               </button>
             </div>
           </div>
@@ -791,11 +804,11 @@ export default function HorseDetailPage() {
             onClick={(e) => e.stopPropagation()}
           >
             <h2 className="font-serif text-xl text-black mb-6">
-              Add health record
+              {t("dashboard.horseHealthModalTitle")}
             </h2>
             <div className="space-y-4">
               <div>
-                <label className="text-xs text-black/50 uppercase tracking-widest block mb-2">Type</label>
+                <label className="text-xs text-black/50 uppercase tracking-widest block mb-2">{t("dashboard.horseHealthTypeLabel")}</label>
                 <select
                   value={healthForm.type}
                   onChange={(e) =>
@@ -803,15 +816,15 @@ export default function HorseDetailPage() {
                   }
                   className="w-full px-4 py-3 bg-base border border-black/10 text-black focus:border-black/30 focus:outline-none"
                 >
-                  {Object.entries(HEALTH_LABELS).map(([v, l]) => (
+                  {(["vet", "vaccination", "deworming", "farrier", "injury"] as const).map((v) => (
                     <option key={v} value={v}>
-                      {l}
+                      {healthLabel(v)}
                     </option>
                   ))}
                 </select>
               </div>
               <div>
-                <label className="text-xs text-black/50 uppercase tracking-widest block mb-2">Date</label>
+                <label className="text-xs text-black/50 uppercase tracking-widest block mb-2">{t("dashboard.bookingsLabelDate")}</label>
                 <input
                   type="date"
                   value={healthForm.date}
@@ -822,7 +835,7 @@ export default function HorseDetailPage() {
                 />
               </div>
               <textarea
-                placeholder="Description"
+                placeholder={t("dashboard.horseHealthDescriptionPlaceholder")}
                 value={healthForm.description}
                 onChange={(e) =>
                   setHealthForm({ ...healthForm, description: e.target.value })
@@ -832,7 +845,7 @@ export default function HorseDetailPage() {
               />
               <input
                 type="number"
-                placeholder="Cost ($)"
+                placeholder={t("dashboard.horseHealthCostPlaceholder")}
                 value={healthForm.cost}
                 onChange={(e) =>
                   setHealthForm({ ...healthForm, cost: e.target.value })
@@ -841,7 +854,7 @@ export default function HorseDetailPage() {
               />
               <div>
                 <label className="text-xs text-black/50 uppercase tracking-widest block mb-2">
-                  Next due (vaccinations, farrier)
+                  {t("dashboard.horseHealthNextDueLabel")}
                 </label>
                 <input
                   type="date"
@@ -860,10 +873,10 @@ export default function HorseDetailPage() {
                   }
                   className="w-full px-4 py-3 bg-base border border-black/10 text-black focus:border-black/30 focus:outline-none"
                 >
-                  <option value="">Recovery status</option>
-                  <option value="active">Active injury</option>
-                  <option value="recovering">Recovering</option>
-                  <option value="cleared">Cleared</option>
+                  <option value="">{t("dashboard.horseHealthRecoveryPlaceholder")}</option>
+                  <option value="active">{t("dashboard.horseHealthRecoveryActive")}</option>
+                  <option value="recovering">{t("dashboard.horseHealthRecoveryRecovering")}</option>
+                  <option value="cleared">{t("dashboard.horseHealthRecoveryCleared")}</option>
                 </select>
               )}
             </div>
@@ -872,7 +885,7 @@ export default function HorseDetailPage() {
                 onClick={() => setShowHealthModal(false)}
                 className="flex-1 py-2.5 border border-black/10 text-black text-sm uppercase tracking-wider hover:border-black/30 transition"
               >
-                Cancel
+                {t("dashboard.bookingsCancel")}
               </button>
               <button
                 onClick={addHealthLog}
@@ -882,10 +895,10 @@ export default function HorseDetailPage() {
                 {healthLogLoading ? (
                   <>
                     <LoadingSpinner size={16} className="text-black" />
-                    Adding…
+                    {t("dashboard.horseHealthAdding")}
                   </>
                 ) : (
-                  "Add record"
+                  t("dashboard.horseHealthAddRecord")
                 )}
               </button>
             </div>

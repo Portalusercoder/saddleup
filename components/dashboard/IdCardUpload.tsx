@@ -1,12 +1,14 @@
 "use client";
 
 import { useState, useRef, useEffect } from "react";
+import { useLanguage } from "@/components/providers/LanguageProvider";
 
 type Props =
   | { type: "rider"; id: string; idCardUrl?: string | null; onSuccess?: () => void; canUpload?: boolean }
   | { type: "trainer"; id: string; idCardUrl?: string | null; onSuccess?: () => void; canUpload?: boolean };
 
 export function IdCardUpload(props: Props) {
+  const { t } = useLanguage();
   const [uploading, setUploading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [url, setUrl] = useState<string | null>(props.idCardUrl ?? null);
@@ -32,13 +34,13 @@ export function IdCardUpload(props: Props) {
       const res = await fetch(endpoint, { method: "POST", body: fd });
       const data = await res.json();
       if (!res.ok) {
-        setError(data.error || "Upload failed");
+        setError(data.error || t("dashboard.horseToastUploadFailed"));
         return;
       }
       setUrl(data.url ?? null);
       props.onSuccess?.();
     } catch {
-      setError("Upload failed");
+      setError(t("dashboard.horseToastUploadFailed"));
     } finally {
       setUploading(false);
     }
@@ -66,7 +68,7 @@ export function IdCardUpload(props: Props) {
             rel="noopener noreferrer"
             className="text-black hover:underline text-sm uppercase tracking-wider"
           >
-            View ID card
+            {t("dashboard.idCardView")}
           </a>
           {props.canUpload && (
             <button
@@ -74,7 +76,7 @@ export function IdCardUpload(props: Props) {
               disabled={uploading}
               className="text-black/60 hover:text-black text-sm uppercase tracking-wider disabled:opacity-50"
             >
-              {uploading ? "Uploading..." : "Replace"}
+              {uploading ? t("dashboard.idCardUploading") : t("dashboard.idCardReplace")}
             </button>
           )}
         </div>
@@ -84,7 +86,7 @@ export function IdCardUpload(props: Props) {
           disabled={uploading}
           className="px-4 py-2.5 border border-black/10 text-black text-sm uppercase tracking-wider hover:border-black/30 transition disabled:opacity-50"
         >
-          {uploading ? "Uploading..." : "Upload ID card"}
+          {uploading ? t("dashboard.idCardUploading") : t("dashboard.idCardUploadCta")}
         </button>
       ) : null}
       {error && <p className="text-amber-400 text-sm">{error}</p>}

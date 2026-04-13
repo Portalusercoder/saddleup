@@ -9,8 +9,10 @@ import MonthlyReportDownload from "@/components/dashboard/MonthlyReportDownload"
 import PageLoader from "@/components/ui/PageLoader";
 import GuidedTourOverlay, { type GuidedTourStep } from "@/components/dashboard/GuidedTourOverlay";
 import { usePageTour } from "@/components/dashboard/usePageTour";
+import { useLanguage } from "@/components/providers/LanguageProvider";
 
 export default function SettingsPage() {
+  const { t } = useLanguage();
   const router = useRouter();
   const { profile, loading } = useProfile();
   const { open: showTour, complete: completeTour } = usePageTour(
@@ -18,9 +20,9 @@ export default function SettingsPage() {
     !loading && Boolean(profile) && profile?.role === "owner"
   );
   const tourSteps: GuidedTourStep[] = [
-    { id: "report", title: "Monthly Report", description: "Download your stable summary report.", selector: '[data-tour="settings-report"]' },
-    { id: "logo", title: "Stable Logo", description: "Upload and update your stable branding.", selector: '[data-tour="settings-logo"]' },
-    { id: "members", title: "Add Members", description: "Invite team members by ID quickly.", selector: '[data-tour="settings-members"]' },
+    { id: "report", title: t("settingsTour.reportTitle"), description: t("settingsTour.reportDesc"), selector: '[data-tour="settings-report"]' },
+    { id: "logo", title: t("settingsTour.logoTitle"), description: t("settingsTour.logoDesc"), selector: '[data-tour="settings-logo"]' },
+    { id: "members", title: t("settingsTour.membersTitle"), description: t("settingsTour.membersDesc"), selector: '[data-tour="settings-members"]' },
   ];
 
   useEffect(() => {
@@ -31,7 +33,7 @@ export default function SettingsPage() {
   }, [profile, router]);
 
   if (loading || !profile || profile.role !== "owner") {
-    return <PageLoader minHeight="min-h-[40vh]" message="Loading…" />;
+    return <PageLoader minHeight="min-h-[40vh]" message={t("common.loading")} />;
   }
 
   return (
@@ -43,9 +45,9 @@ export default function SettingsPage() {
         onComplete={completeTour}
       />
       <div>
-        <h1 className="font-serif text-3xl md:text-4xl font-normal text-black">Settings</h1>
+        <h1 className="font-serif text-3xl md:text-4xl font-normal text-black">{t("dashboard.settingsPageTitle")}</h1>
         <p className="text-black/60 mt-2 text-sm">
-          Add members by ID, monthly report, and stable logo.
+          {t("dashboard.settingsSubtitle")}
         </p>
       </div>
 

@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
+import { useLanguage } from "@/components/providers/LanguageProvider";
 
 export type GuidedTourStep = {
   id: string;
@@ -24,6 +25,7 @@ export default function GuidedTourOverlay({
   onSkip,
   onComplete,
 }: GuidedTourOverlayProps) {
+  const { t } = useLanguage();
   const [index, setIndex] = useState(0);
   const [rect, setRect] = useState<DOMRect | null>(null);
 
@@ -89,7 +91,10 @@ export default function GuidedTourOverlay({
 
       <div className="fixed left-1/2 -translate-x-1/2 bottom-4 w-[calc(100vw-1.5rem)] sm:w-[30rem] border border-black/20 bg-base text-black p-4 sm:p-5">
         <p className="text-xs uppercase tracking-[0.22em] text-black/45">
-          Step {index + 1} / {steps.length}
+          {t("tour.stepOf", {
+            current: String(index + 1),
+            total: String(steps.length),
+          })}
         </p>
         <h3 className="mt-2 font-serif text-xl">{current.title}</h3>
         <p className="mt-2 text-sm text-black/70 leading-relaxed">{current.description}</p>
@@ -101,7 +106,7 @@ export default function GuidedTourOverlay({
             disabled={saving}
             className="px-3 py-2 border border-black/20 text-xs uppercase tracking-wider hover:border-black/35 transition disabled:opacity-50"
           >
-            Skip
+            {t("tour.skip")}
           </button>
           <div className="flex items-center gap-2">
             {index > 0 ? (
@@ -111,7 +116,7 @@ export default function GuidedTourOverlay({
                 disabled={saving}
                 className="px-3 py-2 border border-black/20 text-xs uppercase tracking-wider hover:border-black/35 transition disabled:opacity-50"
               >
-                Back
+                {t("tour.back")}
               </button>
             ) : null}
             {atLast ? (
@@ -121,7 +126,7 @@ export default function GuidedTourOverlay({
                 disabled={saving}
                 className="px-3 py-2 bg-accent text-white text-xs uppercase tracking-wider hover:opacity-95 transition disabled:opacity-50"
               >
-                {saving ? "Saving..." : "Finish"}
+                {saving ? t("tour.saving") : t("tour.finish")}
               </button>
             ) : (
               <button
@@ -130,7 +135,7 @@ export default function GuidedTourOverlay({
                 disabled={saving}
                 className="px-3 py-2 bg-accent text-white text-xs uppercase tracking-wider hover:opacity-95 transition disabled:opacity-50"
               >
-                Next
+                {t("tour.next")}
               </button>
             )}
           </div>

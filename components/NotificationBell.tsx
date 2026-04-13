@@ -2,6 +2,7 @@
 
 import { useEffect, useState, useRef } from "react";
 import Link from "next/link";
+import { useLanguage } from "@/components/providers/LanguageProvider";
 
 interface Notification {
   id: string;
@@ -14,6 +15,7 @@ interface Notification {
 }
 
 export default function NotificationBell() {
+  const { t } = useLanguage();
   const [notifications, setNotifications] = useState<Notification[]>([]);
   const [open, setOpen] = useState(false);
   const ref = useRef<HTMLDivElement>(null);
@@ -51,9 +53,11 @@ export default function NotificationBell() {
   return (
     <div className="relative" ref={ref}>
       <button
+        type="button"
+        data-tour="notification-bell"
         onClick={() => setOpen((o) => !o)}
         className="relative p-2 rounded-lg hover:bg-black/10 transition"
-        aria-label="Notifications"
+        aria-label={t("notifications.ariaLabel")}
       >
         <svg className="w-5 h-5 text-black/80" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path
@@ -72,10 +76,10 @@ export default function NotificationBell() {
       {open && (
         <div className="fixed top-20 left-3 right-3 md:absolute md:top-full md:left-auto md:right-0 md:mt-2 md:w-80 max-h-[70vh] md:max-h-96 overflow-y-auto border border-black/10 bg-base z-[75]">
           <div className="p-3 border-b border-black/10">
-            <h3 className="text-sm font-medium text-black uppercase tracking-wider">Notifications</h3>
+            <h3 className="text-sm font-medium text-black uppercase tracking-wider">{t("notifications.title")}</h3>
           </div>
           {notifications.length === 0 ? (
-            <p className="p-4 text-black/50 text-sm">No notifications</p>
+            <p className="p-4 text-black/50 text-sm">{t("notifications.empty")}</p>
           ) : (
             <div className="divide-y divide-black/5">
               {notifications.slice(0, 10).map((n) => (
@@ -95,7 +99,7 @@ export default function NotificationBell() {
                         }}
                         className="text-xs text-black/50 hover:text-black uppercase tracking-wider"
                       >
-                        View bookings
+                        {t("notifications.viewBookings")}
                       </Link>
                     )}
                     {!n.readAt && (
@@ -103,7 +107,7 @@ export default function NotificationBell() {
                         onClick={() => markRead(n.id)}
                         className="text-xs text-black/40 hover:text-black"
                       >
-                        Mark read
+                        {t("notifications.markRead")}
                       </button>
                     )}
                   </div>

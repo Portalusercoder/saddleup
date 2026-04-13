@@ -6,6 +6,7 @@ import { useProfile } from "@/components/providers/ProfileProvider";
 import TableSkeleton from "@/components/ui/TableSkeleton";
 import GuidedTourOverlay, { type GuidedTourStep } from "@/components/dashboard/GuidedTourOverlay";
 import { usePageTour } from "@/components/dashboard/usePageTour";
+import { useLanguage } from "@/components/providers/LanguageProvider";
 
 type Recipients = {
   students: { count: number; emails: string[] };
@@ -23,6 +24,8 @@ type Campaign = {
 export default function NoticesPage() {
   const router = useRouter();
   const { profile, loading } = useProfile();
+  const { t, lang } = useLanguage();
+  const dateLocale = lang === "ar" ? "ar-SA" : "en-US";
   const [recipients, setRecipients] = useState<Recipients | null>(null);
   const [campaigns, setCampaigns] = useState<Campaign[]>([]);
   const [loadingData, setLoadingData] = useState(true);
@@ -41,20 +44,20 @@ export default function NoticesPage() {
   const tourSteps: GuidedTourStep[] = [
     {
       id: "audience",
-      title: "Choose Audience",
-      description: "Pick which groups receive the notice email.",
+      title: t("dashboard.noticeEmailsTourAudienceTitle"),
+      description: t("dashboard.noticeEmailsTourAudienceDesc"),
       selector: '[data-tour="notices-audience"]',
     },
     {
       id: "composer",
-      title: "Compose Notice",
-      description: "Write the subject and content, then send to selected recipients.",
+      title: t("dashboard.noticeEmailsTourComposeTitle"),
+      description: t("dashboard.noticeEmailsTourComposeDesc"),
       selector: '[data-tour="notices-compose"]',
     },
     {
       id: "history",
-      title: "Campaign History",
-      description: "Review previously sent notice campaigns.",
+      title: t("dashboard.noticeEmailsTourHistoryTitle"),
+      description: t("dashboard.noticeEmailsTourHistoryDesc"),
       selector: '[data-tour="notices-history"]',
     },
   ];
@@ -108,17 +111,23 @@ export default function NoticesPage() {
       const data = await res.json();
       if (res.ok) {
         setSendStatus("success");
-        setSendMessage(`Sent to ${data.sent} recipient${data.sent !== 1 ? "s" : ""}`);
+        setSendMessage(
+          data.sent === 1
+            ? t("dashboard.noticeEmailsSentToOne")
+            : t("dashboard.noticeEmailsSentToMany", {
+                count: String(data.sent ?? 0),
+              })
+        );
         setSendSubject("");
         setSendBody("");
         fetchData();
       } else {
         setSendStatus("error");
-        setSendMessage(data.error || "Could not send");
+        setSendMessage(data.error || t("dashboard.noticeEmailsSendFailed"));
       }
     } catch {
       setSendStatus("error");
-      setSendMessage("Something went wrong");
+      setSendMessage(t("dashboard.noticeEmailsSomethingWrong"));
     }
   };
 
@@ -126,7 +135,7 @@ export default function NoticesPage() {
     return (
       <div className="space-y-6">
         <h1 className="font-serif text-3xl md:text-4xl font-normal text-black">
-          Notices
+          {t("dashboard.noticesTitle")}
         </h1>
         <TableSkeleton rows={6} cols={4} />
       </div>
@@ -153,10 +162,10 @@ export default function NoticesPage() {
       />
       <div>
         <h1 className="font-serif text-3xl md:text-4xl font-normal text-black">
-          Notice emails
+          {t("dashboard.noticeEmailsTitle")}
         </h1>
         <p className="text-black/60 mt-2 text-sm">
-          Send holiday closures, schedule changes, or other updates to students (riders), trainers, and guardians. Owner only.
+          {t("dashboard.noticeEmailsLead")}
         </p>
       </div>
 
@@ -166,7 +175,9 @@ export default function NoticesPage() {
         <>
           {/* Audience sections */}
           <section data-tour="notices-audience">
-            <h2 className="font-serif text-xl text-black mb-4">Who receives notices</h2>
+            <h2 className="font-serif text-xl text-black mb-4">
+              {t("dashboard.noticeEmailsAudienceHeading")}
+            </h2>
             <div className="grid gap-4 sm:grid-cols-3">
               <div className="border border-black/10 p-4">
                 <label className="flex items-center gap-3 cursor-pointer">
@@ -176,10 +187,16 @@ export default function NoticesPage() {
                     onChange={(e) => setSendToStudents(e.target.checked)}
                     className="w-4 h-4 rounded border-black/30 bg-base text-black focus:ring-black/50"
                   />
-                  <span className="font-medium text-black">Students (riders)</span>
+                  <span className="font-medium text-black">
+                    {t("dashboard.noticeEmailsLabelStudents")}
+                  </span>
                 </label>
                 <p className="mt-2 text-black/50 text-sm">
-                  {recipients?.students.count ?? 0} rider{recipients?.students.count !== 1 ? "s" : ""} with email
+                  {(recipients?.students.count ?? 0) === 1
+                    ? t("dashboard.noticeEmailsRidersWithEmailOne")
+                    : t("dashboard.noticeEmailsRidersWithEmail", {
+                        count: String(recipients?.students.count ?? 0),
+                      })}
                 </p>
               </div>
               <div className="border border-black/10 p-4">
@@ -190,10 +207,16 @@ export default function NoticesPage() {
                     onChange={(e) => setSendToTrainers(e.target.checked)}
                     className="w-4 h-4 rounded border-black/30 bg-base text-black focus:ring-black/50"
                   />
-                  <span className="font-medium text-black">Trainers</span>
+                  <span className="font-medium text-black">
+                    {t("dashboard.noticeEmailsLabelTrainers")}
+                  </span>
                 </label>
                 <p className="mt-2 text-black/50 text-sm">
-                  {recipients?.trainers.count ?? 0} trainer{recipients?.trainers.count !== 1 ? "s" : ""} with email
+                  {(recipients?.trainers.count ?? 0) === 1
+                    ? t("dashboard.noticeEmailsTrainersWithEmailOne")
+                    : t("dashboard.noticeEmailsTrainersWithEmail", {
+                        count: String(recipients?.trainers.count ?? 0),
+                      })}
                 </p>
               </div>
               <div className="border border-black/10 p-4">
@@ -204,10 +227,16 @@ export default function NoticesPage() {
                     onChange={(e) => setSendToGuardians(e.target.checked)}
                     className="w-4 h-4 rounded border-black/30 bg-base text-black focus:ring-black/50"
                   />
-                  <span className="font-medium text-black">Guardians</span>
+                  <span className="font-medium text-black">
+                    {t("dashboard.noticeEmailsLabelGuardians")}
+                  </span>
                 </label>
                 <p className="mt-2 text-black/50 text-sm">
-                  {recipients?.guardians.count ?? 0} guardian{recipients?.guardians.count !== 1 ? "s" : ""} with email
+                  {(recipients?.guardians.count ?? 0) === 1
+                    ? t("dashboard.noticeEmailsGuardiansWithEmailOne")
+                    : t("dashboard.noticeEmailsGuardiansWithEmail", {
+                        count: String(recipients?.guardians.count ?? 0),
+                      })}
                 </p>
               </div>
             </div>
@@ -215,31 +244,37 @@ export default function NoticesPage() {
 
           {/* Send notice */}
           <section data-tour="notices-compose">
-            <h2 className="font-serif text-xl text-black mb-4">Send a notice</h2>
+            <h2 className="font-serif text-xl text-black mb-4">
+              {t("dashboard.noticeEmailsSendHeading")}
+            </h2>
             <form onSubmit={handleSend} className="space-y-4 max-w-2xl">
               <div>
-                <label className="block text-sm text-black/60 mb-1">Subject</label>
+                <label className="block text-sm text-black/60 mb-1">
+                  {t("dashboard.noticeEmailsSubjectLabel")}
+                </label>
                 <input
                   type="text"
                   value={sendSubject}
                   onChange={(e) => setSendSubject(e.target.value)}
-                  placeholder="e.g. Stable closed Dec 24–26"
+                  placeholder={t("dashboard.noticeEmailsSubjectPlaceholder")}
                   required
                   className="w-full px-4 py-2.5 bg-black/5 border border-black/20 text-black placeholder:text-black/40 text-sm focus:outline-none focus:border-black/40"
                 />
               </div>
               <div>
-                <label className="block text-sm text-black/60 mb-1">Content (HTML)</label>
+                <label className="block text-sm text-black/60 mb-1">
+                  {t("dashboard.noticeEmailsBodyLabel")}
+                </label>
                 <textarea
                   value={sendBody}
                   onChange={(e) => setSendBody(e.target.value)}
-                  placeholder="<p>Hello, we'll be closed over the holidays...</p>"
+                  placeholder={t("dashboard.noticeEmailsBodyPlaceholder")}
                   required
                   rows={8}
                   className="w-full px-4 py-2.5 bg-black/5 border border-black/20 text-black placeholder:text-black/40 text-sm focus:outline-none focus:border-black/40 font-mono"
                 />
                 <p className="text-black/40 text-xs mt-1">
-                  Use HTML. Example: &lt;p&gt;Hello!&lt;/p&gt;
+                  {t("dashboard.noticeEmailsBodyHint")}
                 </p>
               </div>
               <button
@@ -252,8 +287,12 @@ export default function NoticesPage() {
                 className="px-6 py-2.5 bg-accent text-white font-medium hover:opacity-95 transition disabled:opacity-50 disabled:cursor-not-allowed"
               >
                 {sendStatus === "loading"
-                  ? "Sending..."
-                  : `Send to ${uniqueCount} recipient${uniqueCount !== 1 ? "s" : ""}`}
+                  ? t("dashboard.noticeEmailsSending")
+                  : uniqueCount === 1
+                    ? t("dashboard.noticeEmailsSendToOne")
+                    : t("dashboard.noticeEmailsSendToMany", {
+                        count: String(uniqueCount),
+                      })}
               </button>
             </form>
             {sendMessage && (
@@ -263,24 +302,34 @@ export default function NoticesPage() {
             )}
             {hasOverlap && (
               <p className="text-black/40 text-xs mt-1">
-                Duplicate emails across groups are sent only once.
+                {t("dashboard.noticeEmailsDuplicateHint")}
               </p>
             )}
           </section>
 
           {/* Sent notices history */}
           <section data-tour="notices-history">
-            <h2 className="font-serif text-xl text-black mb-4">Sent notices</h2>
+            <h2 className="font-serif text-xl text-black mb-4">
+              {t("dashboard.noticeEmailsHistoryHeading")}
+            </h2>
             {campaigns.length === 0 ? (
-              <p className="text-black/50 text-sm">No notices sent yet.</p>
+              <p className="text-black/50 text-sm">
+                {t("dashboard.noticeEmailsNoHistory")}
+              </p>
             ) : (
               <div className="border border-black/10 overflow-hidden">
                 <table className="w-full text-sm">
                   <thead>
                     <tr className="border-b border-black/10">
-                      <th className="text-left px-4 py-3 text-black/60 font-medium">Subject</th>
-                      <th className="text-left px-4 py-3 text-black/60 font-medium">Recipients</th>
-                      <th className="text-left px-4 py-3 text-black/60 font-medium">Sent</th>
+                      <th className="text-left px-4 py-3 text-black/60 font-medium">
+                        {t("dashboard.noticeEmailsColSubject")}
+                      </th>
+                      <th className="text-left px-4 py-3 text-black/60 font-medium">
+                        {t("dashboard.noticeEmailsColRecipients")}
+                      </th>
+                      <th className="text-left px-4 py-3 text-black/60 font-medium">
+                        {t("dashboard.noticeEmailsColSent")}
+                      </th>
                     </tr>
                   </thead>
                   <tbody>
@@ -289,7 +338,7 @@ export default function NoticesPage() {
                         <td className="px-4 py-3 text-black">{c.subject}</td>
                         <td className="px-4 py-3 text-black/60">{c.recipient_count}</td>
                         <td className="px-4 py-3 text-black/50 text-xs">
-                          {new Date(c.sent_at).toLocaleString()}
+                          {new Date(c.sent_at).toLocaleString(dateLocale)}
                         </td>
                       </tr>
                     ))}

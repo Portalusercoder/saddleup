@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import Link from "next/link";
 import { HorseAvatar } from "@/components/HorseAvatar";
 import TableSkeleton from "@/components/ui/TableSkeleton";
+import { useLanguage } from "@/components/providers/LanguageProvider";
 
 interface Child {
   id: string;
@@ -32,20 +33,25 @@ interface Session {
   horse: { id: string; name: string } | null;
 }
 
-const PUNCH_LABELS: Record<string, string> = {
-  training: "Training",
-  lesson: "Lesson",
-  free_ride: "Free Ride",
-  competition: "Competition",
-  rest: "Rest",
-  medical_rest: "Medical Rest",
-};
-
 export default function GuardianPage() {
+  const { t, lang } = useLanguage();
+  const dateLocale = lang === "ar" ? "ar-SA" : "en-US";
   const [children, setChildren] = useState<Child[]>([]);
   const [bookings, setBookings] = useState<Booking[]>([]);
   const [sessionsByRider, setSessionsByRider] = useState<Record<string, Session[]>>({});
   const [loading, setLoading] = useState(true);
+
+  const punchLabel = (punchType: string) => {
+    const map: Record<string, string> = {
+      training: t("dashboard.punchTraining"),
+      lesson: t("dashboard.punchLesson"),
+      free_ride: t("dashboard.punchFreeRide"),
+      competition: t("dashboard.punchCompetition"),
+      rest: t("dashboard.punchRest"),
+      medical_rest: t("dashboard.punchMedicalRest"),
+    };
+    return map[punchType] ?? punchType;
+  };
 
   useEffect(() => {
     Promise.all([
@@ -79,7 +85,7 @@ export default function GuardianPage() {
   }, []);
 
   const formatDate = (d: string) =>
-    new Date(d).toLocaleDateString("en-US", {
+    new Date(d).toLocaleDateString(dateLocale, {
       weekday: "short",
       month: "short",
       day: "numeric",
@@ -102,7 +108,7 @@ export default function GuardianPage() {
     return (
       <div className="space-y-6">
         <h1 className="font-serif text-3xl md:text-4xl font-normal text-black">
-          Parent Portal
+          {t("dashboard.guardianTitle")}
         </h1>
         <TableSkeleton rows={6} cols={4} />
       </div>
@@ -113,24 +119,24 @@ export default function GuardianPage() {
     <div className="space-y-10">
       <div>
         <h1 className="font-serif text-3xl md:text-4xl font-normal text-black">
-          Parent Portal
+          {t("dashboard.guardianTitle")}
         </h1>
         <p className="text-black/60 text-sm max-w-xl mt-2">
-          View your children&apos;s lessons and training progress. Read-only access.
+          {t("dashboard.guardianPortalLead")}
         </p>
       </div>
 
       {children.length === 0 ? (
         <div className="border border-black/10 p-8 text-center">
-          <p className="text-black/60 mb-2">No children linked yet</p>
+          <p className="text-black/60 mb-2">{t("dashboard.guardianNoChildrenTitle")}</p>
           <p className="text-black/40 text-sm">
-            Ask your stable to link your account to your child&apos;s rider profile.
+            {t("dashboard.guardianNoChildrenBody")}
           </p>
         </div>
       ) : (
         <>
           <div className="border border-black/10 p-6">
-            <h2 className="font-serif text-lg text-black mb-4">My Children</h2>
+            <h2 className="font-serif text-lg text-black mb-4">{t("dashboard.guardianMyChildren")}</h2>
             <div className="grid gap-4 sm:grid-cols-2">
               {children.map((child) => (
                 <div
@@ -139,12 +145,12 @@ export default function GuardianPage() {
                 >
                   <h3 className="font-medium text-black">{child.name}</h3>
                   <p className="text-black/50 text-sm mt-1">
-                    {child.level || "—"} • {child.email || child.phone || "No contact"}
+                    {child.level || "—"} • {child.email || child.phone || t("dashboard.riderDetailNoContact")}
                   </p>
                   {sessionsByRider[child.id]?.length > 0 && (
                     <div className="mt-3">
                       <p className="text-black/40 text-xs uppercase tracking-wider mb-2">
-                        Recent sessions
+                        {t("dashboard.guardianRecentSessions")}
                       </p>
                       <ul className="space-y-1">
                         {sessionsByRider[child.id].map((s) => (
@@ -152,9 +158,11 @@ export default function GuardianPage() {
                             key={s.id}
                             className="text-sm text-black/70"
                           >
-                            {formatDate(s.punchDate)} • {PUNCH_LABELS[s.punchType] || s.punchType}{" "}
-                            {s.duration > 0 && `(${s.duration} min)`}{" "}
-                            {s.horse && `on ${s.horse.name}`}
+                            {formatDate(s.punchDate)} • {punchLabel(s.punchType)}{" "}
+                            {s.duration > 0 &&
+                              t("dashboard.guardianSessionMinutes", { minutes: String(s.duration) })}{" "}
+                            {s.horse &&
+                              t("dashboard.guardianSessionOnHorse", { horse: s.horse.name })}
                           </li>
                         ))}
                       </ul>
@@ -168,7 +176,7 @@ export default function GuardianPage() {
           {upcomingBookings.length > 0 && (
             <div className="border border-black/10 p-6">
               <h2 className="font-serif text-lg text-black mb-4">
-                Upcoming Lessons
+                {t("dashboard.guardianUpcomingLessons")}
               </h2>
               <div className="space-y-3">
                 {upcomingBookings
@@ -191,7 +199,7 @@ export default function GuardianPage() {
                       )}
                       <div>
                         <span className="font-medium text-black">
-                          {b.horse?.name ?? "Lesson"}
+                          {b.horse?.name ?? t("dashboard.guardianLessonFallback")}
                         </span>
                         <span className="text-black/50 text-sm ml-2">
                           {formatDate(b.bookingDate)} •{" "}
@@ -204,7 +212,7 @@ export default function GuardianPage() {
                         )}
                         {b.status === "pending" && (
                           <span className="text-black/60 text-xs block">
-                            Pending approval
+                            {t("dashboard.bookingsPendingApproval")}
                           </span>
                         )}
                       </div>

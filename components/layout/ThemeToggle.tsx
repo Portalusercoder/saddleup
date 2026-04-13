@@ -1,6 +1,7 @@
 "use client";
 
 import { useTheme } from "@/components/providers/ThemeProvider";
+import { useLanguage } from "@/components/providers/LanguageProvider";
 
 interface ThemeToggleProps {
   /** Use light border/text when on dark background (e.g. hero) */
@@ -8,6 +9,7 @@ interface ThemeToggleProps {
 }
 
 export default function ThemeToggle({ variant = "dark" }: ThemeToggleProps) {
+  const { t } = useLanguage();
   const { theme, toggle } = useTheme();
   const isDark = theme === "dark";
   const isLightVariant = variant === "light";
@@ -21,8 +23,8 @@ export default function ThemeToggle({ variant = "dark" }: ThemeToggleProps) {
       type="button"
       onClick={toggle}
       className={`flex items-center justify-center w-9 h-9 rounded border transition ${buttonClass}`}
-      aria-label={isDark ? "Switch to light mode" : "Switch to dark mode"}
-      title={isDark ? "Light mode" : "Dark mode"}
+      aria-label={isDark ? t("theme.ariaLight") : t("theme.ariaDark")}
+      title={isDark ? t("theme.titleLight") : t("theme.titleDark")}
     >
       {isDark ? (
         <SunIcon className="w-4 h-4" />

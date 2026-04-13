@@ -7,6 +7,7 @@ import LoadingSpinner from "@/components/ui/LoadingSpinner";
 import TableSkeleton from "@/components/ui/TableSkeleton";
 import GuidedTourOverlay, { type GuidedTourStep } from "@/components/dashboard/GuidedTourOverlay";
 import { usePageTour } from "@/components/dashboard/usePageTour";
+import { useLanguage } from "@/components/providers/LanguageProvider";
 
 interface IncidentReport {
   id: string;
@@ -40,14 +41,10 @@ const btnPrimary =
 const btnSecondary =
   "px-4 py-2.5 border border-black/10 text-black text-sm uppercase tracking-wider hover:border-black/30 transition";
 
-const SEVERITY_LABELS: Record<string, string> = {
-  minor: "Minor",
-  moderate: "Moderate",
-  serious: "Serious",
-};
-
 export default function IncidentsPage() {
   const { profile } = useProfile();
+  const { t, lang } = useLanguage();
+  const dateLocale = lang === "ar" ? "ar-SA" : "en-US";
   const [reports, setReports] = useState<IncidentReport[]>([]);
   const [horses, setHorses] = useState<Horse[]>([]);
   const [riders, setRiders] = useState<Rider[]>([]);
@@ -75,17 +72,26 @@ export default function IncidentsPage() {
     !loading
   );
 
+  const severityLabel = (sev: string) => {
+    const map: Record<string, string> = {
+      minor: t("dashboard.incidentsSeverityMinor"),
+      moderate: t("dashboard.incidentsSeverityModerate"),
+      serious: t("dashboard.incidentsSeveritySerious"),
+    };
+    return map[sev] ?? sev;
+  };
+
   const tourSteps: GuidedTourStep[] = [
     {
       id: "create",
-      title: "Create Incident",
-      description: "Log a safety event with horse, date, and notes.",
+      title: t("dashboard.incidentsTourCreateTitle"),
+      description: t("dashboard.incidentsTourCreateDesc"),
       selector: '[data-tour="incidents-create"]',
     },
     {
       id: "history",
-      title: "Incident History",
-      description: "Review, edit, and maintain incident records.",
+      title: t("dashboard.incidentsTourHistoryTitle"),
+      description: t("dashboard.incidentsTourHistoryDesc"),
       selector: '[data-tour="incidents-history"]',
     },
   ];
@@ -118,7 +124,7 @@ export default function IncidentsPage() {
   }, [isTrainerOrOwner]);
 
   const formatDate = (d: string) =>
-    new Date(d).toLocaleDateString("en-US", {
+    new Date(d).toLocaleDateString(dateLocale, {
       weekday: "short",
       month: "short",
       day: "numeric",
@@ -160,7 +166,7 @@ export default function IncidentsPage() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!form.incidentDate || !form.horseId || !form.description.trim()) {
-      setToast("Date, horse, and description are required");
+      setToast(t("dashboard.incidentsRequiredFields"));
       return;
     }
     setSubmitLoading(true);
@@ -188,7 +194,7 @@ export default function IncidentsPage() {
         setReports((prev) =>
           prev.map((x) => (x.id === editingReport.id ? data : x))
         );
-        setToast("Incident report updated");
+        setToast(t("dashboard.incidentsUpdated"));
       } else {
         const res = await fetch("/api/incident-reports", {
           method: "POST",
@@ -198,7 +204,7 @@ export default function IncidentsPage() {
         const data = await res.json();
         if (!res.ok) throw new Error(data.error || "Failed");
         setReports((prev) => [data, ...prev]);
-        setToast("Incident report added");
+        setToast(t("dashboard.incidentsAdded"));
       }
       setTimeout(() => setToast(null), 3000);
       setShowModal(false);
@@ -211,7 +217,7 @@ export default function IncidentsPage() {
   };
 
   const handleDelete = async (id: string) => {
-    if (!confirm("Delete this incident report? This cannot be undone.")) return;
+    if (!confirm(t("dashboard.incidentsConfirmDelete"))) return;
     try {
       const res = await fetch(`/api/incident-reports/${id}`, {
         method: "DELETE",
@@ -221,7 +227,7 @@ export default function IncidentsPage() {
         throw new Error(data.error || "Failed");
       }
       setReports((prev) => prev.filter((x) => x.id !== id));
-      setToast("Incident report deleted");
+      setToast(t("dashboard.incidentsDeleted"));
       setTimeout(() => setToast(null), 3000);
     } catch (err) {
       setToast((err as Error).message);
@@ -233,10 +239,10 @@ export default function IncidentsPage() {
     return (
       <div className="space-y-6">
         <h1 className="font-serif text-2xl md:text-3xl font-normal text-black">
-          Incident Reports
+          {t("dashboard.incidentsPageTitle")}
         </h1>
         <p className="text-black/50">
-          You do not have access to incident reports.
+          {t("dashboard.incidentsNoAccess")}
         </p>
       </div>
     );
@@ -253,16 +259,15 @@ export default function IncidentsPage() {
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div>
           <h1 className="font-serif text-3xl md:text-4xl font-normal text-black">
-            Incident Reports
+            {t("dashboard.incidentsPageTitle")}
           </h1>
           <p className="text-black/60 text-sm max-w-xl mt-2">
-            Document incidents for liability and insurance. Include date, horse,
-            rider, description, and witnesses.
+            {t("dashboard.incidentsLead")}
           </p>
         </div>
         {isTrainerOrOwner && horses.length > 0 && (
           <button onClick={openAdd} className={btnPrimary} data-tour="incidents-create">
-            + Report incident
+            {t("dashboard.incidentsReportCta")}
           </button>
         )}
       </div>
@@ -280,13 +285,13 @@ export default function IncidentsPage() {
         <TableSkeleton rows={6} cols={4} />
       ) : reports.length === 0 ? (
         <div className="border border-black/10 p-8 text-center">
-          <p className="text-black/60">No incident reports yet.</p>
+          <p className="text-black/60">{t("dashboard.incidentsEmpty")}</p>
           {isTrainerOrOwner && horses.length > 0 && (
             <button
               onClick={openAdd}
               className="mt-4 text-black/60 hover:text-black text-sm uppercase tracking-wider"
             >
-              + Report your first incident
+              {t("dashboard.incidentsReportFirst")}
             </button>
           )}
         </div>
@@ -322,7 +327,7 @@ export default function IncidentsPage() {
                                 : "text-black/50"
                           }`}
                         >
-                          {SEVERITY_LABELS[r.severity] ?? r.severity}
+                          {severityLabel(r.severity)}
                         </span>
                       )}
                     </div>
@@ -331,13 +336,13 @@ export default function IncidentsPage() {
                     </p>
                     <div className="flex flex-wrap gap-x-4 gap-y-1 mt-2 text-xs text-black/50">
                       {r.riderName && (
-                        <span>Rider: {r.riderName}</span>
+                        <span>{t("dashboard.incidentsRiderPrefix")} {r.riderName}</span>
                       )}
                       {r.location && (
-                        <span>Location: {r.location}</span>
+                        <span>{t("dashboard.incidentsLocationPrefix")} {r.location}</span>
                       )}
                       {r.witnesses && (
-                        <span>Witnesses: {r.witnesses}</span>
+                        <span>{t("dashboard.incidentsWitnessesPrefix")} {r.witnesses}</span>
                       )}
                     </div>
                   </div>
@@ -347,13 +352,13 @@ export default function IncidentsPage() {
                         onClick={() => openEdit(r)}
                         className="text-black hover:underline text-sm uppercase tracking-wider"
                       >
-                        Edit
+                        {t("dashboard.teamRidersEdit")}
                       </button>
                       <button
                         onClick={() => handleDelete(r.id)}
                         className="text-black/60 hover:text-black text-sm uppercase tracking-wider"
                       >
-                        Delete
+                        {t("dashboard.teamRidersDelete")}
                       </button>
                     </div>
                   )}
@@ -368,11 +373,11 @@ export default function IncidentsPage() {
         <div className="fixed inset-0 bg-black/80 flex items-center justify-center z-50 p-4 overflow-y-auto sm:items-center sm:py-8">
           <div className="bg-base border border-black/10 max-w-lg w-full p-4 sm:p-6 my-4 sm:my-8 max-h-[90vh] overflow-y-auto">
             <h2 className="font-serif text-xl text-black mb-6">
-              {editingReport ? "Edit incident report" : "Report incident"}
+              {editingReport ? t("dashboard.incidentsModalEdit") : t("dashboard.incidentsModalAdd")}
             </h2>
             <form onSubmit={handleSubmit} className="space-y-4">
               <div>
-                <label className={labelClass}>Date *</label>
+                <label className={labelClass}>{t("dashboard.incidentsLabelDate")}</label>
                 <input
                   type="date"
                   value={form.incidentDate}
@@ -384,7 +389,7 @@ export default function IncidentsPage() {
                 />
               </div>
               <div>
-                <label className={labelClass}>Horse *</label>
+                <label className={labelClass}>{t("dashboard.incidentsLabelHorse")}</label>
                 <select
                   value={form.horseId}
                   onChange={(e) =>
@@ -393,7 +398,7 @@ export default function IncidentsPage() {
                   required
                   className={formInput}
                 >
-                  <option value="">Select horse</option>
+                  <option value="">{t("dashboard.bookingsSelectHorse")}</option>
                   {horses.map((h) => (
                     <option key={h.id} value={h.id}>
                       {h.name}
@@ -402,7 +407,7 @@ export default function IncidentsPage() {
                 </select>
               </div>
               <div>
-                <label className={labelClass}>Rider (optional)</label>
+                <label className={labelClass}>{t("dashboard.incidentsLabelRiderOptional")}</label>
                 <select
                   value={form.riderId}
                   onChange={(e) =>
@@ -410,7 +415,7 @@ export default function IncidentsPage() {
                   }
                   className={formInput}
                 >
-                  <option value="">Select rider or enter name below</option>
+                  <option value="">{t("dashboard.incidentsRiderSelectHint")}</option>
                   {riders.map((r) => (
                     <option key={r.id} value={r.id}>
                       {r.name}
@@ -420,7 +425,7 @@ export default function IncidentsPage() {
               </div>
               <div>
                 <label className={labelClass}>
-                  Rider name (if not in list)
+                  {t("dashboard.incidentsRiderNameExtra")}
                 </label>
                 <input
                   type="text"
@@ -429,11 +434,11 @@ export default function IncidentsPage() {
                     setForm((f) => ({ ...f, riderName: e.target.value }))
                   }
                   className={formInput}
-                  placeholder="e.g. Guest rider, parent name"
+                  placeholder={t("dashboard.incidentsRiderNamePlaceholder")}
                 />
               </div>
               <div>
-                <label className={labelClass}>Description *</label>
+                <label className={labelClass}>{t("dashboard.incidentsLabelDescription")}</label>
                 <textarea
                   value={form.description}
                   onChange={(e) =>
@@ -442,11 +447,11 @@ export default function IncidentsPage() {
                   required
                   rows={4}
                   className={`${formInput} resize-none`}
-                  placeholder="What happened? Include as much detail as possible for insurance and liability."
+                  placeholder={t("dashboard.incidentsDescriptionPlaceholder")}
                 />
               </div>
               <div>
-                <label className={labelClass}>Witnesses</label>
+                <label className={labelClass}>{t("dashboard.incidentsLabelWitnesses")}</label>
                 <input
                   type="text"
                   value={form.witnesses}
@@ -454,11 +459,11 @@ export default function IncidentsPage() {
                     setForm((f) => ({ ...f, witnesses: e.target.value }))
                   }
                   className={formInput}
-                  placeholder="Names of witnesses, comma-separated"
+                  placeholder={t("dashboard.incidentsWitnessesPlaceholder")}
                 />
               </div>
               <div>
-                <label className={labelClass}>Location</label>
+                <label className={labelClass}>{t("dashboard.incidentsLabelLocation")}</label>
                 <input
                   type="text"
                   value={form.location}
@@ -466,11 +471,11 @@ export default function IncidentsPage() {
                     setForm((f) => ({ ...f, location: e.target.value }))
                   }
                   className={formInput}
-                  placeholder="e.g. Arena, paddock, trail"
+                  placeholder={t("dashboard.incidentsLocationPlaceholder")}
                 />
               </div>
               <div>
-                <label className={labelClass}>Severity</label>
+                <label className={labelClass}>{t("dashboard.incidentsLabelSeverity")}</label>
                 <select
                   value={form.severity}
                   onChange={(e) =>
@@ -478,14 +483,14 @@ export default function IncidentsPage() {
                   }
                   className={formInput}
                 >
-                  <option value="">Select severity</option>
-                  <option value="minor">Minor</option>
-                  <option value="moderate">Moderate</option>
-                  <option value="serious">Serious</option>
+                  <option value="">{t("dashboard.incidentsSeveritySelect")}</option>
+                  <option value="minor">{t("dashboard.incidentsSeverityMinor")}</option>
+                  <option value="moderate">{t("dashboard.incidentsSeverityModerate")}</option>
+                  <option value="serious">{t("dashboard.incidentsSeveritySerious")}</option>
                 </select>
               </div>
               <div>
-                <label className={labelClass}>Follow-up notes</label>
+                <label className={labelClass}>{t("dashboard.incidentsLabelFollowUp")}</label>
                 <textarea
                   value={form.followUpNotes}
                   onChange={(e) =>
@@ -493,7 +498,7 @@ export default function IncidentsPage() {
                   }
                   rows={2}
                   className={`${formInput} resize-none`}
-                  placeholder="Actions taken, medical follow-up, etc."
+                  placeholder={t("dashboard.incidentsFollowUpPlaceholder")}
                 />
               </div>
               <div className="flex gap-2 pt-2">
@@ -502,7 +507,7 @@ export default function IncidentsPage() {
                   onClick={() => setShowModal(false)}
                   className={btnSecondary}
                 >
-                  Cancel
+                  {t("dashboard.bookingsCancel")}
                 </button>
                 <button
                   type="submit"
@@ -512,10 +517,10 @@ export default function IncidentsPage() {
                   {submitLoading ? (
                     <>
                       <LoadingSpinner size={16} className="text-black" />
-                      {editingReport ? "Saving…" : "Adding…"}
+                      {editingReport ? t("dashboard.incidentsSaving") : t("dashboard.incidentsAdding")}
                     </>
                   ) : (
-                    editingReport ? "Save" : "Report"
+                    editingReport ? t("dashboard.incidentsSave") : t("dashboard.incidentsReportSubmit")
                   )}
                 </button>
               </div>

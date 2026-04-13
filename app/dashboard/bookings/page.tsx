@@ -9,6 +9,7 @@ import TableSkeleton from "@/components/ui/TableSkeleton";
 import GuidedTourOverlay, { type GuidedTourStep } from "@/components/dashboard/GuidedTourOverlay";
 import { usePageTour } from "@/components/dashboard/usePageTour";
 import { trackEvent } from "@/lib/analytics/mixpanel-client";
+import { useLanguage } from "@/components/providers/LanguageProvider";
 
 interface Booking {
   id: string;
@@ -33,6 +34,8 @@ export default function BookingsPage() {
   const [bookings, setBookings] = useState<Booking[]>([]);
   const [horses, setHorses] = useState<Horse[]>([]);
   const { profile } = useProfile();
+  const { t, lang } = useLanguage();
+  const dateLocale = lang === "ar" ? "ar-SA" : "en-US";
   const [loading, setLoading] = useState(true);
   const [showCreate, setShowCreate] = useState(false);
   const [showDeclineModal, setShowDeclineModal] = useState<Booking | null>(null);
@@ -66,7 +69,7 @@ export default function BookingsPage() {
     profile?.role === "trainer" || profile?.role === "owner";
 
   const formatDate = (d: string) =>
-    new Date(d).toLocaleDateString("en-US", {
+    new Date(d).toLocaleDateString(dateLocale, {
       weekday: "short",
       month: "short",
       day: "numeric",
@@ -185,7 +188,7 @@ export default function BookingsPage() {
   };
 
   const handleCancel = async (id: string) => {
-    if (!confirm("Cancel this booking?")) return;
+    if (!confirm(t("dashboard.bookingsConfirmCancel"))) return;
     trackEvent("booking_cancel_attempted", { booking_id: id });
     try {
       const res = await fetch(`/api/bookings/${id}`, {
@@ -241,20 +244,20 @@ export default function BookingsPage() {
   const tourSteps: GuidedTourStep[] = [
     {
       id: "create",
-      title: "Request Lesson",
-      description: "Students can request a new lesson from here.",
+      title: t("dashboard.bookingsTourCreateTitle"),
+      description: t("dashboard.bookingsTourCreateDesc"),
       selector: '[data-tour="bookings-create"]',
     },
     {
       id: "pending",
-      title: "Pending Requests",
-      description: "Owners and trainers approve or decline lesson requests here.",
+      title: t("dashboard.bookingsTourPendingTitle"),
+      description: t("dashboard.bookingsTourPendingDesc"),
       selector: '[data-tour="bookings-pending"]',
     },
     {
       id: "upcoming",
-      title: "Upcoming Lessons",
-      description: "Track scheduled and pending lessons in one place.",
+      title: t("dashboard.bookingsTourUpcomingTitle"),
+      description: t("dashboard.bookingsTourUpcomingDesc"),
       selector: '[data-tour="bookings-upcoming"]',
     },
   ];
@@ -269,11 +272,11 @@ export default function BookingsPage() {
       />
       <div className="flex items-center justify-between flex-wrap gap-4">
         <h1 className="font-serif text-3xl md:text-4xl font-normal text-black">
-          {isStudent ? "My Bookings" : "Bookings"}
+          {isStudent ? t("dashboard.bookingsTitleStudent") : t("dashboard.bookingsTitleStaff")}
         </h1>
         {isStudent && horses.length > 0 && (
           <button onClick={() => setShowCreate(true)} className={btnPrimary} data-tour="bookings-create">
-            + Request Lesson
+            {t("dashboard.bookingsRequestLesson")}
           </button>
         )}
       </div>
@@ -285,10 +288,10 @@ export default function BookingsPage() {
           {isTrainerOrOwner && pending.length > 0 && (
             <div className="border border-black/20 p-6" data-tour="bookings-pending">
               <h2 className="font-serif text-lg text-black mb-2">
-                Pending Requests
+                {t("dashboard.bookingsPendingTitle")}
               </h2>
               <p className="text-black/50 text-sm mb-4">
-                Approve or decline lesson requests from students.
+                {t("dashboard.bookingsPendingLead")}
               </p>
               <div className="space-y-3">
                 {pending.map((b) => (
@@ -321,7 +324,7 @@ export default function BookingsPage() {
                         onClick={() => handleApprove(b)}
                         className="px-3 py-1.5 bg-accent text-white text-xs font-medium uppercase tracking-wider hover:opacity-95"
                       >
-                        Approve
+                        {t("dashboard.bookingsApprove")}
                       </button>
                       <button
                         onClick={() => {
@@ -330,7 +333,7 @@ export default function BookingsPage() {
                         }}
                         className="px-3 py-1.5 border border-black/30 text-black/80 text-xs uppercase tracking-wider hover:border-black/50"
                       >
-                        Decline
+                        {t("dashboard.bookingsDecline")}
                       </button>
                     </div>
                   </div>
@@ -342,7 +345,9 @@ export default function BookingsPage() {
           {(upcoming.length > 0 || (isStudent && myUpcomingPending.length > 0)) && (
             <div className="border border-black/10 p-6" data-tour="bookings-upcoming">
               <h2 className="font-serif text-lg text-black mb-4">
-                {isStudent ? "My Lessons" : "Upcoming Lessons"}
+                {isStudent
+                  ? t("dashboard.bookingsUpcomingStudent")
+                  : t("dashboard.bookingsUpcomingStaff")}
               </h2>
               <div className="space-y-3">
                 {(isStudent ? [...myUpcomingPending, ...upcoming] : upcoming).map((b) => (
@@ -365,12 +370,14 @@ export default function BookingsPage() {
                         </span>
                         {b.status === "pending" && (
                           <span className="text-black/60 text-xs block">
-                            Pending approval
+                            {t("dashboard.bookingsPendingApproval")}
                           </span>
                         )}
                         {b.trainer?.fullName && (
                           <span className="text-black/40 text-xs block">
-                            Trainer: {b.trainer.fullName}
+                            {t("dashboard.bookingsTrainerLine", {
+                              name: b.trainer.fullName,
+                            })}
                           </span>
                         )}
                       </div>
@@ -380,7 +387,7 @@ export default function BookingsPage() {
                         onClick={() => handleCancel(b.id)}
                         className="text-black/60 hover:text-black text-xs uppercase tracking-wider"
                       >
-                        Cancel
+                        {t("dashboard.bookingsCancel")}
                       </button>
                     )}
                   </div>
@@ -392,7 +399,7 @@ export default function BookingsPage() {
           {isStudent && declined.length > 0 && (
             <div className="border border-black/10 p-6">
               <h2 className="font-serif text-lg text-black mb-4">
-                Declined Requests
+                {t("dashboard.bookingsDeclinedTitle")}
               </h2>
               <div className="space-y-3">
                 {declined.map((b) => (
@@ -415,12 +422,16 @@ export default function BookingsPage() {
                         </span>
                         {b.declinedNotes && (
                           <span className="text-black/60 text-xs block mt-1">
-                            Reason: {b.declinedNotes}
+                            {t("dashboard.bookingsReasonLine", {
+                              reason: b.declinedNotes,
+                            })}
                           </span>
                         )}
                       </div>
                     </div>
-                    <span className="text-black/50 text-xs uppercase">Declined</span>
+                    <span className="text-black/50 text-xs uppercase">
+                      {t("dashboard.bookingsDeclinedBadge")}
+                    </span>
                   </div>
                 ))}
               </div>
@@ -430,7 +441,7 @@ export default function BookingsPage() {
           {past.length > 0 && (
             <div className="border border-black/10 p-6">
               <h2 className="font-serif text-lg text-black mb-4">
-                Past Sessions
+                {t("dashboard.bookingsPastSessions")}
               </h2>
               <div className="space-y-3">
                 {past.slice(0, 10).map((b) => (
@@ -463,8 +474,8 @@ export default function BookingsPage() {
             <div className="border border-black/10 p-8 text-center">
               <p className="text-black/60">
                 {isStudent
-                  ? "No bookings yet. Request a lesson to get started."
-                  : "No bookings in this stable yet."}
+                  ? t("dashboard.bookingsEmptyStudent")
+                  : t("dashboard.bookingsEmptyStaff")}
               </p>
             </div>
           )}
@@ -481,12 +492,12 @@ export default function BookingsPage() {
             onClick={(e) => e.stopPropagation()}
           >
             <h2 className="font-serif text-xl text-black mb-4">
-              Request a Lesson
+              {t("dashboard.bookingsModalTitle")}
             </h2>
             <div className="space-y-4">
               <div>
                 <label className="text-xs text-black/50 uppercase tracking-widest block mb-2">
-                  Horse
+                  {t("dashboard.bookingsLabelHorse")}
                 </label>
                 <select
                   value={createForm.horseId}
@@ -495,7 +506,7 @@ export default function BookingsPage() {
                   }
                   className={formInput}
                 >
-                  <option value="">Select horse</option>
+                  <option value="">{t("dashboard.bookingsSelectHorse")}</option>
                   {horses.map((h) => (
                     <option key={h.id} value={h.id}>
                       {h.name}
@@ -505,7 +516,7 @@ export default function BookingsPage() {
               </div>
               <div>
                 <label className="text-xs text-black/50 uppercase tracking-widest block mb-2">
-                  Date
+                  {t("dashboard.bookingsLabelDate")}
                 </label>
                 <input
                   type="date"
@@ -519,7 +530,7 @@ export default function BookingsPage() {
               <div className="grid grid-cols-2 gap-4">
                 <div>
                   <label className="text-xs text-black/50 uppercase tracking-widest block mb-2">
-                    Start
+                    {t("dashboard.bookingsLabelStart")}
                   </label>
                   <input
                     type="time"
@@ -532,7 +543,7 @@ export default function BookingsPage() {
                 </div>
                 <div>
                   <label className="text-xs text-black/50 uppercase tracking-widest block mb-2">
-                    End
+                    {t("dashboard.bookingsLabelEnd")}
                   </label>
                   <input
                     type="time"
@@ -546,7 +557,7 @@ export default function BookingsPage() {
               </div>
               <div>
                 <label className="text-xs text-black/50 uppercase tracking-widest block mb-2">
-                  Notes (optional)
+                  {t("dashboard.bookingsLabelNotes")}
                 </label>
                 <textarea
                   value={createForm.notes}
@@ -563,7 +574,7 @@ export default function BookingsPage() {
                 onClick={() => setShowCreate(false)}
                 className={`flex-1 ${btnSecondary}`}
               >
-                Cancel
+                {t("dashboard.bookingsCancel")}
               </button>
               <button
                 onClick={handleCreate}
@@ -573,10 +584,10 @@ export default function BookingsPage() {
                 {createLoading ? (
                   <>
                     <LoadingSpinner size={16} className="text-black" />
-                    Requesting…
+                    {t("dashboard.bookingsRequesting")}
                   </>
                 ) : (
-                  "Request"
+                  t("dashboard.bookingsRequest")
                 )}
               </button>
             </div>
@@ -593,18 +604,20 @@ export default function BookingsPage() {
             className="bg-base border border-black/10 p-4 sm:p-6 w-full max-w-md max-h-[90vh] overflow-y-auto my-auto"
             onClick={(e) => e.stopPropagation()}
           >
-            <h2 className="font-serif text-xl text-black mb-2">Decline Request</h2>
+            <h2 className="font-serif text-xl text-black mb-2">
+              {t("dashboard.bookingsDeclineModalTitle")}
+            </h2>
             <p className="text-black/60 text-sm mb-4">
               {showDeclineModal.horse?.name} • {formatDate(showDeclineModal.bookingDate)} • {formatTime(showDeclineModal.startTime)}
             </p>
             <div className="mb-4">
               <label className="text-xs text-black/50 uppercase tracking-widest block mb-2">
-                Reason (optional) — shown to the student
+                {t("dashboard.bookingsDeclineReasonLabel")}
               </label>
               <textarea
                 value={declineNotes}
                 onChange={(e) => setDeclineNotes(e.target.value)}
-                placeholder="e.g. Horse is in training that day"
+                placeholder={t("dashboard.bookingsDeclinePlaceholder")}
                 rows={3}
                 className={`${formInput} resize-none`}
               />
@@ -614,13 +627,13 @@ export default function BookingsPage() {
                 onClick={() => setShowDeclineModal(null)}
                 className={`flex-1 ${btnSecondary}`}
               >
-                Cancel
+                {t("dashboard.bookingsCancel")}
               </button>
               <button
                 onClick={handleDecline}
                 className="flex-1 px-4 py-2.5 border border-red-500/50 text-red-400 text-sm uppercase tracking-wider hover:border-red-500/80"
               >
-                Decline
+                {t("dashboard.bookingsDecline")}
               </button>
             </div>
           </div>

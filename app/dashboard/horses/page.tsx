@@ -12,6 +12,7 @@ import HorseIdentificationFields from "@/components/ui/HorseIdentificationFields
 import GuidedTourOverlay, { type GuidedTourStep } from "@/components/dashboard/GuidedTourOverlay";
 import { usePageTour } from "@/components/dashboard/usePageTour";
 import { trackEvent } from "@/lib/analytics/mixpanel-client";
+import { useLanguage } from "@/components/providers/LanguageProvider";
 
 interface Session {
   id: number;
@@ -60,6 +61,7 @@ interface RiderOption {
 }
 
 export default function HorsesPage() {
+  const { t } = useLanguage();
   const router = useRouter();
   const [horses, setHorses] = useState<Horse[]>([]);
   const [riders, setRiders] = useState<RiderOption[]>([]);
@@ -469,7 +471,7 @@ export default function HorsesPage() {
         onComplete={completeTour}
       />
       <div className="flex items-center justify-between flex-wrap gap-2">
-        <h1 className="font-serif text-2xl md:text-3xl font-normal text-black">Horses</h1>
+        <h1 className="font-serif text-2xl md:text-3xl font-normal text-black">{t("dashboard.horsesTitle")}</h1>
         <div className="flex items-center gap-2">
           {subscription && !subscription.canAddHorse && (
             <Link

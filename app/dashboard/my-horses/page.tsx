@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import Link from "next/link";
 import { HorseAvatar } from "@/components/HorseAvatar";
 import TableSkeleton from "@/components/ui/TableSkeleton";
+import { useLanguage } from "@/components/providers/LanguageProvider";
 
 interface Session {
   id: number;
@@ -27,6 +28,7 @@ interface Horse {
 }
 
 export default function MyHorsesPage() {
+  const { t } = useLanguage();
   const [horses, setHorses] = useState<Horse[]>([]);
   const [loading, setLoading] = useState(true);
 
@@ -43,12 +45,12 @@ export default function MyHorsesPage() {
   return (
     <div className="space-y-8">
       <h1 className="font-serif text-3xl md:text-4xl font-normal text-black">
-        My Horses
+        {t("dashboard.myHorsesTitle")}
       </h1>
       <p className="text-black/60 text-sm max-w-xl">
-        Horses assigned to you by your trainer.{" "}
+        {t("dashboard.myHorsesIntro")}{" "}
         <Link href="/dashboard/training-history" className="text-black/80 hover:text-black underline">
-          View training history
+          {t("dashboard.myHorsesHistoryLink")}
         </Link>
       </p>
 

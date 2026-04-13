@@ -6,6 +6,7 @@ import {
   HORSE_COAT_COLORS,
   HORSE_GENDERS,
 } from "@/lib/horse-options";
+import { useLanguage } from "@/components/providers/LanguageProvider";
 
 /** Shared shape for add / edit horse modals (identification block). */
 export interface HorseIdentificationFormValues {
@@ -46,14 +47,15 @@ export default function HorseIdentificationFields({
   onChange,
   formInput,
 }: HorseIdentificationFieldsProps) {
+  const { t } = useLanguage();
   return (
     <>
       <p className="sm:col-span-2 text-xs uppercase tracking-widest text-black/50 mb-0 -mt-2">
-        Identification
+        {t("dashboard.horseFormIdentification")}
       </p>
       <input
         name="name"
-        placeholder="Barn / stable name *"
+        placeholder={t("dashboard.horseFormBarnPlaceholder")}
         value={form.name}
         onChange={onChange}
         className={`sm:col-span-2 ${formInput}`}
@@ -61,7 +63,7 @@ export default function HorseIdentificationFields({
       />
       <input
         name="registeredName"
-        placeholder="Registered name (passport / competition)"
+        placeholder={t("dashboard.horseFormRegisteredPlaceholder")}
         value={form.registeredName}
         onChange={onChange}
         className={`sm:col-span-2 ${formInput}`}
@@ -73,7 +75,7 @@ export default function HorseIdentificationFields({
         onChange={onChange}
         className={formInput}
       >
-        <option value="">Horse type…</option>
+        <option value="">{t("dashboard.horseFormHorseTypePlaceholder")}</option>
         {HORSE_CATEGORIES.map((c) => (
           <option key={c} value={c}>
             {c}
@@ -98,14 +100,14 @@ export default function HorseIdentificationFields({
         name="age"
         type="number"
         min={0}
-        placeholder="Age (years)"
+        placeholder={t("dashboard.horseFormAgePlaceholder")}
         value={form.age}
         onChange={onChange}
         className={formInput}
       />
       <input
         name="breed"
-        placeholder="Breed"
+        placeholder={t("dashboard.horseFormBreedPlaceholder")}
         value={form.breed}
         onChange={onChange}
         list={DL_BREED}
@@ -119,7 +121,7 @@ export default function HorseIdentificationFields({
       </datalist>
       <input
         name="color"
-        placeholder="Coat colour"
+        placeholder={t("dashboard.horseFormCoatPlaceholder")}
         value={form.color}
         onChange={onChange}
         list={DL_COLOR}
@@ -133,7 +135,7 @@ export default function HorseIdentificationFields({
       </datalist>
       <textarea
         name="markings"
-        placeholder="Markings & distinguishing features (e.g. star, socks, brands)"
+        placeholder={t("dashboard.horseFormMarkingsPlaceholder")}
         value={form.markings}
         onChange={onChange}
         rows={2}
@@ -143,14 +145,14 @@ export default function HorseIdentificationFields({
       <input
         name="height"
         type="number"
-        placeholder="Height (cm)"
+        placeholder={t("dashboard.horseFormHeightPlaceholder")}
         value={form.height}
         onChange={onChange}
         className={formInput}
       />
       <input
         name="microchip"
-        placeholder="Microchip number"
+        placeholder={t("dashboard.horseFormMicrochipPlaceholder")}
         value={form.microchip}
         onChange={onChange}
         className={formInput}
@@ -158,7 +160,7 @@ export default function HorseIdentificationFields({
       />
       <input
         name="ueln"
-        placeholder="UELN"
+        placeholder={t("dashboard.horseFormUelnPlaceholder")}
         value={form.ueln}
         onChange={onChange}
         className={formInput}
@@ -166,7 +168,7 @@ export default function HorseIdentificationFields({
       />
       <input
         name="passportNumber"
-        placeholder="Passport / registration №"
+        placeholder={t("dashboard.horseFormPassportPlaceholder")}
         value={form.passportNumber}
         onChange={onChange}
         className={formInput}
@@ -174,7 +176,7 @@ export default function HorseIdentificationFields({
       />
       <input
         name="feiId"
-        placeholder="FEI ID"
+        placeholder={t("dashboard.horseFormFeiPlaceholder")}
         value={form.feiId}
         onChange={onChange}
         className={formInput}
@@ -182,7 +184,7 @@ export default function HorseIdentificationFields({
       />
       <input
         name="studbook"
-        placeholder="Studbook / breed society"
+        placeholder={t("dashboard.horseFormStudbookPlaceholder")}
         value={form.studbook}
         onChange={onChange}
         className={formInput}
@@ -190,7 +192,7 @@ export default function HorseIdentificationFields({
       />
       <input
         name="sireName"
-        placeholder="Sire (father)"
+        placeholder={t("dashboard.horseFormSirePlaceholder")}
         value={form.sireName}
         onChange={onChange}
         className={formInput}
@@ -198,7 +200,7 @@ export default function HorseIdentificationFields({
       />
       <input
         name="damName"
-        placeholder="Dam (mother)"
+        placeholder={t("dashboard.horseFormDamPlaceholder")}
         value={form.damName}
         onChange={onChange}
         className={formInput}
@@ -206,18 +208,18 @@ export default function HorseIdentificationFields({
       />
       <input
         name="countryOfBirth"
-        placeholder="Country / place of birth"
+        placeholder={t("dashboard.horseFormCountryBirthPlaceholder")}
         value={form.countryOfBirth}
         onChange={onChange}
         className={`sm:col-span-2 ${formInput}`}
         autoComplete="off"
       />
       <p className="sm:col-span-2 text-xs uppercase tracking-widest text-black/50 mb-0">
-        Owner & management
+        {t("dashboard.horseFormOwnerSection")}
       </p>
       <input
         name="owner"
-        placeholder="Registered owner"
+        placeholder={t("dashboard.horseFormOwnerPlaceholder")}
         value={form.owner}
         onChange={onChange}
         className={`sm:col-span-2 ${formInput}`}

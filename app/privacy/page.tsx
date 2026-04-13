@@ -14,7 +14,7 @@ export default function PrivacyPage() {
   const contact = legalContactEmail();
 
   return (
-    <LegalPageShell title="Privacy Policy" lastUpdated="5 April 2026">
+    <LegalPageShell titleKey="legal.privacyDocumentTitle" lastUpdated="5 April 2026">
       <section>
         <h2>1. Who we are</h2>
         <p>

@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { useProfile } from "@/components/providers/ProfileProvider";
 import LoadingSpinner from "@/components/ui/LoadingSpinner";
 import TableSkeleton from "@/components/ui/TableSkeleton";
+import { useLanguage } from "@/components/providers/LanguageProvider";
 
 interface Competition {
   id: string;
@@ -29,6 +30,8 @@ const btnSecondary = "px-4 py-2.5 border border-black/10 text-black text-sm uppe
 
 export default function CompetitionsPage() {
   const { profile } = useProfile();
+  const { t, lang } = useLanguage();
+  const dateLocale = lang === "ar" ? "ar-SA" : "en-US";
   const [competitions, setCompetitions] = useState<Competition[]>([]);
   const [horses, setHorses] = useState<Horse[]>([]);
   const [loading, setLoading] = useState(true);
@@ -70,7 +73,7 @@ export default function CompetitionsPage() {
   }, [isTrainerOrOwner]);
 
   const formatDate = (d: string) =>
-    new Date(d).toLocaleDateString("en-US", {
+    new Date(d).toLocaleDateString(dateLocale, {
       weekday: "short",
       month: "short",
       day: "numeric",
@@ -108,7 +111,7 @@ export default function CompetitionsPage() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!form.eventName.trim() || !form.eventDate || !form.horseId) {
-      setToast("Event name, date, and horse are required");
+      setToast(t("dashboard.competitionsRequired"));
       return;
     }
     setSubmitLoading(true);
@@ -124,7 +127,7 @@ export default function CompetitionsPage() {
         setCompetitions((prev) =>
           prev.map((x) => (x.id === editingCompetition.id ? data : x))
         );
-        setToast("Competition updated");
+        setToast(t("dashboard.competitionsUpdated"));
         setTimeout(() => setToast(null), 3000);
       } else {
         const res = await fetch("/api/competitions", {
@@ -135,7 +138,7 @@ export default function CompetitionsPage() {
         const data = await res.json();
         if (!res.ok) throw new Error(data.error || "Failed");
         setCompetitions((prev) => [data, ...prev]);
-        setToast("Competition added");
+        setToast(t("dashboard.competitionsAdded"));
         setTimeout(() => setToast(null), 3000);
       }
       setShowModal(false);
@@ -148,7 +151,7 @@ export default function CompetitionsPage() {
   };
 
   const handleDelete = async (id: string) => {
-    if (!confirm("Delete this competition?")) return;
+    if (!confirm(t("dashboard.competitionsConfirmDelete"))) return;
     try {
       const res = await fetch(`/api/competitions/${id}`, { method: "DELETE" });
       if (!res.ok) {
@@ -156,7 +159,7 @@ export default function CompetitionsPage() {
         throw new Error(data.error || "Failed");
       }
       setCompetitions((prev) => prev.filter((x) => x.id !== id));
-      setToast("Competition deleted");
+      setToast(t("dashboard.competitionsDeleted"));
       setTimeout(() => setToast(null), 3000);
     } catch (err) {
       setToast((err as Error).message);
@@ -173,15 +176,15 @@ export default function CompetitionsPage() {
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div>
           <h1 className="font-serif text-3xl md:text-4xl font-normal text-black">
-            Competitions
+            {t("dashboard.competitionsTitle")}
           </h1>
           <p className="text-black/60 text-sm max-w-xl mt-2">
-            Upcoming and past competition results for horses in your stable.
+            {t("dashboard.competitionsLead")}
           </p>
         </div>
         {isTrainerOrOwner && horses.length > 0 && (
           <button onClick={openAdd} className={btnPrimary}>
-            + Add competition
+            {t("dashboard.competitionsAddCta")}
           </button>
         )}
       </div>
@@ -198,7 +201,7 @@ export default function CompetitionsPage() {
         <>
           {upcoming.length > 0 && (
             <div className="border border-black/10 p-6">
-              <h2 className="font-serif text-lg text-black mb-4">Upcoming</h2>
+              <h2 className="font-serif text-lg text-black mb-4">{t("dashboard.competitionsUpcoming")}</h2>
               <div className="space-y-3">
                 {upcoming.map((c) => (
                   <div
@@ -215,7 +218,7 @@ export default function CompetitionsPage() {
                       </span>
                       {c.horse && (
                         <span className="text-black/40 text-xs block">
-                          Horse: {c.horse.name}
+                          {t("dashboard.competitionsHorsePrefix")} {c.horse.name}
                         </span>
                       )}
                     </div>
@@ -225,13 +228,13 @@ export default function CompetitionsPage() {
                           onClick={() => openEdit(c)}
                           className="text-black hover:underline text-sm uppercase tracking-wider"
                         >
-                          Edit
+                          {t("dashboard.teamRidersEdit")}
                         </button>
                         <button
                           onClick={() => handleDelete(c.id)}
                           className="text-black/60 hover:text-black text-sm uppercase tracking-wider"
                         >
-                          Delete
+                          {t("dashboard.teamRidersDelete")}
                         </button>
                       </div>
                     )}
@@ -243,7 +246,7 @@ export default function CompetitionsPage() {
 
           {past.length > 0 && (
             <div className="border border-black/10 p-6">
-              <h2 className="font-serif text-lg text-black mb-4">Past Results</h2>
+              <h2 className="font-serif text-lg text-black mb-4">{t("dashboard.competitionsPast")}</h2>
               <div className="space-y-3">
                 {past.map((c) => (
                   <div
@@ -260,12 +263,12 @@ export default function CompetitionsPage() {
                       </span>
                       {c.horse && (
                         <span className="text-black/40 text-xs block">
-                          Horse: {c.horse.name}
+                          {t("dashboard.competitionsHorsePrefix")} {c.horse.name}
                         </span>
                       )}
                       {c.result && (
                         <span className="text-black/60 text-xs block mt-1">
-                          Result: {c.result}
+                          {t("dashboard.competitionsResultPrefix")} {c.result}
                         </span>
                       )}
                     </div>
@@ -275,13 +278,13 @@ export default function CompetitionsPage() {
                           onClick={() => openEdit(c)}
                           className="text-black hover:underline text-sm uppercase tracking-wider"
                         >
-                          Edit
+                          {t("dashboard.teamRidersEdit")}
                         </button>
                         <button
                           onClick={() => handleDelete(c.id)}
                           className="text-black/60 hover:text-black text-sm uppercase tracking-wider"
                         >
-                          Delete
+                          {t("dashboard.teamRidersDelete")}
                         </button>
                       </div>
                     )}
@@ -293,13 +296,13 @@ export default function CompetitionsPage() {
 
           {upcoming.length === 0 && past.length === 0 && (
             <div className="border border-black/10 p-8 text-center">
-              <p className="text-black/60">No competitions recorded yet.</p>
+              <p className="text-black/60">{t("dashboard.competitionsEmpty")}</p>
               {isTrainerOrOwner && horses.length > 0 && (
                 <button
                   onClick={openAdd}
                   className="mt-4 text-black/60 hover:text-black text-sm uppercase tracking-wider"
                 >
-                  + Add your first competition
+                  {t("dashboard.competitionsAddFirst")}
                 </button>
               )}
             </div>
@@ -311,22 +314,22 @@ export default function CompetitionsPage() {
         <div className="fixed inset-0 bg-black/80 flex items-center justify-center z-50 p-4 overflow-y-auto sm:items-center">
           <div className="bg-base border border-black/10 max-w-md w-full p-4 sm:p-6 max-h-[90vh] overflow-y-auto">
             <h2 className="font-serif text-xl text-black mb-6">
-              {editingCompetition ? "Edit competition" : "Add competition"}
+              {editingCompetition ? t("dashboard.competitionsModalEdit") : t("dashboard.competitionsModalAdd")}
             </h2>
             <form onSubmit={handleSubmit} className="space-y-4">
               <div>
-                <label className={labelClass}>Event name *</label>
+                <label className={labelClass}>{t("dashboard.competitionsLabelEventName")}</label>
                 <input
                   type="text"
                   value={form.eventName}
                   onChange={(e) => setForm((f) => ({ ...f, eventName: e.target.value }))}
                   required
                   className={formInput}
-                  placeholder="e.g. Regional Dressage Championship"
+                  placeholder={t("dashboard.competitionsEventPlaceholder")}
                 />
               </div>
               <div>
-                <label className={labelClass}>Date *</label>
+                <label className={labelClass}>{t("dashboard.competitionsLabelDate")}</label>
                 <input
                   type="date"
                   value={form.eventDate}
@@ -336,51 +339,51 @@ export default function CompetitionsPage() {
                 />
               </div>
               <div>
-                <label className={labelClass}>Horse *</label>
+                <label className={labelClass}>{t("dashboard.competitionsLabelHorse")}</label>
                 <select
                   value={form.horseId}
                   onChange={(e) => setForm((f) => ({ ...f, horseId: e.target.value }))}
                   required
                   className={formInput}
                 >
-                  <option value="">Select horse</option>
+                  <option value="">{t("dashboard.bookingsSelectHorse")}</option>
                   {horses.map((h) => (
                     <option key={h.id} value={h.id}>{h.name}</option>
                   ))}
                 </select>
               </div>
               <div>
-                <label className={labelClass}>Location</label>
+                <label className={labelClass}>{t("dashboard.competitionsLabelLocation")}</label>
                 <input
                   type="text"
                   value={form.location}
                   onChange={(e) => setForm((f) => ({ ...f, location: e.target.value }))}
                   className={formInput}
-                  placeholder="e.g. Amsterdam Arena"
+                  placeholder={t("dashboard.competitionsLocationPlaceholder")}
                 />
               </div>
               <div>
-                <label className={labelClass}>Discipline</label>
+                <label className={labelClass}>{t("dashboard.competitionsLabelDiscipline")}</label>
                 <input
                   type="text"
                   value={form.discipline}
                   onChange={(e) => setForm((f) => ({ ...f, discipline: e.target.value }))}
                   className={formInput}
-                  placeholder="e.g. Dressage, Jumping"
+                  placeholder={t("dashboard.competitionsDisciplinePlaceholder")}
                 />
               </div>
               <div>
-                <label className={labelClass}>Result</label>
+                <label className={labelClass}>{t("dashboard.competitionsLabelResult")}</label>
                 <input
                   type="text"
                   value={form.result}
                   onChange={(e) => setForm((f) => ({ ...f, result: e.target.value }))}
                   className={formInput}
-                  placeholder="e.g. 1st place, 72.5%"
+                  placeholder={t("dashboard.competitionsResultPlaceholder")}
                 />
               </div>
               <div>
-                <label className={labelClass}>Notes</label>
+                <label className={labelClass}>{t("dashboard.competitionsLabelNotes")}</label>
                 <textarea
                   value={form.notes}
                   onChange={(e) => setForm((f) => ({ ...f, notes: e.target.value }))}
@@ -394,7 +397,7 @@ export default function CompetitionsPage() {
                   onClick={() => setShowModal(false)}
                   className={btnSecondary}
                 >
-                  Cancel
+                  {t("dashboard.bookingsCancel")}
                 </button>
                 <button
                   type="submit"
@@ -404,10 +407,10 @@ export default function CompetitionsPage() {
                   {submitLoading ? (
                     <>
                       <LoadingSpinner size={16} className="text-black" />
-                      {editingCompetition ? "Saving…" : "Adding…"}
+                      {editingCompetition ? t("dashboard.competitionsSaving") : t("dashboard.competitionsAdding")}
                     </>
                   ) : (
-                    editingCompetition ? "Save" : "Add"
+                    editingCompetition ? t("dashboard.competitionsSave") : t("dashboard.competitionsAddSubmit")
                   )}
                 </button>
               </div>

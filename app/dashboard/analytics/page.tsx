@@ -8,6 +8,7 @@ import { useTheme } from "@/components/providers/ThemeProvider";
 import TableSkeleton from "@/components/ui/TableSkeleton";
 import GuidedTourOverlay, { type GuidedTourStep } from "@/components/dashboard/GuidedTourOverlay";
 import { usePageTour } from "@/components/dashboard/usePageTour";
+import { useLanguage } from "@/components/providers/LanguageProvider";
 import {
   LineChart,
   Line,
@@ -34,6 +35,7 @@ interface AnalyticsData {
 export default function AnalyticsPage() {
   const router = useRouter();
   const { profile } = useProfile();
+  const { t } = useLanguage();
   const { theme } = useTheme();
   const isDark = theme === "dark";
   const [data, setData] = useState<AnalyticsData | null>(null);
@@ -84,7 +86,7 @@ export default function AnalyticsPage() {
     return (
       <div className="space-y-6">
         <h1 className="font-serif text-2xl md:text-3xl font-normal text-black">
-          Analytics
+          {t("dashboard.analyticsTitle")}
         </h1>
         <TableSkeleton rows={6} cols={4} />
       </div>
@@ -95,17 +97,17 @@ export default function AnalyticsPage() {
     return (
       <div className="space-y-6">
         <h1 className="font-serif text-2xl md:text-3xl font-normal text-black">
-          Analytics
+          {t("dashboard.analyticsTitle")}
         </h1>
         <div className="border border-black/10 p-8 text-center">
           <p className="text-black/70 mb-4">
-            Upgrade to Starter or higher to access workload analytics and insights.
+            {t("dashboard.analyticsLockedLead")}
           </p>
           <Link
             href="/dashboard/settings"
             className="inline-block px-4 py-2.5 bg-accent text-white font-medium text-sm uppercase tracking-wider hover:opacity-95 transition"
           >
-            Upgrade plan
+            {t("dashboard.upgradePlanCta")}
           </Link>
         </div>
       </div>
@@ -116,9 +118,9 @@ export default function AnalyticsPage() {
     return (
       <div className="space-y-6">
         <h1 className="font-serif text-2xl md:text-3xl font-normal text-black">
-          Analytics
+          {t("dashboard.analyticsTitle")}
         </h1>
-        <p className="text-black/50">Failed to load analytics.</p>
+        <p className="text-black/50">{t("dashboard.analyticsLoadFailed")}</p>
       </div>
     );
   }
@@ -126,20 +128,20 @@ export default function AnalyticsPage() {
   const tourSteps: GuidedTourStep[] = [
     {
       id: "kpis",
-      title: "Key Metrics",
-      description: "Monitor total sessions, minutes, and lesson totals at a glance.",
+      title: t("dashboard.analyticsTourKpisTitle"),
+      description: t("dashboard.analyticsTourKpisDesc"),
       selector: '[data-tour="analytics-kpis"]',
     },
     {
       id: "workload",
-      title: "Workload Trend",
-      description: "Track weekly training volume over the last 8 weeks.",
+      title: t("dashboard.analyticsTourWorkloadTitle"),
+      description: t("dashboard.analyticsTourWorkloadDesc"),
       selector: '[data-tour="analytics-workload"]',
     },
     {
       id: "breakdown",
-      title: "Session Breakdown",
-      description: "See which types of sessions are used most.",
+      title: t("dashboard.analyticsTourBreakdownTitle"),
+      description: t("dashboard.analyticsTourBreakdownDesc"),
       selector: '[data-tour="analytics-breakdown"]',
     },
   ];
@@ -153,41 +155,41 @@ export default function AnalyticsPage() {
         onComplete={completeTour}
       />
       <h1 className="font-serif text-2xl md:text-3xl font-normal text-black">
-        Analytics
+        {t("dashboard.analyticsTitle")}
       </h1>
       <p className="text-black/60 text-sm max-w-xl">
-        Workload trends, session breakdown, and top horses. Data from the last 8 weeks.
+        {t("dashboard.analyticsLead")}
       </p>
 
       <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-3 sm:gap-4" data-tour="analytics-kpis">
         <div className="border border-black/10 p-4">
-          <p className="text-black/50 text-xs uppercase tracking-widest">Total sessions</p>
+          <p className="text-black/50 text-xs uppercase tracking-widest">{t("dashboard.analyticsKpiSessions")}</p>
           <p className="text-2xl font-serif text-black mt-1">{data.totalSessions}</p>
         </div>
         <div className="border border-black/10 p-4">
-          <p className="text-black/50 text-xs uppercase tracking-widest">Total minutes</p>
+          <p className="text-black/50 text-xs uppercase tracking-widest">{t("dashboard.analyticsKpiMinutes")}</p>
           <p className="text-2xl font-serif text-black mt-1">{data.totalMinutes}</p>
         </div>
         <div className="border border-black/10 p-4">
-          <p className="text-black/50 text-xs uppercase tracking-widest">Total care cost</p>
+          <p className="text-black/50 text-xs uppercase tracking-widest">{t("dashboard.analyticsKpiCareCost")}</p>
           <p className="text-2xl font-serif text-black mt-1">
             ${(data.totalCareCost ?? 0).toFixed(2)}
           </p>
         </div>
         <div className="border border-black/10 p-4">
-          <p className="text-black/50 text-xs uppercase tracking-widest">Upcoming lessons</p>
+          <p className="text-black/50 text-xs uppercase tracking-widest">{t("dashboard.analyticsKpiUpcoming")}</p>
           <p className="text-2xl font-serif text-black mt-1">{data.bookingsCount.upcoming}</p>
         </div>
         <div className="border border-black/10 p-4">
-          <p className="text-black/50 text-xs uppercase tracking-widest">Completed lessons</p>
+          <p className="text-black/50 text-xs uppercase tracking-widest">{t("dashboard.analyticsKpiCompleted")}</p>
           <p className="text-2xl font-serif text-black mt-1">{data.bookingsCount.completed}</p>
         </div>
       </div>
 
       <div className="border border-black/10 p-6" data-tour="analytics-workload">
-        <h2 className="font-serif text-lg text-black mb-4">Workload by week</h2>
+        <h2 className="font-serif text-lg text-black mb-4">{t("dashboard.analyticsWorkloadWeek")}</h2>
         <p className="text-black/50 text-sm mb-4">
-          Training minutes logged per week (excluding rest days).
+          {t("dashboard.analyticsWorkloadWeekLead")}
         </p>
         <div className="h-48 sm:h-64 min-h-[12rem]">
           <ResponsiveContainer width="100%" height="100%">
@@ -205,8 +207,8 @@ export default function AnalyticsPage() {
               <Tooltip
                 contentStyle={{ backgroundColor: chart.tooltipBg, border: `1px solid ${chart.tooltipBorder}` }}
                 labelStyle={{ color: chart.tooltipText }}
-                formatter={(value: number | undefined) => [value ?? 0, "Minutes"]}
-                labelFormatter={(label) => `Week of ${label}`}
+                formatter={(value: number | undefined) => [value ?? 0, t("dashboard.analyticsTooltipMinutes")]}
+                labelFormatter={(label) => t("dashboard.analyticsTooltipWeekOf", { week: String(label) })}
               />
               <Line
                 type="monotone"
@@ -222,9 +224,9 @@ export default function AnalyticsPage() {
 
       <div className="grid md:grid-cols-2 gap-6">
         <div className="border border-black/10 p-6">
-          <h2 className="font-serif text-lg text-black mb-4">Session types</h2>
+          <h2 className="font-serif text-lg text-black mb-4">{t("dashboard.analyticsSessionTypes")}</h2>
           <p className="text-black/50 text-sm mb-4">
-            Breakdown by punch type (lessons, training, competition, etc.).
+            {t("dashboard.analyticsSessionTypesLead")}
           </p>
           <div className="h-48 sm:h-64 min-h-[12rem]">
             <ResponsiveContainer width="100%" height="100%">
@@ -240,7 +242,7 @@ export default function AnalyticsPage() {
                 />
                 <Tooltip
                   contentStyle={{ backgroundColor: chart.tooltipBg, border: `1px solid ${chart.tooltipBorder}` }}
-                  formatter={(value: number | undefined) => [value ?? 0, "Sessions"]}
+                  formatter={(value: number | undefined) => [value ?? 0, t("dashboard.analyticsTooltipSessions")]}
                 />
                 <Bar dataKey="count" fill={chart.bar} radius={[0, 4, 4, 0]} />
               </BarChart>
@@ -249,12 +251,12 @@ export default function AnalyticsPage() {
         </div>
 
         <div className="border border-black/10 p-6">
-          <h2 className="font-serif text-lg text-black mb-4">Top horses by workload</h2>
+          <h2 className="font-serif text-lg text-black mb-4">{t("dashboard.analyticsTopHorses")}</h2>
           <p className="text-black/50 text-sm mb-4">
-            Most active horses in the last 4 weeks.
+            {t("dashboard.analyticsTopHorsesLead")}
           </p>
           {data.horseWorkload.length === 0 ? (
-            <p className="text-black/50 text-sm">No training data yet.</p>
+            <p className="text-black/50 text-sm">{t("dashboard.analyticsNoTrainingData")}</p>
           ) : (
             <div className="h-48 sm:h-64 min-h-[12rem]">
               <ResponsiveContainer width="100%" height="100%">
@@ -270,7 +272,7 @@ export default function AnalyticsPage() {
                   />
                   <Tooltip
                     contentStyle={{ backgroundColor: chart.tooltipBg, border: `1px solid ${chart.tooltipBorder}` }}
-                    formatter={(value: number | undefined) => [value ?? 0, "Minutes"]}
+                    formatter={(value: number | undefined) => [value ?? 0, t("dashboard.analyticsTooltipMinutes")]}
                   />
                   <Bar dataKey="minutes" fill={chart.bar} radius={[0, 4, 4, 0]} />
                 </BarChart>
@@ -281,12 +283,12 @@ export default function AnalyticsPage() {
       </div>
 
       <div className="border border-black/10 p-6" data-tour="analytics-breakdown">
-        <h2 className="font-serif text-lg text-black mb-4">Cost per horse</h2>
+        <h2 className="font-serif text-lg text-black mb-4">{t("dashboard.analyticsCostPerHorse")}</h2>
         <p className="text-black/50 text-sm mb-4">
-          Total care costs (vet, farrier, vaccinations, etc.) from health records.
+          {t("dashboard.analyticsCostPerHorseLead")}
         </p>
         {(data.horseCosts ?? []).length === 0 ? (
-          <p className="text-black/50 text-sm">No health costs logged yet.</p>
+          <p className="text-black/50 text-sm">{t("dashboard.analyticsNoHealthCosts")}</p>
         ) : (
           <div className="h-48 sm:h-64 min-h-[12rem]">
             <ResponsiveContainer width="100%" height="100%">
@@ -311,7 +313,7 @@ export default function AnalyticsPage() {
                 />
                 <Tooltip
                   contentStyle={{ backgroundColor: chart.tooltipBg, border: `1px solid ${chart.tooltipBorder}` }}
-                  formatter={(value: number | undefined) => [`$${Number(value ?? 0).toFixed(2)}`, "Cost"]}
+                  formatter={(value: number | undefined) => [`$${Number(value ?? 0).toFixed(2)}`, t("dashboard.analyticsTooltipCost")]}
                 />
                 <Bar dataKey="cost" fill={chart.bar} radius={[0, 4, 4, 0]} />
               </BarChart>

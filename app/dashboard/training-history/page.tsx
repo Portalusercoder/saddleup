@@ -6,6 +6,7 @@ import { HorseAvatar } from "@/components/HorseAvatar";
 import { useProfile } from "@/components/providers/ProfileProvider";
 import { useRouter } from "next/navigation";
 import TableSkeleton from "@/components/ui/TableSkeleton";
+import { useLanguage } from "@/components/providers/LanguageProvider";
 
 interface Session {
   id: string;
@@ -24,27 +25,31 @@ interface Horse {
   sessions: Session[];
 }
 
-const PUNCH_LABELS: Record<string, string> = {
-  training: "Training",
-  lesson: "Lesson",
-  free_ride: "Free Ride",
-  competition: "Competition",
-  rest: "Rest",
-  medical_rest: "Medical Rest",
-};
-
-function formatDate(d: string) {
-  return new Date(d).toLocaleDateString("en-US", {
-    weekday: "short",
-    month: "short",
-    day: "numeric",
-    year: "numeric",
-  });
-}
-
 export default function TrainingHistoryPage() {
   const router = useRouter();
   const { profile } = useProfile();
+  const { t, lang } = useLanguage();
+  const dateLocale = lang === "ar" ? "ar-SA" : "en-US";
+
+  const punchLabel = (punchType: string) => {
+    const map: Record<string, string> = {
+      training: t("dashboard.punchTraining"),
+      lesson: t("dashboard.punchLesson"),
+      free_ride: t("dashboard.punchFreeRide"),
+      competition: t("dashboard.punchCompetition"),
+      rest: t("dashboard.punchRest"),
+      medical_rest: t("dashboard.punchMedicalRest"),
+    };
+    return map[punchType] ?? punchType;
+  };
+
+  const formatDate = (d: string) =>
+    new Date(d).toLocaleDateString(dateLocale, {
+      weekday: "short",
+      month: "short",
+      day: "numeric",
+      year: "numeric",
+    });
   const [horses, setHorses] = useState<Horse[]>([]);
   const [loading, setLoading] = useState(true);
 
@@ -78,25 +83,25 @@ export default function TrainingHistoryPage() {
   return (
     <div className="space-y-8">
       <h1 className="font-serif text-3xl md:text-4xl font-normal text-black">
-        Training History
+        {t("dashboard.trainingHistoryTitle")}
       </h1>
       <p className="text-black/60 text-sm max-w-xl">
-        Sessions logged by your trainer for horses you&apos;re assigned to.
+        {t("dashboard.trainingHistoryIntro")}
       </p>
 
       {loading ? (
         <TableSkeleton rows={6} cols={4} showBottomBar={false} />
       ) : sortedSessions.length === 0 ? (
         <div className="border border-black/10 p-8 text-center">
-          <p className="text-black/60 mb-2">No training sessions yet</p>
+          <p className="text-black/60 mb-2">{t("dashboard.trainingHistoryEmptyTitle")}</p>
           <p className="text-black/40 text-sm">
-            When your trainer logs sessions for your horses, they&apos;ll appear here.
+            {t("dashboard.trainingHistoryEmptyBody")}
           </p>
           <Link
             href="/dashboard/my-horses"
             className="inline-block mt-4 text-black/60 hover:text-black text-sm uppercase tracking-wider"
           >
-            View My Horses →
+            {t("dashboard.trainingHistoryViewMyHorses")}
           </Link>
         </div>
       ) : (
@@ -116,8 +121,9 @@ export default function TrainingHistoryPage() {
                 <div className="flex-1 min-w-0">
                   <p className="font-medium text-black">{s.horse.name}</p>
                   <p className="text-black/60 text-sm mt-0.5">
-                    {PUNCH_LABELS[s.punchType] || s.punchType}
-                    {s.duration > 0 && ` • ${s.duration} min`}
+                    {punchLabel(s.punchType)}
+                    {s.duration > 0 &&
+                      ` • ${t("dashboard.trainingHistoryDurationMin", { minutes: String(s.duration) })}`}
                     {s.rider && ` • ${s.rider}`}
                     {s.discipline && ` • ${s.discipline}`}
                   </p>

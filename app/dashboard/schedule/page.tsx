@@ -8,6 +8,7 @@ import { HorseAvatar } from "@/components/HorseAvatar";
 import TableSkeleton from "@/components/ui/TableSkeleton";
 import GuidedTourOverlay, { type GuidedTourStep } from "@/components/dashboard/GuidedTourOverlay";
 import { usePageTour } from "@/components/dashboard/usePageTour";
+import { useLanguage } from "@/components/providers/LanguageProvider";
 
 interface Horse {
   id: string | number;
@@ -44,24 +45,7 @@ interface BlockedSlot {
   reason?: string | null;
 }
 
-const PUNCH_LABELS: Record<string, string> = {
-  training: "Training",
-  lesson: "Lesson",
-  free_ride: "Free Ride",
-  competition: "Competition",
-  rest: "Rest",
-  medical_rest: "Medical Rest",
-};
-
 const HOURS = Array.from({ length: 11 }, (_, i) => i + 8);
-
-function formatDate(d: string) {
-  return new Date(d).toLocaleDateString("en-US", {
-    weekday: "short",
-    month: "short",
-    day: "numeric",
-  });
-}
 
 function timeToMinutes(t: string): number {
   const s = String(t).slice(0, 5);
@@ -132,23 +116,45 @@ export default function SchedulePage() {
     !loading && profile?.role !== "student"
   );
 
+  const { t, lang } = useLanguage();
+  const dateLocale = lang === "ar" ? "ar-SA" : "en-US";
+
+  const punchLabel = (punchType: string) => {
+    const map: Record<string, string> = {
+      training: t("dashboard.punchTraining"),
+      lesson: t("dashboard.punchLesson"),
+      free_ride: t("dashboard.punchFreeRide"),
+      competition: t("dashboard.punchCompetition"),
+      rest: t("dashboard.punchRest"),
+      medical_rest: t("dashboard.punchMedicalRest"),
+    };
+    return map[punchType] ?? punchType;
+  };
+
+  const formatDate = (d: string) =>
+    new Date(d).toLocaleDateString(dateLocale, {
+      weekday: "short",
+      month: "short",
+      day: "numeric",
+    });
+
   const tourSteps: GuidedTourStep[] = [
     {
       id: "week-nav",
-      title: "Week Navigation",
-      description: "Move between weeks and jump back to today.",
+      title: t("dashboard.scheduleTourWeekTitle"),
+      description: t("dashboard.scheduleTourWeekDesc"),
       selector: '[data-tour="schedule-week-nav"]',
     },
     {
       id: "block-slot",
-      title: "Block Slot",
-      description: "Mark unavailable time for events or closures.",
+      title: t("dashboard.scheduleTourBlockTitle"),
+      description: t("dashboard.scheduleTourBlockDesc"),
       selector: '[data-tour="schedule-block-slot"]',
     },
     {
       id: "grid",
-      title: "Schedule Grid",
-      description: "See bookings and sessions across the week.",
+      title: t("dashboard.scheduleTourGridTitle"),
+      description: t("dashboard.scheduleTourGridDesc"),
       selector: '[data-tour="schedule-grid"]',
     },
   ];
@@ -269,7 +275,7 @@ export default function SchedulePage() {
   };
 
   const handleRemoveBlock = async (id: string) => {
-    if (!confirm("Remove this blocked slot?")) return;
+    if (!confirm(t("dashboard.scheduleConfirmRemoveBlock"))) return;
     try {
       await fetch(`/api/blocked-slots/${id}`, { method: "DELETE" });
       fetchData();
@@ -307,20 +313,20 @@ export default function SchedulePage() {
       />
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <h1 className="font-serif text-3xl md:text-4xl font-normal text-black">
-          Schedule & Availability
+          {t("dashboard.schedulePageTitle")}
         </h1>
         <div className="flex flex-wrap items-center gap-2" data-tour="schedule-week-nav">
           <button onClick={prevWeek} className={btnSecondary}>
-            ← Prev
+            {t("dashboard.schedulePrevWeek")}
           </button>
           <button onClick={goToToday} className="px-4 py-2.5 text-black/60 text-sm uppercase tracking-wider hover:text-black">
-            Today
+            {t("dashboard.scheduleToday")}
           </button>
           <button onClick={nextWeek} className={btnSecondary}>
-            Next →
+            {t("dashboard.scheduleNextWeek")}
           </button>
           <button onClick={() => setShowBlockModal(true)} className={btnPrimary} data-tour="schedule-block-slot">
-            Block Slot
+            {t("dashboard.scheduleBlockSlot")}
           </button>
         </div>
       </div>
@@ -363,7 +369,7 @@ export default function SchedulePage() {
                               key={b.id}
                               className="flex items-center justify-between gap-1 px-2 py-1 text-xs"
                             >
-                              <span className="text-black/60 truncate">Blocked</span>
+                              <span className="text-black/60 truncate">{t("dashboard.scheduleBlockedLabel")}</span>
                               <button
                                 onClick={() => handleRemoveBlock(b.id)}
                                 className="text-black/40 hover:text-black text-[10px]"
@@ -406,9 +412,9 @@ export default function SchedulePage() {
       </div>
 
       <div className="border border-black/10 p-6">
-        <h2 className="font-serif text-lg text-black mb-2">Horse Workload This Week</h2>
+        <h2 className="font-serif text-lg text-black mb-2">{t("dashboard.scheduleWorkloadHeading")}</h2>
         <p className="text-sm text-black/60 mb-4">
-          Use this to avoid overworking horses. Log sessions from the Horses page.
+          {t("dashboard.scheduleWorkloadLead")}
         </p>
         <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
           {horses.map((horse) => {
@@ -436,11 +442,14 @@ export default function SchedulePage() {
                 <div>
                   <p className="font-medium text-black">{horse.name}</p>
                   <p className="text-sm text-black/50 mt-1">
-                    {weekSessions.length} sessions • {totalMin} min
+                    {t("dashboard.scheduleSessionsMin", {
+                      count: String(weekSessions.length),
+                      minutes: String(totalMin),
+                    })}
                   </p>
                   {isHeavy && (
                     <p className="text-black/60 text-xs mt-2 uppercase tracking-wider">
-                      Consider rest day
+                      {t("dashboard.scheduleConsiderRest")}
                     </p>
                   )}
                 </div>
@@ -451,7 +460,7 @@ export default function SchedulePage() {
       </div>
 
       <div className="border border-black/10 p-6">
-        <h2 className="font-serif text-lg text-black mb-4">Recent Activity</h2>
+        <h2 className="font-serif text-lg text-black mb-4">{t("dashboard.scheduleRecentActivity")}</h2>
         <div className="space-y-6">
           {recentDates.map((dateStr) => (
             <div key={dateStr}>
@@ -467,14 +476,16 @@ export default function SchedulePage() {
                     <div className="flex items-center gap-2">
                       <HorseAvatar
                         photoUrl={s.horse?.photoUrl}
-                        name={s.horse?.name || "Horse"}
+                        name={s.horse?.name || "—"}
                         size="sm"
                       />
                       <span className="text-black">{s.horse?.name || "—"}</span>
                     </div>
                     <span className="text-black/50 text-sm">
-                      {PUNCH_LABELS[s.punchType] || s.punchType} •{" "}
-                      {s.duration > 0 ? `${s.duration} min` : "Rest"}
+                      {punchLabel(s.punchType)} •{" "}
+                      {s.duration > 0
+                        ? t("dashboard.trainingHistoryDurationMin", { minutes: String(s.duration) })
+                        : t("dashboard.scheduleRestLabel")}
                       {s.rider && ` • ${s.rider}`}
                     </span>
                   </div>
@@ -483,17 +494,17 @@ export default function SchedulePage() {
             </div>
           ))}
           {recentDates.length === 0 && (
-            <p className="text-black/50">No sessions logged yet</p>
+            <p className="text-black/50">{t("dashboard.scheduleNoSessions")}</p>
           )}
         </div>
       </div>
 
       <div className="flex gap-4">
         <Link href="/dashboard/bookings" className={btnPrimary}>
-          Bookings
+          {t("dashboard.scheduleLinkBookings")}
         </Link>
         <Link href="/dashboard/horses" className={btnSecondary}>
-          Log Session
+          {t("dashboard.scheduleLogSession")}
         </Link>
       </div>
 
@@ -506,13 +517,13 @@ export default function SchedulePage() {
             className="bg-base border border-black/10 p-4 sm:p-6 w-full max-w-md max-h-[90vh] overflow-y-auto my-auto"
             onClick={(e) => e.stopPropagation()}
           >
-            <h2 className="font-serif text-xl text-black mb-4">Block Time Slot</h2>
+            <h2 className="font-serif text-xl text-black mb-4">{t("dashboard.scheduleBlockModalTitle")}</h2>
             <p className="text-black/60 text-sm mb-4">
-              Block a time when the stable is unavailable. Students cannot request lessons during blocked slots.
+              {t("dashboard.scheduleBlockModalLead")}
             </p>
             <div className="space-y-4">
               <div>
-                <label className="text-xs text-black/50 uppercase tracking-widest block mb-2">Date</label>
+                <label className="text-xs text-black/50 uppercase tracking-widest block mb-2">{t("dashboard.bookingsLabelDate")}</label>
                 <input
                   type="date"
                   value={blockForm.blockedDate}
@@ -524,7 +535,7 @@ export default function SchedulePage() {
               </div>
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <label className="text-xs text-black/50 uppercase tracking-widest block mb-2">Start</label>
+                  <label className="text-xs text-black/50 uppercase tracking-widest block mb-2">{t("dashboard.bookingsLabelStart")}</label>
                   <input
                     type="time"
                     value={blockForm.startTime}
@@ -535,7 +546,7 @@ export default function SchedulePage() {
                   />
                 </div>
                 <div>
-                  <label className="text-xs text-black/50 uppercase tracking-widest block mb-2">End</label>
+                  <label className="text-xs text-black/50 uppercase tracking-widest block mb-2">{t("dashboard.bookingsLabelEnd")}</label>
                   <input
                     type="time"
                     value={blockForm.endTime}
@@ -547,24 +558,24 @@ export default function SchedulePage() {
                 </div>
               </div>
               <div>
-                <label className="text-xs text-black/50 uppercase tracking-widest block mb-2">Reason (optional)</label>
+                <label className="text-xs text-black/50 uppercase tracking-widest block mb-2">{t("dashboard.scheduleReasonOptional")}</label>
                 <input
                   type="text"
                   value={blockForm.reason}
                   onChange={(e) =>
                     setBlockForm((f) => ({ ...f, reason: e.target.value }))
                   }
-                  placeholder="e.g. Maintenance"
+                  placeholder={t("dashboard.scheduleReasonPlaceholder")}
                   className={formInput}
                 />
               </div>
             </div>
             <div className="flex gap-3 mt-6">
               <button onClick={() => setShowBlockModal(false)} className={`flex-1 ${btnSecondary}`}>
-                Cancel
+                {t("dashboard.bookingsCancel")}
               </button>
               <button onClick={handleBlockSlot} className={`flex-1 ${btnPrimary}`}>
-                Block
+                {t("dashboard.scheduleBlockSubmit")}
               </button>
             </div>
           </div>
@@ -580,13 +591,13 @@ export default function SchedulePage() {
             className="bg-base border border-black/10 p-4 sm:p-6 w-full max-w-md max-h-[90vh] overflow-y-auto my-auto"
             onClick={(e) => e.stopPropagation()}
           >
-            <h2 className="font-serif text-xl text-black mb-2">Reschedule</h2>
+            <h2 className="font-serif text-xl text-black mb-2">{t("dashboard.scheduleRescheduleTitle")}</h2>
             <p className="text-black/60 text-sm mb-4">
               {showRescheduleModal.horse?.name} • {showRescheduleModal.rider?.name}
             </p>
             <div className="space-y-4">
               <div>
-                <label className="text-xs text-black/50 uppercase tracking-widest block mb-2">Date</label>
+                <label className="text-xs text-black/50 uppercase tracking-widest block mb-2">{t("dashboard.bookingsLabelDate")}</label>
                 <input
                   type="date"
                   value={rescheduleForm.bookingDate}
@@ -598,7 +609,7 @@ export default function SchedulePage() {
               </div>
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <label className="text-xs text-black/50 uppercase tracking-widest block mb-2">Start</label>
+                  <label className="text-xs text-black/50 uppercase tracking-widest block mb-2">{t("dashboard.bookingsLabelStart")}</label>
                   <input
                     type="time"
                     value={rescheduleForm.startTime}
@@ -609,7 +620,7 @@ export default function SchedulePage() {
                   />
                 </div>
                 <div>
-                  <label className="text-xs text-black/50 uppercase tracking-widest block mb-2">End</label>
+                  <label className="text-xs text-black/50 uppercase tracking-widest block mb-2">{t("dashboard.bookingsLabelEnd")}</label>
                   <input
                     type="time"
                     value={rescheduleForm.endTime}
@@ -623,10 +634,10 @@ export default function SchedulePage() {
             </div>
             <div className="flex gap-3 mt-6">
               <button onClick={() => setShowRescheduleModal(null)} className={`flex-1 ${btnSecondary}`}>
-                Cancel
+                {t("dashboard.bookingsCancel")}
               </button>
               <button onClick={handleReschedule} className={`flex-1 ${btnPrimary}`}>
-                Reschedule
+                {t("dashboard.scheduleRescheduleTitle")}
               </button>
             </div>
           </div>

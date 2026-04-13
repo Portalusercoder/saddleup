@@ -7,6 +7,7 @@ import { useProfile } from "@/components/providers/ProfileProvider";
 import TableSkeleton from "@/components/ui/TableSkeleton";
 import GuidedTourOverlay, { type GuidedTourStep } from "@/components/dashboard/GuidedTourOverlay";
 import { usePageTour } from "@/components/dashboard/usePageTour";
+import { useLanguage } from "@/components/providers/LanguageProvider";
 
 interface SuggestedHorse {
   horseId: string;
@@ -65,6 +66,7 @@ function ScoreBadge({ score, label }: { score: number; label: string }) {
 export default function MatchingPage() {
   const router = useRouter();
   const { profile } = useProfile();
+  const { t } = useLanguage();
   const [data, setData] = useState<MatchingData | null>(null);
   const [loading, setLoading] = useState(true);
   const [locked, setLocked] = useState(false);
@@ -102,7 +104,7 @@ export default function MatchingPage() {
     return (
       <div className="space-y-6">
         <h1 className="font-serif text-2xl md:text-3xl font-normal text-black">
-          Horse–rider matching
+          {t("dashboard.matchingPageTitle")}
         </h1>
         <TableSkeleton rows={6} cols={4} />
       </div>
@@ -113,14 +115,14 @@ export default function MatchingPage() {
     return (
       <div className="space-y-6">
         <h1 className="font-serif text-2xl md:text-3xl font-normal text-black">
-          Horse–rider matching
+          {t("dashboard.matchingPageTitle")}
         </h1>
         <div className="border border-black/10 p-8 text-center">
           <p className="text-black/70 mb-4">
-            Upgrade to Stable or Enterprise to get horse–rider compatibility suggestions.
+            {t("dashboard.matchingLockedLead")}
           </p>
           <Link href="/dashboard/settings" className={btnPrimary}>
-            Upgrade plan
+            {t("dashboard.upgradePlanCta")}
           </Link>
         </div>
       </div>
@@ -131,9 +133,9 @@ export default function MatchingPage() {
     return (
       <div className="space-y-6">
         <h1 className="font-serif text-2xl md:text-3xl font-normal text-black">
-          Horse–rider matching
+          {t("dashboard.matchingPageTitle")}
         </h1>
-        <p className="text-black/50">Failed to load matching.</p>
+        <p className="text-black/50">{t("dashboard.matchingLoadFailed")}</p>
       </div>
     );
   }
@@ -141,14 +143,14 @@ export default function MatchingPage() {
   const tourSteps: GuidedTourStep[] = [
     {
       id: "tabs",
-      title: "Matching Views",
-      description: "Switch between rider-first and horse-first compatibility suggestions.",
+      title: t("dashboard.matchingTourTabsTitle"),
+      description: t("dashboard.matchingTourTabsDesc"),
       selector: '[data-tour="matching-tabs"]',
     },
     {
       id: "list",
-      title: "Suggestions List",
-      description: "Open each rider or horse to review scored compatibility recommendations.",
+      title: t("dashboard.matchingTourListTitle"),
+      description: t("dashboard.matchingTourListDesc"),
       selector: '[data-tour="matching-list"]',
     },
   ];
@@ -162,10 +164,10 @@ export default function MatchingPage() {
         onComplete={completeTour}
       />
       <h1 className="font-serif text-2xl md:text-3xl font-normal text-black">
-        Horse–rider matching
+        {t("dashboard.matchingPageTitle")}
       </h1>
       <p className="text-black/60 text-sm max-w-xl">
-        Compatibility suggestions based on rider level, horse temperament, and skill level. Assign horses from the rider detail page.
+        {t("dashboard.matchingLead")}
       </p>
 
       <nav className="flex gap-2 border-b border-black/10 pb-2" data-tour="matching-tabs">
@@ -177,7 +179,7 @@ export default function MatchingPage() {
               : "text-black/50 hover:text-black"
           }`}
         >
-          By rider
+          {t("dashboard.matchingTabRiders")}
         </button>
         <button
           onClick={() => setActiveTab("horses")}
@@ -187,15 +189,15 @@ export default function MatchingPage() {
               : "text-black/50 hover:text-black"
           }`}
         >
-          By horse
+          {t("dashboard.matchingTabHorses")}
         </button>
       </nav>
 
       {activeTab === "riders" && (
         <div className="space-y-6" data-tour="matching-list">
-          <h2 className="font-serif text-lg text-black">Suggested horses for each rider</h2>
+          <h2 className="font-serif text-lg text-black">{t("dashboard.matchingRidersSection")}</h2>
           {data.riderSuggestions.length === 0 ? (
-            <p className="text-black/50">Add riders and horses to see suggestions.</p>
+            <p className="text-black/50">{t("dashboard.matchingEmptyAddBoth")}</p>
           ) : (
             <div className="space-y-4">
               {data.riderSuggestions.map((r) => (
@@ -211,7 +213,7 @@ export default function MatchingPage() {
                   </div>
                   {r.assigned.length > 0 && (
                     <div className="mb-4">
-                      <p className="text-black/50 text-xs uppercase tracking-widest mb-2">Assigned</p>
+                      <p className="text-black/50 text-xs uppercase tracking-widest mb-2">{t("dashboard.matchingAssigned")}</p>
                       <div className="flex flex-wrap gap-2">
                         {r.assigned.map((a) => (
                           <Link
@@ -227,7 +229,7 @@ export default function MatchingPage() {
                   )}
                   {r.suggested.length > 0 ? (
                     <div>
-                      <p className="text-black/50 text-xs uppercase tracking-widest mb-2">Suggested</p>
+                      <p className="text-black/50 text-xs uppercase tracking-widest mb-2">{t("dashboard.matchingSuggested")}</p>
                       <div className="space-y-2">
                         {r.suggested.map((s) => (
                           <div
@@ -251,7 +253,7 @@ export default function MatchingPage() {
                       </div>
                     </div>
                   ) : (
-                    <p className="text-black/50 text-sm">All horses are already assigned to this rider.</p>
+                    <p className="text-black/50 text-sm">{t("dashboard.matchingAllHorsesAssigned")}</p>
                   )}
                 </div>
               ))}
@@ -262,9 +264,9 @@ export default function MatchingPage() {
 
       {activeTab === "horses" && (
         <div className="space-y-6" data-tour="matching-list">
-          <h2 className="font-serif text-lg text-black">Suggested riders for each horse</h2>
+          <h2 className="font-serif text-lg text-black">{t("dashboard.matchingHorsesSection")}</h2>
           {data.horseSuggestions.length === 0 ? (
-            <p className="text-black/50">Add horses and riders to see suggestions.</p>
+            <p className="text-black/50">{t("dashboard.matchingEmptyAddBothHorses")}</p>
           ) : (
             <div className="space-y-4">
               {data.horseSuggestions.map((h) => (
@@ -282,7 +284,7 @@ export default function MatchingPage() {
                   </div>
                   {h.assigned.length > 0 && (
                     <div className="mb-4">
-                      <p className="text-black/50 text-xs uppercase tracking-widest mb-2">Assigned to</p>
+                      <p className="text-black/50 text-xs uppercase tracking-widest mb-2">{t("dashboard.matchingAssignedTo")}</p>
                       <div className="flex flex-wrap gap-2">
                         {h.assigned.map((a) => (
                           <Link
@@ -298,7 +300,7 @@ export default function MatchingPage() {
                   )}
                   {h.suggested.length > 0 ? (
                     <div>
-                      <p className="text-black/50 text-xs uppercase tracking-widest mb-2">Suggested riders</p>
+                      <p className="text-black/50 text-xs uppercase tracking-widest mb-2">{t("dashboard.matchingSuggestedRidersLabel")}</p>
                       <div className="space-y-2">
                         {h.suggested.map((s) => (
                           <div
@@ -323,7 +325,7 @@ export default function MatchingPage() {
                       </div>
                     </div>
                   ) : (
-                    <p className="text-black/50 text-sm">All riders are already assigned to this horse.</p>
+                    <p className="text-black/50 text-sm">{t("dashboard.matchingAllRidersAssigned")}</p>
                   )}
                 </div>
               ))}

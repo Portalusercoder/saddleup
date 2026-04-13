@@ -9,6 +9,7 @@ import LoadingSpinner from "@/components/ui/LoadingSpinner";
 import TableSkeleton from "@/components/ui/TableSkeleton";
 import GuidedTourOverlay, { type GuidedTourStep } from "@/components/dashboard/GuidedTourOverlay";
 import { usePageTour } from "@/components/dashboard/usePageTour";
+import { useLanguage } from "@/components/providers/LanguageProvider";
 
 interface Rider {
   id: string;
@@ -48,6 +49,7 @@ export default function TeamRidersPage() {
   const [showUpgradeModal, setShowUpgradeModal] = useState(false);
   const [submitLoading, setSubmitLoading] = useState(false);
   const { profile } = useProfile();
+  const { t } = useLanguage();
   const { open: showTour, complete: completeTour } = usePageTour(
     "saddleup_tour_team_v1",
     !loading && profile?.role !== "student"
@@ -56,20 +58,20 @@ export default function TeamRidersPage() {
   const tourSteps: GuidedTourStep[] = [
     {
       id: "search",
-      title: "Search Riders",
-      description: "Filter your rider list instantly by name or email.",
+      title: t("dashboard.teamRidersTourSearchTitle"),
+      description: t("dashboard.teamRidersTourSearchDesc"),
       selector: '[data-tour="team-search"]',
     },
     {
       id: "add",
-      title: "Add Rider",
-      description: "Create rider profiles here and complete details later.",
+      title: t("dashboard.teamRidersTourAddTitle"),
+      description: t("dashboard.teamRidersTourAddDesc"),
       selector: '[data-tour="team-add-rider"]',
     },
     {
       id: "list",
-      title: "Rider List",
-      description: "Manage rider records, edit details, and upload IDs from this table.",
+      title: t("dashboard.teamRidersTourListTitle"),
+      description: t("dashboard.teamRidersTourListDesc"),
       selector: '[data-tour="team-riders-table"]',
     },
   ];
@@ -153,11 +155,11 @@ export default function TeamRidersPage() {
           setShowModal(false);
           setShowUpgradeModal(true);
         } else {
-          setToast(data.error || "Something went wrong");
+          setToast(data.error || t("dashboard.teamRidersToastWrong"));
         }
         return;
       }
-      setToast(editingRider ? "Rider updated" : "Rider added");
+      setToast(editingRider ? t("dashboard.teamRidersToastUpdated") : t("dashboard.teamRidersToastAdded"));
       setShowModal(false);
       fetchRiders();
     } finally {
@@ -166,14 +168,14 @@ export default function TeamRidersPage() {
   };
 
   const handleDelete = async (id: string) => {
-    if (!confirm("Delete this rider?")) return;
+    if (!confirm(t("dashboard.teamRidersConfirmDelete"))) return;
     const res = await fetch(`/api/riders/${id}`, { method: "DELETE" });
     if (!res.ok) {
       const data = await res.json();
-      setToast(data.error || "Failed to delete");
+      setToast(data.error || t("dashboard.teamRidersToastDeleteFailed"));
       return;
     }
-    setToast("Rider deleted");
+    setToast(t("dashboard.teamRidersToastDeleted"));
     fetchRiders();
   };
 
@@ -191,20 +193,20 @@ export default function TeamRidersPage() {
             href="/dashboard/settings"
             className="text-black/60 hover:text-black text-xs uppercase tracking-wider"
           >
-            Upgrade to add more riders →
+            {t("dashboard.teamRidersUpgradeLink")}
           </Link>
         )}
         <div className="flex flex-wrap gap-2 items-center ml-auto">
           <input
             type="search"
-            placeholder="Search riders..."
+            placeholder={t("dashboard.teamRidersSearchPlaceholder")}
             value={search}
             onChange={(e) => setSearch(e.target.value)}
             data-tour="team-search"
             className="px-4 py-2.5 bg-base border border-black/10 text-black placeholder-black/40 focus:border-black/30 focus:outline-none text-sm"
           />
           <button onClick={openAdd} className={btnPrimary} data-tour="team-add-rider">
-            Add rider
+            {t("dashboard.teamRidersAdd")}
           </button>
         </div>
       </div>
@@ -219,17 +221,17 @@ export default function TeamRidersPage() {
         <TableSkeleton rows={6} cols={3} />
       ) : filtered.length === 0 ? (
         <p className="text-black/50">
-          {search ? "No riders match your search." : "No riders yet. Add one or use Add member by personal ID above."}
+          {search ? t("dashboard.teamRidersEmptySearch") : t("dashboard.teamRidersEmpty")}
         </p>
       ) : (
         <div className="border border-black/10 overflow-hidden" data-tour="team-riders-table">
           <table className="w-full text-left text-sm">
             <thead className="border-b border-black/10 text-black/50 text-xs uppercase tracking-widest">
               <tr>
-                <th className="px-6 py-4 font-medium">Name</th>
-                <th className="px-6 py-4 font-medium">Email</th>
-                <th className="px-6 py-4 font-medium">Level</th>
-                <th className="px-6 py-4 font-medium w-24">Actions</th>
+                <th className="px-6 py-4 font-medium">{t("dashboard.teamRidersColName")}</th>
+                <th className="px-6 py-4 font-medium">{t("dashboard.teamRidersColEmail")}</th>
+                <th className="px-6 py-4 font-medium">{t("dashboard.teamRidersColLevel")}</th>
+                <th className="px-6 py-4 font-medium w-24">{t("dashboard.teamRidersColActions")}</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-white/10">
@@ -258,13 +260,13 @@ export default function TeamRidersPage() {
                         onClick={() => openEdit(r)}
                         className="text-black hover:underline text-sm uppercase tracking-wider"
                       >
-                        Edit
+                        {t("dashboard.teamRidersEdit")}
                       </button>
                       <button
                         onClick={() => handleDelete(r.id)}
                         className="text-black/60 hover:text-black hover:underline text-sm uppercase tracking-wider"
                       >
-                        Delete
+                        {t("dashboard.teamRidersDelete")}
                       </button>
                     </div>
                   </td>
@@ -279,11 +281,11 @@ export default function TeamRidersPage() {
         <div className="fixed inset-0 bg-black/80 flex items-center justify-center z-50 p-4 overflow-y-auto sm:items-center">
           <div className="bg-base border border-black/10 max-w-md w-full p-4 sm:p-6 max-h-[90vh] overflow-y-auto">
             <h2 className="font-serif text-xl text-black mb-6">
-              {editingRider ? "Edit rider" : "Add rider"}
+              {editingRider ? t("dashboard.teamRidersModalEdit") : t("dashboard.teamRidersModalAdd")}
             </h2>
             <form onSubmit={handleSubmit} className="space-y-4">
               <div>
-                <label className={labelClass}>Name *</label>
+                <label className={labelClass}>{t("dashboard.teamRidersLabelName")}</label>
                 <input
                   type="text"
                   value={form.name}
@@ -293,7 +295,7 @@ export default function TeamRidersPage() {
                 />
               </div>
               <div>
-                <label className={labelClass}>Email</label>
+                <label className={labelClass}>{t("common.email")}</label>
                 <input
                   type="email"
                   value={form.email}
@@ -302,7 +304,7 @@ export default function TeamRidersPage() {
                 />
               </div>
               <div>
-                <label className={labelClass}>Phone</label>
+                <label className={labelClass}>{t("dashboard.teamRidersLabelPhone")}</label>
                 <input
                   type="tel"
                   value={form.phone}
@@ -311,19 +313,19 @@ export default function TeamRidersPage() {
                 />
               </div>
               <div>
-                <label className={labelClass}>Level</label>
+                <label className={labelClass}>{t("dashboard.teamRidersColLevel")}</label>
                 <select
                   value={form.level}
                   onChange={(e) => setForm((f) => ({ ...f, level: e.target.value }))}
                   className={formInput}
                 >
-                  <option value="beginner">Beginner</option>
-                  <option value="intermediate">Intermediate</option>
-                  <option value="advanced">Advanced</option>
+                  <option value="beginner">{t("dashboard.teamRidersLevelBeginner")}</option>
+                  <option value="intermediate">{t("dashboard.teamRidersLevelIntermediate")}</option>
+                  <option value="advanced">{t("dashboard.teamRidersLevelAdvanced")}</option>
                 </select>
               </div>
               <div>
-                <label className={labelClass}>Goals</label>
+                <label className={labelClass}>{t("dashboard.teamRidersLabelGoals")}</label>
                 <textarea
                   value={form.goals}
                   onChange={(e) => setForm((f) => ({ ...f, goals: e.target.value }))}
@@ -332,7 +334,7 @@ export default function TeamRidersPage() {
                 />
               </div>
               <div>
-                <label className={labelClass}>Notes</label>
+                <label className={labelClass}>{t("dashboard.teamRidersLabelNotes")}</label>
                 <textarea
                   value={form.notes}
                   onChange={(e) => setForm((f) => ({ ...f, notes: e.target.value }))}
@@ -342,7 +344,7 @@ export default function TeamRidersPage() {
               </div>
               {editingRider && (
                 <div>
-                  <label className={labelClass}>Instructor feedback</label>
+                  <label className={labelClass}>{t("dashboard.teamRidersLabelInstructorFeedback")}</label>
                   <textarea
                     value={form.instructor_feedback}
                     onChange={(e) =>
@@ -359,7 +361,7 @@ export default function TeamRidersPage() {
                   onClick={() => setShowModal(false)}
                   className={btnSecondary}
                 >
-                  Cancel
+                  {t("dashboard.bookingsCancel")}
                 </button>
                 <button
                   type="submit"
@@ -369,10 +371,10 @@ export default function TeamRidersPage() {
                   {submitLoading ? (
                     <>
                       <LoadingSpinner size={16} className="text-black" />
-                      {editingRider ? "Saving…" : "Adding…"}
+                      {editingRider ? t("dashboard.teamRidersSaving") : t("dashboard.teamRidersAdding")}
                     </>
                   ) : (
-                    editingRider ? "Save" : "Add"
+                    editingRider ? t("dashboard.teamRidersSave") : t("dashboard.teamRidersAdd")
                   )}
                 </button>
               </div>

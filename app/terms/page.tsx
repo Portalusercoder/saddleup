@@ -14,7 +14,7 @@ export default function TermsPage() {
   const contact = legalContactEmail();
 
   return (
-    <LegalPageShell title="Terms & Conditions" lastUpdated="5 April 2026">
+    <LegalPageShell titleKey="legal.termsDocumentTitle" lastUpdated="5 April 2026">
       <section>
         <h2>1. Agreement</h2>
         <p>

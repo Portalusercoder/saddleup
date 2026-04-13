@@ -15,7 +15,7 @@ export default function DataCompliancePage() {
 
   return (
     <LegalPageShell
-      title="Data protection & compliance"
+      titleKey="legal.dataComplianceDocumentTitle"
       lastUpdated="5 April 2026"
     >
       <section>

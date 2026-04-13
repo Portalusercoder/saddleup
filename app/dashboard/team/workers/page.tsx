@@ -5,6 +5,7 @@ import { useProfile } from "@/components/providers/ProfileProvider";
 import LoadingSpinner from "@/components/ui/LoadingSpinner";
 import GuidedTourOverlay, { type GuidedTourStep } from "@/components/dashboard/GuidedTourOverlay";
 import { usePageTour } from "@/components/dashboard/usePageTour";
+import { useLanguage } from "@/components/providers/LanguageProvider";
 
 interface Worker {
   id: string;
@@ -28,6 +29,7 @@ export default function TeamWorkersPage() {
   const [toast, setToast] = useState<string | null>(null);
   const [submitLoading, setSubmitLoading] = useState(false);
   const { profile } = useProfile();
+  const { t } = useLanguage();
   const { open: showTour, complete: completeTour } = usePageTour(
     "saddleup_tour_team_workers_v1",
     Boolean(profile) && profile?.role === "owner"
@@ -35,14 +37,14 @@ export default function TeamWorkersPage() {
   const tourSteps: GuidedTourStep[] = [
     {
       id: "worker-add",
-      title: "Add Worker",
-      description: "Create non-account staff records like groom, vet, and farrier.",
+      title: t("dashboard.teamWorkersTourAddTitle"),
+      description: t("dashboard.teamWorkersTourAddDesc"),
       selector: '[data-tour="workers-add"]',
     },
     {
       id: "worker-list",
-      title: "Worker List",
-      description: "Edit and remove worker records from the staff table.",
+      title: t("dashboard.teamWorkersTourListTitle"),
+      description: t("dashboard.teamWorkersTourListDesc"),
       selector: '[data-tour="workers-list"]',
     },
   ];
@@ -61,7 +63,7 @@ export default function TeamWorkersPage() {
 
   if (profile?.role !== "owner") {
     return (
-      <p className="text-black/50">Only stable owners can manage workers.</p>
+      <p className="text-black/50">{t("dashboard.teamWorkersOwnerOnly")}</p>
     );
   }
 
@@ -74,7 +76,7 @@ export default function TeamWorkersPage() {
         onComplete={completeTour}
       />
       <p className="text-black/50 text-sm mb-4">
-        Track staff without accounts. Add names and custom roles (e.g. Groom, Farrier, Vet).
+        {t("dashboard.teamWorkersLead")}
       </p>
 
       <button
@@ -86,7 +88,7 @@ export default function TeamWorkersPage() {
         className={btnPrimary}
         data-tour="workers-add"
       >
-        + Add worker
+        {t("dashboard.teamWorkersAdd")}
       </button>
 
       {toast && (
@@ -100,10 +102,10 @@ export default function TeamWorkersPage() {
           <table className="w-full text-left text-sm">
             <thead className="border-b border-black/10 text-black/50 text-xs uppercase tracking-widest">
               <tr>
-                <th className="px-6 py-4 font-medium">Name</th>
-                <th className="px-6 py-4 font-medium">Role</th>
-                <th className="px-6 py-4 font-medium">Contact</th>
-                <th className="px-6 py-4 font-medium w-32">Actions</th>
+                <th className="px-6 py-4 font-medium">{t("dashboard.teamWorkersColName")}</th>
+                <th className="px-6 py-4 font-medium">{t("dashboard.teamWorkersColRole")}</th>
+                <th className="px-6 py-4 font-medium">{t("dashboard.teamWorkersColContact")}</th>
+                <th className="px-6 py-4 font-medium w-32">{t("dashboard.teamWorkersColActions")}</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-white/10">
@@ -128,23 +130,23 @@ export default function TeamWorkersPage() {
                         }}
                         className="text-black hover:underline text-sm uppercase tracking-wider"
                       >
-                        Edit
+                        {t("dashboard.teamWorkersEdit")}
                       </button>
                       <button
                         onClick={async () => {
-                          if (!confirm(`Remove ${w.name}?`)) return;
+                          if (!confirm(t("dashboard.teamWorkersRemoveConfirm", { name: w.name }))) return;
                           const res = await fetch(`/api/workers/${w.id}`, { method: "DELETE" });
                           if (!res.ok) {
                             const d = await res.json();
-                            setToast(d.error || "Failed");
+                            setToast(d.error || t("dashboard.teamWorkersFailed"));
                             return;
                           }
-                          setToast("Worker removed");
+                          setToast(t("dashboard.teamWorkersRemoved"));
                           fetchWorkers();
                         }}
                         className="text-black/60 hover:text-black text-sm uppercase tracking-wider"
                       >
-                        Delete
+                        {t("dashboard.teamWorkersDelete")}
                       </button>
                     </div>
                   </td>
@@ -159,7 +161,7 @@ export default function TeamWorkersPage() {
         <div className="fixed inset-0 bg-black/80 flex items-center justify-center z-50 p-4 overflow-y-auto sm:items-center">
           <div className="bg-base border border-black/10 max-w-md w-full p-4 sm:p-6 max-h-[90vh] overflow-y-auto">
             <h2 className="font-serif text-xl text-black mb-6">
-              {editingWorker ? "Edit worker" : "Add worker"}
+              {editingWorker ? t("dashboard.teamWorkersModalEdit") : t("dashboard.teamWorkersModalAdd")}
             </h2>
             <form
               onSubmit={async (e) => {
@@ -175,7 +177,7 @@ export default function TeamWorkersPage() {
                   });
                   const data = await res.json();
                   if (!res.ok) {
-                    setToast(data.error || "Failed");
+                    setToast(data.error || t("dashboard.teamWorkersFailed"));
                     return;
                   }
                   setShowModal(false);
@@ -187,7 +189,7 @@ export default function TeamWorkersPage() {
               className="space-y-4"
             >
               <div>
-                <label className={labelClass}>Name *</label>
+                <label className={labelClass}>{t("dashboard.teamWorkersLabelName")}</label>
                 <input
                   type="text"
                   value={workerForm.name}
@@ -197,18 +199,18 @@ export default function TeamWorkersPage() {
                 />
               </div>
               <div>
-                <label className={labelClass}>Role *</label>
+                <label className={labelClass}>{t("dashboard.teamWorkersLabelRole")}</label>
                 <input
                   type="text"
                   value={workerForm.role}
                   onChange={(e) => setWorkerForm((f) => ({ ...f, role: e.target.value }))}
                   required
-                  placeholder="e.g. Groom, Farrier, Vet"
+                  placeholder={t("dashboard.teamWorkersRolePlaceholder")}
                   className={formInput}
                 />
               </div>
               <div>
-                <label className={labelClass}>Email</label>
+                <label className={labelClass}>{t("common.email")}</label>
                 <input
                   type="email"
                   value={workerForm.email}
@@ -217,7 +219,7 @@ export default function TeamWorkersPage() {
                 />
               </div>
               <div>
-                <label className={labelClass}>Phone</label>
+                <label className={labelClass}>{t("dashboard.teamRidersLabelPhone")}</label>
                 <input
                   type="tel"
                   value={workerForm.phone}
@@ -226,7 +228,7 @@ export default function TeamWorkersPage() {
                 />
               </div>
               <div>
-                <label className={labelClass}>Notes</label>
+                <label className={labelClass}>{t("dashboard.teamWorkersLabelNotes")}</label>
                 <textarea
                   value={workerForm.notes}
                   onChange={(e) => setWorkerForm((f) => ({ ...f, notes: e.target.value }))}
@@ -240,7 +242,7 @@ export default function TeamWorkersPage() {
                   onClick={() => setShowModal(false)}
                   className={btnSecondary}
                 >
-                  Cancel
+                  {t("dashboard.bookingsCancel")}
                 </button>
                 <button
                   type="submit"
@@ -250,10 +252,10 @@ export default function TeamWorkersPage() {
                   {submitLoading ? (
                     <>
                       <LoadingSpinner size={16} className="text-black" />
-                      {editingWorker ? "Saving…" : "Adding…"}
+                      {editingWorker ? t("dashboard.teamWorkersSaving") : t("dashboard.teamWorkersAdding")}
                     </>
                   ) : (
-                    editingWorker ? "Save" : "Add"
+                    editingWorker ? t("dashboard.teamWorkersSave") : t("dashboard.teamWorkersAddSubmit")
                   )}
                 </button>
               </div>

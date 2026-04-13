@@ -7,6 +7,7 @@ import { useProfile } from "@/components/providers/ProfileProvider";
 import { IdCardUpload } from "@/components/dashboard/IdCardUpload";
 import LoadingSpinner from "@/components/ui/LoadingSpinner";
 import PageLoader from "@/components/ui/PageLoader";
+import { useLanguage } from "@/components/providers/LanguageProvider";
 
 interface Rider {
   id: string;
@@ -39,18 +40,11 @@ interface Session {
   horse: { id: string; name: string } | null;
 }
 
-const PUNCH_LABELS: Record<string, string> = {
-  training: "Training",
-  lesson: "Lesson",
-  free_ride: "Free Ride",
-  competition: "Competition",
-  rest: "Rest",
-  medical: "Medical Rest",
-};
-
 export default function RiderDetailPage() {
   const params = useParams();
   const id = params.id as string;
+  const { t, lang } = useLanguage();
+  const dateLocale = lang === "ar" ? "ar-SA" : "en-US";
   const [rider, setRider] = useState<Rider | null>(null);
   const [assignments, setAssignments] = useState<Assignment[]>([]);
   const [sessions, setSessions] = useState<Session[]>([]);
@@ -65,6 +59,19 @@ export default function RiderDetailPage() {
   const [guardianId, setGuardianId] = useState("");
   const [guardianSaving, setGuardianSaving] = useState(false);
   const [assignLoading, setAssignLoading] = useState(false);
+
+  const punchLabel = (punchType: string) => {
+    const map: Record<string, string> = {
+      training: t("dashboard.punchTraining"),
+      lesson: t("dashboard.punchLesson"),
+      free_ride: t("dashboard.punchFreeRide"),
+      competition: t("dashboard.punchCompetition"),
+      rest: t("dashboard.punchRest"),
+      medical: t("dashboard.punchMedicalRest"),
+      medical_rest: t("dashboard.punchMedicalRest"),
+    };
+    return map[punchType] ?? punchType;
+  };
 
   useEffect(() => {
     fetch(`/api/riders/${id}`)
@@ -95,16 +102,16 @@ export default function RiderDetailPage() {
   }, [id, role]);
 
   if (loading) {
-    return <PageLoader minHeight="min-h-[40vh]" message="Loading…" />;
+    return <PageLoader minHeight="min-h-[40vh]" message={t("common.loading")} />;
   }
 
   if (!rider) {
     return (
       <div className="space-y-4">
         <Link href="/dashboard/team/riders" className="text-black/60 hover:text-black text-sm uppercase tracking-wider">
-          ← Back to Riders
+          {t("dashboard.riderDetailBack")}
         </Link>
-        <p className="text-black/50">Rider not found.</p>
+        <p className="text-black/50">{t("dashboard.riderDetailNotFound")}</p>
       </div>
     );
   }
@@ -115,14 +122,14 @@ export default function RiderDetailPage() {
         href="/dashboard/team/riders"
         className="text-black/60 hover:text-black text-sm uppercase tracking-wider"
       >
-        ← Back to Riders
+        {t("dashboard.riderDetailBack")}
       </Link>
 
       <div className="border border-black/10 p-6 flex flex-wrap items-center justify-between gap-4">
         <div>
           <h1 className="font-serif text-2xl md:text-3xl font-normal text-black">{rider.name}</h1>
           <p className="text-black/60 mt-1 text-sm">
-            {rider.level || "—"} • {rider.email || rider.phone || "No contact"}
+            {rider.level || "—"} • {rider.email || rider.phone || t("dashboard.riderDetailNoContact")}
           </p>
         </div>
         {(role === "owner" || role === "trainer") && (
@@ -143,9 +150,9 @@ export default function RiderDetailPage() {
       <div className="grid md:grid-cols-2 gap-6">
         {(role === "owner" || role === "trainer") && guardians.length > 0 && (
           <div className="border border-black/10 p-6">
-            <h2 className="font-serif text-lg text-black mb-4">Parent / Guardian</h2>
+            <h2 className="font-serif text-lg text-black mb-4">{t("dashboard.riderDetailGuardianHeading")}</h2>
             <p className="text-black/50 text-sm mb-4">
-              Link a guardian so they can view this rider&apos;s lessons and progress in the Parent Portal.
+              {t("dashboard.riderDetailGuardianLead")}
             </p>
             <div className="flex flex-wrap items-center gap-3">
               <select
@@ -153,7 +160,7 @@ export default function RiderDetailPage() {
                 onChange={(e) => setGuardianId(e.target.value)}
                 className="px-4 py-2.5 bg-base border border-black/10 text-black focus:border-black/30 focus:outline-none min-w-[200px]"
               >
-                <option value="">No guardian linked</option>
+                <option value="">{t("dashboard.riderDetailNoGuardian")}</option>
                 {guardians.map((g) => (
                   <option key={g.id} value={g.id}>
                     {g.full_name || g.email || g.id}
@@ -172,7 +179,7 @@ export default function RiderDetailPage() {
                     if (!res.ok) throw new Error("Failed");
                     setRider((prev) => prev ? { ...prev, guardian_id: guardianId || null } : null);
                   } catch {
-                    alert("Failed to update guardian");
+                    alert(t("dashboard.riderDetailGuardianSaveFailed"));
                   } finally {
                     setGuardianSaving(false);
                   }
@@ -183,10 +190,10 @@ export default function RiderDetailPage() {
                 {guardianSaving ? (
                   <>
                     <LoadingSpinner size={16} className="text-black" />
-                    Saving…
+                    {t("dashboard.teamRidersSaving")}
                   </>
                 ) : (
-                  "Save"
+                  t("dashboard.teamRidersSave")
                 )}
               </button>
             </div>
@@ -194,44 +201,44 @@ export default function RiderDetailPage() {
         )}
 
         <div className="border border-black/10 p-6">
-          <h2 className="font-serif text-lg text-black mb-4">Profile</h2>
+          <h2 className="font-serif text-lg text-black mb-4">{t("dashboard.riderDetailProfileHeading")}</h2>
           <dl className="space-y-4 text-sm">
             <div>
-              <dt className="text-black/50 text-xs uppercase tracking-widest">Email</dt>
+              <dt className="text-black/50 text-xs uppercase tracking-widest">{t("common.email")}</dt>
               <dd className="text-black mt-1">{rider.email || "—"}</dd>
             </div>
             <div>
-              <dt className="text-black/50 text-xs uppercase tracking-widest">Phone</dt>
+              <dt className="text-black/50 text-xs uppercase tracking-widest">{t("dashboard.teamRidersLabelPhone")}</dt>
               <dd className="text-black mt-1">{rider.phone || "—"}</dd>
             </div>
             <div>
-              <dt className="text-black/50 text-xs uppercase tracking-widest">Level</dt>
+              <dt className="text-black/50 text-xs uppercase tracking-widest">{t("dashboard.teamRidersColLevel")}</dt>
               <dd className="text-black mt-1 capitalize">{rider.level || "—"}</dd>
             </div>
             <div>
-              <dt className="text-black/50 text-xs uppercase tracking-widest">Goals</dt>
+              <dt className="text-black/50 text-xs uppercase tracking-widest">{t("dashboard.teamRidersLabelGoals")}</dt>
               <dd className="text-black mt-1">{rider.goals || "—"}</dd>
             </div>
             <div>
-              <dt className="text-black/50 text-xs uppercase tracking-widest">Notes</dt>
+              <dt className="text-black/50 text-xs uppercase tracking-widest">{t("dashboard.teamRidersLabelNotes")}</dt>
               <dd className="text-black mt-1">{rider.notes || "—"}</dd>
             </div>
           </dl>
         </div>
 
         <div className="border border-black/10 p-6">
-          <h2 className="font-serif text-lg text-black mb-4">Instructor feedback</h2>
+          <h2 className="font-serif text-lg text-black mb-4">{t("dashboard.riderDetailFeedbackHeading")}</h2>
           <p className="text-black/70 text-sm whitespace-pre-wrap">
-            {rider.instructor_feedback || "No feedback yet."}
+            {rider.instructor_feedback || t("dashboard.riderDetailNoFeedback")}
           </p>
         </div>
       </div>
 
       {(role === "owner" || role === "trainer") && (
         <div className="border border-black/10 p-6">
-          <h2 className="font-serif text-lg text-black mb-4">Assigned Horses</h2>
+          <h2 className="font-serif text-lg text-black mb-4">{t("dashboard.riderDetailAssignedHeading")}</h2>
           <p className="text-black/50 text-sm mb-4">
-            Assign horses this rider can book lessons with. Students see these in &quot;My Horses&quot;.
+            {t("dashboard.riderDetailAssignedLead")}
           </p>
           <div className="space-y-2 mb-4">
             {assignments.map((a) => (
@@ -250,13 +257,13 @@ export default function RiderDetailPage() {
                 )}
                 <button
                   onClick={async () => {
-                    if (!confirm("Remove this assignment?")) return;
+                    if (!confirm(t("dashboard.riderDetailConfirmRemoveAssignment"))) return;
                     await fetch(`/api/rider-horse-assignments/${a.id}`, { method: "DELETE" });
                     setAssignments((prev) => prev.filter((x) => x.id !== a.id));
                   }}
                   className="text-black/60 hover:text-black text-xs uppercase tracking-wider"
                 >
-                  Remove
+                  {t("dashboard.riderDetailRemoveAssignment")}
                 </button>
               </div>
             ))}
@@ -265,19 +272,19 @@ export default function RiderDetailPage() {
             onClick={() => setShowAssign(true)}
             className="px-4 py-2.5 bg-accent text-white font-medium text-sm uppercase tracking-wider hover:opacity-95 transition"
           >
-            + Assign Horse
+            {t("dashboard.riderDetailAssignHorse")}
           </button>
         </div>
       )}
 
       <div className="border border-black/10 p-6">
-        <h2 className="font-serif text-lg text-black mb-4">Activity timeline</h2>
+        <h2 className="font-serif text-lg text-black mb-4">{t("dashboard.riderDetailActivityHeading")}</h2>
         <p className="text-black/50 text-sm mb-4">
-          Training sessions and lessons logged with this rider.
+          {t("dashboard.riderDetailActivityLead")}
         </p>
         {sessions.length === 0 ? (
           <p className="text-black/50 text-sm">
-            No sessions yet. Log a session from the Horses page and select this rider.
+            {t("dashboard.riderDetailNoSessions")}
           </p>
         ) : (
           <div className="space-y-2">
@@ -288,7 +295,7 @@ export default function RiderDetailPage() {
               >
                 <div>
                   <span className="font-medium text-black">
-                    {PUNCH_LABELS[s.punchType] || s.punchType}
+                    {punchLabel(s.punchType)}
                   </span>
                   {s.horse && (
                     <Link
@@ -299,13 +306,15 @@ export default function RiderDetailPage() {
                     </Link>
                   )}
                   <span className="text-black/50 text-sm block mt-0.5">
-                    {s.duration > 0 ? `${s.duration} min` : "Rest"}
+                    {s.duration > 0
+                      ? t("dashboard.trainingHistoryDurationMin", { minutes: String(s.duration) })
+                      : t("dashboard.scheduleRestLabel")}
                     {s.discipline && ` • ${s.discipline}`}
                     {s.intensity && ` • ${s.intensity}`}
                   </span>
                 </div>
                 <span className="text-black/50 text-sm whitespace-nowrap">
-                  {new Date(s.punchDate || s.createdAt).toLocaleDateString("en-US", {
+                  {new Date(s.punchDate || s.createdAt).toLocaleDateString(dateLocale, {
                     weekday: "short",
                     month: "short",
                     day: "numeric",
@@ -327,16 +336,16 @@ export default function RiderDetailPage() {
             className="bg-base border border-black/10 p-4 sm:p-6 w-full max-w-md max-h-[90vh] overflow-y-auto my-auto"
             onClick={(e) => e.stopPropagation()}
           >
-            <h2 className="font-serif text-xl text-black mb-4">Assign Horse</h2>
+            <h2 className="font-serif text-xl text-black mb-4">{t("dashboard.riderDetailAssignModalTitle")}</h2>
             <div className="space-y-4">
               <div>
-                <label className="text-xs text-black/50 uppercase tracking-widest block mb-2">Horse</label>
+                <label className="text-xs text-black/50 uppercase tracking-widest block mb-2">{t("dashboard.bookingsLabelHorse")}</label>
                 <select
                   value={assignHorseId}
                   onChange={(e) => setAssignHorseId(e.target.value)}
                   className="w-full px-4 py-3 bg-base border border-black/10 text-black focus:border-black/30 focus:outline-none"
                 >
-                  <option value="">Select horse</option>
+                  <option value="">{t("dashboard.bookingsSelectHorse")}</option>
                   {horses
                     .filter((h) => !assignments.some((a) => a.horse_id === h.id))
                     .map((h) => (
@@ -345,13 +354,13 @@ export default function RiderDetailPage() {
                 </select>
               </div>
               <div>
-                <label className="text-xs text-black/50 uppercase tracking-widest block mb-2">Suitability notes (optional)</label>
+                <label className="text-xs text-black/50 uppercase tracking-widest block mb-2">{t("dashboard.riderDetailSuitabilityLabel")}</label>
                 <textarea
                   value={assignNotes}
                   onChange={(e) => setAssignNotes(e.target.value)}
                   rows={2}
                   className="w-full px-4 py-3 bg-base border border-black/10 text-black placeholder-black/40 focus:border-black/30 focus:outline-none resize-none"
-                  placeholder="e.g. Best for flatwork, needs experienced rider"
+                  placeholder={t("dashboard.riderDetailSuitabilityPlaceholder")}
                 />
               </div>
             </div>
@@ -360,7 +369,7 @@ export default function RiderDetailPage() {
                 onClick={() => setShowAssign(false)}
                 className="flex-1 py-2.5 border border-black/10 text-black text-sm uppercase tracking-wider hover:border-black/30 transition"
               >
-                Cancel
+                {t("dashboard.bookingsCancel")}
               </button>
               <button
                 onClick={async () => {
@@ -405,10 +414,10 @@ export default function RiderDetailPage() {
                 {assignLoading ? (
                   <>
                     <LoadingSpinner size={16} className="text-black" />
-                    Assigning…
+                    {t("dashboard.riderDetailAssigning")}
                   </>
                 ) : (
-                  "Assign"
+                  t("dashboard.riderDetailAssign")
                 )}
               </button>
             </div>

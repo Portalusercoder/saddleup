@@ -5,6 +5,7 @@ import { useProfile } from "@/components/providers/ProfileProvider";
 import { IdCardUpload } from "@/components/dashboard/IdCardUpload";
 import GuidedTourOverlay, { type GuidedTourStep } from "@/components/dashboard/GuidedTourOverlay";
 import { usePageTour } from "@/components/dashboard/usePageTour";
+import { useLanguage } from "@/components/providers/LanguageProvider";
 
 interface TeamMember {
   id: string;
@@ -18,6 +19,7 @@ export default function TeamTrainersPage() {
   const [teamMembers, setTeamMembers] = useState<TeamMember[]>([]);
   const [toast, setToast] = useState<string | null>(null);
   const { profile } = useProfile();
+  const { t } = useLanguage();
   const currentUserId = profile?.id ?? null;
   const { open: showTour, complete: completeTour } = usePageTour(
     "saddleup_tour_team_trainers_v1",
@@ -26,8 +28,8 @@ export default function TeamTrainersPage() {
   const tourSteps: GuidedTourStep[] = [
     {
       id: "trainers-list",
-      title: "Trainer Directory",
-      description: "Manage trainers, upload ID cards, and remove members if needed.",
+      title: t("dashboard.teamTrainersTourTitle"),
+      description: t("dashboard.teamTrainersTourDesc"),
       selector: '[data-tour="trainers-list"]',
     },
   ];
@@ -62,7 +64,7 @@ export default function TeamTrainersPage() {
         onComplete={completeTour}
       />
       <p className="text-black/50 text-sm mb-4">
-        Trainers are added via &quot;Add member by personal ID&quot; above. They can teach lessons and manage riders.
+        {t("dashboard.teamTrainersLead")}
       </p>
 
       {toast && (
@@ -72,15 +74,15 @@ export default function TeamTrainersPage() {
       )}
 
       {trainers.length === 0 ? (
-        <p className="text-black/50">No trainers yet. Add one using their personal ID above.</p>
+        <p className="text-black/50">{t("dashboard.teamTrainersEmpty")}</p>
       ) : (
         <div className="border border-black/10 overflow-hidden" data-tour="trainers-list">
           <table className="w-full text-left text-sm">
             <thead className="border-b border-black/10 text-black/50 text-xs uppercase tracking-widest">
               <tr>
-                <th className="px-6 py-4 font-medium">Name</th>
-                <th className="px-6 py-4 font-medium">Email</th>
-                <th className="px-6 py-4 font-medium w-48">Actions</th>
+                <th className="px-6 py-4 font-medium">{t("dashboard.teamTrainersColName")}</th>
+                <th className="px-6 py-4 font-medium">{t("dashboard.teamTrainersColEmail")}</th>
+                <th className="px-6 py-4 font-medium w-48">{t("dashboard.teamTrainersColActions")}</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-white/10">
@@ -104,7 +106,9 @@ export default function TeamTrainersPage() {
                           onClick={async () => {
                             if (
                               !confirm(
-                                `Remove ${m.full_name || m.email || "this trainer"} from the team?`
+                                t("dashboard.teamTrainersRemoveConfirm", {
+                                  name: m.full_name || m.email || "—",
+                                })
                               )
                             )
                               return;
@@ -113,15 +117,15 @@ export default function TeamTrainersPage() {
                             });
                             const data = await res.json();
                             if (!res.ok) {
-                              setToast(data.error || "Failed to remove");
+                              setToast(data.error || t("dashboard.teamTrainersRemoveFailed"));
                               return;
                             }
-                            setToast("Trainer removed");
+                            setToast(t("dashboard.teamTrainersRemoved"));
                             fetchMembers();
                           }}
                           className="text-black/60 hover:text-black text-sm uppercase tracking-wider"
                         >
-                          Remove
+                          {t("dashboard.teamTrainersRemove")}
                         </button>
                       )}
                     </div>

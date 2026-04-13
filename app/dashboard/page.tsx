@@ -8,6 +8,7 @@ import { HorseAvatar } from "@/components/HorseAvatar";
 import GuidedTourOverlay, {
   type GuidedTourStep,
 } from "@/components/dashboard/GuidedTourOverlay";
+import { useLanguage } from "@/components/providers/LanguageProvider";
 
 interface Horse {
   id: number;
@@ -25,15 +26,6 @@ interface Session {
   createdAt: string;
   horse: Horse;
 }
-
-const PUNCH_LABELS: Record<string, string> = {
-  training: "Training",
-  lesson: "Lesson",
-  free_ride: "Free Ride",
-  competition: "Competition",
-  rest: "Rest",
-  medical_rest: "Medical Rest",
-};
 
 function calculateWorkload(horse: Horse) {
   const sevenDaysAgo = new Date();
@@ -54,6 +46,21 @@ function calculateWorkload(horse: Horse) {
 }
 
 export default function DashboardPage() {
+  const { t, lang } = useLanguage();
+  const dateLocale = lang === "ar" ? "ar-SA" : "en-US";
+
+  const punchLabel = (punchType: string) => {
+    const map: Record<string, string> = {
+      training: t("dashboard.punchTraining"),
+      lesson: t("dashboard.punchLesson"),
+      free_ride: t("dashboard.punchFreeRide"),
+      competition: t("dashboard.punchCompetition"),
+      rest: t("dashboard.punchRest"),
+      medical_rest: t("dashboard.punchMedicalRest"),
+    };
+    return map[punchType] ?? punchType;
+  };
+
   const [horses, setHorses] = useState<Horse[]>([]);
   const [sessions, setSessions] = useState<Session[]>([]);
   const [loading, setLoading] = useState(true);
@@ -144,7 +151,7 @@ export default function DashboardPage() {
               name:
                 typeof (stableData as { name?: unknown }).name === "string"
                   ? (stableData as { name: string }).name
-                  : "Your Stable",
+                  : t("dashboard.shareInvite.defaultStableName"),
               joinCode: (stableData as { joinCode: string }).joinCode,
               role:
                 typeof (stableData as { role?: unknown }).role === "string"
@@ -198,74 +205,74 @@ export default function DashboardPage() {
     ? [
         {
           id: "notif",
-          title: "Notifications",
-          description: "Tap the bell to see booking updates and reminders.",
-          selector: '[aria-label="Notifications"]',
+          title: t("tour.student.notifTitle"),
+          description: t("tour.student.notifDesc"),
+          selector: '[data-tour="notification-bell"]',
         },
         {
           id: "upcoming",
-          title: "Upcoming Lessons",
-          description: "Track your next sessions and stay ready.",
+          title: t("tour.student.upcomingTitle"),
+          description: t("tour.student.upcomingDesc"),
           selector: '[data-tour="upcoming-lessons"]',
         },
         {
           id: "stats",
-          title: "Your Stats",
-          description: "Quick view of assigned horses and upcoming lessons.",
+          title: t("tour.student.statsTitle"),
+          description: t("tour.student.statsDesc"),
           selector: '[data-tour="stats-grid"]',
         },
         {
           id: "recent",
-          title: "Recent Sessions",
-          description: "See your latest training activity here.",
+          title: t("tour.student.recentTitle"),
+          description: t("tour.student.recentDesc"),
           selector: '[data-tour="recent-sessions"]',
         },
         {
           id: "links",
-          title: "Quick Links",
-          description: "Jump to horses, bookings, and competitions in one tap.",
+          title: t("tour.student.linksTitle"),
+          description: t("tour.student.linksDesc"),
           selector: '[data-tour="quick-links"]',
         },
       ]
     : [
         {
           id: "notif",
-          title: "Notifications",
-          description: "Tap the bell to review booking updates and reminders.",
-          selector: '[aria-label="Notifications"]',
+          title: t("tour.staff.notifTitle"),
+          description: t("tour.staff.notifDesc"),
+          selector: '[data-tour="notification-bell"]',
         },
         ...(isOwner
           ? [
               {
                 id: "invite",
-                title: "Invite Your Team",
-                description: "Share this code so trainers and students can join your stable.",
+                title: t("tour.staff.inviteTitle"),
+                description: t("tour.staff.inviteDesc"),
                 selector: '[data-tour="invite-code"]',
               } as GuidedTourStep,
             ]
           : []),
         {
           id: "care",
-          title: "Care Reminders",
-          description: "Upcoming care reminders help you stay ahead of horse health tasks.",
+          title: t("tour.staff.careTitle"),
+          description: t("tour.staff.careDesc"),
           selector: '[data-tour="care-reminders"]',
         },
         {
           id: "stats",
-          title: "Stable Stats",
-          description: "See total horses, sessions, and weekly performance at a glance.",
+          title: t("tour.staff.statsTitle"),
+          description: t("tour.staff.statsDesc"),
           selector: '[data-tour="stats-grid"]',
         },
         {
           id: "recent",
-          title: "Recent Sessions",
-          description: "Review latest training entries quickly.",
+          title: t("tour.staff.recentTitle"),
+          description: t("tour.staff.recentDesc"),
           selector: '[data-tour="recent-sessions"]',
         },
         {
           id: "actions",
-          title: "Quick Actions",
-          description: "Add horses, log sessions, and manage your schedule from here.",
+          title: t("tour.staff.actionsTitle"),
+          description: t("tour.staff.actionsDesc"),
           selector: '[data-tour="quick-actions"]',
         },
       ];
@@ -274,17 +281,17 @@ export default function DashboardPage() {
     return (
       <div className="space-y-10">
         <h1 className="font-serif text-3xl md:text-4xl font-normal text-black">
-          Dashboard
+          {t("dashboard.pageTitle")}
         </h1>
         <div className="border border-black/20 p-6">
           <p className="text-black/80 mb-4">
-            View your children&apos;s lessons and training progress in the Parent Portal.
+            {t("dashboard.guardianLead")}
           </p>
           <Link
             href="/dashboard/guardian"
             className="inline-block px-4 py-2.5 bg-accent text-white font-medium text-sm uppercase tracking-wider hover:opacity-95 transition"
           >
-            Open Parent Portal
+            {t("dashboard.guardianOpenPortal")}
           </Link>
         </div>
       </div>
@@ -318,7 +325,7 @@ export default function DashboardPage() {
       />
 
       <h1 className="font-serif text-3xl md:text-4xl font-normal text-black">
-        Dashboard
+        {t("dashboard.pageTitle")}
       </h1>
 
       {isOwner && <ShareInviteCode stable={inviteStable} />}
@@ -326,7 +333,7 @@ export default function DashboardPage() {
       {/* Student: Upcoming lessons */}
       {isStudent && upcomingBookings.length > 0 && (
         <div className="border border-black/20 p-6" data-tour="upcoming-lessons">
-          <h2 className="font-serif text-lg text-black mb-2">Upcoming Lessons</h2>
+          <h2 className="font-serif text-lg text-black mb-2">{t("dashboard.upcomingLessons")}</h2>
           <div className="space-y-2">
             {upcomingBookings.map((b) => (
               <Link
@@ -342,9 +349,9 @@ export default function DashboardPage() {
                   />
                 )}
                 <div>
-                  <span className="font-medium text-black">{b.horse?.name ?? "Lesson"}</span>
+                  <span className="font-medium text-black">{b.horse?.name ?? t("dashboard.lessonFallback")}</span>
                   <span className="text-black/50 text-sm ml-2">
-                    {new Date(b.bookingDate).toLocaleDateString("en-US", {
+                    {new Date(b.bookingDate).toLocaleDateString(dateLocale, {
                       weekday: "short",
                       month: "short",
                       day: "numeric",
@@ -362,10 +369,10 @@ export default function DashboardPage() {
       {!isStudent && careReminders.length > 0 && (
         <div className="border border-black/20 p-6" data-tour="care-reminders">
           <h2 className="font-serif text-lg text-black mb-2 flex items-center gap-2">
-            <span>📋</span> Upcoming Care Reminders
+            <span>📋</span> {t("dashboard.careRemindersTitle")}
           </h2>
           <p className="text-sm text-black/60 mb-4">
-            Vaccinations, farrier, and other care due in the next 30 days.
+            {t("dashboard.careRemindersSub")}
           </p>
           <ul className="space-y-2">
             {careReminders.map((r) => (
@@ -384,8 +391,8 @@ export default function DashboardPage() {
                       : "text-black/50"
                   }
                 >
-                  {r.overdue ? "Overdue • " : ""}
-                  {new Date(r.nextDue).toLocaleDateString("en-US", {
+                  {r.overdue ? t("dashboard.overduePrefix") : ""}
+                  {new Date(r.nextDue).toLocaleDateString(dateLocale, {
                     month: "short",
                     day: "numeric",
                   })}
@@ -400,10 +407,10 @@ export default function DashboardPage() {
       {!isStudent && overworkedHorses.length > 0 && (
         <div className="border border-black/20 p-6">
           <h2 className="font-serif text-lg text-black mb-2 flex items-center gap-2">
-            <span>⚠</span> Horse Workload Alerts
+            <span>⚠</span> {t("dashboard.workloadAlertsTitle")}
           </h2>
           <p className="text-sm text-black/60 mb-4">
-            These horses may need a rest day based on recent activity.
+            {t("dashboard.workloadAlertsSub")}
           </p>
           <ul className="space-y-2">
             {overworkedHorses.map((h) => {
@@ -417,7 +424,10 @@ export default function DashboardPage() {
                     {h.name}
                   </Link>
                   <span className="text-black/50 shrink-0">
-                    {w.sessionsCount} sessions, {w.totalMinutes} min this week
+                    {t("dashboard.workloadWeekSummary", {
+                      count: String(w.sessionsCount),
+                      minutes: String(w.totalMinutes),
+                    })}
                   </span>
                 </li>
               );
@@ -429,15 +439,15 @@ export default function DashboardPage() {
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4" data-tour="stats-grid">
         {isStudent ? (
           <>
-            <StatCard title="Assigned Horses" value={horses.length} />
-            <StatCard title="Upcoming Lessons" value={upcomingBookings.length} />
+            <StatCard title={t("dashboard.statAssignedHorses")} value={horses.length} />
+            <StatCard title={t("dashboard.statUpcomingLessons")} value={upcomingBookings.length} />
           </>
         ) : (
           <>
-            <StatCard title="Total Horses" value={horses.length} />
-            <StatCard title="Total Sessions" value={totalSessions} />
-            <StatCard title="Sessions This Week" value={sessionsThisWeek} />
-            <StatCard title="Avg Duration (min)" value={avgDuration} />
+            <StatCard title={t("dashboard.statTotalHorses")} value={horses.length} />
+            <StatCard title={t("dashboard.statTotalSessions")} value={totalSessions} />
+            <StatCard title={t("dashboard.statSessionsThisWeek")} value={sessionsThisWeek} />
+            <StatCard title={t("dashboard.statAvgDuration")} value={avgDuration} />
           </>
         )}
       </div>
@@ -445,7 +455,7 @@ export default function DashboardPage() {
       <div className="grid md:grid-cols-2 gap-6">
         <div className="border border-black/10 p-6" data-tour="recent-sessions">
           <h2 className="font-serif text-lg text-black mb-4">
-            {isStudent ? "My Recent Sessions" : "Recent Sessions"}
+            {isStudent ? t("dashboard.recentMySessions") : t("dashboard.recentSessions")}
           </h2>
           <div className="space-y-3">
             {sessions.slice(0, 5).map((session) => (
@@ -456,67 +466,69 @@ export default function DashboardPage() {
                 <div>
                   <span className="font-medium text-black">{session.horse?.name}</span>
                   <span className="text-black/50 text-sm ml-2">
-                    {PUNCH_LABELS[session.punchType] || session.punchType}
+                    {punchLabel(session.punchType)}
                   </span>
                 </div>
                 <span className="text-black/50 text-sm">
-                  {session.duration > 0 ? `${session.duration} min` : "Rest"}
+                  {session.duration > 0
+                    ? `${session.duration} ${t("dashboard.minShort")}`
+                    : t("dashboard.restSession")}
                 </span>
               </div>
             ))}
             {sessions.length === 0 && (
-              <p className="text-black/50 text-sm">No sessions yet</p>
+              <p className="text-black/50 text-sm">{t("dashboard.noSessionsYet")}</p>
             )}
           </div>
         </div>
 
         {!isStudent && (
           <div className="border border-black/10 p-6" data-tour="quick-actions">
-            <h2 className="font-serif text-lg text-black mb-4">Quick Actions</h2>
+            <h2 className="font-serif text-lg text-black mb-4">{t("dashboard.quickActions")}</h2>
             <div className="space-y-3">
               <Link
                 href="/dashboard/horses?add=1"
                 data-tour="add-horse-button"
                 className="block w-full px-4 py-3 bg-accent text-white font-medium text-center text-sm uppercase tracking-wider hover:opacity-95 transition"
               >
-                + Add Horse
+                {t("dashboard.addHorse")}
               </Link>
               <Link
                 href="/dashboard/horses"
                 className="block w-full px-4 py-3 border border-black/10 text-black font-medium text-center text-sm uppercase tracking-wider hover:border-black/30 transition"
               >
-                Log Training Session
+                {t("dashboard.logTrainingSession")}
               </Link>
               <Link
                 href="/dashboard/schedule"
                 className="block w-full px-4 py-3 border border-black/10 text-black font-medium text-center text-sm uppercase tracking-wider hover:border-black/30 transition"
               >
-                View Schedule
+                {t("dashboard.viewSchedule")}
               </Link>
             </div>
           </div>
         )}
         {isStudent && (
           <div className="border border-black/10 p-6" data-tour="quick-links">
-            <h2 className="font-serif text-lg text-black mb-4">Quick Links</h2>
+            <h2 className="font-serif text-lg text-black mb-4">{t("dashboard.quickLinks")}</h2>
             <div className="space-y-3">
               <Link
                 href="/dashboard/my-horses"
                 className="block w-full px-4 py-3 border border-black/10 text-black font-medium text-center text-sm uppercase tracking-wider hover:border-black/30 transition"
               >
-                My Horses
+                {t("navRole.myHorses")}
               </Link>
               <Link
                 href="/dashboard/bookings"
                 className="block w-full px-4 py-3 border border-black/10 text-black font-medium text-center text-sm uppercase tracking-wider hover:border-black/30 transition"
               >
-                My Bookings
+                {t("navRole.myBookings")}
               </Link>
               <Link
                 href="/dashboard/competitions"
                 className="block w-full px-4 py-3 border border-black/10 text-black font-medium text-center text-sm uppercase tracking-wider hover:border-black/30 transition"
               >
-                Competitions
+                {t("navRole.competitions")}
               </Link>
             </div>
           </div>
