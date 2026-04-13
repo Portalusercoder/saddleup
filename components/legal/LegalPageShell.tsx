@@ -11,11 +11,13 @@ export default function LegalPageShell({
   titleKey,
   lastUpdated,
   arabicSummary,
+  arabicBody,
   children,
 }: {
   titleKey: string;
   lastUpdated: string;
   arabicSummary?: ReactNode;
+  arabicBody?: ReactNode;
   children: ReactNode;
 }) {
   const { t, lang } = useLanguage();
@@ -64,8 +66,11 @@ export default function LegalPageShell({
           </div>
         ) : null}
 
-        <div className="space-y-6 text-[15px] leading-relaxed text-black/85 dark:text-white/85 [&_h2]:mt-12 [&_h2]:scroll-mt-24 [&_h2]:font-serif [&_h2]:text-2xl [&_h2]:font-normal [&_h2]:text-black [&_h2]:first:mt-0 dark:[&_h2]:text-white [&_h3]:mt-8 [&_h3]:font-medium [&_h3]:text-black dark:[&_h3]:text-white [&_ul]:mt-3 [&_ul]:list-disc [&_ul]:space-y-2 [&_ul]:pl-5 [&_ol]:mt-3 [&_ol]:list-decimal [&_ol]:space-y-2 [&_ol]:pl-5 [&_strong]:font-medium [&_strong]:text-black dark:[&_strong]:text-white [&_a]:text-accent [&_a]:underline-offset-2 hover:[&_a]:underline">
-          {children}
+        <div
+          dir={lang === "ar" ? "rtl" : undefined}
+          className="space-y-6 text-[15px] leading-relaxed text-black/85 dark:text-white/85 [&_h2]:mt-12 [&_h2]:scroll-mt-24 [&_h2]:font-serif [&_h2]:text-2xl [&_h2]:font-normal [&_h2]:text-black [&_h2]:first:mt-0 dark:[&_h2]:text-white [&_h3]:mt-8 [&_h3]:font-medium [&_h3]:text-black dark:[&_h3]:text-white [&_ul]:mt-3 [&_ul]:list-disc [&_ul]:space-y-2 [&_ul]:pl-5 [&_ol]:mt-3 [&_ol]:list-decimal [&_ol]:space-y-2 [&_ol]:pl-5 [&_strong]:font-medium [&_strong]:text-black dark:[&_strong]:text-white [&_a]:text-accent [&_a]:underline-offset-2 hover:[&_a]:underline"
+        >
+          {lang === "ar" && arabicBody ? arabicBody : children}
         </div>
 
         <nav

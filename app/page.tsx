@@ -11,6 +11,12 @@ import {
   SiStripe,
   SiPrisma,
   SiCloudflare,
+  SiSentry,
+  SiOpenai,
+  SiUpstash,
+  SiResend,
+  SiMixpanel,
+  SiFramer,
 } from "react-icons/si";
 import { SUBSCRIPTION_PLANS } from "@/lib/constants";
 import AuthModal from "@/components/landing/AuthModal";
@@ -362,11 +368,50 @@ export default function Home() {
                 title: "Cloudflare",
                 href: "https://www.cloudflare.com",
               },
+              {
+                node: <SiSentry />,
+                title: "Sentry",
+                href: "https://sentry.io",
+              },
+              {
+                node: <SiUpstash />,
+                title: "Upstash",
+                href: "https://upstash.com",
+              },
               { node: <SiStripe />, title: "Stripe", href: "https://stripe.com" },
               {
                 node: <SiPrisma />,
                 title: "Prisma",
                 href: "https://prisma.io",
+              },
+              {
+                node: <SiResend />,
+                title: "Resend",
+                href: "https://resend.com",
+              },
+              {
+                node: <SiMixpanel />,
+                title: "Mixpanel",
+                href: "https://mixpanel.com",
+              },
+              {
+                node: <SiOpenai />,
+                title: "OpenAI",
+                href: "https://openai.com",
+              },
+              {
+                node: <SiFramer />,
+                title: "Framer Motion",
+                href: "https://www.framer.com/motion/",
+              },
+              {
+                node: (
+                  <span className="text-xs font-semibold tracking-wide uppercase">
+                    Recharts
+                  </span>
+                ),
+                title: "Recharts",
+                href: "https://recharts.org",
               },
             ]}
             speed={80}
@@ -376,7 +421,7 @@ export default function Home() {
             hoverSpeed={0}
             scaleOnHover
             fadeOut
-            ariaLabel="Technology stack"
+            ariaLabel={t("home.techAriaLabel")}
           />
           </div>
         </ScrollReveal>

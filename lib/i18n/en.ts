@@ -256,6 +256,7 @@ export const en = {
     getStartedFree: "Get started free",
     getStarted: "Get started",
     techTitle: "Built with",
+    techAriaLabel: "Technology stack",
     planHeroUnlimited: "Unlimited horses & riders",
     planHeroFree: "{horses} horses · {riders} riders free",
     planHeroPaid: "{horses} horses · {riders} riders",
