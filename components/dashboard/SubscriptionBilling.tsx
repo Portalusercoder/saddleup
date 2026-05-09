@@ -92,7 +92,7 @@ export default function SubscriptionBilling() {
 
   const isOwner = role === "owner";
 
-  const btnPrimary = "px-4 py-2.5 bg-accent text-black font-medium text-sm uppercase tracking-wider hover:opacity-95 transition disabled:opacity-50";
+  const btnPrimary = "px-4 py-2.5 bg-accent text-white font-medium text-sm uppercase tracking-wider hover:opacity-95 transition disabled:opacity-50";
   const btnSecondary = "px-4 py-2.5 border border-black/10 text-black text-sm uppercase tracking-wider hover:border-black/30 transition disabled:opacity-50";
 
   const hasUsage = data && data.limits && data.usage;

@@ -8,8 +8,8 @@ export default {
   theme: {
     extend: {
       colors: {
-        base: "#f3efe8",
-        accent: "#bba591",
+        base: "#FFFBF0",
+        accent: "#53161D",
       },
       fontFamily: {
         serif: ["var(--font-playfair)", "Georgia", "serif"],

@@ -4,7 +4,7 @@
       @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&amp;display=swap');
       .bg { fill: #0f0f0f; }
       .mark {
-        fill: #f3efe8;
+        fill: #fffbf0;
         font-family: 'Playfair Display', Georgia, serif;
         font-size: 31px;
         font-weight: 700;

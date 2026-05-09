@@ -3,7 +3,7 @@
 
   --logoloop-gap: 32px;
   --logoloop-logoHeight: 28px;
-  --logoloop-fadeColorAuto: #f3efe8;
+  --logoloop-fadeColorAuto: #fffbf0;
 }
 
 /* Dark theme: match section background and use light logos */
@@ -78,7 +78,7 @@
 .logoloop__node {
   display: inline-flex;
   align-items: center;
-  color: rgba(0, 0, 0, 0.75);
+  color: rgba(83, 22, 29, 0.75);
 }
 
 .logoloop__item img {

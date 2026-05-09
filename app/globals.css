@@ -11,31 +11,118 @@ html[lang="ar"] .font-serif {
   font-family: var(--font-tajawal), var(--font-playfair), ui-serif, Georgia, serif;
 }
 
-/* ---------------- Design Tokens (base #f3efe8, buttons #bba591) ---------------- */
+/* ---------------- Light theme: Ivory Whisper + Bordeaux Velvet ---------------- */
 
 :root {
-  --bg-main: #f3efe8;
-  --bg-card: #f3efe8;
-  --bg-elevated: #ebe6df;
-  --bg-hover: #e5dfd6;
+  --brand-ivory: #fffbf0;
+  --brand-bordeaux: #53161d;
 
-  --border-subtle: rgba(0, 0, 0, 0.08);
-  --border-default: rgba(0, 0, 0, 0.15);
+  --bg-main: #fffbf0;
+  --bg-card: #fffbf0;
+  --bg-elevated: #f7f2e8;
+  --bg-hover: #efe8db;
 
-  --text-primary: #000000;
-  --text-muted: rgba(0, 0, 0, 0.6);
-  --text-subtle: rgba(0, 0, 0, 0.4);
+  --border-subtle: rgba(83, 22, 29, 0.1);
+  --border-default: rgba(83, 22, 29, 0.18);
 
-  --button-primary-bg: #bba591;
-  --button-primary-text: #ffffff;
-  --button-secondary-border: rgba(0, 0, 0, 0.2);
-  --button-secondary-text: #000000;
+  --text-primary: #53161d;
+  --text-muted: rgba(83, 22, 29, 0.65);
+  --text-subtle: rgba(83, 22, 29, 0.45);
+
+  --button-primary-bg: #53161d;
+  --button-primary-text: #fffbf0;
+  --button-secondary-border: rgba(83, 22, 29, 0.35);
+  --button-secondary-text: #53161d;
 
   --radius: 0;
   --radius-sm: 2px;
 
   --background: var(--bg-main);
   --foreground: var(--text-primary);
+}
+
+/* Light: map common Tailwind black utilities to brand ink (Bordeaux) */
+html:not(.dark) .text-black {
+  color: var(--text-primary) !important;
+}
+html:not(.dark) .text-black\/90 {
+  color: rgba(83, 22, 29, 0.9) !important;
+}
+html:not(.dark) .text-black\/80 {
+  color: rgba(83, 22, 29, 0.8) !important;
+}
+html:not(.dark) .text-black\/75 {
+  color: rgba(83, 22, 29, 0.75) !important;
+}
+html:not(.dark) .text-black\/70 {
+  color: rgba(83, 22, 29, 0.7) !important;
+}
+html:not(.dark) .text-black\/65 {
+  color: rgba(83, 22, 29, 0.65) !important;
+}
+html:not(.dark) .text-black\/60 {
+  color: rgba(83, 22, 29, 0.6) !important;
+}
+html:not(.dark) .text-black\/50 {
+  color: rgba(83, 22, 29, 0.5) !important;
+}
+html:not(.dark) .text-black\/45 {
+  color: rgba(83, 22, 29, 0.45) !important;
+}
+html:not(.dark) .text-black\/40 {
+  color: rgba(83, 22, 29, 0.4) !important;
+}
+html:not(.dark) .text-black\/30 {
+  color: rgba(83, 22, 29, 0.3) !important;
+}
+html:not(.dark) .hover\:text-black:hover {
+  color: var(--text-primary) !important;
+}
+
+html:not(.dark) .border-black\/5 {
+  border-color: rgba(83, 22, 29, 0.06) !important;
+}
+html:not(.dark) .border-black\/10 {
+  border-color: rgba(83, 22, 29, 0.12) !important;
+}
+html:not(.dark) .border-black\/15 {
+  border-color: rgba(83, 22, 29, 0.16) !important;
+}
+html:not(.dark) .border-black\/20 {
+  border-color: rgba(83, 22, 29, 0.2) !important;
+}
+html:not(.dark) .border-black\/30 {
+  border-color: rgba(83, 22, 29, 0.28) !important;
+}
+html:not(.dark) .border-black\/40 {
+  border-color: rgba(83, 22, 29, 0.35) !important;
+}
+html:not(.dark) .focus\:border-black\/30:focus {
+  border-color: rgba(83, 22, 29, 0.35) !important;
+}
+html:not(.dark) .hover\:border-black\/30:hover {
+  border-color: rgba(83, 22, 29, 0.35) !important;
+}
+html:not(.dark) .placeholder-black\/40::placeholder {
+  color: rgba(83, 22, 29, 0.4) !important;
+}
+html:not(.dark) .ring-black\/50 {
+  --tw-ring-color: rgba(83, 22, 29, 0.35) !important;
+}
+html:not(.dark) .focus\:ring-black\/50:focus {
+  --tw-ring-color: rgba(83, 22, 29, 0.35) !important;
+}
+
+html:not(.dark) .bg-black\/5,
+html:not(.dark) .hover\:bg-black\/5:hover {
+  background: rgba(83, 22, 29, 0.05) !important;
+}
+html:not(.dark) .bg-black\/10,
+html:not(.dark) .hover\:bg-black\/10:hover {
+  background: rgba(83, 22, 29, 0.08) !important;
+}
+html:not(.dark) .bg-black\/15 {
+  background: rgba(83, 22, 29, 0.1) !important;
 }
 
 /* ---------------- Dark theme (old app colors) ---------------- */
@@ -65,7 +152,9 @@ html.dark {
 /* Dark: override Tailwind classes that use light-theme colors */
 .dark .bg-base,
 .dark .bg-base\/95,
-.dark .bg-\[\#f3efe8\] {
+.dark .bg-\[\#f3efe8\],
+.dark .bg-\[\#FFFBF0\],
+.dark .bg-\[\#fffbf0\] {
   background: var(--bg-main) !important;
 }
 
@@ -244,7 +333,7 @@ h1, h2, h3 {
 }
 
 .button-secondary:hover {
-  background: rgba(0, 0, 0, 0.05);
+  background: rgba(83, 22, 29, 0.06);
 }
 
 /* ---------------- Inputs & Forms ---------------- */
@@ -267,7 +356,7 @@ input:focus,
 select:focus,
 textarea:focus {
   outline: none;
-  border-color: rgba(0, 0, 0, 0.3);
+  border-color: rgba(83, 22, 29, 0.45);
 }
 html {
   scroll-behavior: smooth;
@@ -412,9 +501,9 @@ html {
 .skeleton {
   background: linear-gradient(
     90deg,
-    rgba(0, 0, 0, 0.06) 0%,
-    rgba(0, 0, 0, 0.12) 50%,
-    rgba(0, 0, 0, 0.06) 100%
+    rgba(83, 22, 29, 0.06) 0%,
+    rgba(83, 22, 29, 0.12) 50%,
+    rgba(83, 22, 29, 0.06) 100%
   );
   background-size: 200% 100%;
   animation: skeleton-shimmer 1.5s ease-in-out infinite;
