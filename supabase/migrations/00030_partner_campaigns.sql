@@ -34,7 +34,7 @@ insert into public.partner_campaigns (slug, name, enabled, destination_url, prom
 values (
   'ouma',
   'Ouma Horse',
-  false,
+  true,
   'https://www.oumahorse.com',
   null,
   'Visit partner'

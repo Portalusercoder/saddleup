@@ -2,26 +2,9 @@
 
 import { useState, useEffect } from "react";
 import Link from "next/link";
-import {
-  SiReact,
-  SiNextdotjs,
-  SiTypescript,
-  SiTailwindcss,
-  SiSupabase,
-  SiStripe,
-  SiPrisma,
-  SiCloudflare,
-  SiSentry,
-  SiOpenai,
-  SiUpstash,
-  SiResend,
-  SiMixpanel,
-  SiFramer,
-} from "react-icons/si";
 import { SUBSCRIPTION_PLANS } from "@/lib/constants";
 import AuthModal from "@/components/landing/AuthModal";
 import PixelCard from "@/components/ui/PixelCard";
-import LogoLoop from "@/components/ui/LogoLoop";
 import BlurText from "@/components/ui/BlurText";
 import Footer from "@/components/landing/Footer";
 import ScrollReveal from "@/components/ui/ScrollReveal";
@@ -330,93 +313,6 @@ export default function Home() {
       </section>
 
       <PartnerSpotlight />
-
-      {/* Tech stack */}
-      <section className="bg-base border-t border-black/10 py-12 overflow-hidden text-black dark:border-white/10">
-        <ScrollReveal>
-          <p className="text-center text-black/70 dark:text-white/90 text-xs uppercase tracking-[0.3em] mb-8">
-            {t("home.techTitle")}
-          </p>
-        </ScrollReveal>
-        <ScrollReveal delay={0.1}>
-          <div className="h-16 relative">
-          <LogoLoop
-            logos={[
-              { node: <SiReact />, title: "React", href: "https://react.dev" },
-              {
-                node: <SiNextdotjs />,
-                title: "Next.js",
-                href: "https://nextjs.org",
-              },
-              {
-                node: <SiTypescript />,
-                title: "TypeScript",
-                href: "https://www.typescriptlang.org",
-              },
-              {
-                node: <SiTailwindcss />,
-                title: "Tailwind CSS",
-                href: "https://tailwindcss.com",
-              },
-              {
-                node: <SiSupabase />,
-                title: "Supabase",
-                href: "https://supabase.com",
-              },
-              {
-                node: <SiCloudflare />,
-                title: "Cloudflare",
-                href: "https://www.cloudflare.com",
-              },
-              {
-                node: <SiSentry />,
-                title: "Sentry",
-                href: "https://sentry.io",
-              },
-              {
-                node: <SiUpstash />,
-                title: "Upstash",
-                href: "https://upstash.com",
-              },
-              { node: <SiStripe />, title: "Stripe", href: "https://stripe.com" },
-              {
-                node: <SiPrisma />,
-                title: "Prisma",
-                href: "https://prisma.io",
-              },
-              {
-                node: <SiResend />,
-                title: "Resend",
-                href: "https://resend.com",
-              },
-              {
-                node: <SiMixpanel />,
-                title: "Mixpanel",
-                href: "https://mixpanel.com",
-              },
-              {
-                node: <SiOpenai />,
-                title: "OpenAI",
-                href: "https://openai.com",
-              },
-              {
-                node: <SiFramer />,
-                title: "Framer Motion",
-                href: "https://www.framer.com/motion/",
-              },
-            ]}
-            speed={80}
-            direction="left"
-            logoHeight={32}
-            gap={48}
-            hoverSpeed={0}
-            scaleOnHover
-            fadeOut
-            ariaLabel={t("home.techAriaLabel")}
-          />
-          </div>
-        </ScrollReveal>
-      </section>
 
       <ScrollReveal>
         <Footer onGetStarted={() => openAuth()} />
