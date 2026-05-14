@@ -54,14 +54,14 @@ export const metadata: Metadata = {
     description:
       "Manage horses, riders, lessons, sessions, and stable operations in one place.",
     url: "/",
-    images: [{ url: "/hero-bg.jpg" }],
+    images: [{ url: "/hero-bg.png" }],
   },
   twitter: {
     card: "summary_large_image",
     title: "Saddle Up | Horse & Stable Management Software",
     description:
       "Manage horses, riders, lessons, sessions, and stable operations in one place.",
-    images: ["/hero-bg.jpg"],
+    images: ["/hero-bg.png"],
   },
 }
 

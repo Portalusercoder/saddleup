@@ -82,7 +82,7 @@ export default function UpgradeCTAModal() {
           <div className="grid grid-cols-1 md:grid-cols-2 min-h-[320px] md:min-h-[380px]">
             <div className="relative aspect-square md:aspect-auto md:min-h-[380px] bg-white/5">
               <Image
-                src="/hero-bg.jpg"
+                src="/hero-bg.png"
                 alt=""
                 fill
                 className="object-cover"

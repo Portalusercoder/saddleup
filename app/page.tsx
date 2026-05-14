@@ -54,7 +54,7 @@ export default function Home() {
         {/* Background image */}
         <div
           className="absolute inset-0 bg-cover bg-center bg-no-repeat parallax-bg"
-          style={{ backgroundImage: "url(/hero-bg.jpg)" }}
+          style={{ backgroundImage: "url(/hero-bg.png)" }}
         />
         {/* Dark overlay + gradient (left/bottom) - FASTRACK-style */}
         <div className="absolute inset-0 bg-black/50" />
