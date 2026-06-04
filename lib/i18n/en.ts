@@ -127,6 +127,7 @@ export const en = {
       errGeneric: "Something went wrong",
       resendAnother: "We sent another code to your email.",
       shareIdWithOwner: "Share this ID with your stable owner.",
+      turnstileRequired: "Please complete the security check.",
     },
     forgot: {
       backToSignIn: "Back to sign in",
@@ -365,7 +366,7 @@ export const en = {
     shellLastUpdated: "Last updated: {date}",
     shellDisclaimerBold: "Important:",
     shellDisclaimer:
-      "This is a template for Saudi PDPL-style expectations, not legal advice. Have a Saudi lawyer review it, match it to your real data flows, and publish Arabic where required. Privacy/legal email:",
+      "This is a template for Saudi PDPL-style expectations, not legal advice. Have a Saudi lawyer review it, match it to your real data flows, and publish Arabic where required. Privacy and legal inquiries: {email}.",
     shellNavAria: "Related legal pages",
     shellDataCompliance: "Data and compliance",
     bodyEnglishNote:

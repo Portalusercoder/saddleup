@@ -22,6 +22,18 @@ Use this checklist before launch and then monthly.
 - [ ] Run [SSL Labs](https://www.ssllabs.com/ssltest/) and confirm no critical TLS issues.
 - [ ] Confirm no mixed content warnings in browser console on main pages.
 
+### 1b) Verify production security headers (Next.js)
+
+Headers are defined in `next.config.ts`. Confirm they reach the browser (not stripped by CDN).
+
+```bash
+curl -sI https://www.saddleup-sa.com | grep -iE 'content-security-policy|strict-transport-security|x-frame-options|x-content-type-options|referrer-policy|permissions-policy'
+```
+
+Expected (values may vary slightly): CSP, HSTS with `max-age=63072000`, `X-Frame-Options: DENY`, `X-Content-Type-Options: nosniff`, `Referrer-Policy: strict-origin-when-cross-origin`, `Permissions-Policy` restricting camera/mic/geo.
+
+If missing on HTML but present on a Vercel preview URL, fix Cloudflare or proxy rules before changing app code.
+
 Evidence:
 
 ## 2) Auth & Authorization
@@ -44,6 +56,7 @@ Evidence:
 
 ## 4) Rate Limiting & Abuse Resistance
 
+- [ ] Signup email check requires Turnstile; `/api/auth/check-signup-email` returns 429 when rate limited.
 - [ ] Trigger repeated requests on login/forgot-password/contact and verify 429 behavior.
 - [ ] Confirm `Retry-After` is returned when applicable.
 - [ ] Confirm high-risk send endpoints (notices/newsletter) are throttled.

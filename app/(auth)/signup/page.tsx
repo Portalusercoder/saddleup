@@ -5,6 +5,8 @@ import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
 import { trackEvent } from "@/lib/analytics/mixpanel-client";
+import TurnstileWidget from "@/components/security/TurnstileWidget";
+import { hasTurnstileToken } from "@/lib/security/turnstile-client";
 import { useLanguage } from "@/components/providers/LanguageProvider";
 
 type Role = "owner" | "trainer" | "student" | "guardian";
@@ -75,6 +77,7 @@ export default function SignupPage() {
   const [resendCooldownSec, setResendCooldownSec] = useState(0);
   const [resendLoading, setResendLoading] = useState(false);
   const [resendHint, setResendHint] = useState<string | null>(null);
+  const [turnstileToken, setTurnstileToken] = useState("");
 
   const getOtpOptions = (includeRedirect = true) => {
     const origin =
@@ -131,7 +134,10 @@ export default function SignupPage() {
     const res = await fetch("/api/auth/check-signup-email", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ email: emailValue.trim() }),
+      body: JSON.stringify({
+        email: emailValue.trim(),
+        turnstileToken: turnstileToken.trim(),
+      }),
     });
     if (!res.ok) {
       let message = t("auth.signup.errEmailCheck");
@@ -182,6 +188,10 @@ export default function SignupPage() {
   const sendCode = async (e: React.FormEvent) => {
     e.preventDefault();
     setError(null);
+    if (!hasTurnstileToken(turnstileToken)) {
+      setError(t("auth.signup.turnstileRequired"));
+      return;
+    }
     setLoading(true);
     trackEvent("signup_code_requested", { role });
     try {
@@ -214,6 +224,10 @@ export default function SignupPage() {
 
   const resendVerificationEmail = async () => {
     if (resendCooldownSec > 0 || resendLoading) return;
+    if (!hasTurnstileToken(turnstileToken)) {
+      setError(t("auth.signup.turnstileRequired"));
+      return;
+    }
     setResendHint(null);
     setError(null);
     setResendLoading(true);
@@ -510,7 +524,9 @@ export default function SignupPage() {
                 {t("auth.signup.useDifferentEmail")}
               </button>
             </form>
-            <div className="mt-5 pt-5 border-t border-black/10 text-center">
+            <div className="mt-5 pt-5 border-t border-black/10">
+              <TurnstileWidget onTokenChange={setTurnstileToken} className="mb-4" />
+              <div className="text-center">
               {resendHint && (
                 <p className="text-black/70 text-sm mb-3">{resendHint}</p>
               )}
@@ -528,6 +544,7 @@ export default function SignupPage() {
                   {resendLoading ? t("auth.forgot.sending") : t("auth.signup.resendVerification")}
                 </button>
               )}
+              </div>
             </div>
           </div>
           <p className="mt-6 text-center">
@@ -689,6 +706,10 @@ export default function SignupPage() {
                 </p>
               </div>
             )}
+
+            <div>
+              <TurnstileWidget onTokenChange={setTurnstileToken} />
+            </div>
 
             {error && (
               <p className="text-red-600 text-sm">{error}</p>

@@ -43,11 +43,7 @@ export default function LegalPageShell({
 
         <div className="mb-10 border border-amber-300/80 bg-amber-50/90 p-4 text-sm leading-relaxed text-black/85 dark:border-amber-800/60 dark:bg-amber-950/30 dark:text-white/85">
           <strong className="font-medium">{t("legal.shellDisclaimerBold")}</strong>{" "}
-          {t("legal.shellDisclaimer")}{" "}
-          <code className="rounded bg-black/5 px-1 py-0.5 text-xs dark:bg-white/10">
-            NEXT_PUBLIC_LEGAL_EMAIL
-          </code>{" "}
-          (fallback: {defaultContact}).
+          {t("legal.shellDisclaimer", { email: defaultContact })}
         </div>
 
         {lang === "ar" ? (

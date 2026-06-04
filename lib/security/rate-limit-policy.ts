@@ -31,6 +31,9 @@ export function getApiRateLimitPolicy(
   if (pathname === "/api/contact") {
     return { bucket: "contact", max: 10, windowMs: ONE_MINUTE };
   }
+  if (pathname === "/api/auth/check-signup-email") {
+    return { bucket: "check-signup-email", max: 15, windowMs: ONE_MINUTE };
+  }
   if (pathname === "/api/bookings" && m === "POST") {
     return { bucket: "bookings-create", max: 10, windowMs: ONE_MINUTE };
   }

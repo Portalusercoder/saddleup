@@ -42,6 +42,7 @@ export const checkSignupEmailSchema = z
       .trim()
       .pipe(z.string().email())
       .transform((s) => s.toLowerCase()),
+    turnstileToken: z.string().trim().min(1),
   })
   .strip();
 
