@@ -525,7 +525,11 @@ export default function SignupPage() {
               </button>
             </form>
             <div className="mt-5 pt-5 border-t border-black/10">
-              <TurnstileWidget onTokenChange={setTurnstileToken} className="mb-4" />
+              <TurnstileWidget
+                onTokenChange={setTurnstileToken}
+                theme="auto"
+                className="mb-4"
+              />
               <div className="text-center">
               {resendHint && (
                 <p className="text-black/70 text-sm mb-3">{resendHint}</p>
@@ -641,6 +645,8 @@ export default function SignupPage() {
               />
             </div>
 
+            <TurnstileWidget onTokenChange={setTurnstileToken} theme="auto" />
+
             {role === "owner" && (
               <>
                 <div>
@@ -706,10 +712,6 @@ export default function SignupPage() {
                 </p>
               </div>
             )}
-
-            <div>
-              <TurnstileWidget onTokenChange={setTurnstileToken} />
-            </div>
 
             {error && (
               <p className="text-red-600 text-sm">{error}</p>

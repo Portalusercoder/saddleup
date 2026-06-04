@@ -57,6 +57,9 @@ const arInner = {
     required: "مطلوب",
     yourName: "اسمك",
     placeholderEmail: "you@example.com",
+    securityCheck: "التحقق الأمني",
+    turnstileNotConfigured:
+      "التحقق الأمني غير مُعد. عيّن NEXT_PUBLIC_TURNSTILE_SITE_KEY و TURNSTILE_SECRET_KEY ثم أعد النشر.",
   },
   auth: {
     login: {

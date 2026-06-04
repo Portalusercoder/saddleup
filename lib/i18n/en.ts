@@ -55,6 +55,9 @@ export const en = {
     required: "Required",
     yourName: "Your name",
     placeholderEmail: "you@example.com",
+    securityCheck: "Security check",
+    turnstileNotConfigured:
+      "Security check is not configured. Set NEXT_PUBLIC_TURNSTILE_SITE_KEY and TURNSTILE_SECRET_KEY, then redeploy.",
   },
   auth: {
     login: {

@@ -200,7 +200,7 @@ function ForgotPasswordForm() {
           ) : step === "email" ? (
             <form onSubmit={sendCode} className="space-y-5">
               <div>
-                <TurnstileWidget onTokenChange={setTurnstileToken} />
+                <TurnstileWidget onTokenChange={setTurnstileToken} theme="light" />
               </div>
               <div>
                 <label htmlFor="email" className={labelClass}>
@@ -281,7 +281,7 @@ function ForgotPasswordForm() {
                 {loading ? t("auth.forgot.updating") : t("auth.forgot.updatePassword")}
               </button>
               <div className="flex flex-wrap items-center gap-2 text-sm text-black/60">
-                <TurnstileWidget onTokenChange={setTurnstileToken} className="w-full" />
+                <TurnstileWidget onTokenChange={setTurnstileToken} theme="light" className="w-full" />
                 <button
                   type="button"
                   onClick={() => {
