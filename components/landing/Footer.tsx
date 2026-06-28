@@ -6,9 +6,10 @@ import TextLogo from "@/components/brand/TextLogo";
 import { useLanguage } from "@/components/providers/LanguageProvider";
 
 const navLinkKeys = [
-  { href: "/#features", key: "nav.features" as const },
+  { href: "/#features", key: "nav.product" as const },
   { href: "/#pricing", key: "nav.pricing" as const },
-  { href: "/#about", key: "nav.about" as const },
+  { href: "/for-schools", key: "nav.forSchools" as const },
+  { href: "/for-trainers", key: "nav.forTrainers" as const },
   { href: "/blog", key: "footer.guides" as const },
   { href: "/contact", key: "nav.contact" as const },
 ];
@@ -46,7 +47,7 @@ export default function Footer({
         </div>
 
         {/* Heading + CTA */}
-        <h2 className="font-serif text-2xl sm:text-3xl md:text-4xl font-normal mb-6 max-w-xl mx-auto">
+        <h2 className="font-serif text-2xl sm:text-3xl md:text-4xl font-normal mb-6 max-w-xl mx-auto leading-snug">
           {t("footer.ctaTitle")}
         </h2>
         <button

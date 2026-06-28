@@ -65,20 +65,24 @@ export default function Navbar() {
 
   const isAuthPage = pathname === "/login" || pathname === "/signup";
   const isHome = pathname === "/";
+  const isMarketing =
+    isHome || pathname === "/for-schools" || pathname === "/for-trainers";
 
   const [scrolledPastHero, setScrolledPastHero] = useState(false);
+  const [navCompact, setNavCompact] = useState(false);
   useEffect(() => {
     if (!isHome) return;
     const check = () => {
       const threshold = window.innerHeight * HERO_SCROLL_THRESHOLD;
       setScrolledPastHero(window.scrollY > threshold);
+      setNavCompact(window.scrollY > 60);
     };
     check();
     window.addEventListener("scroll", check, { passive: true });
     return () => window.removeEventListener("scroll", check);
   }, [isHome]);
 
-  const isOverHero = isHome && !scrolledPastHero;
+  const isOverHero = isHome && !scrolledPastHero && !navCompact;
   const isDashboard = pathname.startsWith("/dashboard");
 
   if (isAuthPage) return null;
@@ -86,15 +90,17 @@ export default function Navbar() {
   return (
     <div className="relative">
       <nav
-        className={`h-20 flex items-center fixed top-0 left-0 right-0 w-full z-50 transition-all duration-300 ${
+        className={`flex items-center fixed top-0 left-0 right-0 w-full z-50 transition-all duration-300 ${
+          isHome && navCompact ? "h-16" : "h-20"
+        } ${
           isDashboard
             ? "px-4 sm:px-6 md:ps-56 md:pe-12 lg:pe-16 xl:pe-20"
             : "px-4 sm:px-6 md:px-12 lg:px-16 xl:px-20"
         } ${
           isOverHero
             ? "bg-transparent text-white"
-            : isHome
-              ? "bg-base/95 backdrop-blur-sm text-black border-b border-black/10"
+            : isHome || isMarketing
+              ? "bg-base/95 backdrop-blur-md text-black border-b border-black/10 shadow-sm"
               : "bg-base border-b border-black/10 text-black"
         }`}
       >
@@ -102,29 +108,29 @@ export default function Navbar() {
         <div className="flex-1 min-w-0" />
 
         {/* Center: Nav links (home page only) */}
-        {isHome && !user && (
+        {isMarketing && !user && (
           <div
-            className={`hidden lg:flex items-center gap-6 xl:gap-8 uppercase text-[0.65rem] md:text-[0.7rem] tracking-[0.2em] font-light ${
+            className={`hidden lg:flex items-center gap-5 xl:gap-7 text-[0.65rem] md:text-[0.7rem] tracking-[0.12em] font-light ${
               isOverHero ? "text-white/90" : "text-black/90"
             }`}
           >
             <Link href="/#features" className={isOverHero ? "hover:text-white transition" : "hover:text-black transition"}>
-              {t("nav.features")}
+              {t("nav.product")}
             </Link>
             <Link href="/#pricing" className={isOverHero ? "hover:text-white transition" : "hover:text-black transition"}>
               {t("nav.pricing")}
             </Link>
-            <Link href="/#about" className={isOverHero ? "hover:text-white transition" : "hover:text-black transition"}>
-              {t("nav.about")}
+            <Link href="/for-schools" className={isOverHero ? "hover:text-white transition" : "hover:text-black transition"}>
+              {t("nav.forSchools")}
             </Link>
-            <Link href="/contact" className={isOverHero ? "hover:text-white transition" : "hover:text-black transition"}>
-              {t("nav.contact")}
+            <Link href="/for-trainers" className={isOverHero ? "hover:text-white transition" : "hover:text-black transition"}>
+              {t("nav.forTrainers")}
             </Link>
           </div>
         )}
 
         {/* Top-right chrome: always physical right (sidebar stays on the left in RTL) */}
-        <div className={`flex-1 flex items-center justify-end min-w-0 ${isHome && !user ? "" : "max-lg:flex-none"}`}>
+        <div className={`flex-1 flex items-center justify-end min-w-0 ${isMarketing && !user ? "" : "max-lg:flex-none"}`}>
           <div dir="ltr" className="flex items-center gap-2 sm:gap-3 shrink-0">
             <LanguageToggle variant={isOverHero ? "light" : "dark"} />
             {authChecked && user ? (
@@ -155,7 +161,7 @@ export default function Navbar() {
                     href="/signup"
                     className="px-4 py-2.5 bg-accent text-white font-medium hover:opacity-95 transition uppercase tracking-[0.2em] text-[0.7rem]"
                   >
-                    {t("nav.signUp")}
+                    {t("nav.startFree")}
                   </Link>
                 </>
               )
