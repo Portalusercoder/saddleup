@@ -13,7 +13,7 @@ export default function HowItWorks() {
   ];
 
   return (
-    <section id="how-it-works" className="relative -mt-6 sm:-mt-10 pt-12 sm:pt-16 pb-20 sm:pb-32 px-5 sm:px-6">
+    <section id="how-it-works" className="relative pt-16 sm:pt-20 pb-20 sm:pb-32 px-5 sm:px-6">
       <div className="max-w-6xl mx-auto">
         <ScrollReveal className="text-center max-w-2xl mx-auto mb-10 sm:mb-16">
           <p className="landing-section-label">{t("home.howItWorksTitle")}</p>

@@ -22,7 +22,7 @@ export default function Home() {
   };
 
   return (
-    <main className="min-h-screen bg-[#1d1d1f]">
+    <main className="min-h-screen bg-[#f5f5f7]">
       <AuthModal
         isOpen={authModalOpen}
         onClose={() => setAuthModalOpen(false)}

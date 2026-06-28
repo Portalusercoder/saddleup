@@ -1,5 +1,6 @@
 "use client";
 
+import { useEffect, useState } from "react";
 import { motion, useReducedMotion } from "framer-motion";
 
 interface ScrollRevealProps {
@@ -16,21 +17,26 @@ export default function ScrollReveal({
   direction = "up",
 }: ScrollRevealProps) {
   const reduceMotion = useReducedMotion();
-  const y = direction === "up" ? 40 : -40;
+  const [ready, setReady] = useState(false);
+  const y = direction === "up" ? 24 : -24;
 
-  const target = { opacity: 1, y: 0, filter: "blur(0px)" as const };
+  useEffect(() => {
+    setReady(true);
+  }, []);
+
+  if (!ready || reduceMotion) {
+    return <div className={className}>{children}</div>;
+  }
 
   return (
     <motion.div
-      initial={
-        reduceMotion ? target : { opacity: 0, y, filter: "blur(12px)" }
-      }
-      whileInView={target}
-      viewport={{ once: true, amount: 0.15 }}
+      initial={{ opacity: 0, y }}
+      whileInView={{ opacity: 1, y: 0 }}
+      viewport={{ once: true, amount: 0.12, margin: "0px 0px -40px 0px" }}
       transition={{
-        duration: reduceMotion ? 0 : 0.6,
-        delay: reduceMotion ? 0 : delay,
-        ease: [0.25, 0.46, 0.45, 0.94],
+        duration: 0.55,
+        delay,
+        ease: [0.16, 1, 0.3, 1],
       }}
       className={className}
     >

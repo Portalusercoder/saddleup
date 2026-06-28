@@ -10,17 +10,21 @@ export default function PagePadding({
   const pathname = usePathname();
   const isAuthPage = pathname === "/login" || pathname === "/signup";
   const isDashboard = pathname.startsWith("/dashboard");
-  return (
-    <div
-      className={
-        isAuthPage
-          ? ""
-          : isDashboard
-            ? "pt-20"
-            : "pt-20 px-4 sm:px-6 md:px-10"
-      }
-    >
-      {children}
-    </div>
-  );
+  const isHome = pathname === "/";
+  const isMarketingSubpage =
+    pathname === "/for-schools" || pathname === "/for-trainers";
+
+  if (isAuthPage || isHome) {
+    return <>{children}</>;
+  }
+
+  if (isDashboard) {
+    return <div className="pt-20">{children}</div>;
+  }
+
+  if (isMarketingSubpage) {
+    return <div className="pt-20">{children}</div>;
+  }
+
+  return <div className="pt-20 px-4 sm:px-6 md:px-10">{children}</div>;
 }
