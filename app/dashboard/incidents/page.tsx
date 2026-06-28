@@ -5,6 +5,8 @@ import Link from "next/link";
 import { useProfile } from "@/components/providers/ProfileProvider";
 import LoadingSpinner from "@/components/ui/LoadingSpinner";
 import TableSkeleton from "@/components/ui/TableSkeleton";
+import IncidentDetailDrawer from "@/components/dashboard/IncidentDetailDrawer";
+import DashboardEmptyState from "@/components/ui/DashboardEmptyState";
 import GuidedTourOverlay, { type GuidedTourStep } from "@/components/dashboard/GuidedTourOverlay";
 import { usePageTour } from "@/components/dashboard/usePageTour";
 import { useLanguage } from "@/components/providers/LanguageProvider";
@@ -64,6 +66,9 @@ export default function IncidentsPage() {
     followUpNotes: "",
   });
   const [submitLoading, setSubmitLoading] = useState(false);
+  const [filterSeverity, setFilterSeverity] = useState<string>("all");
+  const [filterHorseId, setFilterHorseId] = useState<string>("all");
+  const [detailReport, setDetailReport] = useState<IncidentReport | null>(null);
 
   const isTrainerOrOwner =
     profile?.role === "trainer" || profile?.role === "owner";
@@ -130,6 +135,12 @@ export default function IncidentsPage() {
       day: "numeric",
       year: "numeric",
     });
+
+  const filteredReports = reports.filter((r) => {
+    if (filterSeverity !== "all" && r.severity !== filterSeverity) return false;
+    if (filterHorseId !== "all" && (r.horseId ?? r.horse?.id) !== filterHorseId) return false;
+    return true;
+  });
 
   const openAdd = () => {
     setEditingReport(null);
@@ -284,79 +295,108 @@ export default function IncidentsPage() {
       {loading ? (
         <TableSkeleton rows={6} cols={4} />
       ) : reports.length === 0 ? (
-        <div className="border border-black/10 p-8 text-center">
-          <p className="text-black/60">{t("dashboard.incidentsEmpty")}</p>
-          {isTrainerOrOwner && horses.length > 0 && (
-            <button
-              onClick={openAdd}
-              className="mt-4 text-black/60 hover:text-black text-sm uppercase tracking-wider"
-            >
-              {t("dashboard.incidentsReportFirst")}
-            </button>
-          )}
-        </div>
+        <DashboardEmptyState
+          title={t("dashboard.incidentsEmptyTitle")}
+          description={t("dashboard.incidentsEmpty")}
+          actionLabel={isTrainerOrOwner && horses.length > 0 ? t("dashboard.incidentsReportFirst") : undefined}
+          onAction={isTrainerOrOwner && horses.length > 0 ? openAdd : undefined}
+        />
       ) : (
-        <div className="border border-black/10 p-6" data-tour="incidents-history">
+        <div className="border border-black/10 p-6 dark:border-white/10" data-tour="incidents-history">
+          <div className="flex flex-col sm:flex-row sm:items-end gap-3 mb-4">
+            <label className="text-sm text-black/60 dark:text-white/60">
+              <span className="block text-xs uppercase tracking-widest mb-1">
+                {t("dashboard.incidentsFilterSeverity")}
+              </span>
+              <select
+                value={filterSeverity}
+                onChange={(e) => setFilterSeverity(e.target.value)}
+                className="px-3 py-2 bg-base border border-black/10 text-black text-sm dark:border-white/15 dark:text-white"
+              >
+                <option value="all">{t("dashboard.incidentsFilterAll")}</option>
+                <option value="minor">{t("dashboard.incidentsSeverityMinor")}</option>
+                <option value="moderate">{t("dashboard.incidentsSeverityModerate")}</option>
+                <option value="serious">{t("dashboard.incidentsSeveritySerious")}</option>
+              </select>
+            </label>
+            <label className="text-sm text-black/60 dark:text-white/60">
+              <span className="block text-xs uppercase tracking-widest mb-1">
+                {t("dashboard.incidentsFilterHorse")}
+              </span>
+              <select
+                value={filterHorseId}
+                onChange={(e) => setFilterHorseId(e.target.value)}
+                className="px-3 py-2 bg-base border border-black/10 text-black text-sm dark:border-white/15 dark:text-white"
+              >
+                <option value="all">{t("dashboard.incidentsFilterAll")}</option>
+                {horses.map((h) => (
+                  <option key={h.id} value={h.id}>
+                    {h.name}
+                  </option>
+                ))}
+              </select>
+            </label>
+          </div>
           <div className="space-y-3">
-            {reports.map((r) => (
+            {filteredReports.length === 0 ? (
+              <p className="text-black/50 text-sm dark:text-white/50">
+                {t("dashboard.incidentsFilterEmpty")}
+              </p>
+            ) : (
+              filteredReports.map((r) => (
               <div
                 key={r.id}
-                className="border border-black/10 px-4 py-4 hover:border-black/20 transition"
+                className="border border-black/10 px-4 py-4 hover:border-black/20 transition cursor-pointer dark:border-white/10"
+                onClick={() => setDetailReport(r)}
+                onKeyDown={(e) => {
+                  if (e.key === "Enter" || e.key === " ") {
+                    e.preventDefault();
+                    setDetailReport(r);
+                  }
+                }}
+                role="button"
+                tabIndex={0}
               >
                 <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-2">
                   <div className="flex-1">
                     <div className="flex flex-wrap items-center gap-2">
-                      <span className="font-medium text-black">
+                      <span className="font-medium text-black dark:text-white">
                         {formatDate(r.incidentDate)}
                       </span>
                       {r.horse && (
-                        <Link
-                          href={`/dashboard/horses/${r.horse.id}`}
-                          className="text-black/70 hover:text-black text-sm"
-                        >
-                          {r.horse.name}
-                        </Link>
+                        <span className="text-black/70 text-sm dark:text-white/70">{r.horse.name}</span>
                       )}
                       {r.severity && (
                         <span
                           className={`text-xs px-2 py-0.5 uppercase tracking-wider ${
                             r.severity === "serious"
-                              ? "bg-amber-500/20 text-amber-400"
+                              ? "bg-amber-500/20 text-amber-700 dark:text-amber-400"
                               : r.severity === "moderate"
-                                ? "bg-white/10 text-black/80"
-                                : "text-black/50"
+                                ? "bg-black/5 text-black/80 dark:bg-white/10 dark:text-white/80"
+                                : "text-black/50 dark:text-white/50"
                           }`}
                         >
                           {severityLabel(r.severity)}
                         </span>
                       )}
                     </div>
-                    <p className="text-black/80 text-sm mt-2 line-clamp-2">
+                    <p className="text-black/80 text-sm mt-2 line-clamp-2 dark:text-white/80">
                       {r.description}
                     </p>
-                    <div className="flex flex-wrap gap-x-4 gap-y-1 mt-2 text-xs text-black/50">
-                      {r.riderName && (
-                        <span>{t("dashboard.incidentsRiderPrefix")} {r.riderName}</span>
-                      )}
-                      {r.location && (
-                        <span>{t("dashboard.incidentsLocationPrefix")} {r.location}</span>
-                      )}
-                      {r.witnesses && (
-                        <span>{t("dashboard.incidentsWitnessesPrefix")} {r.witnesses}</span>
-                      )}
-                    </div>
                   </div>
                   {isTrainerOrOwner && (
-                    <div className="flex gap-2 shrink-0">
+                    <div className="flex gap-2 shrink-0" onClick={(e) => e.stopPropagation()}>
                       <button
+                        type="button"
                         onClick={() => openEdit(r)}
-                        className="text-black hover:underline text-sm uppercase tracking-wider"
+                        className="text-black hover:underline text-sm uppercase tracking-wider dark:text-white"
                       >
                         {t("dashboard.teamRidersEdit")}
                       </button>
                       <button
+                        type="button"
                         onClick={() => handleDelete(r.id)}
-                        className="text-black/60 hover:text-black text-sm uppercase tracking-wider"
+                        className="text-black/60 hover:text-black text-sm uppercase tracking-wider dark:text-white/60"
                       >
                         {t("dashboard.teamRidersDelete")}
                       </button>
@@ -364,10 +404,42 @@ export default function IncidentsPage() {
                   )}
                 </div>
               </div>
-            ))}
+            ))
+            )}
           </div>
         </div>
       )}
+
+      {detailReport ? (
+        <IncidentDetailDrawer
+          report={detailReport}
+          formatDate={formatDate}
+          severityLabel={severityLabel}
+          onClose={() => setDetailReport(null)}
+          onEdit={
+            isTrainerOrOwner
+              ? () => {
+                  setDetailReport(null);
+                  openEdit(detailReport);
+                }
+              : undefined
+          }
+          labels={{
+            title: t("dashboard.incidentsDetailTitle"),
+            close: t("common.close"),
+            date: t("dashboard.incidentsLabelDate"),
+            horse: t("dashboard.bookingsLabelHorse"),
+            rider: t("dashboard.bookingsDetailRider"),
+            location: t("dashboard.incidentsLabelLocation"),
+            severity: t("dashboard.incidentsLabelSeverity"),
+            description: t("dashboard.incidentsLabelDescription"),
+            witnesses: t("dashboard.incidentsLabelWitnesses"),
+            followUp: t("dashboard.incidentsLabelFollowUp"),
+            edit: t("dashboard.teamRidersEdit"),
+            none: "—",
+          }}
+        />
+      ) : null}
 
       {showModal && (
         <div className="fixed inset-0 bg-black/80 flex items-center justify-center z-50 p-4 overflow-y-auto sm:items-center sm:py-8">

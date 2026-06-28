@@ -4,6 +4,7 @@ import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useProfile } from "@/components/providers/ProfileProvider";
+import HorseStatusPill from "@/components/ui/HorseStatusPill";
 import { HorseAvatar } from "@/components/HorseAvatar";
 import UpgradePlanModal from "@/components/dashboard/UpgradePlanModal";
 import LoadingSpinner from "@/components/ui/LoadingSpinner";
@@ -62,6 +63,27 @@ interface RiderOption {
 
 export default function HorsesPage() {
   const { t } = useLanguage();
+  const levelLabel = (level?: string | null) => {
+    const map: Record<string, string> = {
+      beginner: t("dashboard.horsesLevelBeginner"),
+      intermediate: t("dashboard.horsesLevelIntermediate"),
+      advanced: t("dashboard.horsesLevelAdvanced"),
+    };
+    return level ? map[level] ?? level : null;
+  };
+
+  const trainingLabel = (status?: string | null) => {
+    const map: Record<string, string> = {
+      green: t("dashboard.horsesTrainingGreen"),
+      schooling: t("dashboard.horsesTrainingSchooling"),
+      "competition-ready": t("dashboard.horsesTrainingCompetitionReady"),
+    };
+    return status ? map[status] ?? status : null;
+  };
+
+  const iconBtn =
+    "inline-flex h-9 w-9 items-center justify-center border border-black/15 text-black/70 hover:bg-black/[0.04] hover:text-black dark:border-white/20 dark:text-white/70 dark:hover:bg-white/5 dark:hover:text-white";
+
   const punchLabel = (type?: string | null) => {
     const map: Record<string, string> = {
       training: t("dashboard.punchTraining"),
@@ -74,6 +96,7 @@ export default function HorsesPage() {
     };
     return map[type || ""] ?? (type || "—");
   };
+
   const router = useRouter();
   const [horses, setHorses] = useState<Horse[]>([]);
   const [riders, setRiders] = useState<RiderOption[]>([]);
@@ -555,32 +578,58 @@ export default function HorsesPage() {
                             {horse.name}
                           </Link>
                           {workload.warning && (
-                            <span className="text-xs border border-black/30 text-black/80 px-2 py-0.5 uppercase tracking-wider">
-                              {t("dashboard.horsesOverworked")}
-                            </span>
+                            <HorseStatusPill
+                              label={t("dashboard.horsesOverworked")}
+                              tone="warn"
+                            />
                           )}
                         </div>
                       </td>
-                      <td className="px-6 py-5 text-black/80">{horse.gender}</td>
-                      <td className="px-6 py-5 text-black/80">{horse.age ?? "—"}</td>
-                      <td className="px-6 py-5 text-black/50">
-                        {horse.skillLevel || "—"}
+                      <td className="px-6 py-5 text-black/80 dark:text-white/80">{horse.gender}</td>
+                      <td className="px-6 py-5 text-black/80 dark:text-white/80">{horse.age ?? "—"}</td>
+                      <td className="px-6 py-5">
+                        <div className="flex flex-wrap gap-1.5">
+                          {levelLabel(horse.skillLevel) ? (
+                            <HorseStatusPill label={levelLabel(horse.skillLevel)!} tone="accent" />
+                          ) : (
+                            <span className="text-black/40 dark:text-white/40">—</span>
+                          )}
+                          {trainingLabel(horse.trainingStatus) ? (
+                            <HorseStatusPill label={trainingLabel(horse.trainingStatus)!} />
+                          ) : null}
+                        </div>
                       </td>
-                      <td className="px-6 py-5 text-black/80">{horse.owner ?? "—"}</td>
-                      <td className="px-6 py-5 text-right space-x-3">
-                        <button
-                          onClick={() => openSessionModal(horse)}
-                          data-tour="horses-log-session"
-                          className="text-black hover:underline text-sm uppercase tracking-wider"
-                        >
-                          {t("dashboard.scheduleLogSession")}
-                        </button>
-                        <button
-                          onClick={() => deleteHorse(horse.id)}
-                          className="text-black/60 hover:text-black hover:underline text-sm uppercase tracking-wider"
-                        >
-                          {t("dashboard.teamRidersDelete")}
-                        </button>
+                      <td className="px-6 py-5 text-black/80 dark:text-white/80">{horse.owner ?? "—"}</td>
+                      <td className="px-6 py-5">
+                        <div className="flex items-center justify-end gap-1.5">
+                          <Link
+                            href={`/dashboard/horses/${horse.id}`}
+                            className={iconBtn}
+                            title={t("dashboard.horsesActionView")}
+                            aria-label={t("dashboard.horsesActionView")}
+                          >
+                            ↗
+                          </Link>
+                          <button
+                            type="button"
+                            onClick={() => openSessionModal(horse)}
+                            data-tour="horses-log-session"
+                            className={iconBtn}
+                            title={t("dashboard.scheduleLogSession")}
+                            aria-label={t("dashboard.scheduleLogSession")}
+                          >
+                            ✎
+                          </button>
+                          <button
+                            type="button"
+                            onClick={() => deleteHorse(horse.id)}
+                            className={iconBtn}
+                            title={t("dashboard.teamRidersDelete")}
+                            aria-label={t("dashboard.teamRidersDelete")}
+                          >
+                            ✕
+                          </button>
+                        </div>
                       </td>
                     </tr>
                   );

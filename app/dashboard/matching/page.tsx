@@ -49,6 +49,8 @@ interface MatchingData {
 }
 
 const btnPrimary = "px-4 py-2.5 bg-accent text-white font-medium text-sm uppercase tracking-wider hover:opacity-95 transition";
+const btnSecondary =
+  "px-3 py-1.5 border border-black/15 text-black text-xs uppercase tracking-wider hover:bg-black/[0.04] dark:border-white/20 dark:text-white";
 
 function ScoreBadge({ score, label }: { score: number; label: string }) {
   const color =
@@ -63,6 +65,70 @@ function ScoreBadge({ score, label }: { score: number; label: string }) {
   );
 }
 
+function MatchingSuggestionRow({
+  name,
+  nameHref,
+  score,
+  label,
+  reason,
+  meta,
+  assignLabel,
+  assigning,
+  onAssign,
+  viewDetailsLabel,
+}: {
+  name: string;
+  nameHref: string;
+  score: number;
+  label: string;
+  reason: string;
+  meta?: string;
+  assignLabel: string;
+  assigning: boolean;
+  onAssign: () => void;
+  viewDetailsLabel: string;
+}) {
+  const [expanded, setExpanded] = useState(false);
+
+  return (
+    <div className="border border-black/10 px-4 py-3 dark:border-white/10">
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+        <div className="min-w-0">
+          <Link href={nameHref} className="font-medium text-black hover:underline dark:text-white">
+            {name}
+          </Link>
+          {meta ? (
+            <p className="text-black/50 text-xs mt-0.5 capitalize dark:text-white/50">{meta}</p>
+          ) : null}
+        </div>
+        <div className="flex flex-wrap items-center gap-2 shrink-0">
+          <ScoreBadge score={score} label={label} />
+          <button
+            type="button"
+            onClick={() => setExpanded((v) => !v)}
+            className={btnSecondary}
+          >
+            {viewDetailsLabel}
+          </button>
+          <button
+            type="button"
+            onClick={onAssign}
+            disabled={assigning}
+            className={`${btnPrimary} disabled:opacity-50 text-xs px-3 py-1.5`}
+          >
+            {assigning ? "…" : assignLabel}
+          </button>
+        </div>
+      </div>
+      {expanded ? (
+        <p className="mt-3 text-sm text-black/65 border-t border-black/5 pt-3 dark:text-white/65 dark:border-white/10">
+          {reason}
+        </p>
+      ) : null}
+    </div>
+  );
+}
+
 export default function MatchingPage() {
   const router = useRouter();
   const { profile } = useProfile();
@@ -71,6 +137,8 @@ export default function MatchingPage() {
   const [loading, setLoading] = useState(true);
   const [locked, setLocked] = useState(false);
   const [activeTab, setActiveTab] = useState<"riders" | "horses">("riders");
+  const [assigningKey, setAssigningKey] = useState<string | null>(null);
+  const [assignError, setAssignError] = useState<string | null>(null);
   const { open: showTour, complete: completeTour } = usePageTour(
     "saddleup_tour_matching_v1",
     !loading && !locked && Boolean(data)
@@ -97,6 +165,27 @@ export default function MatchingPage() {
       .catch(() => setData(null))
       .finally(() => setLoading(false));
   }, [profile, router]);
+
+  const handleAssign = async (riderId: string, horseId: string) => {
+    const key = `${riderId}:${horseId}`;
+    setAssigningKey(key);
+    setAssignError(null);
+    try {
+      const res = await fetch("/api/rider-horse-assignments", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ riderId, horseId }),
+      });
+      const j = await res.json();
+      if (!res.ok) throw new Error(j.error || "Failed");
+      const refresh = await fetch("/api/matching").then((r) => r.json());
+      if (!refresh.error && !refresh.code) setData(refresh);
+    } catch (err) {
+      setAssignError((err as Error).message);
+    } finally {
+      setAssigningKey(null);
+    }
+  };
 
   if (profile?.role === "student") return null;
 
@@ -169,8 +258,11 @@ export default function MatchingPage() {
       <p className="text-black/60 text-sm max-w-xl">
         {t("dashboard.matchingLead")}
       </p>
+      {assignError ? (
+        <p className="text-amber-700 text-sm dark:text-amber-400">{assignError}</p>
+      ) : null}
 
-      <nav className="flex gap-2 border-b border-black/10 pb-2" data-tour="matching-tabs">
+      <nav className="flex gap-2 border-b border-black/10 pb-2 dark:border-white/10" data-tour="matching-tabs">
         <button
           onClick={() => setActiveTab("riders")}
           className={`px-4 py-2 text-sm font-medium uppercase tracking-wider transition ${
@@ -232,23 +324,18 @@ export default function MatchingPage() {
                       <p className="text-black/50 text-xs uppercase tracking-widest mb-2">{t("dashboard.matchingSuggested")}</p>
                       <div className="space-y-2">
                         {r.suggested.map((s) => (
-                          <div
+                          <MatchingSuggestionRow
                             key={s.horseId}
-                            className="flex items-center justify-between border border-black/10 px-4 py-3"
-                          >
-                            <Link
-                              href={`/dashboard/horses/${s.horseId}`}
-                              className="font-medium text-black hover:underline"
-                            >
-                              {s.horseName}
-                            </Link>
-                            <div className="flex items-center gap-3">
-                              <ScoreBadge score={s.score} label={s.label} />
-                              <span className="text-black/50 text-xs max-w-[200px] truncate" title={s.reason}>
-                                {s.reason}
-                              </span>
-                            </div>
-                          </div>
+                            name={s.horseName}
+                            nameHref={`/dashboard/horses/${s.horseId}`}
+                            score={s.score}
+                            label={s.label}
+                            reason={s.reason}
+                            assignLabel={t("dashboard.matchingAssign")}
+                            assigning={assigningKey === `${r.riderId}:${s.horseId}`}
+                            onAssign={() => handleAssign(r.riderId, s.horseId)}
+                            viewDetailsLabel={t("dashboard.matchingWhy")}
+                          />
                         ))}
                       </div>
                     </div>
@@ -303,24 +390,19 @@ export default function MatchingPage() {
                       <p className="text-black/50 text-xs uppercase tracking-widest mb-2">{t("dashboard.matchingSuggestedRidersLabel")}</p>
                       <div className="space-y-2">
                         {h.suggested.map((s) => (
-                          <div
+                          <MatchingSuggestionRow
                             key={s.riderId}
-                            className="flex items-center justify-between border border-black/10 px-4 py-3"
-                          >
-                            <Link
-                              href={`/dashboard/team/riders/${s.riderId}`}
-                              className="font-medium text-black hover:underline"
-                            >
-                              {s.riderName}
-                            </Link>
-                            <div className="flex items-center gap-3">
-                              <span className="text-black/50 text-xs capitalize">{s.riderLevel || "—"}</span>
-                              <ScoreBadge score={s.score} label={s.label} />
-                              <span className="text-black/50 text-xs max-w-[200px] truncate" title={s.reason}>
-                                {s.reason}
-                              </span>
-                            </div>
-                          </div>
+                            name={s.riderName}
+                            nameHref={`/dashboard/team/riders/${s.riderId}`}
+                            score={s.score}
+                            label={s.label}
+                            reason={s.reason}
+                            meta={s.riderLevel || undefined}
+                            assignLabel={t("dashboard.matchingAssign")}
+                            assigning={assigningKey === `${s.riderId}:${h.horseId}`}
+                            onAssign={() => handleAssign(s.riderId, h.horseId)}
+                            viewDetailsLabel={t("dashboard.matchingWhy")}
+                          />
                         ))}
                       </div>
                     </div>

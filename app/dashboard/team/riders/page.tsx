@@ -5,6 +5,8 @@ import Link from "next/link";
 import { useProfile } from "@/components/providers/ProfileProvider";
 import UpgradePlanModal from "@/components/dashboard/UpgradePlanModal";
 import { IdCardUpload } from "@/components/dashboard/IdCardUpload";
+import TeamMemberAvatar from "@/components/ui/TeamMemberAvatar";
+import HorseStatusPill from "@/components/ui/HorseStatusPill";
 import LoadingSpinner from "@/components/ui/LoadingSpinner";
 import TableSkeleton from "@/components/ui/TableSkeleton";
 import GuidedTourOverlay, { type GuidedTourStep } from "@/components/dashboard/GuidedTourOverlay";
@@ -21,6 +23,7 @@ interface Rider {
   notes: string | null;
   instructor_feedback: string | null;
   id_card_url?: string | null;
+  last_session_at?: string | null;
 }
 
 const formInput = "w-full px-4 py-3 bg-base border border-black/10 text-black placeholder-black/40 focus:border-black/30 focus:outline-none";
@@ -49,7 +52,8 @@ export default function TeamRidersPage() {
   const [showUpgradeModal, setShowUpgradeModal] = useState(false);
   const [submitLoading, setSubmitLoading] = useState(false);
   const { profile } = useProfile();
-  const { t } = useLanguage();
+  const { t, lang } = useLanguage();
+  const dateLocale = lang === "ar" ? "ar-SA" : "en-US";
   const { open: showTour, complete: completeTour } = usePageTour(
     "saddleup_tour_team_v1",
     !loading && profile?.role !== "student"
@@ -179,6 +183,27 @@ export default function TeamRidersPage() {
     fetchRiders();
   };
 
+  const levelLabel = (level: string | null) => {
+    const map: Record<string, string> = {
+      beginner: t("dashboard.teamRidersLevelBeginner"),
+      intermediate: t("dashboard.teamRidersLevelIntermediate"),
+      advanced: t("dashboard.teamRidersLevelAdvanced"),
+    };
+    return level ? map[level] ?? level : null;
+  };
+
+  const formatLastSession = (iso: string | null | undefined) => {
+    if (!iso) return t("dashboard.teamRidersNoSession");
+    return new Date(iso).toLocaleDateString(dateLocale, {
+      month: "short",
+      day: "numeric",
+      year: "numeric",
+    });
+  };
+
+  const iconBtn =
+    "inline-flex h-9 w-9 items-center justify-center border border-black/15 text-black/70 hover:bg-black/[0.04] dark:border-white/20 dark:text-white/70";
+
   return (
     <>
       <GuidedTourOverlay
@@ -187,32 +212,34 @@ export default function TeamRidersPage() {
         onSkip={completeTour}
         onComplete={completeTour}
       />
-      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-4">
-        {subscription && !subscription.canAddRider && (
-          <Link
-            href="/dashboard/settings"
-            className="text-black/60 hover:text-black text-xs uppercase tracking-wider"
-          >
-            {t("dashboard.teamRidersUpgradeLink")}
-          </Link>
-        )}
-        <div className="flex flex-wrap gap-2 items-center ml-auto">
-          <input
-            type="search"
-            placeholder={t("dashboard.teamRidersSearchPlaceholder")}
-            value={search}
-            onChange={(e) => setSearch(e.target.value)}
-            data-tour="team-search"
-            className="px-4 py-2.5 bg-base border border-black/10 text-black placeholder-black/40 focus:border-black/30 focus:outline-none text-sm"
-          />
-          <button onClick={openAdd} className={btnPrimary} data-tour="team-add-rider">
-            {t("dashboard.teamRidersAdd")}
-          </button>
+      <div className="sticky top-0 z-10 -mx-1 px-1 py-3 mb-2 bg-base/95 backdrop-blur-sm border-b border-black/10 dark:border-white/10">
+        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+          {subscription && !subscription.canAddRider && (
+            <Link
+              href="/dashboard/plans"
+              className="text-black/60 hover:text-black text-xs uppercase tracking-wider dark:text-white/60"
+            >
+              {t("dashboard.teamRidersUpgradeLink")}
+            </Link>
+          )}
+          <div className="flex flex-col sm:flex-row gap-2 sm:ml-auto w-full sm:w-auto">
+            <input
+              type="search"
+              placeholder={t("dashboard.teamRidersSearchPlaceholder")}
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
+              data-tour="team-search"
+              className="w-full sm:min-w-[280px] px-4 py-2.5 bg-base border border-black/10 text-black placeholder-black/40 focus:border-black/30 focus:outline-none text-sm dark:border-white/15 dark:text-white"
+            />
+            <button onClick={openAdd} className={`${btnPrimary} shrink-0`} data-tour="team-add-rider">
+              {t("dashboard.teamRidersAdd")}
+            </button>
+          </div>
         </div>
       </div>
 
       {toast && (
-        <div className="px-4 py-2 border border-black/10 text-black text-sm mb-4" role="alert">
+        <div className="px-4 py-2 border border-black/10 text-black text-sm mb-4 dark:border-white/15 dark:text-white" role="alert">
           {toast}
         </div>
       )}
@@ -220,53 +247,76 @@ export default function TeamRidersPage() {
       {loading ? (
         <TableSkeleton rows={6} cols={3} />
       ) : filtered.length === 0 ? (
-        <p className="text-black/50">
+        <p className="text-black/50 dark:text-white/50">
           {search ? t("dashboard.teamRidersEmptySearch") : t("dashboard.teamRidersEmpty")}
         </p>
       ) : (
-        <div className="border border-black/10 overflow-hidden" data-tour="team-riders-table">
+        <div className="border border-black/10 overflow-hidden dark:border-white/10" data-tour="team-riders-table">
           <table className="w-full text-left text-sm">
-            <thead className="border-b border-black/10 text-black/50 text-xs uppercase tracking-widest">
+            <thead className="border-b border-black/10 text-black/50 text-xs uppercase tracking-widest dark:border-white/10 dark:text-white/50">
               <tr>
                 <th className="px-6 py-4 font-medium">{t("dashboard.teamRidersColName")}</th>
-                <th className="px-6 py-4 font-medium">{t("dashboard.teamRidersColEmail")}</th>
                 <th className="px-6 py-4 font-medium">{t("dashboard.teamRidersColLevel")}</th>
-                <th className="px-6 py-4 font-medium w-24">{t("dashboard.teamRidersColActions")}</th>
+                <th className="px-6 py-4 font-medium">{t("dashboard.teamRidersColLastSession")}</th>
+                <th className="px-6 py-4 font-medium w-32">{t("dashboard.teamRidersColActions")}</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-white/10">
+            <tbody className="divide-y divide-black/10 dark:divide-white/10">
               {filtered.map((r) => (
-                <tr key={r.id} className="hover:bg-black/[0.02]">
+                <tr key={r.id} className="hover:bg-black/[0.02] dark:hover:bg-white/[0.02]">
                   <td className="px-6 py-4">
-                    <Link
-                      href={`${ridersBaseUrl}/${r.id}`}
-                      className="text-black font-medium hover:underline"
-                    >
-                      {r.name}
-                    </Link>
+                    <div className="flex items-center gap-3 min-w-0">
+                      <TeamMemberAvatar name={r.name} />
+                      <div className="min-w-0">
+                        <Link
+                          href={`${ridersBaseUrl}/${r.id}`}
+                          className="text-black font-medium hover:underline dark:text-white block truncate"
+                        >
+                          {r.name}
+                        </Link>
+                        <p className="text-black/50 text-xs truncate dark:text-white/50">
+                          {r.email || "—"}
+                        </p>
+                      </div>
+                    </div>
                   </td>
-                  <td className="px-6 py-4 text-black/60">{r.email || "—"}</td>
-                  <td className="px-6 py-4 text-black/60 capitalize">{r.level || "—"}</td>
                   <td className="px-6 py-4">
-                    <div className="flex gap-3 items-center">
+                    {levelLabel(r.level) ? (
+                      <HorseStatusPill label={levelLabel(r.level)!} tone="accent" />
+                    ) : (
+                      <span className="text-black/40 dark:text-white/40">—</span>
+                    )}
+                  </td>
+                  <td className="px-6 py-4 text-black/60 dark:text-white/60">
+                    {formatLastSession(r.last_session_at)}
+                  </td>
+                  <td className="px-6 py-4">
+                    <div className="flex gap-1.5 items-center">
                       <IdCardUpload
                         type="rider"
                         id={r.id}
                         idCardUrl={r.id_card_url}
                         canUpload={profile?.role === "owner"}
                         onSuccess={fetchRiders}
+                        iconOnly
                       />
                       <button
+                        type="button"
                         onClick={() => openEdit(r)}
-                        className="text-black hover:underline text-sm uppercase tracking-wider"
+                        className={iconBtn}
+                        title={t("dashboard.teamRidersEdit")}
+                        aria-label={t("dashboard.teamRidersEdit")}
                       >
-                        {t("dashboard.teamRidersEdit")}
+                        ✎
                       </button>
                       <button
+                        type="button"
                         onClick={() => handleDelete(r.id)}
-                        className="text-black/60 hover:text-black hover:underline text-sm uppercase tracking-wider"
+                        className={iconBtn}
+                        title={t("dashboard.teamRidersDelete")}
+                        aria-label={t("dashboard.teamRidersDelete")}
                       >
-                        {t("dashboard.teamRidersDelete")}
+                        ✕
                       </button>
                     </div>
                   </td>

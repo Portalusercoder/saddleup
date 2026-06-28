@@ -4,8 +4,8 @@ import { useState, useRef, useEffect } from "react";
 import { useLanguage } from "@/components/providers/LanguageProvider";
 
 type Props =
-  | { type: "rider"; id: string; idCardUrl?: string | null; onSuccess?: () => void; canUpload?: boolean }
-  | { type: "trainer"; id: string; idCardUrl?: string | null; onSuccess?: () => void; canUpload?: boolean };
+  | { type: "rider"; id: string; idCardUrl?: string | null; onSuccess?: () => void; canUpload?: boolean; iconOnly?: boolean }
+  | { type: "trainer"; id: string; idCardUrl?: string | null; onSuccess?: () => void; canUpload?: boolean; iconOnly?: boolean };
 
 export function IdCardUpload(props: Props) {
   const { t } = useLanguage();
@@ -48,8 +48,48 @@ export function IdCardUpload(props: Props) {
   };
 
   const displayUrl = url ?? props.idCardUrl;
+  const iconBtn =
+    "inline-flex h-9 w-9 items-center justify-center border border-black/15 text-black/70 hover:bg-black/[0.04] dark:border-white/20 dark:text-white/70";
 
   if (!displayUrl && !props.canUpload) return null;
+
+  if (props.iconOnly) {
+    return (
+      <div>
+        <input
+          ref={inputRef}
+          type="file"
+          accept="image/jpeg,image/png,image/webp,application/pdf"
+          onChange={handleUpload}
+          className="hidden"
+        />
+        {displayUrl ? (
+          <a
+            href={displayUrl}
+            target="_blank"
+            rel="noopener noreferrer"
+            className={iconBtn}
+            title={t("dashboard.idCardView")}
+            aria-label={t("dashboard.idCardView")}
+          >
+            🪪
+          </a>
+        ) : props.canUpload ? (
+          <button
+            type="button"
+            onClick={() => inputRef.current?.click()}
+            disabled={uploading}
+            className={`${iconBtn} disabled:opacity-50`}
+            title={t("dashboard.idCardUploadCta")}
+            aria-label={t("dashboard.idCardUploadCta")}
+          >
+            {uploading ? "…" : "🪪"}
+          </button>
+        ) : null}
+        {error && <p className="sr-only">{error}</p>}
+      </div>
+    );
+  }
 
   return (
     <div className="space-y-2">

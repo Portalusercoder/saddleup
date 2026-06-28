@@ -4,6 +4,8 @@ import { useEffect, useState } from "react";
 import { useProfile } from "@/components/providers/ProfileProvider";
 import Link from "next/link";
 import ShareInviteCode from "@/components/dashboard/ShareInviteCode";
+import WeekAtAGlance, { type GlanceItem } from "@/components/dashboard/WeekAtAGlance";
+import SmartQuickActions, { type QuickAction } from "@/components/dashboard/SmartQuickActions";
 import { HorseAvatar } from "@/components/HorseAvatar";
 import GuidedTourOverlay, {
   type GuidedTourStep,
@@ -198,8 +200,112 @@ export default function DashboardPage() {
   const upcomingBookings = bookings.filter(
     (b) =>
       b.status !== "cancelled" &&
+      b.status !== "declined" &&
       new Date(b.bookingDate) >= new Date(new Date().toDateString())
-  ).slice(0, 5);
+  );
+
+  const pendingBookings = bookings.filter(
+    (b) =>
+      b.status === "pending" &&
+      new Date(b.bookingDate) >= new Date(new Date().toDateString())
+  );
+
+  const overdueCareCount = careReminders.filter((r) => r.overdue).length;
+  const upcomingBookingsPreview = upcomingBookings.slice(0, 5);
+
+  const glanceItems: GlanceItem[] = isStudent
+    ? [
+        {
+          label: t("dashboard.glanceUpcomingLessons"),
+          value: upcomingBookings.length,
+          href: "/dashboard/bookings",
+        },
+        {
+          label: t("dashboard.statSessionsThisWeek"),
+          value: sessionsThisWeek,
+          href: "/dashboard/training-history",
+        },
+        {
+          label: t("dashboard.statAssignedHorses"),
+          value: horses.length,
+          href: "/dashboard/my-horses",
+        },
+      ]
+    : [
+        {
+          label: t("dashboard.statSessionsThisWeek"),
+          value: sessionsThisWeek,
+          href: "/dashboard/schedule",
+        },
+        {
+          label: t("dashboard.glanceUpcomingBookings"),
+          value: upcomingBookings.length,
+          href: "/dashboard/bookings",
+        },
+        {
+          label: t("dashboard.glancePendingApprovals"),
+          value: pendingBookings.length,
+          href: "/dashboard/bookings",
+          highlight: pendingBookings.length > 0,
+        },
+        {
+          label: t("dashboard.glanceOverdueCare"),
+          value: overdueCareCount,
+          href: "/dashboard/horses",
+          highlight: overdueCareCount > 0,
+        },
+        {
+          label: t("dashboard.glanceOverworkedHorses"),
+          value: overworkedHorses.length,
+          href: "/dashboard/schedule",
+          highlight: overworkedHorses.length > 0,
+        },
+      ];
+
+  const staffQuickActions: QuickAction[] = [
+    ...(pendingBookings.length > 0
+      ? [
+          {
+            label: t("dashboard.actionReviewPending"),
+            href: "/dashboard/bookings",
+            variant: "primary" as const,
+            badge: pendingBookings.length,
+            description: t("dashboard.actionReviewPendingDesc"),
+          },
+        ]
+      : []),
+    ...(overdueCareCount > 0
+      ? [
+          {
+            label: t("dashboard.actionCareDue"),
+            href: careReminders.find((r) => r.overdue)
+              ? `/dashboard/horses/${careReminders.find((r) => r.overdue)!.horseId}`
+              : "/dashboard/horses",
+            variant: pendingBookings.length === 0 ? ("primary" as const) : ("secondary" as const),
+            badge: overdueCareCount,
+            description: t("dashboard.actionCareDueDesc"),
+          },
+        ]
+      : []),
+    {
+      label: t("dashboard.addHorse"),
+      href: "/dashboard/horses?add=1",
+      variant:
+        pendingBookings.length === 0 && overdueCareCount === 0
+          ? ("primary" as const)
+          : ("secondary" as const),
+    },
+    {
+      label: t("dashboard.logTrainingSession"),
+      href: "/dashboard/horses",
+      variant: "secondary" as const,
+    },
+    {
+      label: t("dashboard.viewSchedule"),
+      href: "/dashboard/schedule",
+      variant: "secondary" as const,
+    },
+  ];
 
   const tourSteps: GuidedTourStep[] = isStudent
     ? [
@@ -330,12 +436,14 @@ export default function DashboardPage() {
 
       {isOwner && <ShareInviteCode stable={inviteStable} />}
 
+      <WeekAtAGlance title={t("dashboard.weekAtAGlance")} items={glanceItems} />
+
       {/* Student: Upcoming lessons */}
-      {isStudent && upcomingBookings.length > 0 && (
-        <div className="border border-black/20 p-6" data-tour="upcoming-lessons">
-          <h2 className="font-serif text-lg text-black mb-2">{t("dashboard.upcomingLessons")}</h2>
+      {isStudent && upcomingBookingsPreview.length > 0 && (
+        <div className="border border-black/20 p-6 dark:border-white/20" data-tour="upcoming-lessons">
+          <h2 className="font-serif text-lg text-black dark:text-white mb-2">{t("dashboard.upcomingLessons")}</h2>
           <div className="space-y-2">
-            {upcomingBookings.map((b) => (
+            {upcomingBookingsPreview.map((b) => (
               <Link
                 key={b.id}
                 href="/dashboard/bookings"
@@ -483,30 +591,7 @@ export default function DashboardPage() {
         </div>
 
         {!isStudent && (
-          <div className="border border-black/10 p-6" data-tour="quick-actions">
-            <h2 className="font-serif text-lg text-black mb-4">{t("dashboard.quickActions")}</h2>
-            <div className="space-y-3">
-              <Link
-                href="/dashboard/horses?add=1"
-                data-tour="add-horse-button"
-                className="block w-full px-4 py-3 bg-accent text-white font-medium text-center text-sm uppercase tracking-wider hover:opacity-95 transition"
-              >
-                {t("dashboard.addHorse")}
-              </Link>
-              <Link
-                href="/dashboard/horses"
-                className="block w-full px-4 py-3 border border-black/10 text-black font-medium text-center text-sm uppercase tracking-wider hover:border-black/30 transition"
-              >
-                {t("dashboard.logTrainingSession")}
-              </Link>
-              <Link
-                href="/dashboard/schedule"
-                className="block w-full px-4 py-3 border border-black/10 text-black font-medium text-center text-sm uppercase tracking-wider hover:border-black/30 transition"
-              >
-                {t("dashboard.viewSchedule")}
-              </Link>
-            </div>
-          </div>
+          <SmartQuickActions title={t("dashboard.quickActions")} actions={staffQuickActions} />
         )}
         {isStudent && (
           <div className="border border-black/10 p-6" data-tour="quick-links">

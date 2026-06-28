@@ -29,7 +29,31 @@ export async function GET() {
       );
     }
 
-    return NextResponse.json(riders || []);
+    const list = riders || [];
+    if (list.length === 0) {
+      return NextResponse.json([]);
+    }
+
+    const riderIds = list.map((r) => r.id as string);
+    const { data: punches } = await supabase
+      .from("training_punches")
+      .select("rider_id, punch_date, created_at")
+      .in("rider_id", riderIds)
+      .order("punch_date", { ascending: false });
+
+    const lastSessionByRider = new Map<string, string>();
+    for (const p of punches || []) {
+      if (!p.rider_id || lastSessionByRider.has(p.rider_id)) continue;
+      const when = (p.punch_date as string) || (p.created_at as string);
+      if (when) lastSessionByRider.set(p.rider_id, when);
+    }
+
+    return NextResponse.json(
+      list.map((r) => ({
+        ...r,
+        last_session_at: lastSessionByRider.get(r.id as string) ?? null,
+      }))
+    );
   } catch (err) {
     console.error("GET riders error:", err);
     return NextResponse.json(

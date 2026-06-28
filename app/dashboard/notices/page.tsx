@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { useProfile } from "@/components/providers/ProfileProvider";
 import TableSkeleton from "@/components/ui/TableSkeleton";
+import SimpleRichTextEditor from "@/components/ui/SimpleRichTextEditor";
 import GuidedTourOverlay, { type GuidedTourStep } from "@/components/dashboard/GuidedTourOverlay";
 import { usePageTour } from "@/components/dashboard/usePageTour";
 import { useLanguage } from "@/components/providers/LanguageProvider";
@@ -36,6 +37,8 @@ export default function NoticesPage() {
   const [sendBody, setSendBody] = useState("");
   const [sendStatus, setSendStatus] = useState<"idle" | "loading" | "success" | "error">("idle");
   const [sendMessage, setSendMessage] = useState("");
+  const [showPreview, setShowPreview] = useState(false);
+  const [resendLoadingId, setResendLoadingId] = useState<string | null>(null);
   const { open: showTour, complete: completeTour } = usePageTour(
     "saddleup_tour_notices_v1",
     !loadingData && Boolean(profile) && profile?.role === "owner"
@@ -93,7 +96,7 @@ export default function NoticesPage() {
 
   const handleSend = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!sendSubject.trim() || !sendBody.trim()) return;
+    if (!sendSubject.trim() || !sendBody.trim() || sendBody === "<br>") return;
     setSendStatus("loading");
     setSendMessage("");
     try {
@@ -128,6 +131,41 @@ export default function NoticesPage() {
     } catch {
       setSendStatus("error");
       setSendMessage(t("dashboard.noticeEmailsSomethingWrong"));
+    }
+  };
+
+  const handleResend = async (campaignId: string) => {
+    setResendLoadingId(campaignId);
+    setSendMessage("");
+    try {
+      const res = await fetch("/api/notices/resend", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          campaignId,
+          sendToStudents,
+          sendToTrainers,
+          sendToGuardians,
+        }),
+      });
+      const data = await res.json();
+      if (res.ok) {
+        setSendStatus("success");
+        setSendMessage(
+          data.sent === 1
+            ? t("dashboard.noticeEmailsSentToOne")
+            : t("dashboard.noticeEmailsSentToMany", { count: String(data.sent ?? 0) })
+        );
+        fetchData();
+      } else {
+        setSendStatus("error");
+        setSendMessage(data.error || t("dashboard.noticeEmailsSendFailed"));
+      }
+    } catch {
+      setSendStatus("error");
+      setSendMessage(t("dashboard.noticeEmailsSomethingWrong"));
+    } finally {
+      setResendLoadingId(null);
     }
   };
 
@@ -265,35 +303,43 @@ export default function NoticesPage() {
                 <label className="block text-sm text-black/60 mb-1">
                   {t("dashboard.noticeEmailsBodyLabel")}
                 </label>
-                <textarea
+                <SimpleRichTextEditor
                   value={sendBody}
-                  onChange={(e) => setSendBody(e.target.value)}
+                  onChange={setSendBody}
                   placeholder={t("dashboard.noticeEmailsBodyPlaceholder")}
-                  required
-                  rows={8}
-                  className="w-full px-4 py-2.5 bg-black/5 border border-black/20 text-black placeholder:text-black/40 text-sm focus:outline-none focus:border-black/40 font-mono"
+                  ariaLabel={t("dashboard.noticeEmailsBodyLabel")}
                 />
                 <p className="text-black/40 text-xs mt-1">
-                  {t("dashboard.noticeEmailsBodyHint")}
+                  {t("dashboard.noticeEmailsBodyHintRich")}
                 </p>
               </div>
-              <button
-                type="submit"
-                disabled={
-                  sendStatus === "loading" ||
-                  (!sendToStudents && !sendToTrainers && !sendToGuardians) ||
-                  uniqueCount === 0
-                }
-                className="px-6 py-2.5 bg-accent text-white font-medium hover:opacity-95 transition disabled:opacity-50 disabled:cursor-not-allowed"
-              >
-                {sendStatus === "loading"
-                  ? t("dashboard.noticeEmailsSending")
-                  : uniqueCount === 1
-                    ? t("dashboard.noticeEmailsSendToOne")
-                    : t("dashboard.noticeEmailsSendToMany", {
-                        count: String(uniqueCount),
-                      })}
-              </button>
+              <div className="flex flex-wrap gap-3">
+                <button
+                  type="button"
+                  onClick={() => setShowPreview(true)}
+                  disabled={!sendSubject.trim() || !sendBody.trim() || sendBody === "<br>"}
+                  className="px-4 py-2.5 border border-black/15 text-black text-sm uppercase tracking-wider hover:bg-black/[0.04] disabled:opacity-50 dark:border-white/20 dark:text-white"
+                >
+                  {t("dashboard.noticeEmailsPreview")}
+                </button>
+                <button
+                  type="submit"
+                  disabled={
+                    sendStatus === "loading" ||
+                    (!sendToStudents && !sendToTrainers && !sendToGuardians) ||
+                    uniqueCount === 0
+                  }
+                  className="px-6 py-2.5 bg-accent text-white font-medium hover:opacity-95 transition disabled:opacity-50 disabled:cursor-not-allowed"
+                >
+                  {sendStatus === "loading"
+                    ? t("dashboard.noticeEmailsSending")
+                    : uniqueCount === 1
+                      ? t("dashboard.noticeEmailsSendToOne")
+                      : t("dashboard.noticeEmailsSendToMany", {
+                          count: String(uniqueCount),
+                        })}
+                </button>
+              </div>
             </form>
             {sendMessage && (
               <p className={`text-sm mt-4 ${sendStatus === "success" ? "text-black/80" : "text-red-400"}`}>
@@ -327,8 +373,11 @@ export default function NoticesPage() {
                       <th className="text-left px-4 py-3 text-black/60 font-medium">
                         {t("dashboard.noticeEmailsColRecipients")}
                       </th>
-                      <th className="text-left px-4 py-3 text-black/60 font-medium">
+                      <th className="text-left px-4 py-3 text-black/60 font-medium dark:text-white/60">
                         {t("dashboard.noticeEmailsColSent")}
+                      </th>
+                      <th className="text-right px-4 py-3 text-black/60 font-medium dark:text-white/60">
+                        {t("dashboard.noticeEmailsColActions")}
                       </th>
                     </tr>
                   </thead>
@@ -337,8 +386,20 @@ export default function NoticesPage() {
                       <tr key={c.id} className="border-b border-black/5">
                         <td className="px-4 py-3 text-black">{c.subject}</td>
                         <td className="px-4 py-3 text-black/60">{c.recipient_count}</td>
-                        <td className="px-4 py-3 text-black/50 text-xs">
+                        <td className="px-4 py-3 text-black/50 text-xs dark:text-white/50">
                           {new Date(c.sent_at).toLocaleString(dateLocale)}
+                        </td>
+                        <td className="px-4 py-3 text-right">
+                          <button
+                            type="button"
+                            onClick={() => handleResend(c.id)}
+                            disabled={resendLoadingId === c.id}
+                            className="text-black/70 hover:text-black text-xs uppercase tracking-wider underline disabled:opacity-50 dark:text-white/70 dark:hover:text-white"
+                          >
+                            {resendLoadingId === c.id
+                              ? t("dashboard.noticeEmailsResending")
+                              : t("dashboard.noticeEmailsResend")}
+                          </button>
                         </td>
                       </tr>
                     ))}
@@ -349,6 +410,41 @@ export default function NoticesPage() {
           </section>
         </>
       )}
+
+      {showPreview ? (
+        <div
+          className="fixed inset-0 bg-black/80 flex items-center justify-center p-4 z-50"
+          onClick={() => setShowPreview(false)}
+          role="dialog"
+          aria-modal="true"
+        >
+          <div
+            className="bg-base border border-black/10 w-full max-w-lg max-h-[85vh] overflow-y-auto p-6 dark:border-white/15"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div className="flex items-start justify-between gap-4 mb-4">
+              <h2 className="font-serif text-xl text-black dark:text-white">
+                {t("dashboard.noticeEmailsPreviewTitle")}
+              </h2>
+              <button
+                type="button"
+                onClick={() => setShowPreview(false)}
+                className="text-black/50 text-sm uppercase tracking-wider dark:text-white/50"
+              >
+                {t("common.close")}
+              </button>
+            </div>
+            <p className="text-xs uppercase tracking-widest text-black/50 mb-1 dark:text-white/50">
+              {t("dashboard.noticeEmailsSubjectLabel")}
+            </p>
+            <p className="font-medium text-black mb-4 dark:text-white">{sendSubject}</p>
+            <div
+              className="prose prose-sm max-w-none text-black border border-black/10 p-4 dark:text-white dark:border-white/15 dark:prose-invert"
+              dangerouslySetInnerHTML={{ __html: sendBody }}
+            />
+          </div>
+        </div>
+      ) : null}
     </div>
   );
 }

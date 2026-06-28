@@ -152,3 +152,42 @@ export function getDashboardNavSections(role: string | undefined): NavSectionDef
 export function flattenDashboardNav(sections: NavSectionDef[]): NavItemDef[] {
   return sections.flatMap((s) => s.items);
 }
+
+/** Primary tabs for mobile bottom bar (max 5). */
+export function getMobileTabBarItems(role: string | undefined): NavItemDef[] {
+  const pick = (paths: string[]): NavItemDef[] => {
+    const flat = flattenDashboardNav(getDashboardNavSections(role));
+    return paths
+      .map((href) => flat.find((i) => i.href === href))
+      .filter((i): i is NavItemDef => Boolean(i));
+  };
+
+  switch (role) {
+    case "student":
+      return pick([
+        "/dashboard",
+        "/dashboard/my-horses",
+        "/dashboard/bookings",
+        "/dashboard/training-history",
+        "/dashboard/profile",
+      ]);
+    case "trainer":
+      return pick([
+        "/dashboard",
+        "/dashboard/horses",
+        "/dashboard/bookings",
+        "/dashboard/team",
+        "/dashboard/profile",
+      ]);
+    case "guardian":
+      return pick(["/dashboard/guardian", "/dashboard/profile"]);
+    default:
+      return pick([
+        "/dashboard",
+        "/dashboard/horses",
+        "/dashboard/bookings",
+        "/dashboard/team",
+        "/dashboard/settings",
+      ]);
+  }
+}

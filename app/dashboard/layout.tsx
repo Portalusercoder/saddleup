@@ -1,5 +1,6 @@
 import ProfileGuard from "@/components/dashboard/ProfileGuard";
 import CollapsibleSidebar from "@/components/dashboard/CollapsibleSidebar";
+import MobileTabBar from "@/components/dashboard/MobileTabBar";
 import TrialBanner from "@/components/dashboard/TrialBanner";
 import TrialCTAModal from "@/components/dashboard/TrialCTAModal";
 import UpgradeCTAModal from "@/components/dashboard/UpgradeCTAModal";
@@ -28,10 +29,11 @@ export default function DashboardLayout({
         <div className="fixed left-0 top-0 bottom-0 z-[60] hidden md:block">
           <CollapsibleSidebar />
         </div>
-        <main className="pl-[max(0.75rem,env(safe-area-inset-left))] pr-[max(0.75rem,env(safe-area-inset-right))] md:pl-56 sm:px-6 md:px-12 py-6 sm:py-8 md:py-12 max-w-6xl mx-auto">
+        <main className="pl-[max(0.75rem,env(safe-area-inset-left))] pr-[max(0.75rem,env(safe-area-inset-right))] md:pl-56 sm:px-6 md:px-12 py-6 sm:py-8 md:py-12 pb-24 md:pb-12 max-w-6xl mx-auto">
           <TrialBanner />
           {children}
         </main>
+        <MobileTabBar />
       </div>
       </DeletionGuard>
     </ProfileGuard>

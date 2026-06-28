@@ -72,6 +72,12 @@ export default function SchedulePage() {
   });
   const [showBlockModal, setShowBlockModal] = useState(false);
   const [showRescheduleModal, setShowRescheduleModal] = useState<Booking | null>(null);
+  const openSlotBlock = (dateStr: string, hour: number) => {
+    const start = `${String(hour).padStart(2, "0")}:00`;
+    const end = `${String(hour).padStart(2, "0")}:45`;
+    setBlockForm({ blockedDate: dateStr, startTime: start, endTime: end, reason: "" });
+    setShowBlockModal(true);
+  };
   const [blockForm, setBlockForm] = useState({
     blockedDate: "",
     startTime: "09:00",
@@ -379,6 +385,15 @@ export default function SchedulePage() {
                             </div>
                           ))}
                         </div>
+                      ) : slotBookings.length === 0 ? (
+                        <button
+                          type="button"
+                          onClick={() => openSlotBlock(dateStr, hour)}
+                          className="w-full h-full min-h-[52px] text-left px-1 py-1 text-[10px] uppercase tracking-wider text-black/30 hover:bg-accent/10 hover:text-accent transition dark:text-white/30"
+                          title={t("dashboard.scheduleSlotBook")}
+                        >
+                          +
+                        </button>
                       ) : (
                         slotBookings.map((b) => (
                           <button
@@ -411,8 +426,48 @@ export default function SchedulePage() {
         )}
       </div>
 
-      <div className="border border-black/10 p-6">
-        <h2 className="font-serif text-lg text-black mb-2">{t("dashboard.scheduleWorkloadHeading")}</h2>
+      <div className="border border-black/10 p-6 dark:border-white/10" data-tour="schedule-recent">
+        <h2 className="font-serif text-lg text-black dark:text-white mb-4">{t("dashboard.scheduleRecentActivity")}</h2>
+        <div className="space-y-6">
+          {recentDates.map((dateStr) => (
+            <div key={dateStr}>
+              <p className="text-sm text-black/50 mb-2 uppercase tracking-wider dark:text-white/50">
+                {formatDate(dateStr)}
+              </p>
+              <div className="space-y-3">
+                {byDate[dateStr].map((s) => (
+                  <div
+                    key={s.id}
+                    className="flex justify-between items-center gap-3 border border-black/10 px-4 py-3 dark:border-white/10"
+                  >
+                    <div className="flex items-center gap-2">
+                      <HorseAvatar
+                        photoUrl={s.horse?.photoUrl}
+                        name={s.horse?.name || "—"}
+                        size="sm"
+                      />
+                      <span className="text-black dark:text-white">{s.horse?.name || "—"}</span>
+                    </div>
+                    <span className="text-black/50 text-sm dark:text-white/50">
+                      {punchLabel(s.punchType)} •{" "}
+                      {s.duration > 0
+                        ? t("dashboard.trainingHistoryDurationMin", { minutes: String(s.duration) })
+                        : t("dashboard.scheduleRestLabel")}
+                      {s.rider && ` • ${s.rider}`}
+                    </span>
+                  </div>
+                ))}
+              </div>
+            </div>
+          ))}
+          {recentDates.length === 0 && (
+            <p className="text-black/50 dark:text-white/50">{t("dashboard.scheduleNoSessions")}</p>
+          )}
+        </div>
+      </div>
+
+      <div className="border border-black/10 p-6 dark:border-white/10">
+        <h2 className="font-serif text-lg text-black dark:text-white mb-2">{t("dashboard.scheduleWorkloadHeading")}</h2>
         <p className="text-sm text-black/60 mb-4">
           {t("dashboard.scheduleWorkloadLead")}
         </p>
@@ -433,7 +488,7 @@ export default function SchedulePage() {
             return (
               <Link
                 key={horse.id}
-                href={`/dashboard/horses/${horse.id}`}
+                href={`/dashboard/horses/${horse.id}?week=${weekStartStr}`}
                 className={`flex items-center gap-3 p-4 border transition ${
                   isHeavy ? "border-black/20 bg-black/[0.02]" : "border-black/10 hover:border-black/20"
                 }`}
@@ -456,46 +511,6 @@ export default function SchedulePage() {
               </Link>
             );
           })}
-        </div>
-      </div>
-
-      <div className="border border-black/10 p-6">
-        <h2 className="font-serif text-lg text-black mb-4">{t("dashboard.scheduleRecentActivity")}</h2>
-        <div className="space-y-6">
-          {recentDates.map((dateStr) => (
-            <div key={dateStr}>
-              <p className="text-sm text-black/50 mb-2 uppercase tracking-wider">
-                {formatDate(dateStr)}
-              </p>
-              <div className="space-y-3">
-                {byDate[dateStr].map((s) => (
-                  <div
-                    key={s.id}
-                    className="flex justify-between items-center gap-3 border border-black/10 px-4 py-3"
-                  >
-                    <div className="flex items-center gap-2">
-                      <HorseAvatar
-                        photoUrl={s.horse?.photoUrl}
-                        name={s.horse?.name || "—"}
-                        size="sm"
-                      />
-                      <span className="text-black">{s.horse?.name || "—"}</span>
-                    </div>
-                    <span className="text-black/50 text-sm">
-                      {punchLabel(s.punchType)} •{" "}
-                      {s.duration > 0
-                        ? t("dashboard.trainingHistoryDurationMin", { minutes: String(s.duration) })
-                        : t("dashboard.scheduleRestLabel")}
-                      {s.rider && ` • ${s.rider}`}
-                    </span>
-                  </div>
-                ))}
-              </div>
-            </div>
-          ))}
-          {recentDates.length === 0 && (
-            <p className="text-black/50">{t("dashboard.scheduleNoSessions")}</p>
-          )}
         </div>
       </div>
 

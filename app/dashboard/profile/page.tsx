@@ -22,6 +22,9 @@ export default function ProfilePage() {
   const [riderIdCard, setRiderIdCard] = useState<string | null>(null);
   const [saving, setSaving] = useState(false);
   const [emailSubmitting, setEmailSubmitting] = useState(false);
+  const [password, setPassword] = useState("");
+  const [passwordConfirm, setPasswordConfirm] = useState("");
+  const [passwordSubmitting, setPasswordSubmitting] = useState(false);
   const [toast, setToast] = useState<string | null>(null);
   const [fullName, setFullName] = useState("");
   const [emailInput, setEmailInput] = useState("");
@@ -146,6 +149,36 @@ export default function ProfilePage() {
     }
     setEmailSubmitting(false);
     setTimeout(() => setToast(null), 8000);
+  };
+
+  const handlePasswordUpdate = async () => {
+    if (!password || password.length < 8) {
+      setToast(t("profile.passwordTooShort"));
+      setTimeout(() => setToast(null), 4000);
+      return;
+    }
+    if (password !== passwordConfirm) {
+      setToast(t("profile.passwordMismatch"));
+      setTimeout(() => setToast(null), 4000);
+      return;
+    }
+    setPasswordSubmitting(true);
+    try {
+      const { createClient } = await import("@/lib/supabase/client");
+      const supabase = createClient();
+      const { error } = await supabase.auth.updateUser({ password });
+      if (error) {
+        setToast(error.message || t("profile.passwordUpdateFailed"));
+      } else {
+        setPassword("");
+        setPasswordConfirm("");
+        setToast(t("profile.passwordUpdated"));
+      }
+    } catch {
+      setToast(t("profile.passwordUpdateFailed"));
+    }
+    setPasswordSubmitting(false);
+    setTimeout(() => setToast(null), 5000);
   };
 
   if (loading) {
@@ -307,10 +340,51 @@ export default function ProfilePage() {
         </div>
       </div>
 
+      <div className="border border-black/10 p-6 max-w-md dark:border-white/10">
+        <h2 className="font-serif text-lg text-black dark:text-white mb-2">{t("profile.passwordTitle")}</h2>
+        <p className="text-black/60 text-sm mb-4 dark:text-white/60">{t("profile.passwordLead")}</p>
+        <div className="space-y-4">
+          <div>
+            <label className={labelClass} htmlFor="profile-new-password">
+              {t("profile.passwordNew")}
+            </label>
+            <input
+              id="profile-new-password"
+              type="password"
+              autoComplete="new-password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              className={formInput}
+            />
+          </div>
+          <div>
+            <label className={labelClass} htmlFor="profile-confirm-password">
+              {t("profile.passwordConfirm")}
+            </label>
+            <input
+              id="profile-confirm-password"
+              type="password"
+              autoComplete="new-password"
+              value={passwordConfirm}
+              onChange={(e) => setPasswordConfirm(e.target.value)}
+              className={formInput}
+            />
+          </div>
+          <button
+            type="button"
+            onClick={handlePasswordUpdate}
+            disabled={passwordSubmitting || !password}
+            className={`${btnSecondary} disabled:opacity-50 disabled:cursor-not-allowed`}
+          >
+            {passwordSubmitting ? t("profile.passwordUpdating") : t("profile.passwordUpdateCta")}
+          </button>
+        </div>
+      </div>
+
       {profile.role === "owner" && (
-        <div className="border border-black/10 p-6 max-w-md border-amber-500/30">
-          <h2 className="font-serif text-lg text-black mb-2">{t("profile.deleteTitle")}</h2>
-          <p className="text-black/60 text-sm mb-4">
+        <div className="border-2 border-red-500/40 bg-red-500/[0.04] p-6 max-w-md rounded-lg dark:border-red-400/40">
+          <h2 className="font-serif text-lg text-red-800 dark:text-red-300 mb-2">{t("profile.deleteTitle")}</h2>
+          <p className="text-black/70 text-sm mb-4 dark:text-white/70">
             {t("profile.deleteLead")}
           </p>
           <DeleteAccountButton
@@ -349,7 +423,7 @@ function DeleteAccountButton({ onScheduled }: { onScheduled: () => void }) {
       <button
         type="button"
         onClick={() => setConfirm(true)}
-        className="px-4 py-2.5 border border-black/30 text-black text-sm uppercase tracking-wider hover:bg-black/5 transition"
+        className="px-4 py-2.5 border border-red-500/50 text-red-700 text-sm uppercase tracking-wider hover:bg-red-500/10 transition dark:text-red-300"
       >
         {t("profile.scheduleDeletion")}
       </button>
@@ -361,7 +435,7 @@ function DeleteAccountButton({ onScheduled }: { onScheduled: () => void }) {
         type="button"
         onClick={handleDelete}
         disabled={loading}
-        className="px-4 py-2.5 bg-amber-600 text-black text-sm uppercase tracking-wider hover:bg-amber-500 transition disabled:opacity-50"
+        className="px-4 py-2.5 bg-red-600 text-white text-sm uppercase tracking-wider hover:bg-red-500 transition disabled:opacity-50"
       >
         {loading ? t("profile.scheduling") : t("profile.confirmDeletion")}
       </button>
