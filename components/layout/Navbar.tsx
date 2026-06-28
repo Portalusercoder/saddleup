@@ -16,12 +16,20 @@ import {
   getDashboardNavSections,
 } from "@/lib/dashboard/nav-config";
 
-const HERO_SCROLL_THRESHOLD = 0.6; // show solid nav after scrolling 60% of viewport
+const HERO_SCROLL_THRESHOLD = 0.6;
+
+const MARKETING_LINKS = [
+  { href: "/#features", key: "nav.product" as const },
+  { href: "/#pricing", key: "nav.pricing" as const },
+  { href: "/for-schools", key: "nav.forSchools" as const },
+  { href: "/for-trainers", key: "nav.forTrainers" as const },
+];
 
 export default function Navbar() {
   const pathname = usePathname();
   const router = useRouter();
   const [mobileOpen, setMobileOpen] = useState(false);
+  const [marketingMobileOpen, setMarketingMobileOpen] = useState(false);
   const { profile, loading: profileLoading, userId } = useProfile();
   const { t } = useLanguage();
 
@@ -29,13 +37,13 @@ export default function Navbar() {
   const authChecked = !profileLoading;
 
   useEffect(() => {
-    if (!mobileOpen) return;
+    if (!mobileOpen && !marketingMobileOpen) return;
     const prev = document.body.style.overflow;
     document.body.style.overflow = "hidden";
     return () => {
       document.body.style.overflow = prev;
     };
-  }, [mobileOpen]);
+  }, [mobileOpen, marketingMobileOpen]);
 
   const handleSignOut = async () => {
     const supabase = createClient();
@@ -89,79 +97,89 @@ export default function Navbar() {
 
   if (isAuthPage) return null;
 
+  const marketingLinkClass = (dark: boolean) =>
+    `block px-4 py-3.5 text-base font-medium transition-colors ${
+      dark ? "text-white/85 hover:text-white" : "text-[#1d1d1f]/80 hover:text-[#1d1d1f]"
+    }`;
+
   return (
     <div className="relative">
       <nav
-        className={`flex items-center fixed top-0 left-0 right-0 w-full z-50 transition-all duration-500 ease-out ${
-          isHome && navCompact ? "h-16 py-2" : "h-20 py-3"
+        className={`flex items-center gap-3 fixed top-0 left-0 right-0 w-full z-50 transition-all duration-500 ease-out ${
+          isHome && navCompact ? "h-14 sm:h-16" : "h-16 sm:h-20"
         } ${
           isDashboard
             ? "px-4 sm:px-6 md:ps-56 md:pe-12 lg:pe-16 xl:pe-20"
-            : "px-4 sm:px-6 md:px-10 lg:px-14"
+            : "px-4 sm:px-6 lg:px-10 xl:px-14"
         } ${
           isDashboard
             ? "bg-base border-b border-black/10 text-black"
             : isMarketing && navOnDark
-              ? "bg-transparent text-white"
+              ? "bg-black/20 backdrop-blur-md text-white"
               : isMarketing
-                ? "bg-[#f5f5f7]/80 backdrop-blur-xl border-b border-black/[0.04] text-[#1d1d1f]"
+                ? "bg-[#f5f5f7]/90 backdrop-blur-xl border-b border-black/[0.04] text-[#1d1d1f]"
                 : "bg-base border-b border-black/10 text-black"
         }`}
       >
         {/* Logo (marketing) */}
         {isMarketing && !user ? (
-          <Link href="/" className="shrink-0 me-6">
+          <Link href="/" className="shrink-0 min-w-0">
             <TextLogo
-              className={`text-[0.72rem] transition-colors ${navOnDark ? "text-white/90" : "text-[#1d1d1f]/90"}`}
+              className={`text-[0.62rem] sm:text-[0.72rem] transition-colors truncate ${
+                navOnDark ? "text-white/90" : "text-[#1d1d1f]/90"
+              }`}
             />
           </Link>
         ) : (
           <div className="flex-1 min-w-0 hidden md:block" />
         )}
 
-        {/* Center: Nav links */}
+        {/* Desktop nav links */}
         {isMarketing && !user && (
           <div
-            className={`hidden lg:flex items-center gap-6 xl:gap-8 text-sm font-medium ${
-              navOnDark ? "text-white/75" : "text-[#1d1d1f]/65"
-            } ${isMarketing ? "flex-1 justify-center" : ""}`}
+            className={`hidden lg:flex items-center gap-6 xl:gap-8 text-sm font-medium flex-1 justify-center ${
+              navOnDark ? "text-white/80" : "text-[#1d1d1f]/65"
+            }`}
           >
-            <Link
-              href="/#features"
-              className={`transition-colors duration-300 ${navOnDark ? "hover:text-white" : "hover:text-[#1d1d1f]"}`}
-            >
-              {t("nav.product")}
-            </Link>
-            <Link
-              href="/#pricing"
-              className={`transition-colors duration-300 ${navOnDark ? "hover:text-white" : "hover:text-[#1d1d1f]"}`}
-            >
-              {t("nav.pricing")}
-            </Link>
-            <Link
-              href="/for-schools"
-              className={`transition-colors duration-300 ${navOnDark ? "hover:text-white" : "hover:text-[#1d1d1f]"}`}
-            >
-              {t("nav.forSchools")}
-            </Link>
-            <Link
-              href="/for-trainers"
-              className={`transition-colors duration-300 ${navOnDark ? "hover:text-white" : "hover:text-[#1d1d1f]"}`}
-            >
-              {t("nav.forTrainers")}
-            </Link>
+            {MARKETING_LINKS.map((link) => (
+              <Link
+                key={link.href}
+                href={link.href}
+                className={`transition-colors duration-300 ${navOnDark ? "hover:text-white" : "hover:text-[#1d1d1f]"}`}
+              >
+                {t(link.key)}
+              </Link>
+            ))}
           </div>
         )}
 
+        {/* Spacer pushes actions right on mobile marketing */}
+        {isMarketing && !user && <div className="flex-1 lg:hidden min-w-0" aria-hidden />}
+
         {/* Top-right chrome */}
-        <div className={`flex items-center justify-end min-w-0 ${isMarketing && !user ? "shrink-0" : "flex-1 max-lg:flex-none"}`}>
-          <div
-            dir="ltr"
-            className={`flex items-center gap-2 sm:gap-3 shrink-0 ${
-              isMarketing && !navOnDark ? "landing-nav-pill-light px-2 py-1.5" : isMarketing && navOnDark ? "landing-nav-pill px-2 py-1.5" : ""
-            }`}
-          >
-            <LanguageToggle variant={navOnDark ? "light" : "dark"} />
+        <div
+          className={`flex items-center justify-end gap-1.5 sm:gap-2 shrink-0 ${
+            isMarketing && !user ? "" : "flex-1 max-lg:flex-none"
+          }`}
+        >
+          {/* Marketing mobile menu */}
+          {isMarketing && !user && (
+            <button
+              type="button"
+              onClick={() => setMarketingMobileOpen(true)}
+              className={`lg:hidden p-2 rounded-full transition-colors ${
+                navOnDark ? "text-white/85 hover:bg-white/10" : "text-[#1d1d1f]/70 hover:bg-black/5"
+              }`}
+              aria-label={t("nav.menu")}
+            >
+              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden>
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.75} d="M4 7h16M4 12h16M4 17h16" />
+              </svg>
+            </button>
+          )}
+
+          <div dir="ltr" className="flex items-center gap-1 sm:gap-2 shrink-0">
+            <LanguageToggle variant={navOnDark ? "light" : "dark"} compact={isMarketing} />
             {authChecked && user ? (
               <>
                 {!isAuthPage && !isHome && <NotificationBell />}
@@ -178,9 +196,9 @@ export default function Navbar() {
                 <>
                   <Link
                     href="/login"
-                    className={`px-4 py-2 text-sm font-medium transition-colors duration-300 ${
+                    className={`hidden sm:inline-flex px-3 py-2 text-sm font-medium transition-colors duration-300 ${
                       navOnDark
-                        ? "text-white/80 hover:text-white"
+                        ? "text-white/85 hover:text-white"
                         : "text-[#1d1d1f]/70 hover:text-[#1d1d1f]"
                     }`}
                   >
@@ -188,7 +206,7 @@ export default function Navbar() {
                   </Link>
                   <Link
                     href="/signup"
-                    className={`px-4 py-2 rounded-full text-sm font-medium transition-all duration-300 ${
+                    className={`px-3 sm:px-4 py-1.5 sm:py-2 rounded-full text-xs sm:text-sm font-medium transition-all duration-300 whitespace-nowrap ${
                       navOnDark
                         ? "bg-white text-[#1d1d1f] hover:bg-white/90"
                         : "bg-[#1d1d1f] text-white hover:bg-[#1d1d1f]/90"
@@ -202,38 +220,84 @@ export default function Navbar() {
           </div>
         </div>
 
-        {/* Mobile menu button (dashboard only) */}
+        {/* Dashboard mobile menu button */}
         {user && !isAuthPage && (
           <button
             onClick={() => setMobileOpen(!mobileOpen)}
             className={`md:hidden p-2 rounded-lg ${navOnDark ? "hover:bg-white/10" : "hover:bg-black/10"}`}
             aria-label={t("nav.menu")}
           >
-            <svg
-              className="w-6 h-6"
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
-            >
+            <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               {mobileOpen ? (
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M6 18L18 6M6 6l12 12"
-                />
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
               ) : (
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M4 6h16M4 12h16M4 18h16"
-                />
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
               )}
             </svg>
           </button>
         )}
       </nav>
+
+      {/* Marketing mobile drawer */}
+      {isMarketing && !user && (
+        <>
+          <div
+            className={`lg:hidden fixed inset-0 bg-black/50 z-[60] transition-opacity duration-300 ${
+              marketingMobileOpen ? "opacity-100 pointer-events-auto" : "opacity-0 pointer-events-none"
+            }`}
+            onClick={() => setMarketingMobileOpen(false)}
+            aria-hidden={!marketingMobileOpen}
+          />
+          <aside
+            className={`lg:hidden fixed top-0 right-0 h-[100dvh] w-[min(100vw,20rem)] bg-[#1d1d1f] z-[70] transition-transform duration-300 ease-out flex flex-col ${
+              marketingMobileOpen ? "translate-x-0" : "translate-x-full"
+            }`}
+            aria-hidden={!marketingMobileOpen}
+          >
+            <div className="h-16 px-5 flex items-center justify-between border-b border-white/10 shrink-0">
+              <TextLogo className="text-[0.68rem] text-white/90" />
+              <button
+                type="button"
+                onClick={() => setMarketingMobileOpen(false)}
+                className="p-2 text-white/60 hover:text-white rounded-full hover:bg-white/10 transition"
+                aria-label={t("nav.closeMenu")}
+              >
+                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                </svg>
+              </button>
+            </div>
+            <nav className="flex-1 px-3 py-4 overflow-y-auto">
+              {MARKETING_LINKS.map((link) => (
+                <Link
+                  key={link.href}
+                  href={link.href}
+                  onClick={() => setMarketingMobileOpen(false)}
+                  className={marketingLinkClass(true)}
+                >
+                  {t(link.key)}
+                </Link>
+              ))}
+            </nav>
+            <div className="p-5 border-t border-white/10 space-y-3 shrink-0">
+              <Link
+                href="/login"
+                onClick={() => setMarketingMobileOpen(false)}
+                className="block w-full py-3 text-center text-sm font-medium text-white/80 border border-white/20 rounded-full hover:bg-white/10 transition"
+              >
+                {t("nav.signIn")}
+              </Link>
+              <Link
+                href="/signup"
+                onClick={() => setMarketingMobileOpen(false)}
+                className="block w-full py-3 text-center text-sm font-medium bg-white text-[#1d1d1f] rounded-full hover:bg-white/90 transition"
+              >
+                {t("nav.startFree")}
+              </Link>
+            </div>
+          </aside>
+        </>
+      )}
 
       {user && !isAuthPage && !isHome && (
         <>

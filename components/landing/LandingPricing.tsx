@@ -61,11 +61,11 @@ export default function LandingPricing({ onSelectPlan }: LandingPricingProps) {
             </h2>
             <p className="mt-4 text-[#1d1d1f]/55 text-lg">{t("home.pricingSub")}</p>
           </div>
-          <div className="landing-glass rounded-full p-1 flex shrink-0 self-start lg:self-auto">
+          <div className="landing-glass rounded-full p-1 flex shrink-0 self-stretch sm:self-start lg:self-auto w-full sm:w-auto">
             <button
               type="button"
               onClick={() => setAnnual(false)}
-              className={`rounded-full px-5 py-2 text-sm font-medium transition-all duration-300 ${
+              className={`flex-1 sm:flex-none rounded-full px-4 sm:px-5 py-2 text-xs sm:text-sm font-medium transition-all duration-300 ${
                 !annual ? "bg-[#1d1d1f] text-white shadow-sm" : "text-[#1d1d1f]/55 hover:text-[#1d1d1f]"
               }`}
             >
@@ -74,7 +74,7 @@ export default function LandingPricing({ onSelectPlan }: LandingPricingProps) {
             <button
               type="button"
               onClick={() => setAnnual(true)}
-              className={`rounded-full px-5 py-2 text-sm font-medium transition-all duration-300 ${
+              className={`flex-1 sm:flex-none rounded-full px-4 sm:px-5 py-2 text-xs sm:text-sm font-medium transition-all duration-300 ${
                 annual ? "bg-[#1d1d1f] text-white shadow-sm" : "text-[#1d1d1f]/55 hover:text-[#1d1d1f]"
               }`}
             >
