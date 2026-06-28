@@ -102,16 +102,16 @@ export default function LandingPricing({ onSelectPlan }: LandingPricingProps) {
                   {PLAN_IDS.map((id) => (
                     <th
                       key={id}
-                      className={`p-4 text-start font-serif text-base relative ${
+                      className={`p-4 pt-5 text-start font-serif text-base text-black relative ${
                         id === "starter" ? "bg-accent/[0.06] ring-1 ring-inset ring-accent/20" : ""
                       }`}
                     >
                       {id === "starter" && (
-                        <span className="absolute -top-2.5 left-1/2 -translate-x-1/2 bg-accent text-white text-[0.6rem] uppercase tracking-wider px-2 py-0.5 whitespace-nowrap">
+                        <span className="absolute top-0 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-accent text-white text-[0.6rem] uppercase tracking-wider px-2 py-0.5 whitespace-nowrap">
                           {t("home.pricingMostPopular")}
                         </span>
                       )}
-                      <div>{t(`pricing.${id}.name`)}</div>
+                      <div className="text-black">{t(`pricing.${id}.name`)}</div>
                       <div className="text-xs font-sans text-black/55 mt-1">{priceFor(id)}</div>
                     </th>
                   ))}
@@ -135,22 +135,14 @@ export default function LandingPricing({ onSelectPlan }: LandingPricingProps) {
                   <td className="p-4" />
                   {PLAN_IDS.map((id) => (
                     <td key={id} className={`p-4 ${id === "starter" ? "bg-accent/[0.03]" : ""}`}>
+                     
                       {id === "enterprise" ? (
-                        <div className="space-y-3">
-                          <div className="flex items-center gap-3">
-                            <div className="h-9 w-9 rounded-full bg-black/[0.06] border border-black/10 shrink-0" aria-hidden />
-                            <div>
-                              <p className="text-sm font-medium text-black">{t("home.enterpriseContactName")}</p>
-                              <p className="text-xs text-black/50">{t("home.enterpriseContactRole")}</p>
-                            </div>
-                          </div>
-                          <Link
-                            href="/contact?type=enterprise"
-                            className="block w-full py-2 text-center border border-black/20 hover:bg-black/5 text-sm transition"
-                          >
-                            {t("home.contactSales")}
-                          </Link>
-                        </div>
+                        <Link
+                          href="/contact?type=enterprise"
+                          className="block w-full py-2.5 text-center border border-black/20 hover:bg-black/5 text-sm transition text-black"
+                        >
+                          {t("home.contactSales")}
+                        </Link>
                       ) : (
                         <button
                           type="button"
@@ -175,8 +167,8 @@ export default function LandingPricing({ onSelectPlan }: LandingPricingProps) {
         </ScrollReveal>
 
         <ScrollReveal delay={0.1} className="mt-14">
-          <h3 className="font-serif text-xl mb-6">{t("home.pricingFaqTitle")}</h3>
-          <div className="space-y-4 max-w-2xl">
+          <h3 className="font-serif text-xl mb-6 text-center sm:text-start">{t("home.pricingFaqTitle")}</h3>
+          <div className="space-y-4">
             {faqs.map((faq) => (
               <details key={faq.q} className="border border-black/10 group">
                 <summary className="cursor-pointer px-4 py-3 text-sm font-medium text-black list-none flex justify-between items-center">

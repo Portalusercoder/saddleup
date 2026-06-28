@@ -3,11 +3,7 @@
 import ScrollReveal from "@/components/ui/ScrollReveal";
 import { useLanguage } from "@/components/providers/LanguageProvider";
 
-type LandingTestimonialProps = {
-  onStartFree: () => void;
-};
-
-export default function LandingTestimonial({ onStartFree }: LandingTestimonialProps) {
+export default function LandingTestimonial() {
   const { t } = useLanguage();
 
   return (
@@ -23,13 +19,6 @@ export default function LandingTestimonial({ onStartFree }: LandingTestimonialPr
           <p className="text-sm font-medium text-black mt-2">{t("home.testimonialName")}</p>
           <p className="text-xs text-black/50">{t("home.testimonialRole")}</p>
         </footer>
-        <button
-          type="button"
-          onClick={onStartFree}
-          className="mt-10 inline-flex items-center px-6 py-3 bg-accent text-white font-medium hover:opacity-95 transition text-sm tracking-wide"
-        >
-          {t("nav.startFree")}
-        </button>
       </ScrollReveal>
     </section>
   );

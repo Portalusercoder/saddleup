@@ -28,13 +28,13 @@ export default function Footer({
   const { t } = useLanguage();
   return (
     <footer className="relative bg-base text-black overflow-hidden border-t border-black/[0.06]">
-      {/* Very subtle white grid overlay */}
+      {/* Subtle grid overlay */}
       <div
-        className="absolute inset-0 opacity-[0.02] pointer-events-none"
+        className="absolute inset-0 opacity-[0.04] pointer-events-none"
         style={{
           backgroundImage: `
-            linear-gradient(rgba(255,255,255,1) 1px, transparent 1px),
-            linear-gradient(90deg, rgba(255,255,255,1) 1px, transparent 1px)
+            linear-gradient(rgba(83,22,29,0.35) 1px, transparent 1px),
+            linear-gradient(90deg, rgba(83,22,29,0.35) 1px, transparent 1px)
           `,
           backgroundSize: "32px 32px",
         }}
@@ -66,7 +66,7 @@ export default function Footer({
             <span key={link.href} className="flex items-center gap-4">
               {i > 0 && (
                 <span
-                  className="w-px h-4 bg-white/15 flex-shrink-0"
+                  className="w-px h-4 bg-black/15 flex-shrink-0"
                   aria-hidden
                 />
               )}

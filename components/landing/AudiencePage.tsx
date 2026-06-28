@@ -23,7 +23,7 @@ export default function AudiencePage({
   const { t } = useLanguage();
 
   return (
-    <main className="min-h-screen bg-base text-black pt-20">
+    <main className="min-h-screen landing-surface bg-base text-black pt-20">
       <section className="max-w-3xl mx-auto px-6 py-16 sm:py-24 text-center">
         <ScrollReveal>
           <p className="text-xs uppercase tracking-[0.2em] text-black/45 mb-4">Saddle Up</p>

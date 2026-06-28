@@ -99,8 +99,8 @@ export default function Navbar() {
         } ${
           isOverHero
             ? "bg-transparent text-white"
-            : isHome || isMarketing
-              ? "bg-base/95 backdrop-blur-md text-black border-b border-black/10 shadow-sm"
+            : isMarketing
+              ? "marketing-nav-light bg-base/95 backdrop-blur-md text-black border-b border-black/10 shadow-sm"
               : "bg-base border-b border-black/10 text-black"
         }`}
       >

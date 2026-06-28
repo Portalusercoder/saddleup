@@ -24,7 +24,7 @@ export default function HowItWorks() {
           {steps.map((step, i) => (
             <ScrollReveal key={step.n} delay={i * 0.08}>
               <div className="text-center md:text-start">
-                <div className="inline-flex h-10 w-10 items-center justify-center rounded-full border border-accent/30 text-accent font-serif text-lg mb-4">
+                <div className="inline-flex h-10 w-10 items-center justify-center rounded-full border-2 border-accent/40 bg-accent/10 text-accent font-serif text-base font-medium leading-none tabular-nums mb-4">
                   {step.n}
                 </div>
                 <h3 className="font-serif text-xl text-black">{step.title}</h3>

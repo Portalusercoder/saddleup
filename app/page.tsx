@@ -51,7 +51,7 @@ export default function Home() {
         />
         <div className="hero-grid" />
 
-        <div className="relative flex-1 flex flex-col justify-end pb-24 sm:pb-28 md:pb-32">
+        <div className="relative flex-1 flex flex-col justify-center py-10 sm:py-14 md:py-16">
           <div className="px-5 sm:px-8 md:px-14 lg:px-20 max-w-5xl">
             <TextLogo className="mb-3 text-[0.72rem] sm:text-[0.78rem] text-[#d4a574]" />
 
@@ -61,14 +61,14 @@ export default function Home() {
                 delay={100}
                 animateBy="words"
                 direction="top"
-                className="font-serif text-[3.25rem] sm:text-[4.5rem] md:text-[6rem] lg:text-[7.5rem] font-extrabold tracking-tight text-white leading-[0.92] uppercase"
+                className="font-serif text-[2.75rem] sm:text-[4rem] md:text-[5.25rem] lg:text-[6.25rem] font-extrabold tracking-tight text-white leading-[0.92] uppercase"
               />
               <BlurText
                 text={t("home.heroLine2")}
                 delay={150}
                 animateBy="words"
                 direction="top"
-                className="font-serif text-[3.25rem] sm:text-[4.5rem] md:text-[6rem] lg:text-[7.5rem] font-extrabold tracking-tight text-white leading-[0.92] uppercase mt-1"
+                className="font-serif text-[2.75rem] sm:text-[4rem] md:text-[5.25rem] lg:text-[6.25rem] font-extrabold tracking-tight text-white leading-[0.92] uppercase mt-1"
               />
             </div>
 
@@ -80,7 +80,7 @@ export default function Home() {
 
             <p className="mt-2 text-xs text-[#d4a574]/90 tracking-wide">{t("home.arabicCallout")}</p>
 
-            <div className="mt-10 flex flex-wrap gap-10 sm:gap-14">
+            <div className="mt-8 sm:mt-10 flex flex-wrap gap-8 sm:gap-14">
               <button
                 type="button"
                 onClick={() => openAuth()}
@@ -104,20 +104,20 @@ export default function Home() {
                 <span className="mt-1 font-sans text-xs text-white/70">{t("home.ctaSecondarySub")}</span>
               </a>
             </div>
+
+            <a
+              href="#how-it-works"
+              aria-label={t("home.scrollFeatures")}
+              className="mt-10 inline-flex items-center justify-center text-white/40 hover:text-white/70 transition"
+            >
+              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden>
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 14l-7 7m0 0l-7-7m7 7V3" />
+              </svg>
+            </a>
           </div>
         </div>
 
-        <a
-          href="#features"
-          aria-label={t("home.scrollFeatures")}
-          className="absolute bottom-6 left-1/2 -translate-x-1/2 flex items-center justify-center text-white/40 hover:text-white/70 transition"
-        >
-          <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden>
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 14l-7 7m0 0l-7-7m7 7V3" />
-          </svg>
-        </a>
-
-        <ScrollReveal className="relative border-t border-white/10 py-5 px-8 md:px-14 lg:px-20 min-h-[6.5rem]">
+        <ScrollReveal className="relative shrink-0 border-t border-white/10 py-5 px-8 md:px-14 lg:px-20 min-h-[6.5rem]">
           <div className="flex flex-wrap justify-between gap-x-8 gap-y-6 items-start uppercase text-[0.65rem] md:text-[0.7rem] tracking-[0.25em] text-white/80 font-sans">
             <div className="shrink-0">
               <p className="text-white/50">{t("home.statEstablished")}</p>
@@ -147,15 +147,17 @@ export default function Home() {
         </ScrollReveal>
       </section>
 
-      <HowItWorks />
-      <LandingFeatures />
-      <LandingPricing onSelectPlan={openAuth} />
-      <PartnerSpotlight />
-      <LandingTestimonial onStartFree={() => openAuth()} />
+      <div className="landing-surface">
+        <HowItWorks />
+        <LandingFeatures />
+        <LandingPricing onSelectPlan={openAuth} />
+        <PartnerSpotlight />
+        <LandingTestimonial />
 
-      <ScrollReveal>
-        <Footer onGetStarted={() => openAuth()} />
-      </ScrollReveal>
+        <ScrollReveal>
+          <Footer onGetStarted={() => openAuth()} />
+        </ScrollReveal>
+      </div>
 
       <div className="fixed bottom-6 end-6 z-50">
         <ThemeToggle variant="dark" />

@@ -92,17 +92,21 @@ export default function LandingFeatures() {
                 <h3 className="font-serif text-2xl text-black">{lead.title}</h3>
                 <p className="text-black/60 mt-3 leading-relaxed max-w-2xl">{lead.desc}</p>
               </div>
-              <div className="hidden lg:block w-48 h-32 border border-dashed border-black/15 bg-black/[0.02] rounded-sm shrink-0" aria-hidden />
+              <div className="hidden lg:block w-40 h-28 border border-dashed border-black/15 bg-black/[0.02] rounded-sm shrink-0" aria-hidden />
             </div>
           </div>
         </ScrollReveal>
 
-        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+        <div className="grid md:grid-cols-2 gap-6">
           {rest.map((feat, i) => {
             const Icon = ICONS[i + 1];
             return (
               <ScrollReveal key={feat.title} delay={0.08 + i * 0.05}>
-                <div className="border border-black/10 p-6 h-full hover:border-black/20 transition">
+                <div
+                  className={`border border-black/10 p-6 h-full hover:border-black/20 transition ${
+                    i === rest.length - 1 && rest.length % 2 !== 0 ? "md:col-span-2 md:max-w-lg md:justify-self-center md:w-full" : ""
+                  }`}
+                >
                   <div className="text-accent mb-4">
                     <Icon />
                   </div>
