@@ -51,7 +51,7 @@ export default function LandingPricing({ onSelectPlan }: LandingPricingProps) {
   ];
 
   return (
-    <section id="pricing" className="py-24 sm:py-32 px-6">
+    <section id="pricing" className="py-20 sm:py-28 px-5 sm:px-6 bg-[#f5f5f7]">
       <div className="max-w-6xl mx-auto">
         <ScrollReveal className="flex flex-col lg:flex-row lg:items-end lg:justify-between gap-8 mb-14">
           <div className="max-w-xl">

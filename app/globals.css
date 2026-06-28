@@ -471,10 +471,9 @@ html.dark {
 
 .landing-hero-mesh {
   background:
-    radial-gradient(ellipse 90% 60% at 10% 20%, rgba(83, 22, 29, 0.55), transparent 55%),
-    radial-gradient(ellipse 70% 50% at 90% 10%, rgba(201, 168, 124, 0.12), transparent 50%),
-    radial-gradient(ellipse 60% 70% at 50% 100%, rgba(83, 22, 29, 0.35), transparent 55%),
-    #050505;
+    radial-gradient(ellipse 80% 55% at 15% 25%, rgba(83, 22, 29, 0.5), transparent 55%),
+    radial-gradient(ellipse 60% 45% at 85% 15%, rgba(201, 168, 124, 0.1), transparent 50%),
+    #0a0a0a;
 }
 
 .landing-cta-pill {
@@ -487,6 +486,28 @@ html.dark {
   font-weight: 500;
   letter-spacing: -0.01em;
   transition: all 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+/* Brand primary — always bordeaux + ivory, never theme-remapped */
+.landing-cta-brand {
+  background: #53161d !important;
+  color: #fffbf0 !important;
+}
+
+.landing-cta-brand:hover {
+  background: #6b1d26 !important;
+  transform: scale(1.02);
+}
+
+/* Ghost on dark hero */
+.landing-cta-ghost {
+  background: transparent !important;
+  color: #ffffff !important;
+  border: 1px solid rgba(255, 255, 255, 0.35);
+}
+
+.landing-cta-ghost:hover {
+  background: rgba(255, 255, 255, 0.1) !important;
 }
 
 .landing-cta-primary {
@@ -555,14 +576,6 @@ html.dark {
 }
 
 /* Hero: always visible (no JS animation gate), CSS-only entrance */
-.landing-hero-content h1,
-.landing-hero-content p,
-.landing-hero-content a,
-.landing-hero-content button,
-.landing-hero-content span {
-  color: inherit;
-}
-
 .landing-hero-content h1 {
   color: #ffffff;
 }
@@ -620,6 +633,59 @@ html.dark {
 
 .dark .landing-hero-content .text-white\/40 {
   color: rgba(255, 255, 255, 0.4) !important;
+}
+
+/*
+ * Landing page: always light marketing theme regardless of dashboard dark mode.
+ * Dashboard dark mode toggles html.dark — this scopes the public site back to light.
+ */
+.landing-page {
+  color-scheme: light;
+  background: #f5f5f7;
+  color: #1d1d1f;
+}
+
+.dark .landing-page {
+  background: #f5f5f7 !important;
+  color: #1d1d1f !important;
+}
+
+.dark .landing-page .landing-premium,
+.dark .landing-page .landing-surface {
+  background: #f5f5f7 !important;
+}
+
+.dark .landing-page .landing-section-label {
+  color: rgba(83, 22, 29, 0.55) !important;
+}
+
+.dark .landing-page .landing-display {
+  color: inherit;
+}
+
+.dark .landing-page .landing-card {
+  background: #ffffff !important;
+  border-color: rgba(0, 0, 0, 0.06) !important;
+}
+
+.dark .landing-page .landing-cta-brand {
+  background: #53161d !important;
+  color: #fffbf0 !important;
+}
+
+.dark .landing-page .landing-cta-ghost {
+  background: transparent !important;
+  color: #ffffff !important;
+  border-color: rgba(255, 255, 255, 0.35) !important;
+}
+
+.dark .landing-page .landing-cta-primary {
+  background: #ffffff !important;
+  color: #1d1d1f !important;
+}
+
+.dark body:has(.landing-page) {
+  background: #f5f5f7 !important;
 }
 
 /* ---------------- Base ---------------- */

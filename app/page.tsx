@@ -10,7 +10,6 @@ import LandingPricing from "@/components/landing/LandingPricing";
 import LandingTestimonial from "@/components/landing/LandingTestimonial";
 import LandingHero from "@/components/landing/LandingHero";
 import LandingCtaBand from "@/components/landing/LandingCtaBand";
-import ThemeToggle from "@/components/layout/ThemeToggle";
 
 export default function Home() {
   const [authModalOpen, setAuthModalOpen] = useState(false);
@@ -22,7 +21,7 @@ export default function Home() {
   };
 
   return (
-    <main className="min-h-screen bg-[#f5f5f7]">
+    <main className="landing-page min-h-screen bg-[#f5f5f7] text-[#1d1d1f]">
       <AuthModal
         isOpen={authModalOpen}
         onClose={() => setAuthModalOpen(false)}
@@ -31,7 +30,7 @@ export default function Home() {
 
       <LandingHero onStartFree={() => openAuth()} />
 
-      <div className="landing-premium landing-surface">
+      <div className="landing-premium landing-surface bg-[#f5f5f7]">
         <HowItWorks />
         <LandingFeatures />
         <LandingPricing onSelectPlan={openAuth} />
@@ -41,10 +40,6 @@ export default function Home() {
 
       <LandingCtaBand onStartFree={() => openAuth()} />
       <Footer />
-
-      <div className="fixed bottom-6 end-6 z-50">
-        <ThemeToggle variant="dark" />
-      </div>
     </main>
   );
 }

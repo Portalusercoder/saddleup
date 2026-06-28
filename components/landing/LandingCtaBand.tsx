@@ -27,7 +27,7 @@ export default function LandingCtaBand({ onStartFree }: LandingCtaBandProps) {
         <button
           type="button"
           onClick={onStartFree}
-          className="mt-8 landing-cta-pill landing-cta-primary text-[#1d1d1f]"
+          className="mt-8 landing-cta-pill landing-cta-primary"
         >
           {t("footer.getStarted")}
         </button>

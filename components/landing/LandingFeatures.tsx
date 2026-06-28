@@ -81,7 +81,7 @@ export default function LandingFeatures() {
   ];
 
   return (
-    <section id="features" className="py-24 sm:py-32 px-6 bg-white">
+    <section id="features" className="py-20 sm:py-28 px-5 sm:px-6 bg-[#f5f5f7]">
       <div className="max-w-6xl mx-auto">
         <ScrollReveal className="max-w-2xl mb-16">
           <p className="landing-section-label">{t("home.featuresTitle")}</p>

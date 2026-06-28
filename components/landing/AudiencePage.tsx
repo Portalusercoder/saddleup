@@ -23,7 +23,7 @@ export default function AudiencePage({
   const { t } = useLanguage();
 
   return (
-    <main className="min-h-screen landing-premium landing-surface pt-20">
+    <main className="landing-page min-h-screen landing-premium landing-surface bg-[#f5f5f7] text-[#1d1d1f] pt-20">
       <section className="max-w-3xl mx-auto px-6 py-20 sm:py-28 text-center">
         <ScrollReveal>
           <p className="landing-section-label mb-4">Saddle Up</p>
