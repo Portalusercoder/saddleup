@@ -7,17 +7,23 @@ export default function LandingTestimonial() {
   const { t } = useLanguage();
 
   return (
-    <section className="bg-base text-black py-16 sm:py-24 px-4 sm:px-6 border-t border-black/10">
-      <ScrollReveal className="max-w-3xl mx-auto text-center">
-        <blockquote className="font-serif text-2xl sm:text-3xl md:text-4xl font-normal leading-snug text-black/90">
+    <section className="py-24 sm:py-32 px-6 bg-[#1d1d1f] text-white">
+      <ScrollReveal className="max-w-4xl mx-auto text-center">
+        <p className="text-xs font-semibold uppercase tracking-widest text-white/40 mb-8">
+          {t("home.testimonialLabel")}
+        </p>
+        <blockquote className="landing-display text-2xl sm:text-3xl md:text-4xl lg:text-[2.75rem] font-semibold leading-snug tracking-tight text-white/95">
           &ldquo;{t("home.testimonialQuote")}&rdquo;
         </blockquote>
-        <footer className="mt-8 flex flex-col items-center gap-1">
-          <div className="h-12 w-12 rounded-full bg-black/[0.06] border border-black/10 flex items-center justify-center text-black/40 font-serif text-lg" aria-hidden>
+        <footer className="mt-10 flex flex-col items-center gap-1">
+          <div
+            className="h-11 w-11 rounded-full bg-white/10 flex items-center justify-center text-white/50 text-sm font-medium"
+            aria-hidden
+          >
             {t("home.testimonialName").charAt(0)}
           </div>
-          <p className="text-sm font-medium text-black mt-2">{t("home.testimonialName")}</p>
-          <p className="text-xs text-black/50">{t("home.testimonialRole")}</p>
+          <p className="text-sm font-medium text-white/90 mt-3">{t("home.testimonialName")}</p>
+          <p className="text-xs text-white/45">{t("home.testimonialRole")}</p>
         </footer>
       </ScrollReveal>
     </section>

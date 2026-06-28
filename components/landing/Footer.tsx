@@ -14,111 +14,72 @@ const navLinkKeys = [
   { href: "/contact", key: "nav.contact" as const },
 ];
 
+const legalKeys = [
+  { href: "/privacy", key: "footer.privacy" as const },
+  { href: "/terms", key: "footer.terms" as const },
+  { href: "/legal/data-compliance", key: "footer.dataCompliance" as const },
+];
+
 const socialLinks = [
   { href: "#", icon: SiGithub, label: "GitHub" },
   { href: "#", icon: SiInstagram, label: "Instagram" },
   { href: "#", icon: SiX, label: "X" },
 ];
 
-export default function Footer({
-  onGetStarted,
-}: {
-  onGetStarted?: () => void;
-}) {
+export default function Footer() {
   const { t } = useLanguage();
+  const year = new Date().getFullYear();
+
   return (
-    <footer className="relative bg-base text-black overflow-hidden border-t border-black/[0.06]">
-      {/* Subtle grid overlay */}
-      <div
-        className="absolute inset-0 opacity-[0.04] pointer-events-none"
-        style={{
-          backgroundImage: `
-            linear-gradient(rgba(83,22,29,0.35) 1px, transparent 1px),
-            linear-gradient(90deg, rgba(83,22,29,0.35) 1px, transparent 1px)
-          `,
-          backgroundSize: "32px 32px",
-        }}
-      />
+    <footer className="bg-[#111111] text-white/70 border-t border-white/[0.06]">
+      <div className="max-w-6xl mx-auto px-6 py-16 sm:py-20">
+        <div className="flex flex-col md:flex-row md:items-start md:justify-between gap-12">
+          <div>
+            <TextLogo className="text-[0.85rem] text-white/90" subtitle={t("footer.subtitle")} subtitleClassName="text-white/40" />
+            <p className="mt-4 text-sm text-white/40 max-w-xs leading-relaxed">{t("footer.tagline")}</p>
+          </div>
 
-      <div className="relative max-w-4xl mx-auto py-16 sm:py-20 px-6 text-center">
-        {/* Logo + Brand */}
-        <div className="flex flex-col items-center mb-10">
-          <TextLogo className="text-[0.95rem] text-black/90" subtitle={t("footer.subtitle")} />
-        </div>
-
-        {/* Heading + CTA */}
-        <h2 className="font-serif text-2xl sm:text-3xl md:text-4xl font-normal mb-6 max-w-xl mx-auto leading-snug">
-          {t("footer.ctaTitle")}
-        </h2>
-        <button
-          onClick={onGetStarted}
-          className="inline-flex items-center gap-2 px-6 py-3 bg-accent text-white font-medium rounded-full hover:opacity-95 transition uppercase tracking-wider text-sm"
-        >
-          {t("footer.getStarted")}
-        </button>
-
-        {/* Nav links with subtle separators */}
-        <nav
-          className="mt-12 flex flex-wrap items-center justify-center gap-x-4 gap-y-2"
-          aria-label="Footer navigation"
-        >
-          {navLinkKeys.map((link, i) => (
-            <span key={link.href} className="flex items-center gap-4">
-              {i > 0 && (
-                <span
-                  className="w-px h-4 bg-black/15 flex-shrink-0"
-                  aria-hidden
-                />
-              )}
+          <nav className="grid grid-cols-2 sm:grid-cols-3 gap-8 text-sm" aria-label="Footer navigation">
+            {navLinkKeys.map((link) => (
               <Link
+                key={link.href}
                 href={link.href}
-                className="text-sm text-black/70 hover:text-black transition uppercase tracking-wider"
+                className="text-white/55 hover:text-white transition-colors duration-300"
               >
                 {t(link.key)}
               </Link>
-            </span>
-          ))}
-        </nav>
-
-        <nav
-          className="mt-6 flex flex-wrap items-center justify-center gap-x-4 gap-y-2 text-xs uppercase tracking-wider text-black/50"
-          aria-label="Legal"
-        >
-          <Link href="/privacy" className="hover:text-black/80 transition">
-            {t("footer.privacy")}
-          </Link>
-          <span className="text-black/20" aria-hidden>
-            |
-          </span>
-          <Link href="/terms" className="hover:text-black/80 transition">
-            {t("footer.terms")}
-          </Link>
-          <span className="text-black/20" aria-hidden>
-            |
-          </span>
-          <Link
-            href="/legal/data-compliance"
-            className="hover:text-black/80 transition"
-          >
-            {t("footer.dataCompliance")}
-          </Link>
-        </nav>
-
-        {/* Social icons */}
-        <div className="mt-10 flex items-center justify-center gap-6">
-          {socialLinks.map(({ href, icon: Icon, label }) => (
-            <a
-              key={label}
-              href={href}
-              target="_blank"
-              rel="noreferrer noopener"
-              aria-label={label}
-              className="text-black/50 hover:text-black/80 transition"
-            >
-              <Icon className="w-5 h-5" />
-            </a>
-          ))}
+            ))}
+          </nav>
         </div>
+
+        <div className="mt-14 pt-8 border-t border-white/[0.06] flex flex-col sm:flex-row sm:items-center sm:justify-between gap-6">
+          <nav className="flex flex-wrap gap-x-6 gap-y-2 text-xs text-white/40" aria-label="Legal">
+            {legalKeys.map((link) => (
+              <Link key={link.href} href={link.href} className="hover:text-white/70 transition-colors">
+                {t(link.key)}
+              </Link>
+            ))}
+          </nav>
+
+          <div className="flex items-center gap-5">
+            {socialLinks.map(({ href, icon: Icon, label }) => (
+              <a
+                key={label}
+                href={href}
+                target="_blank"
+                rel="noreferrer noopener"
+                aria-label={label}
+                className="text-white/35 hover:text-white/70 transition-colors"
+              >
+                <Icon className="w-4 h-4" />
+              </a>
+            ))}
+          </div>
+        </div>
+
+        <p className="mt-8 text-xs text-white/30">
+          © {year} Saddle Up. {t("footer.rights")}
+        </p>
       </div>
     </footer>
   );

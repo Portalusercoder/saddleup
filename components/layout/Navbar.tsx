@@ -6,6 +6,7 @@ import { useState, useEffect } from "react";
 import { createClient } from "@/lib/supabase/client";
 import NotificationBell from "@/components/NotificationBell";
 import UserMenuDropdown from "@/components/layout/UserMenuDropdown";
+import TextLogo from "@/components/brand/TextLogo";
 import { useProfile } from "@/components/providers/ProfileProvider";
 import { useLanguage } from "@/components/providers/LanguageProvider";
 import LanguageToggle from "@/components/layout/LanguageToggle";
@@ -84,55 +85,83 @@ export default function Navbar() {
 
   const isOverHero = isHome && !scrolledPastHero && !navCompact;
   const isDashboard = pathname.startsWith("/dashboard");
+  const navOnDark = isOverHero;
 
   if (isAuthPage) return null;
 
   return (
     <div className="relative">
       <nav
-        className={`flex items-center fixed top-0 left-0 right-0 w-full z-50 transition-all duration-300 ${
-          isHome && navCompact ? "h-16" : "h-20"
+        className={`flex items-center fixed top-0 left-0 right-0 w-full z-50 transition-all duration-500 ease-out ${
+          isHome && navCompact ? "h-16 py-2" : "h-20 py-3"
         } ${
           isDashboard
             ? "px-4 sm:px-6 md:ps-56 md:pe-12 lg:pe-16 xl:pe-20"
-            : "px-4 sm:px-6 md:px-12 lg:px-16 xl:px-20"
+            : "px-4 sm:px-6 md:px-10 lg:px-14"
         } ${
-          isOverHero
-            ? "bg-transparent text-white"
-            : isMarketing
-              ? "marketing-nav-light bg-base/95 backdrop-blur-md text-black border-b border-black/10 shadow-sm"
-              : "bg-base border-b border-black/10 text-black"
+          isDashboard
+            ? "bg-base border-b border-black/10 text-black"
+            : isMarketing && navOnDark
+              ? "bg-transparent text-white"
+              : isMarketing
+                ? "bg-[#f5f5f7]/80 backdrop-blur-xl border-b border-black/[0.04] text-[#1d1d1f]"
+                : "bg-base border-b border-black/10 text-black"
         }`}
       >
-        {/* Spacer — keeps home nav links centered */}
-        <div className="flex-1 min-w-0" />
+        {/* Logo (marketing) */}
+        {isMarketing && !user ? (
+          <Link href="/" className="shrink-0 me-6">
+            <TextLogo
+              className={`text-[0.72rem] transition-colors ${navOnDark ? "text-white/90" : "text-[#1d1d1f]/90"}`}
+            />
+          </Link>
+        ) : (
+          <div className="flex-1 min-w-0 hidden md:block" />
+        )}
 
-        {/* Center: Nav links (home page only) */}
+        {/* Center: Nav links */}
         {isMarketing && !user && (
           <div
-            className={`hidden lg:flex items-center gap-5 xl:gap-7 text-[0.65rem] md:text-[0.7rem] tracking-[0.12em] font-light ${
-              isOverHero ? "text-white/90" : "text-black/90"
-            }`}
+            className={`hidden lg:flex items-center gap-6 xl:gap-8 text-sm font-medium ${
+              navOnDark ? "text-white/75" : "text-[#1d1d1f]/65"
+            } ${isMarketing ? "flex-1 justify-center" : ""}`}
           >
-            <Link href="/#features" className={isOverHero ? "hover:text-white transition" : "hover:text-black transition"}>
+            <Link
+              href="/#features"
+              className={`transition-colors duration-300 ${navOnDark ? "hover:text-white" : "hover:text-[#1d1d1f]"}`}
+            >
               {t("nav.product")}
             </Link>
-            <Link href="/#pricing" className={isOverHero ? "hover:text-white transition" : "hover:text-black transition"}>
+            <Link
+              href="/#pricing"
+              className={`transition-colors duration-300 ${navOnDark ? "hover:text-white" : "hover:text-[#1d1d1f]"}`}
+            >
               {t("nav.pricing")}
             </Link>
-            <Link href="/for-schools" className={isOverHero ? "hover:text-white transition" : "hover:text-black transition"}>
+            <Link
+              href="/for-schools"
+              className={`transition-colors duration-300 ${navOnDark ? "hover:text-white" : "hover:text-[#1d1d1f]"}`}
+            >
               {t("nav.forSchools")}
             </Link>
-            <Link href="/for-trainers" className={isOverHero ? "hover:text-white transition" : "hover:text-black transition"}>
+            <Link
+              href="/for-trainers"
+              className={`transition-colors duration-300 ${navOnDark ? "hover:text-white" : "hover:text-[#1d1d1f]"}`}
+            >
               {t("nav.forTrainers")}
             </Link>
           </div>
         )}
 
-        {/* Top-right chrome: always physical right (sidebar stays on the left in RTL) */}
-        <div className={`flex-1 flex items-center justify-end min-w-0 ${isMarketing && !user ? "" : "max-lg:flex-none"}`}>
-          <div dir="ltr" className="flex items-center gap-2 sm:gap-3 shrink-0">
-            <LanguageToggle variant={isOverHero ? "light" : "dark"} />
+        {/* Top-right chrome */}
+        <div className={`flex items-center justify-end min-w-0 ${isMarketing && !user ? "shrink-0" : "flex-1 max-lg:flex-none"}`}>
+          <div
+            dir="ltr"
+            className={`flex items-center gap-2 sm:gap-3 shrink-0 ${
+              isMarketing && !navOnDark ? "landing-nav-pill-light px-2 py-1.5" : isMarketing && navOnDark ? "landing-nav-pill px-2 py-1.5" : ""
+            }`}
+          >
+            <LanguageToggle variant={navOnDark ? "light" : "dark"} />
             {authChecked && user ? (
               <>
                 {!isAuthPage && !isHome && <NotificationBell />}
@@ -149,17 +178,21 @@ export default function Navbar() {
                 <>
                   <Link
                     href="/login"
-                    className={`px-4 py-2.5 border transition uppercase tracking-[0.2em] text-[0.7rem] font-light ${
-                      isOverHero
-                        ? "border-white/40 text-white hover:bg-white/10"
-                        : "border-black/30 text-black hover:bg-black/10"
+                    className={`px-4 py-2 text-sm font-medium transition-colors duration-300 ${
+                      navOnDark
+                        ? "text-white/80 hover:text-white"
+                        : "text-[#1d1d1f]/70 hover:text-[#1d1d1f]"
                     }`}
                   >
                     {t("nav.signIn")}
                   </Link>
                   <Link
                     href="/signup"
-                    className="px-4 py-2.5 bg-accent text-white font-medium hover:opacity-95 transition uppercase tracking-[0.2em] text-[0.7rem]"
+                    className={`px-4 py-2 rounded-full text-sm font-medium transition-all duration-300 ${
+                      navOnDark
+                        ? "bg-white text-[#1d1d1f] hover:bg-white/90"
+                        : "bg-[#1d1d1f] text-white hover:bg-[#1d1d1f]/90"
+                    }`}
                   >
                     {t("nav.startFree")}
                   </Link>
@@ -173,7 +206,7 @@ export default function Navbar() {
         {user && !isAuthPage && (
           <button
             onClick={() => setMobileOpen(!mobileOpen)}
-            className={`md:hidden p-2 rounded-lg ${isOverHero ? "hover:bg-white/10" : "hover:bg-black/10"}`}
+            className={`md:hidden p-2 rounded-lg ${navOnDark ? "hover:bg-white/10" : "hover:bg-black/10"}`}
             aria-label={t("nav.menu")}
           >
             <svg

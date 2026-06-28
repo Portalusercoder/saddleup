@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import ScrollReveal from "@/components/ui/ScrollReveal";
 import { useLanguage } from "@/components/providers/LanguageProvider";
 
 type PartnerPayload = {
@@ -27,7 +28,7 @@ export default function PartnerSpotlight() {
           setPartner(data);
         }
       } catch {
-        // keep section hidden on failure
+        /* keep section hidden on failure */
       }
     })();
     return () => {
@@ -38,34 +39,36 @@ export default function PartnerSpotlight() {
   if (!partner?.active || !partner.destinationUrl) return null;
 
   return (
-    <section
-      className="border-t border-black/10 py-12 px-6 text-black bg-cover bg-center bg-no-repeat"
-      style={{ backgroundImage: "url('/horseback.jpg')" }}
-    >
-      <div className="max-w-4xl mx-auto border border-black/15">
-        <div className="p-6 sm:p-8 bg-black text-white">
-          <p className="text-xs uppercase tracking-[0.28em] text-white/70">{t("home.partnerSpotlightLabel")}</p>
-          <h3 className="font-serif text-2xl md:text-3xl mt-2">{partner.name}</h3>
-          <p className="text-white/85 mt-3">
-            {t("home.partnerSpotlightDesc")}
-          </p>
-          {partner.promoCode ? (
-            <p className="mt-3 text-sm text-white/90">
-              {t("home.partnerPromoPrefix")}{" "}
-              <span className="font-semibold">{partner.promoCode}</span>{" "}
-              {t("home.partnerPromoSuffix")}
-            </p>
-          ) : null}
-          <a
-            href={partner.destinationUrl}
-            target="_blank"
-            rel="noopener noreferrer sponsored"
-            className="inline-block mt-6 px-6 py-2.5 bg-accent text-white uppercase tracking-wider text-sm hover:opacity-95 transition"
+    <section className="py-16 px-6">
+      <ScrollReveal className="max-w-4xl mx-auto">
+        <div className="landing-card overflow-hidden">
+          <div
+            className="relative p-8 sm:p-10 bg-cover bg-center"
+            style={{ backgroundImage: "linear-gradient(rgba(29,29,31,0.88), rgba(29,29,31,0.92)), url('/horseback.jpg')" }}
           >
-            {partner.ctaText || t("home.partnerCtaDefault")}
-          </a>
+            <p className="text-xs font-semibold uppercase tracking-widest text-white/45">
+              {t("home.partnerSpotlightLabel")}
+            </p>
+            <h3 className="landing-display mt-3 text-2xl sm:text-3xl font-semibold text-white">{partner.name}</h3>
+            <p className="text-white/65 mt-3 max-w-xl leading-relaxed">{t("home.partnerSpotlightDesc")}</p>
+            {partner.promoCode ? (
+              <p className="mt-4 text-sm text-white/80">
+                {t("home.partnerPromoPrefix")}{" "}
+                <span className="font-semibold text-white">{partner.promoCode}</span>{" "}
+                {t("home.partnerPromoSuffix")}
+              </p>
+            ) : null}
+            <a
+              href={partner.destinationUrl}
+              target="_blank"
+              rel="noopener noreferrer sponsored"
+              className="inline-flex mt-6 landing-cta-pill landing-cta-primary text-[#1d1d1f]"
+            >
+              {partner.ctaText || t("home.partnerCtaDefault")}
+            </a>
+          </div>
         </div>
-      </div>
+      </ScrollReveal>
     </section>
   );
 }

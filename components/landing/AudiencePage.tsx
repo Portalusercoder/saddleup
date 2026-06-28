@@ -23,31 +23,33 @@ export default function AudiencePage({
   const { t } = useLanguage();
 
   return (
-    <main className="min-h-screen landing-surface bg-base text-black pt-20">
-      <section className="max-w-3xl mx-auto px-6 py-16 sm:py-24 text-center">
+    <main className="min-h-screen landing-premium landing-surface pt-20">
+      <section className="max-w-3xl mx-auto px-6 py-20 sm:py-28 text-center">
         <ScrollReveal>
-          <p className="text-xs uppercase tracking-[0.2em] text-black/45 mb-4">Saddle Up</p>
-          <h1 className="font-serif text-4xl md:text-5xl font-normal">{t(titleKey)}</h1>
-          <p className="mt-4 text-lg text-black/70">{t(subtitleKey)}</p>
-          <p className="mt-6 text-black/60 leading-relaxed">{t(bodyKey)}</p>
-          <div className="mt-10 flex flex-wrap justify-center gap-4">
+          <p className="landing-section-label mb-4">Saddle Up</p>
+          <h1 className="landing-display text-4xl md:text-5xl font-semibold tracking-tight text-[#1d1d1f]">
+            {t(titleKey)}
+          </h1>
+          <p className="mt-5 text-lg text-[#1d1d1f]/60">{t(subtitleKey)}</p>
+          <p className="mt-6 text-[#1d1d1f]/55 leading-relaxed max-w-2xl mx-auto">{t(bodyKey)}</p>
+          <div className="mt-10 flex flex-wrap justify-center gap-3">
             <button
               type="button"
               onClick={onStartFree}
-              className="px-6 py-3 bg-accent text-white font-medium hover:opacity-95 transition text-sm"
+              className="landing-cta-pill bg-[#1d1d1f] text-white hover:bg-[#1d1d1f]/90"
             >
               {t(ctaKey)}
             </button>
             <Link
               href="/#pricing"
-              className="px-6 py-3 border border-black/20 hover:bg-black/5 transition text-sm"
+              className="landing-cta-pill border border-[#1d1d1f]/15 text-[#1d1d1f] hover:bg-[#1d1d1f]/5"
             >
               {t("nav.pricing")}
             </Link>
           </div>
         </ScrollReveal>
       </section>
-      <Footer onGetStarted={onStartFree} />
+      <Footer />
     </main>
   );
 }
