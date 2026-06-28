@@ -315,6 +315,7 @@ html.dark {
   --landing-card-border: rgba(0, 0, 0, 0.04);
   --landing-pill-bg: #ffffff;
   --landing-pill-border: rgba(0, 0, 0, 0.08);
+  --landing-grid-border: rgba(0, 0, 0, 0.1);
   color-scheme: light;
   background: var(--landing-bg);
   color: var(--landing-ink);
@@ -332,6 +333,7 @@ html.dark {
   --landing-card-border: rgba(255, 255, 255, 0.08);
   --landing-pill-bg: #1a1a1a;
   --landing-pill-border: rgba(255, 255, 255, 0.1);
+  --landing-grid-border: rgba(255, 255, 255, 0.1);
   color-scheme: dark;
   background: var(--landing-bg);
   color: var(--landing-ink);
@@ -409,6 +411,104 @@ html.dark {
 .landing-premium {
   background: var(--landing-bg);
   color: var(--landing-ink);
+}
+
+/* Benefits grid — bordered cells with ghost UI illustrations */
+.landing-benefits-eyebrow {
+  font-size: 0.6875rem;
+  font-weight: 600;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--landing-ink-faint);
+}
+
+.landing-benefits-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  border: 1px solid var(--landing-grid-border);
+}
+
+@media (min-width: 768px) {
+  .landing-benefits-grid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+.landing-benefits-cell {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  min-height: 18.5rem;
+  padding: 1.75rem 1.5rem 1.5rem;
+  border-bottom: 1px solid var(--landing-grid-border);
+}
+
+@media (min-width: 640px) {
+  .landing-benefits-cell {
+    min-height: 21rem;
+    padding: 2rem 1.75rem 1.75rem;
+  }
+}
+
+@media (min-width: 768px) {
+  .landing-benefits-cell {
+    border-bottom: 1px solid var(--landing-grid-border);
+    border-right: 1px solid var(--landing-grid-border);
+  }
+
+  .landing-benefits-cell:nth-child(3n) {
+    border-right: none;
+  }
+
+  .landing-benefits-cell:nth-last-child(-n + 3) {
+    border-bottom: none;
+  }
+}
+
+.landing-benefits-cell:last-child {
+  border-bottom: none;
+}
+
+.landing-benefits-badge {
+  position: absolute;
+  top: 0;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  padding: 0.2rem 0.65rem;
+  font-size: 0.625rem;
+  font-weight: 600;
+  font-style: italic;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: #c9a87c;
+  background: var(--landing-bg);
+  border: 1px solid color-mix(in srgb, #c9a87c 45%, transparent);
+  white-space: nowrap;
+}
+
+.landing-benefits-visual {
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  min-height: 7.5rem;
+}
+
+.landing-benefits-cta {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.7rem 1.25rem;
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: #c9a87c;
+  border: 1px solid color-mix(in srgb, #c9a87c 55%, transparent);
+  transition:
+    background 0.25s ease,
+    color 0.25s ease;
+}
+
+.landing-benefits-cta:hover {
+  background: color-mix(in srgb, #c9a87c 12%, transparent);
+  color: #d4b896;
 }
 
 .landing-glass {

@@ -262,8 +262,11 @@ export const en = {
     howStep3Title: "Manage everything from one place",
     howStep3Desc: "Bookings, workload alerts, and reports without WhatsApp chaos.",
     featuresTitle: "Platform",
+    featuresEyebrow: "Benefits of Saddle Up for stable management",
     featuresHeadline: "Everything your stable needs.",
     featuresSub: "From horse passports to workload intelligence — one system for the whole barn.",
+    featuresFreeBadge: "Free module",
+    featuresCta: "See plans and what's included",
     feat1Title: "Horse profiles",
     feat1Desc:
       "Digital passport for each horse: temperament, skill level, training status, riding suitability.",

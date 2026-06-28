@@ -264,8 +264,11 @@ const arInner = {
     howStep3Title: "أدر كل شيء من مكان واحد",
     howStep3Desc: "حجوزات، تنبيهات حمولة، وتقارير بلا فوضى واتساب.",
     featuresTitle: "المنصة",
+    featuresEyebrow: "مزايا Saddle Up لإدارة الإسطبل",
     featuresHeadline: "كل ما يحتاجه إسطبلك.",
     featuresSub: "من جوازات الخيول إلى ذكاء الحمولة — نظام واحد للإسطبل بأكمله.",
+    featuresFreeBadge: "وحدة مجانية",
+    featuresCta: "اطّلع على الباقات وما يشمله كل باقة",
     feat1Title: "ملفات الخيول",
     feat1Desc:
       "جواز رقمي لكل حصان: المزاج، المستوى، حالة التدريج، وملاءمة الركوب.",
