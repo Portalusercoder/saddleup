@@ -27,10 +27,10 @@ export default function DashboardLayout({
       <TrialCTAModal />
       <UpgradeCTAModal />
       <div className="min-h-screen bg-base text-black">
-        <div className="fixed left-0 top-0 bottom-0 z-[60] hidden md:block">
+        <div className="fixed start-0 top-0 bottom-0 z-[60] hidden md:block">
           <CollapsibleSidebar />
         </div>
-        <main className="pl-[max(0.75rem,env(safe-area-inset-left))] pr-[max(0.75rem,env(safe-area-inset-right))] md:pl-56 sm:px-6 md:px-12 py-6 sm:py-8 md:py-12 pb-24 md:pb-12 max-w-6xl mx-auto">
+        <main className="ps-[max(0.75rem,env(safe-area-inset-left))] pe-[max(0.75rem,env(safe-area-inset-right))] md:ps-56 md:pe-12 sm:ps-6 sm:pe-6 py-6 sm:py-8 md:py-12 pb-24 md:pb-12 max-w-6xl mx-auto">
           <TrialBanner />
           <PageTransition>{children}</PageTransition>
         </main>

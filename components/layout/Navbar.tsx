@@ -88,7 +88,7 @@ export default function Navbar() {
       <nav
         className={`h-20 flex items-center fixed top-0 left-0 right-0 w-full z-50 transition-all duration-300 ${
           isDashboard
-            ? "px-4 sm:px-6 md:pl-56 md:pr-12 lg:pr-16 xl:pr-20"
+            ? "px-4 sm:px-6 md:ps-56 md:pe-12 lg:pe-16 xl:pe-20"
             : "px-4 sm:px-6 md:px-12 lg:px-16 xl:px-20"
         } ${
           isOverHero

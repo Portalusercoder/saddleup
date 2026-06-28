@@ -26,7 +26,7 @@ export default function CollapsibleSidebar() {
   const sections = getDashboardNavSections(profile?.role);
 
   return (
-    <aside className="h-full w-56 bg-base border-r border-black/10 flex flex-col overflow-hidden dark:border-white/10">
+    <aside className="h-full w-56 bg-base border-e border-black/10 flex flex-col overflow-hidden dark:border-white/10">
       {stable && (
         <div className="shrink-0 h-20 px-4 border-b border-black/10 dark:border-white/10 flex items-center gap-3">
           {stable.logoUrl ? (
@@ -49,7 +49,7 @@ export default function CollapsibleSidebar() {
       )}
       <nav
         ref={containerRef}
-        className="relative flex-1 px-2 py-4 overflow-y-auto"
+        className="relative flex-1 ps-3 pe-4 py-4 overflow-y-auto"
         aria-label={t("navSection.sidebarAria")}
       >
         {indicator.height > 0 && (
@@ -68,7 +68,7 @@ export default function CollapsibleSidebar() {
             className={sectionIndex > 0 ? "mt-5 pt-4 border-t border-black/10 dark:border-white/10" : ""}
           >
             <p
-              className="nav-section-label px-3 mb-2 text-[0.65rem] font-medium uppercase tracking-[0.22em] text-black/45 dark:text-white/45"
+              className="nav-section-label ps-1 pe-2 mb-2 text-[0.65rem] font-medium uppercase tracking-[0.22em] text-black/45 dark:text-white/45"
               style={{ animationDelay: `${sectionIndex * 60}ms` }}
             >
               {t(`navSection.${section.sectionKey}`)}
@@ -82,7 +82,7 @@ export default function CollapsibleSidebar() {
                     <Link
                       href={item.href}
                       data-nav-active={isActive ? "true" : undefined}
-                      className={`nav-link group flex items-center gap-3 rounded-md px-3 py-2.5 text-sm font-medium transition-colors ${
+                      className={`nav-link group flex items-center gap-3 rounded-md ps-3 pe-3 py-2.5 text-sm font-medium transition-colors ${
                         isActive
                           ? "nav-link-active-glow bg-black/[0.07] text-black dark:bg-white/10 dark:text-white"
                           : "text-black/65 hover:bg-black/[0.04] hover:text-black dark:text-white/65 dark:hover:bg-white/5 dark:hover:text-white"
