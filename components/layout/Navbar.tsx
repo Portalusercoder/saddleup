@@ -22,7 +22,7 @@ export default function Navbar() {
   const router = useRouter();
   const [mobileOpen, setMobileOpen] = useState(false);
   const { profile, loading: profileLoading, userId } = useProfile();
-  const { lang, t } = useLanguage();
+  const { t } = useLanguage();
 
   const user = userId ? { id: userId, email: profile?.email } : null;
   const authChecked = !profileLoading;
@@ -86,9 +86,9 @@ export default function Navbar() {
   return (
     <div className="relative">
       <nav
-        className={`h-20 flex items-center justify-between fixed top-0 left-0 right-0 w-full z-50 transition-all duration-300 ${
+        className={`h-20 flex items-center fixed top-0 left-0 right-0 w-full z-50 transition-all duration-300 ${
           isDashboard
-            ? "px-4 sm:px-6 md:pl-[4.25rem] md:pr-12 lg:pr-16 xl:pr-20"
+            ? "px-4 sm:px-6 md:pl-56 md:pr-12 lg:pr-16 xl:pr-20"
             : "px-4 sm:px-6 md:px-12 lg:px-16 xl:px-20"
         } ${
           isOverHero
@@ -98,10 +98,8 @@ export default function Navbar() {
               : "bg-base border-b border-black/10 text-black"
         }`}
       >
-        {/* Left: Language toggle (starts after sidebar on dashboard) */}
-        <div className="flex-1 flex items-center gap-2 min-w-0 pl-2 md:pl-3">
-          <LanguageToggle variant={isOverHero ? "light" : "dark"} />
-        </div>
+        {/* Spacer — keeps home nav links centered */}
+        <div className="flex-1 min-w-0" />
 
         {/* Center: Nav links (home page only) */}
         {isHome && !user && (
@@ -125,41 +123,44 @@ export default function Navbar() {
           </div>
         )}
 
-        {/* Right: Sign in / Sign up or profile avatar (in RTL this block is on the left; add space from the line) */}
-        <div className={`flex-1 flex items-center justify-end gap-2 ${lang === "ar" ? "me-3 md:me-4" : ""}`}>
-          {authChecked && user ? (
-            <div className="flex items-center gap-3">
-              {!isAuthPage && !isHome && <NotificationBell />}
-              <UserMenuDropdown
-                fullName={profile?.fullName}
-                email={profile?.email ?? user.email}
-                avatarUrl={profile?.avatarUrl}
-                isOwner={profile?.role === "owner"}
-                onSignOut={handleSignOut}
-              />
-            </div>
-          ) : (
-            !isAuthPage && (
-              <div className="flex items-center gap-3">
-                <Link
-                  href="/login"
-                  className={`px-4 py-2.5 border transition uppercase tracking-[0.2em] text-[0.7rem] font-light ${
-                    isOverHero
-                      ? "border-white/40 text-white hover:bg-white/10"
-                      : "border-black/30 text-black hover:bg-black/10"
-                  }`}
-                >
-                  {t("nav.signIn")}
-                </Link>
-                <Link
-                  href="/signup"
-                  className="px-4 py-2.5 bg-accent text-white font-medium hover:opacity-95 transition uppercase tracking-[0.2em] text-[0.7rem]"
-                >
-                  {t("nav.signUp")}
-                </Link>
-              </div>
-            )
-          )}
+        {/* Top-right chrome: always physical right (sidebar stays on the left in RTL) */}
+        <div className={`flex-1 flex items-center justify-end min-w-0 ${isHome && !user ? "" : "max-lg:flex-none"}`}>
+          <div dir="ltr" className="flex items-center gap-2 sm:gap-3 shrink-0">
+            <LanguageToggle variant={isOverHero ? "light" : "dark"} />
+            {authChecked && user ? (
+              <>
+                {!isAuthPage && !isHome && <NotificationBell />}
+                <UserMenuDropdown
+                  fullName={profile?.fullName}
+                  email={profile?.email ?? user.email}
+                  avatarUrl={profile?.avatarUrl}
+                  isOwner={profile?.role === "owner"}
+                  onSignOut={handleSignOut}
+                />
+              </>
+            ) : (
+              !isAuthPage && (
+                <>
+                  <Link
+                    href="/login"
+                    className={`px-4 py-2.5 border transition uppercase tracking-[0.2em] text-[0.7rem] font-light ${
+                      isOverHero
+                        ? "border-white/40 text-white hover:bg-white/10"
+                        : "border-black/30 text-black hover:bg-black/10"
+                    }`}
+                  >
+                    {t("nav.signIn")}
+                  </Link>
+                  <Link
+                    href="/signup"
+                    className="px-4 py-2.5 bg-accent text-white font-medium hover:opacity-95 transition uppercase tracking-[0.2em] text-[0.7rem]"
+                  >
+                    {t("nav.signUp")}
+                  </Link>
+                </>
+              )
+            )}
+          </div>
         </div>
 
         {/* Mobile menu button (dashboard only) */}

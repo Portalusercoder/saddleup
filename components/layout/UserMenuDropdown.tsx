@@ -220,7 +220,7 @@ export default function UserMenuDropdown({
                 type="button"
                 role="menuitem"
                 onClick={() => selectItem(item)}
-                className={`user-menu-item w-full text-left ${pressedId === item.id ? "user-menu-item-pressed" : ""}`}
+                className={`user-menu-item w-full text-start ${pressedId === item.id ? "user-menu-item-pressed" : ""}`}
               >
                 {item.icon}
                 <span>{item.label}</span>
@@ -243,7 +243,7 @@ export default function UserMenuDropdown({
                   onSelect: onSignOut,
                 })
               }
-              className={`user-menu-item user-menu-item-danger w-full text-left ${pressedId === "signout" ? "user-menu-item-pressed" : ""}`}
+              className={`user-menu-item user-menu-item-danger w-full text-start ${pressedId === "signout" ? "user-menu-item-pressed" : ""}`}
             >
               <IconSignOut />
               <span>{t("nav.signOut")}</span>
