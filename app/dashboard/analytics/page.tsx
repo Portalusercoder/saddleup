@@ -6,6 +6,7 @@ import { useRouter } from "next/navigation";
 import { useProfile } from "@/components/providers/ProfileProvider";
 import { useTheme } from "@/components/providers/ThemeProvider";
 import TableSkeleton from "@/components/ui/TableSkeleton";
+import DashboardEmptyState from "@/components/ui/DashboardEmptyState";
 import GuidedTourOverlay, { type GuidedTourStep } from "@/components/dashboard/GuidedTourOverlay";
 import { usePageTour } from "@/components/dashboard/usePageTour";
 import { useLanguage } from "@/components/providers/LanguageProvider";
@@ -41,6 +42,7 @@ export default function AnalyticsPage() {
   const [data, setData] = useState<AnalyticsData | null>(null);
   const [loading, setLoading] = useState(true);
   const [locked, setLocked] = useState(false);
+  const [horseFilter, setHorseFilter] = useState<string>("all");
   const { open: showTour, complete: completeTour } = usePageTour(
     "saddleup_tour_analytics_v1",
     !loading && !locked && Boolean(data)
@@ -125,6 +127,27 @@ export default function AnalyticsPage() {
     );
   }
 
+  const horseOptions = Array.from(
+    new Map(
+      [...data.horseWorkload, ...(data.horseCosts ?? [])].map((h) => [
+        h.horseId,
+        h.horseName,
+      ])
+    ).entries()
+  ).sort((a, b) => a[1].localeCompare(b[1]));
+
+  const filteredHorseWorkload =
+    horseFilter === "all"
+      ? data.horseWorkload
+      : data.horseWorkload.filter((h) => h.horseId === horseFilter);
+
+  const filteredHorseCosts =
+    horseFilter === "all"
+      ? (data.horseCosts ?? [])
+      : (data.horseCosts ?? []).filter((h) => h.horseId === horseFilter);
+
+  const hasTrainingData = data.totalSessions > 0 || data.totalMinutes > 0;
+
   const tourSteps: GuidedTourStep[] = [
     {
       id: "kpis",
@@ -186,40 +209,72 @@ export default function AnalyticsPage() {
         </div>
       </div>
 
-      <div className="border border-black/10 p-6" data-tour="analytics-workload">
-        <h2 className="font-serif text-lg text-black mb-4">{t("dashboard.analyticsWorkloadWeek")}</h2>
-        <p className="text-black/50 text-sm mb-4">
+      <div className="border border-black/10 p-6 dark:border-white/10" data-tour="analytics-workload">
+        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 mb-4">
+          <h2 className="font-serif text-lg text-black dark:text-white">
+            {t("dashboard.analyticsWorkloadWeek")}
+          </h2>
+          {horseOptions.length > 0 && (
+            <label className="flex items-center gap-2 text-sm text-black/60 dark:text-white/60">
+              <span className="text-xs uppercase tracking-widest">
+                {t("dashboard.analyticsHorseFilter")}
+              </span>
+              <select
+                value={horseFilter}
+                onChange={(e) => setHorseFilter(e.target.value)}
+                className="px-3 py-1.5 bg-base border border-black/10 text-black text-sm focus:outline-none dark:border-white/15 dark:text-white"
+              >
+                <option value="all">{t("dashboard.analyticsHorseFilterAll")}</option>
+                {horseOptions.map(([id, name]) => (
+                  <option key={id} value={id}>
+                    {name}
+                  </option>
+                ))}
+              </select>
+            </label>
+          )}
+        </div>
+        <p className="text-black/50 text-sm mb-4 dark:text-white/50">
           {t("dashboard.analyticsWorkloadWeekLead")}
         </p>
-        <div className="h-48 sm:h-64 min-h-[12rem]">
-          <ResponsiveContainer width="100%" height="100%">
-            <LineChart data={data.sessionsByWeek}>
-              <CartesianGrid strokeDasharray="3 3" stroke={chart.grid} />
-              <XAxis
-                dataKey="label"
-                stroke={chart.axis}
-                tick={{ fill: chart.tick, fontSize: 11 }}
-              />
-              <YAxis
-                stroke={chart.axis}
-                tick={{ fill: chart.tick, fontSize: 11 }}
-              />
-              <Tooltip
-                contentStyle={{ backgroundColor: chart.tooltipBg, border: `1px solid ${chart.tooltipBorder}` }}
-                labelStyle={{ color: chart.tooltipText }}
-                formatter={(value: number | undefined) => [value ?? 0, t("dashboard.analyticsTooltipMinutes")]}
-                labelFormatter={(label) => t("dashboard.analyticsTooltipWeekOf", { week: String(label) })}
-              />
-              <Line
-                type="monotone"
-                dataKey="minutes"
-                stroke={chart.line}
-                strokeWidth={2}
-                dot={{ fill: chart.dot }}
-              />
-            </LineChart>
-          </ResponsiveContainer>
-        </div>
+        {!hasTrainingData ? (
+          <DashboardEmptyState
+            title={t("dashboard.analyticsEmptyTrainingTitle")}
+            description={t("dashboard.analyticsEmptyTrainingBody")}
+            actionLabel={t("dashboard.analyticsEmptyTrainingCta")}
+            actionHref="/dashboard/horses"
+          />
+        ) : (
+          <div className="h-48 sm:h-64 min-h-[12rem]">
+            <ResponsiveContainer width="100%" height="100%">
+              <LineChart data={data.sessionsByWeek}>
+                <CartesianGrid strokeDasharray="3 3" stroke={chart.grid} />
+                <XAxis
+                  dataKey="label"
+                  stroke={chart.axis}
+                  tick={{ fill: chart.tick, fontSize: 11 }}
+                />
+                <YAxis
+                  stroke={chart.axis}
+                  tick={{ fill: chart.tick, fontSize: 11 }}
+                />
+                <Tooltip
+                  contentStyle={{ backgroundColor: chart.tooltipBg, border: `1px solid ${chart.tooltipBorder}` }}
+                  labelStyle={{ color: chart.tooltipText }}
+                  formatter={(value: number | undefined) => [value ?? 0, t("dashboard.analyticsTooltipMinutes")]}
+                  labelFormatter={(label) => t("dashboard.analyticsTooltipWeekOf", { week: String(label) })}
+                />
+                <Line
+                  type="monotone"
+                  dataKey="minutes"
+                  stroke={chart.line}
+                  strokeWidth={2}
+                  dot={{ fill: chart.dot }}
+                />
+              </LineChart>
+            </ResponsiveContainer>
+          </div>
+        )}
       </div>
 
       <div className="grid md:grid-cols-2 gap-6">
@@ -255,12 +310,17 @@ export default function AnalyticsPage() {
           <p className="text-black/50 text-sm mb-4">
             {t("dashboard.analyticsTopHorsesLead")}
           </p>
-          {data.horseWorkload.length === 0 ? (
-            <p className="text-black/50 text-sm">{t("dashboard.analyticsNoTrainingData")}</p>
+          {filteredHorseWorkload.length === 0 ? (
+            <DashboardEmptyState
+              title={t("dashboard.analyticsEmptyTrainingTitle")}
+              description={t("dashboard.analyticsEmptyTrainingBody")}
+              actionLabel={t("dashboard.analyticsEmptyTrainingCta")}
+              actionHref="/dashboard/horses"
+            />
           ) : (
             <div className="h-48 sm:h-64 min-h-[12rem]">
               <ResponsiveContainer width="100%" height="100%">
-                <BarChart data={data.horseWorkload} layout="vertical" margin={{ left: 20, right: 20 }}>
+                <BarChart data={filteredHorseWorkload} layout="vertical" margin={{ left: 20, right: 20 }}>
                   <CartesianGrid strokeDasharray="3 3" stroke={chart.grid} />
                   <XAxis type="number" stroke={chart.axis} tick={{ fill: chart.tick, fontSize: 11 }} />
                   <YAxis
@@ -287,13 +347,18 @@ export default function AnalyticsPage() {
         <p className="text-black/50 text-sm mb-4">
           {t("dashboard.analyticsCostPerHorseLead")}
         </p>
-        {(data.horseCosts ?? []).length === 0 ? (
-          <p className="text-black/50 text-sm">{t("dashboard.analyticsNoHealthCosts")}</p>
+        {(filteredHorseCosts ?? []).length === 0 ? (
+          <DashboardEmptyState
+            title={t("dashboard.analyticsEmptyCostsTitle")}
+            description={t("dashboard.analyticsEmptyCostsBody")}
+            actionLabel={t("dashboard.analyticsEmptyCostsCta")}
+            actionHref="/dashboard/horses"
+          />
         ) : (
           <div className="h-48 sm:h-64 min-h-[12rem]">
             <ResponsiveContainer width="100%" height="100%">
               <BarChart
-                data={data.horseCosts ?? []}
+                data={filteredHorseCosts ?? []}
                 layout="vertical"
                 margin={{ left: 20, right: 20 }}
               >

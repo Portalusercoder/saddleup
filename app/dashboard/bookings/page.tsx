@@ -3,9 +3,11 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import { useProfile } from "@/components/providers/ProfileProvider";
-import { HorseAvatar } from "@/components/HorseAvatar";
+import BookingCard from "@/components/dashboard/BookingCard";
+import BookingDetailModal from "@/components/dashboard/BookingDetailModal";
 import LoadingSpinner from "@/components/ui/LoadingSpinner";
 import TableSkeleton from "@/components/ui/TableSkeleton";
+import DashboardEmptyState from "@/components/ui/DashboardEmptyState";
 import GuidedTourOverlay, { type GuidedTourStep } from "@/components/dashboard/GuidedTourOverlay";
 import { usePageTour } from "@/components/dashboard/usePageTour";
 import { trackEvent } from "@/lib/analytics/mixpanel-client";
@@ -48,6 +50,8 @@ export default function BookingsPage() {
     notes: "",
   });
   const [createLoading, setCreateLoading] = useState(false);
+  const [viewTab, setViewTab] = useState<"upcoming" | "past">("upcoming");
+  const [detailBooking, setDetailBooking] = useState<Booking | null>(null);
   const { open: showTour, complete: completeTour } = usePageTour(
     "saddleup_tour_bookings_v1",
     !loading
@@ -234,6 +238,55 @@ export default function BookingsPage() {
   const cancelled = bookings.filter((b) => b.status === "cancelled");
   const declined = bookings.filter((b) => b.status === "declined");
 
+  const upcomingList = isStudent ? [...myUpcomingPending, ...upcoming] : upcoming;
+  const pastList = [...past, ...cancelled, ...declined].sort(
+    (a, b) => new Date(b.bookingDate).getTime() - new Date(a.bookingDate).getTime()
+  );
+
+  const statusLabel = (status: string) => {
+    const key = `dashboard.bookingsStatus_${status}` as const;
+    const translated = t(key);
+    return translated === key ? status : translated;
+  };
+
+  const renderBookingActions = (b: Booking) => {
+    if (isTrainerOrOwner && b.status === "pending") {
+      return (
+        <>
+          <button
+            type="button"
+            onClick={() => handleApprove(b)}
+            className="px-3 py-1.5 bg-accent text-white text-xs font-medium uppercase tracking-wider hover:opacity-95"
+          >
+            {t("dashboard.bookingsApprove")}
+          </button>
+          <button
+            type="button"
+            onClick={() => {
+              setShowDeclineModal(b);
+              setDeclineNotes("");
+            }}
+            className="px-3 py-1.5 border border-black/30 text-black/80 text-xs uppercase tracking-wider hover:border-black/50 dark:border-white/30 dark:text-white/80"
+          >
+            {t("dashboard.bookingsDecline")}
+          </button>
+        </>
+      );
+    }
+    if (isStudent && b.status === "scheduled") {
+      return (
+        <button
+          type="button"
+          onClick={() => handleCancel(b.id)}
+          className="text-black/60 hover:text-black text-xs uppercase tracking-wider dark:text-white/60 dark:hover:text-white"
+        >
+          {t("dashboard.bookingsCancel")}
+        </button>
+      );
+    }
+    return null;
+  };
+
   const formInput =
     "w-full px-4 py-3 bg-base border border-black/10 text-black placeholder-black/40 focus:border-black/30 focus:outline-none";
   const btnPrimary =
@@ -271,13 +324,26 @@ export default function BookingsPage() {
         onComplete={completeTour}
       />
       <div className="flex items-center justify-between flex-wrap gap-4">
-        <h1 className="font-serif text-3xl md:text-4xl font-normal text-black">
+        <h1 className="font-serif text-3xl md:text-4xl font-normal text-black dark:text-white">
           {isStudent ? t("dashboard.bookingsTitleStudent") : t("dashboard.bookingsTitleStaff")}
         </h1>
-        {isStudent && horses.length > 0 && (
-          <button onClick={() => setShowCreate(true)} className={btnPrimary} data-tour="bookings-create">
-            {t("dashboard.bookingsRequestLesson")}
+        {isStudent ? (
+          <button
+            type="button"
+            onClick={() => setShowCreate(true)}
+            className={btnPrimary}
+            data-tour="bookings-create"
+          >
+            {t("dashboard.bookingsNewBooking")}
           </button>
+        ) : (
+          <Link
+            href="/dashboard/schedule"
+            className={btnPrimary}
+            data-tour="bookings-create"
+          >
+            {t("dashboard.bookingsViewSchedule")}
+          </Link>
         )}
       </div>
 
@@ -286,201 +352,147 @@ export default function BookingsPage() {
       ) : (
         <>
           {isTrainerOrOwner && pending.length > 0 && (
-            <div className="border border-black/20 p-6" data-tour="bookings-pending">
-              <h2 className="font-serif text-lg text-black mb-2">
+            <div className="border border-black/20 p-6 dark:border-white/20" data-tour="bookings-pending">
+              <h2 className="font-serif text-lg text-black dark:text-white mb-2">
                 {t("dashboard.bookingsPendingTitle")}
               </h2>
-              <p className="text-black/50 text-sm mb-4">
+              <p className="text-black/50 text-sm mb-4 dark:text-white/50">
                 {t("dashboard.bookingsPendingLead")}
               </p>
               <div className="space-y-3">
                 {pending.map((b) => (
-                  <div
+                  <BookingCard
                     key={b.id}
-                    className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 border border-black/10 px-4 py-3"
-                  >
-                    <div className="flex items-center gap-4">
-                      <HorseAvatar
-                        photoUrl={b.horse?.photoUrl}
-                        name={b.horse?.name ?? "—"}
-                        size="sm"
-                      />
-                      <div>
-                        <span className="font-medium text-black">
-                          {b.horse?.name ?? "—"}
-                        </span>
-                        <span className="text-black/50 text-sm ml-2">
-                          {formatDate(b.bookingDate)} • {formatTime(b.startTime)}–{formatTime(b.endTime)}
-                        </span>
-                        {b.rider && (
-                          <span className="text-black/40 text-xs block">
-                            {b.rider.name}
-                          </span>
-                        )}
-                      </div>
-                    </div>
-                    <div className="flex gap-2 shrink-0">
-                      <button
-                        onClick={() => handleApprove(b)}
-                        className="px-3 py-1.5 bg-accent text-white text-xs font-medium uppercase tracking-wider hover:opacity-95"
-                      >
-                        {t("dashboard.bookingsApprove")}
-                      </button>
-                      <button
-                        onClick={() => {
-                          setShowDeclineModal(b);
-                          setDeclineNotes("");
-                        }}
-                        className="px-3 py-1.5 border border-black/30 text-black/80 text-xs uppercase tracking-wider hover:border-black/50"
-                      >
-                        {t("dashboard.bookingsDecline")}
-                      </button>
-                    </div>
-                  </div>
+                    booking={b}
+                    formatDate={formatDate}
+                    formatTime={formatTime}
+                    viewDetailsLabel={t("dashboard.bookingsViewDetails")}
+                    onViewDetails={() => setDetailBooking(b)}
+                    actions={renderBookingActions(b)}
+                  />
                 ))}
               </div>
             </div>
           )}
 
-          {(upcoming.length > 0 || (isStudent && myUpcomingPending.length > 0)) && (
-            <div className="border border-black/10 p-6" data-tour="bookings-upcoming">
-              <h2 className="font-serif text-lg text-black mb-4">
-                {isStudent
-                  ? t("dashboard.bookingsUpcomingStudent")
-                  : t("dashboard.bookingsUpcomingStaff")}
-              </h2>
-              <div className="space-y-3">
-                {(isStudent ? [...myUpcomingPending, ...upcoming] : upcoming).map((b) => (
-                  <div
-                    key={b.id}
-                    className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 border border-black/10 px-4 py-3"
-                  >
-                    <div className="flex items-center gap-4">
-                      <HorseAvatar
-                        photoUrl={b.horse?.photoUrl}
-                        name={b.horse?.name ?? "—"}
-                        size="sm"
-                      />
-                      <div>
-                        <span className="font-medium text-black">
-                          {b.horse?.name ?? "—"}
-                        </span>
-                        <span className="text-black/50 text-sm ml-2">
-                          {formatDate(b.bookingDate)} • {formatTime(b.startTime)}–{formatTime(b.endTime)}
-                        </span>
-                        {b.status === "pending" && (
-                          <span className="text-black/60 text-xs block">
-                            {t("dashboard.bookingsPendingApproval")}
-                          </span>
-                        )}
-                        {b.trainer?.fullName && (
-                          <span className="text-black/40 text-xs block">
-                            {t("dashboard.bookingsTrainerLine", {
-                              name: b.trainer.fullName,
-                            })}
-                          </span>
-                        )}
-                      </div>
-                    </div>
-                    {isStudent && b.status === "scheduled" && (
-                      <button
-                        onClick={() => handleCancel(b.id)}
-                        className="text-black/60 hover:text-black text-xs uppercase tracking-wider"
-                      >
-                        {t("dashboard.bookingsCancel")}
-                      </button>
-                    )}
-                  </div>
-                ))}
-              </div>
-            </div>
-          )}
+          <div className="flex gap-2 border-b border-black/10 dark:border-white/10">
+            <button
+              type="button"
+              onClick={() => setViewTab("upcoming")}
+              className={`px-4 py-2 text-sm uppercase tracking-wider transition ${
+                viewTab === "upcoming"
+                  ? "border-b-2 border-accent text-black dark:text-white -mb-px"
+                  : "text-black/50 hover:text-black dark:text-white/50 dark:hover:text-white"
+              }`}
+            >
+              {t("dashboard.bookingsViewUpcoming")}
+            </button>
+            <button
+              type="button"
+              onClick={() => setViewTab("past")}
+              className={`px-4 py-2 text-sm uppercase tracking-wider transition ${
+                viewTab === "past"
+                  ? "border-b-2 border-accent text-black dark:text-white -mb-px"
+                  : "text-black/50 hover:text-black dark:text-white/50 dark:hover:text-white"
+              }`}
+            >
+              {t("dashboard.bookingsViewPast")}
+            </button>
+          </div>
 
-          {isStudent && declined.length > 0 && (
-            <div className="border border-black/10 p-6">
-              <h2 className="font-serif text-lg text-black mb-4">
-                {t("dashboard.bookingsDeclinedTitle")}
-              </h2>
-              <div className="space-y-3">
-                {declined.map((b) => (
-                  <div
+          {viewTab === "upcoming" ? (
+            <div className="space-y-3" data-tour="bookings-upcoming">
+              {upcomingList.length === 0 ? (
+                <DashboardEmptyState
+                  title={t("dashboard.bookingsEmptyUpcomingTitle")}
+                  description={
+                    isStudent
+                      ? t("dashboard.bookingsEmptyUpcomingStudent")
+                      : t("dashboard.bookingsEmptyUpcomingStaff")
+                  }
+                  actionLabel={isStudent ? t("dashboard.bookingsNewBooking") : undefined}
+                  onAction={isStudent ? () => setShowCreate(true) : undefined}
+                />
+              ) : (
+                upcomingList.map((b) => (
+                  <BookingCard
                     key={b.id}
-                    className="flex items-center justify-between border border-black/10 px-4 py-3 opacity-75"
-                  >
-                    <div className="flex items-center gap-4">
-                      <HorseAvatar
-                        photoUrl={b.horse?.photoUrl}
-                        name={b.horse?.name ?? "—"}
-                        size="sm"
-                      />
-                      <div>
-                        <span className="font-medium text-black">
-                          {b.horse?.name ?? "—"}
-                        </span>
-                        <span className="text-black/50 text-sm ml-2">
-                          {formatDate(b.bookingDate)} • {formatTime(b.startTime)}–{formatTime(b.endTime)}
-                        </span>
-                        {b.declinedNotes && (
-                          <span className="text-black/60 text-xs block mt-1">
-                            {t("dashboard.bookingsReasonLine", {
-                              reason: b.declinedNotes,
-                            })}
-                          </span>
-                        )}
-                      </div>
-                    </div>
-                    <span className="text-black/50 text-xs uppercase">
-                      {t("dashboard.bookingsDeclinedBadge")}
-                    </span>
-                  </div>
-                ))}
-              </div>
+                    booking={b}
+                    formatDate={formatDate}
+                    formatTime={formatTime}
+                    pendingApprovalLabel={
+                      b.status === "pending" ? t("dashboard.bookingsPendingApproval") : undefined
+                    }
+                    trainerLine={
+                      b.trainer?.fullName
+                        ? t("dashboard.bookingsTrainerLine", { name: b.trainer.fullName })
+                        : undefined
+                    }
+                    statusLabel={
+                      b.status === "declined" || b.status === "cancelled"
+                        ? statusLabel(b.status)
+                        : undefined
+                    }
+                    viewDetailsLabel={t("dashboard.bookingsViewDetails")}
+                    onViewDetails={() => setDetailBooking(b)}
+                    actions={renderBookingActions(b)}
+                  />
+                ))
+              )}
             </div>
-          )}
-
-          {past.length > 0 && (
-            <div className="border border-black/10 p-6">
-              <h2 className="font-serif text-lg text-black mb-4">
-                {t("dashboard.bookingsPastSessions")}
-              </h2>
-              <div className="space-y-3">
-                {past.slice(0, 10).map((b) => (
-                  <div
+          ) : (
+            <div className="space-y-3">
+              {pastList.length === 0 ? (
+                <DashboardEmptyState
+                  title={t("dashboard.bookingsEmptyPastTitle")}
+                  description={t("dashboard.bookingsEmptyPastBody")}
+                />
+              ) : (
+                pastList.map((b) => (
+                  <BookingCard
                     key={b.id}
-                    className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 border border-black/10 px-4 py-3"
-                  >
-                    <div className="flex items-center gap-4">
-                      <HorseAvatar
-                        photoUrl={b.horse?.photoUrl}
-                        name={b.horse?.name ?? "—"}
-                        size="sm"
-                      />
-                      <div>
-                        <span className="font-medium text-black">
-                          {b.horse?.name ?? "—"}
-                        </span>
-                        <span className="text-black/50 text-sm ml-2">
-                          {formatDate(b.bookingDate)}
-                        </span>
-                      </div>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </div>
-          )}
-
-          {upcoming.length === 0 && past.length === 0 && cancelled.length === 0 && declined.length === 0 && pending.length === 0 && (
-            <div className="border border-black/10 p-8 text-center">
-              <p className="text-black/60">
-                {isStudent
-                  ? t("dashboard.bookingsEmptyStudent")
-                  : t("dashboard.bookingsEmptyStaff")}
-              </p>
+                    booking={b}
+                    formatDate={formatDate}
+                    formatTime={formatTime}
+                    trainerLine={
+                      b.trainer?.fullName
+                        ? t("dashboard.bookingsTrainerLine", { name: b.trainer.fullName })
+                        : undefined
+                    }
+                    statusLabel={statusLabel(b.status)}
+                    viewDetailsLabel={t("dashboard.bookingsViewDetails")}
+                    onViewDetails={() => setDetailBooking(b)}
+                  />
+                ))
+              )}
             </div>
           )}
         </>
       )}
+
+      {detailBooking ? (
+        <BookingDetailModal
+          booking={detailBooking}
+          formatDate={formatDate}
+          formatTime={formatTime}
+          onClose={() => setDetailBooking(null)}
+          statusText={statusLabel(detailBooking.status)}
+          labels={{
+            title: t("dashboard.bookingsDetailTitle"),
+            close: t("common.close"),
+            horse: t("dashboard.bookingsLabelHorse"),
+            rider: t("dashboard.bookingsDetailRider"),
+            trainer: t("dashboard.bookingsDetailTrainer"),
+            date: t("dashboard.bookingsLabelDate"),
+            time: t("dashboard.bookingsDetailTime"),
+            status: t("dashboard.bookingsDetailStatus"),
+            notes: t("dashboard.bookingsLabelNotes"),
+            declinedReason: t("dashboard.bookingsDeclineReasonLabel"),
+            logNotes: t("dashboard.bookingsLogNotes"),
+            none: "—",
+          }}
+        />
+      ) : null}
 
       {showCreate && (
         <div

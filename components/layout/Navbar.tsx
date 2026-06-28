@@ -10,46 +10,12 @@ import { useProfile } from "@/components/providers/ProfileProvider";
 import { useLanguage } from "@/components/providers/LanguageProvider";
 import LanguageToggle from "@/components/layout/LanguageToggle";
 import ThemeToggle from "@/components/layout/ThemeToggle";
+import {
+  flattenDashboardNav,
+  getDashboardNavSections,
+} from "@/lib/dashboard/nav-config";
 
 const HERO_SCROLL_THRESHOLD = 0.6; // show solid nav after scrolling 60% of viewport
-
-const navItemsByRole: Record<string, { href: string; labelKey: string }[]> = {
-    guardian: [
-      { href: "/dashboard/guardian", labelKey: "parentPortal" },
-      { href: "/dashboard/profile", labelKey: "profile" },
-    ],
-    student: [
-      { href: "/dashboard", labelKey: "dashboard" },
-      { href: "/dashboard/my-horses", labelKey: "myHorses" },
-      { href: "/dashboard/bookings", labelKey: "myBookings" },
-      { href: "/dashboard/training-history", labelKey: "trainingHistory" },
-      { href: "/dashboard/competitions", labelKey: "competitions" },
-      { href: "/dashboard/profile", labelKey: "profile" },
-    ],
-    trainer: [
-      { href: "/dashboard", labelKey: "dashboard" },
-      { href: "/dashboard/horses", labelKey: "horses" },
-      { href: "/dashboard/team", labelKey: "teamManagement" },
-      { href: "/dashboard/bookings", labelKey: "bookings" },
-      { href: "/dashboard/schedule", labelKey: "schedule" },
-      { href: "/dashboard/analytics", labelKey: "analytics" },
-      { href: "/dashboard/matching", labelKey: "matching" },
-      { href: "/dashboard/incidents", labelKey: "incidents" },
-      { href: "/dashboard/profile", labelKey: "profile" },
-    ],
-    owner: [
-      { href: "/dashboard", labelKey: "dashboard" },
-      { href: "/dashboard/horses", labelKey: "horses" },
-      { href: "/dashboard/team", labelKey: "teamManagement" },
-      { href: "/dashboard/bookings", labelKey: "bookings" },
-      { href: "/dashboard/schedule", labelKey: "schedule" },
-      { href: "/dashboard/analytics", labelKey: "analytics" },
-      { href: "/dashboard/matching", labelKey: "matching" },
-      { href: "/dashboard/incidents", labelKey: "incidents" },
-      { href: "/dashboard/settings", labelKey: "billingPlan" },
-      { href: "/dashboard/profile", labelKey: "profile" },
-    ],
-  };
 
 export default function Navbar() {
   const pathname = usePathname();
@@ -91,10 +57,7 @@ export default function Navbar() {
     router.refresh();
   };
 
-  const navItems =
-    profile?.role && navItemsByRole[profile.role]
-      ? navItemsByRole[profile.role]
-      : navItemsByRole.owner;
+  const navItems = flattenDashboardNav(getDashboardNavSections(profile?.role));
 
   const NavLink = ({ item }: { item: (typeof navItems)[0] }) => {
     const isActive =
@@ -109,7 +72,7 @@ export default function Navbar() {
             : "text-black/60 hover:text-black hover:bg-black/5"
         }`}
       >
-        {t(`navRole.${item.labelKey}`)}
+        {t(item.labelPath)}
       </Link>
     );
   };

@@ -2,12 +2,13 @@
 
 import { useEffect, useState } from "react";
 import { useProfile } from "@/components/providers/ProfileProvider";
-import PixelCard from "@/components/ui/PixelCard";
+import PlansComparisonTable from "@/components/dashboard/PlansComparisonTable";
 import PageLoader from "@/components/ui/PageLoader";
 import GuidedTourOverlay, { type GuidedTourStep } from "@/components/dashboard/GuidedTourOverlay";
 import { usePageTour } from "@/components/dashboard/usePageTour";
 import { trackEvent } from "@/lib/analytics/mixpanel-client";
 import { useLanguage } from "@/components/providers/LanguageProvider";
+import { SUBSCRIPTION_PLANS } from "@/lib/constants";
 
 interface SubscriptionData {
   tier: string;
@@ -182,6 +183,16 @@ export default function PlansPage() {
     },
   ];
 
+  const planMeta = SUBSCRIPTION_PLANS.find((p) => p.id === data.tier);
+  const billingDate =
+    data.currentPeriodEnd && data.tier !== "free"
+      ? new Date(data.currentPeriodEnd).toLocaleDateString(undefined, {
+          month: "long",
+          day: "numeric",
+          year: "numeric",
+        })
+      : null;
+
   return (
     <div className="space-y-10">
       <GuidedTourOverlay
@@ -201,7 +212,7 @@ export default function PlansPage() {
         <p className="font-medium text-black capitalize">
           {data.tier} {t("dashboard.plansTierSuffix")}
         </p>
-        <p className="text-sm text-black/60 mt-1">
+        <p className="text-sm text-black/60 mt-1 dark:text-white/60">
           {t("dashboard.plansUsageLine", {
             horsesUsed: String(data.usage?.horses ?? 0),
             horsesLimit: String(data.limits?.horses ?? 0),
@@ -209,6 +220,18 @@ export default function PlansPage() {
             ridersLimit: String(data.limits?.riders ?? 0),
           })}
         </p>
+        {planMeta && planMeta.price != null && planMeta.price > 0 && (
+          <p className="text-sm text-black/60 mt-2 dark:text-white/60">
+            {t("dashboard.plansBillingAmount", { amount: planMeta.price.toFixed(2) })}
+          </p>
+        )}
+        {billingDate && (
+          <p className="text-sm text-black/60 mt-1 dark:text-white/60">
+            {data.cancelAtPeriodEnd
+              ? t("dashboard.plansBillingEnds", { date: billingDate })
+              : t("dashboard.plansBillingRenews", { date: billingDate })}
+          </p>
+        )}
         {data.cancelAtPeriodEnd && daysLeft !== null && (
           <p className="mt-3 text-amber-800 text-sm">
             {daysLeft === 1
@@ -221,101 +244,48 @@ export default function PlansPage() {
 
       {/* Upgrade & Cancel */}
       {isOwner && (
-        <div className="border border-black/10 p-6 space-y-4" data-tour="plans-manage">
-          <h2 className="font-serif text-lg text-black mb-4">{t("dashboard.plansUpgradeHeading")}</h2>
+        <div className="border border-black/10 p-6 space-y-4 dark:border-white/10" data-tour="plans-manage">
+          <h2 className="font-serif text-lg text-black dark:text-white mb-2">
+            {t("dashboard.plansUpgradeHeading")}
+          </h2>
+          <p className="text-sm text-black/55 dark:text-white/55">
+            {t("dashboard.plansManageLead")}
+          </p>
           {data.hasStripeCustomer && (
             <button
               type="button"
               onClick={handlePortal}
               disabled={portalLoading}
-              className="px-4 py-2.5 border border-black/10 text-black text-sm uppercase tracking-wider hover:bg-black/5 transition disabled:opacity-50"
+              className="px-4 py-2.5 border border-black/10 text-black text-sm uppercase tracking-wider hover:bg-black/5 transition disabled:opacity-50 dark:border-white/15 dark:text-white dark:hover:bg-white/5"
             >
               {portalLoading ? t("dashboard.plansPortalOpening") : t("dashboard.plansPortalCta")}
             </button>
-          )}
-          {data.tier === "free" && (
-            <div className="flex flex-wrap gap-3">
-              <button
-                onClick={() => handleCheckout("starter")}
-                disabled={!!checkoutLoading}
-                className="px-4 py-2.5 bg-accent text-white font-medium text-sm uppercase tracking-wider hover:opacity-95 transition disabled:opacity-50"
-              >
-                {checkoutLoading === "starter" ? t("dashboard.plansRedirecting") : t("dashboard.plansUpgradeStarter")}
-              </button>
-              <button
-                onClick={() => handleCheckout("stable")}
-                disabled={!!checkoutLoading}
-                className="px-4 py-2.5 border border-black/20 text-black text-sm uppercase tracking-wider hover:bg-black/5 transition disabled:opacity-50"
-              >
-                {checkoutLoading === "stable" ? t("dashboard.plansRedirecting") : t("dashboard.plansUpgradeStable")}
-              </button>
-            </div>
           )}
           {(data.tier === "starter" || data.tier === "stable") && !data.cancelAtPeriodEnd && (
             <button
               type="button"
               onClick={handleCancelPlan}
               disabled={cancelLoading}
-              className="px-4 py-2.5 border border-black/30 text-black text-sm uppercase tracking-wider hover:bg-black/5 transition disabled:opacity-50"
+              className="px-4 py-2.5 border border-black/30 text-black text-sm uppercase tracking-wider hover:bg-black/5 transition disabled:opacity-50 dark:border-white/25 dark:text-white"
             >
               {cancelLoading ? t("dashboard.plansCancelling") : t("dashboard.plansCancelCta")}
-            </button>
-          )}
-          {data.tier === "starter" && (
-            <button
-              onClick={() => handleChangePlan("stable")}
-              disabled={!!changePlanLoading}
-              className="block px-4 py-2.5 bg-accent text-white font-medium text-sm uppercase tracking-wider hover:opacity-95 transition disabled:opacity-50"
-            >
-              {changePlanLoading === "stable" ? t("dashboard.plansChanging") : t("dashboard.plansChangeStable")}
-            </button>
-          )}
-          {data.tier === "stable" && (
-            <button
-              onClick={() => handleChangePlan("starter")}
-              disabled={!!changePlanLoading}
-              className="block px-4 py-2.5 border border-black/20 text-black text-sm uppercase tracking-wider hover:bg-black/5 transition disabled:opacity-50"
-            >
-              {changePlanLoading === "starter" ? t("dashboard.plansChanging") : t("dashboard.plansChangeStarter")}
             </button>
           )}
         </div>
       )}
 
-      {/* Plan cards */}
-      <div className="grid gap-4 sm:grid-cols-2" data-tour="plans-tiers">
-        <PixelCard variant="white" className={`!min-h-[120px] ${data.tier === "starter" ? "border-black/30" : ""}`}>
-          <div className="absolute inset-0 p-4 z-10 flex flex-col">
-            <p className="font-medium text-black">{t("dashboard.plansCardStarterTitle")}</p>
-            <p className="text-sm text-black/60 mt-1">{t("dashboard.plansCardStarterBlurb")}</p>
-            {data.tier === "free" && (
-              <button onClick={() => handleCheckout("starter")} disabled={!!checkoutLoading} className="mt-3 text-sm text-black/80 hover:text-black underline disabled:opacity-50 text-left">
-                {t("dashboard.plansCardUpgradeStarter")}
-              </button>
-            )}
-            {data.tier === "stable" && (
-              <button onClick={() => handleChangePlan("starter")} disabled={!!changePlanLoading} className="mt-3 text-sm text-black/80 hover:text-black underline disabled:opacity-50 text-left">
-                {t("dashboard.plansCardChangeStarter")}
-              </button>
-            )}
-          </div>
-        </PixelCard>
-        <PixelCard variant="white" className={`!min-h-[120px] ${data.tier === "stable" ? "border-black/30" : ""}`}>
-          <div className="absolute inset-0 p-4 z-10 flex flex-col">
-            <p className="font-medium text-black">{t("dashboard.plansCardStableTitle")}</p>
-            <p className="text-sm text-black/60 mt-1">{t("dashboard.plansCardStableBlurb")}</p>
-            {data.tier === "free" && (
-              <button onClick={() => handleCheckout("stable")} disabled={!!checkoutLoading} className="mt-3 text-sm text-black/80 hover:text-black underline disabled:opacity-50 text-left">
-                {t("dashboard.plansCardUpgradeStable")}
-              </button>
-            )}
-            {data.tier === "starter" && (
-              <button onClick={() => handleChangePlan("stable")} disabled={!!changePlanLoading} className="mt-3 text-sm text-black/80 hover:text-black underline disabled:opacity-50 text-left">
-                {t("dashboard.plansCardChangeStable")}
-              </button>
-            )}
-          </div>
-        </PixelCard>
+      <div>
+        <h2 className="font-serif text-lg text-black dark:text-white mb-4">
+          {t("dashboard.plansCompareHeading")}
+        </h2>
+        <PlansComparisonTable
+          currentTier={data.tier}
+          t={t}
+          onCheckout={handleCheckout}
+          onChangePlan={handleChangePlan}
+          checkoutLoading={checkoutLoading}
+          changePlanLoading={changePlanLoading}
+        />
       </div>
     </div>
   );

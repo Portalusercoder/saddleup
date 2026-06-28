@@ -28,7 +28,7 @@ export default function DashboardLayout({
         <div className="fixed left-0 top-0 bottom-0 z-[60] hidden md:block">
           <CollapsibleSidebar />
         </div>
-        <main className="pl-0 md:pl-[4.25rem] max-w-6xl mx-auto pl-[max(0.75rem,env(safe-area-inset-left))] pr-[max(0.75rem,env(safe-area-inset-right))] sm:px-6 md:px-12 py-6 sm:py-8 md:py-12">
+        <main className="pl-[max(0.75rem,env(safe-area-inset-left))] pr-[max(0.75rem,env(safe-area-inset-right))] md:pl-56 sm:px-6 md:px-12 py-6 sm:py-8 md:py-12 max-w-6xl mx-auto">
           <TrialBanner />
           {children}
         </main>

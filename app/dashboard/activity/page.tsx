@@ -7,6 +7,7 @@ import PageLoader from "@/components/ui/PageLoader";
 import GuidedTourOverlay, { type GuidedTourStep } from "@/components/dashboard/GuidedTourOverlay";
 import { usePageTour } from "@/components/dashboard/usePageTour";
 import { useLanguage } from "@/components/providers/LanguageProvider";
+import { formatActivitySummary } from "@/lib/dashboard/format-activity-details";
 
 type LogRow = {
   id: string;
@@ -20,13 +21,6 @@ type LogRow = {
 export default function ActivityPage() {
   const { t, lang } = useLanguage();
   const dateLocale = lang === "ar" ? "ar-SA" : undefined;
-
-  const actionLabel = (action: string) => {
-    const path = `dashboard.activityAction.${action}`;
-    const label = t(path);
-    if (label !== path) return label;
-    return action.replace(/_/g, " ");
-  };
 
   const router = useRouter();
   const { profile, loading: profileLoading } = useProfile();
@@ -75,8 +69,10 @@ export default function ActivityPage() {
         onComplete={completeTour}
       />
       <div>
-        <h1 className="font-serif text-3xl md:text-4xl font-normal text-black">{t("dashboard.activityTitle")}</h1>
-        <p className="text-black/60 mt-2 text-sm">
+        <h1 className="font-serif text-3xl md:text-4xl font-normal text-black dark:text-white">
+          {t("dashboard.activityTitle")}
+        </h1>
+        <p className="text-black/60 mt-2 text-sm dark:text-white/60">
           {t("dashboard.activitySubtitle")}
         </p>
       </div>
@@ -85,43 +81,41 @@ export default function ActivityPage() {
         <div className="flex justify-center py-16">
           <PageLoader message={t("dashboard.activityLoading")} minHeight="min-h-0" />
         </div>
+      ) : logs.length === 0 ? (
+        <p className="text-black/50 dark:text-white/50">{t("dashboard.activityEmpty")}</p>
       ) : (
-        <div className="overflow-x-auto border border-black/10 rounded-lg" data-tour="activity-table">
+        <div className="overflow-x-auto border border-black/10 rounded-lg dark:border-white/10" data-tour="activity-table">
           <table className="w-full text-sm">
             <thead>
-              <tr className="border-b border-black/10 bg-black/5">
-                <th className="text-left p-3 font-medium text-black">{t("dashboard.activityColTime")}</th>
-                <th className="text-left p-3 font-medium text-black">{t("dashboard.activityColAction")}</th>
-                <th className="text-left p-3 font-medium text-black">{t("dashboard.activityColEntity")}</th>
-                <th className="text-left p-3 font-medium text-black">{t("dashboard.activityColDetails")}</th>
+              <tr className="border-b border-black/10 bg-black/5 dark:border-white/10 dark:bg-white/5">
+                <th className="text-left p-3 font-medium text-black dark:text-white">
+                  {t("dashboard.activityColTime")}
+                </th>
+                <th className="text-left p-3 font-medium text-black dark:text-white">
+                  {t("dashboard.activityColDetails")}
+                </th>
               </tr>
             </thead>
             <tbody>
               {logs.map((log) => (
-                <tr key={log.id} className="border-b border-black/5 hover:bg-black/5">
-                  <td className="p-3 text-black/70 whitespace-nowrap">
-                    {new Date(log.created_at).toLocaleString(dateLocale)}
+                <tr
+                  key={log.id}
+                  className="border-b border-black/5 hover:bg-black/5 dark:border-white/5 dark:hover:bg-white/5"
+                >
+                  <td className="p-3 text-black/70 whitespace-nowrap align-top dark:text-white/70">
+                    {new Date(log.created_at).toLocaleString(dateLocale, {
+                      dateStyle: "medium",
+                      timeStyle: "short",
+                    })}
                   </td>
-                  <td className="p-3 font-medium text-black">{actionLabel(log.action)}</td>
-                  <td className="p-3 text-black/70">
-                    {log.entity_type && log.entity_id
-                      ? `${log.entity_type} (${log.entity_id.slice(0, 8)}…)`
-                      : "—"}
-                  </td>
-                  <td className="p-3 text-black/60 max-w-xs truncate">
-                    {log.details && Object.keys(log.details).length > 0
-                      ? JSON.stringify(log.details)
-                      : "—"}
+                  <td className="p-3 text-black align-top dark:text-white">
+                    {formatActivitySummary(log.action, log.details, t)}
                   </td>
                 </tr>
               ))}
             </tbody>
           </table>
         </div>
-      )}
-
-      {!loading && logs.length === 0 && (
-        <p className="text-black/50">{t("dashboard.activityEmpty")}</p>
       )}
     </div>
   );
