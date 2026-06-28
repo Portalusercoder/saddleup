@@ -2,10 +2,10 @@
 
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect } from "react";
 import { createClient } from "@/lib/supabase/client";
-import { ProfileAvatar } from "@/components/ProfileAvatar";
 import NotificationBell from "@/components/NotificationBell";
+import UserMenuDropdown from "@/components/layout/UserMenuDropdown";
 import { useProfile } from "@/components/providers/ProfileProvider";
 import { useLanguage } from "@/components/providers/LanguageProvider";
 import LanguageToggle from "@/components/layout/LanguageToggle";
@@ -21,25 +21,11 @@ export default function Navbar() {
   const pathname = usePathname();
   const router = useRouter();
   const [mobileOpen, setMobileOpen] = useState(false);
-  const [profileMenuOpen, setProfileMenuOpen] = useState(false);
-  const profileMenuRef = useRef<HTMLDivElement>(null);
   const { profile, loading: profileLoading, userId } = useProfile();
   const { lang, t } = useLanguage();
 
   const user = userId ? { id: userId, email: profile?.email } : null;
   const authChecked = !profileLoading;
-
-  useEffect(() => {
-    const handleClickOutside = (e: MouseEvent) => {
-      if (profileMenuRef.current && !profileMenuRef.current.contains(e.target as Node)) {
-        setProfileMenuOpen(false);
-      }
-    };
-    if (profileMenuOpen) {
-      document.addEventListener("click", handleClickOutside);
-    }
-    return () => document.removeEventListener("click", handleClickOutside);
-  }, [profileMenuOpen]);
 
   useEffect(() => {
     if (!mobileOpen) return;
@@ -144,59 +130,13 @@ export default function Navbar() {
           {authChecked && user ? (
             <div className="flex items-center gap-3">
               {!isAuthPage && !isHome && <NotificationBell />}
-              <div className="relative" ref={profileMenuRef}>
-              <button
-                onClick={() => setProfileMenuOpen((o) => !o)}
-                className={`flex items-center hover:opacity-90 transition rounded-full focus:outline-none focus:ring-2 ${isOverHero ? "focus:ring-white/40" : "focus:ring-black/30"}`}
-                aria-expanded={profileMenuOpen}
-                aria-haspopup="true"
-                title={t("nav.profileMenu")}
-              >
-                <ProfileAvatar
-                  avatarUrl={profile?.avatarUrl}
-                  name={profile?.fullName ?? user.email}
-                  size="sm"
-                />
-              </button>
-              {profileMenuOpen && (
-                <div className="absolute right-0 top-full mt-2 py-2 min-w-[160px] border border-black/10 bg-base z-50">
-                  <Link
-                    href="/dashboard/profile"
-                    onClick={() => setProfileMenuOpen(false)}
-                    className="block px-4 py-2.5 text-sm text-black hover:bg-black/10 uppercase tracking-wider"
-                  >
-                    {t("nav.goToProfile")}
-                  </Link>
-                  {profile?.role === "owner" && (
-                    <>
-                      <Link
-                        href="/dashboard/plans"
-                        onClick={() => setProfileMenuOpen(false)}
-                        className="block px-4 py-2.5 text-sm text-black hover:bg-black/10 uppercase tracking-wider"
-                      >
-                        {t("nav.plans")}
-                      </Link>
-                      <Link
-                        href="/dashboard/settings"
-                        onClick={() => setProfileMenuOpen(false)}
-                        className="block px-4 py-2.5 text-sm text-black hover:bg-black/10 uppercase tracking-wider"
-                      >
-                        {t("nav.settings")}
-                      </Link>
-                    </>
-                  )}
-                  <button
-                    onClick={() => {
-                      setProfileMenuOpen(false);
-                      handleSignOut();
-                    }}
-                    className="block w-full text-left px-4 py-2.5 text-sm text-black/60 hover:bg-black/10 hover:text-black uppercase tracking-wider"
-                  >
-                    {t("nav.signOut")}
-                  </button>
-                </div>
-              )}
-              </div>
+              <UserMenuDropdown
+                fullName={profile?.fullName}
+                email={profile?.email ?? user.email}
+                avatarUrl={profile?.avatarUrl}
+                isOwner={profile?.role === "owner"}
+                onSignOut={handleSignOut}
+              />
             </div>
           ) : (
             !isAuthPage && (

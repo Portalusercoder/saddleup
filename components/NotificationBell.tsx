@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState, useRef } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { useLanguage } from "@/components/providers/LanguageProvider";
 
@@ -18,7 +18,9 @@ export default function NotificationBell() {
   const { t } = useLanguage();
   const [notifications, setNotifications] = useState<Notification[]>([]);
   const [open, setOpen] = useState(false);
-  const ref = useRef<HTMLDivElement>(null);
+  const [closing, setClosing] = useState(false);
+  const [badgePop, setBadgePop] = useState(false);
+  const prevUnreadRef = useRef(0);
 
   useEffect(() => {
     fetch("/api/notifications")
@@ -27,17 +29,47 @@ export default function NotificationBell() {
       .catch(() => setNotifications([]));
   }, []);
 
+  const unreadCount = notifications.filter((n) => !n.readAt).length;
+
   useEffect(() => {
-    const handleClickOutside = (e: MouseEvent) => {
-      if (ref.current && !ref.current.contains(e.target as Node)) {
-        setOpen(false);
-      }
-    };
-    if (open) document.addEventListener("click", handleClickOutside);
-    return () => document.removeEventListener("click", handleClickOutside);
+    if (unreadCount > 0 && prevUnreadRef.current === 0) {
+      setBadgePop(true);
+      const timer = window.setTimeout(() => setBadgePop(false), 450);
+      prevUnreadRef.current = unreadCount;
+      return () => window.clearTimeout(timer);
+    }
+    prevUnreadRef.current = unreadCount;
+  }, [unreadCount]);
+
+  const closeDrawer = useCallback(() => {
+    if (!open) return;
+    setOpen(false);
+    setClosing(true);
+    window.setTimeout(() => setClosing(false), 200);
   }, [open]);
 
-  const unreadCount = notifications.filter((n) => !n.readAt).length;
+  const openDrawer = useCallback(() => {
+    setClosing(false);
+    setOpen(true);
+  }, []);
+
+  useEffect(() => {
+    if (!open) return;
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === "Escape") closeDrawer();
+    };
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+  }, [open, closeDrawer]);
+
+  useEffect(() => {
+    if (!open) return;
+    const prev = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+    return () => {
+      document.body.style.overflow = prev;
+    };
+  }, [open]);
 
   const markRead = async (id: string) => {
     await fetch("/api/notifications", {
@@ -50,16 +82,25 @@ export default function NotificationBell() {
     );
   };
 
+  const showDrawer = open || closing;
+
   return (
-    <div className="relative" ref={ref}>
+    <>
       <button
         type="button"
         data-tour="notification-bell"
-        onClick={() => setOpen((o) => !o)}
-        className="relative p-2 rounded-lg hover:bg-black/10 transition"
+        onClick={() => (open ? closeDrawer() : openDrawer())}
+        className="notification-bell-trigger relative rounded-lg p-2 transition hover:bg-black/10"
         aria-label={t("notifications.ariaLabel")}
+        aria-expanded={open}
       >
-        <svg className="w-5 h-5 text-black/80" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <svg
+          className="notification-bell-icon h-5 w-5 text-black/80"
+          fill="none"
+          stroke="currentColor"
+          viewBox="0 0 24 24"
+          aria-hidden
+        >
           <path
             strokeLinecap="round"
             strokeLinejoin="round"
@@ -68,55 +109,81 @@ export default function NotificationBell() {
           />
         </svg>
         {unreadCount > 0 && (
-          <span className="absolute -top-0.5 -right-0.5 flex h-4 w-4 items-center justify-center rounded-full bg-accent text-white text-[10px] font-medium">
-            {unreadCount > 9 ? "9+" : unreadCount}
-          </span>
+          <span
+            className={`notification-unread-dot ${badgePop ? "notification-unread-dot-pop" : ""}`}
+            aria-hidden
+          />
         )}
       </button>
-      {open && (
-        <div className="fixed top-20 left-3 right-3 md:absolute md:top-full md:left-auto md:right-0 md:mt-2 md:w-80 max-h-[70vh] md:max-h-96 overflow-y-auto border border-black/10 bg-base z-[75]">
-          <div className="p-3 border-b border-black/10">
-            <h3 className="text-sm font-medium text-black uppercase tracking-wider">{t("notifications.title")}</h3>
-          </div>
-          {notifications.length === 0 ? (
-            <p className="p-4 text-black/50 text-sm">{t("notifications.empty")}</p>
-          ) : (
-            <div className="divide-y divide-black/5">
-              {notifications.slice(0, 10).map((n) => (
-                <div
-                  key={n.id}
-                  className={`p-4 hover:bg-black/5 ${!n.readAt ? "bg-black/5" : ""}`}
-                >
-                  <p className="text-sm font-medium text-black">{n.title}</p>
-                  {n.body && <p className="text-xs text-black/60 mt-1">{n.body}</p>}
-                  <div className="flex items-center gap-2 mt-2">
-                    {n.bookingId && (
-                      <Link
-                        href="/dashboard/bookings"
-                        onClick={() => {
-                          markRead(n.id);
-                          setOpen(false);
-                        }}
-                        className="text-xs text-black/50 hover:text-black uppercase tracking-wider"
-                      >
-                        {t("notifications.viewBookings")}
-                      </Link>
-                    )}
-                    {!n.readAt && (
-                      <button
-                        onClick={() => markRead(n.id)}
-                        className="text-xs text-black/40 hover:text-black"
-                      >
-                        {t("notifications.markRead")}
-                      </button>
-                    )}
-                  </div>
-                </div>
-              ))}
+
+      {showDrawer && (
+        <div className="fixed inset-0 z-[75] flex justify-end" role="dialog" aria-modal="true">
+          <button
+            type="button"
+            className={`drawer-backdrop absolute inset-0 bg-black/50 ${closing ? "opacity-0 transition-opacity duration-200 ease-in" : ""}`}
+            onClick={closeDrawer}
+            aria-label={t("notifications.close")}
+          />
+          <aside
+            className={`notification-drawer relative flex h-full w-full max-w-sm flex-col border-l border-white/10 bg-[#1a1a1a]/95 backdrop-blur-[20px] ${closing ? "notification-drawer-exit" : "notification-drawer-enter"}`}
+          >
+            <div className="flex items-center justify-between border-b border-white/10 px-5 py-4">
+              <h3 className="text-[15px] font-medium text-white">{t("notifications.title")}</h3>
+              <button
+                type="button"
+                onClick={closeDrawer}
+                className="rounded-lg p-1.5 text-white/50 transition hover:bg-white/10 hover:text-white"
+                aria-label={t("notifications.close")}
+              >
+                <svg className="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden>
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                </svg>
+              </button>
             </div>
-          )}
+
+            <div className="flex-1 overflow-y-auto">
+              {notifications.length === 0 ? (
+                <p className="p-5 text-sm text-white/45">{t("notifications.empty")}</p>
+              ) : (
+                <div className="divide-y divide-white/[0.06]">
+                  {notifications.slice(0, 20).map((n) => (
+                    <div
+                      key={n.id}
+                      className={`p-4 transition hover:bg-white/[0.04] ${!n.readAt ? "bg-white/[0.03]" : ""}`}
+                    >
+                      <p className="text-sm font-medium text-white">{n.title}</p>
+                      {n.body ? <p className="mt-1 text-xs text-white/55">{n.body}</p> : null}
+                      <div className="mt-2 flex items-center gap-3">
+                        {n.bookingId ? (
+                          <Link
+                            href="/dashboard/bookings"
+                            onClick={() => {
+                              markRead(n.id);
+                              closeDrawer();
+                            }}
+                            className="text-xs text-[#c9a87c] hover:text-[#dbc49a]"
+                          >
+                            {t("notifications.viewBookings")}
+                          </Link>
+                        ) : null}
+                        {!n.readAt ? (
+                          <button
+                            type="button"
+                            onClick={() => markRead(n.id)}
+                            className="text-xs text-white/40 hover:text-white/70"
+                          >
+                            {t("notifications.markRead")}
+                          </button>
+                        ) : null}
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+          </aside>
         </div>
       )}
-    </div>
+    </>
   );
 }

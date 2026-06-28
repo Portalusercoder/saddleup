@@ -10,7 +10,9 @@ const arInner = {
     signIn: "تسجيل الدخول",
     signUp: "إنشاء حساب",
     goToProfile: "الذهاب إلى الملف الشخصي",
+    profile: "الملف الشخصي",
     plans: "الخطط",
+    plansBilling: "الخطط والفوترة",
     settings: "الإعدادات",
     signOut: "تسجيل الخروج",
     menu: "القائمة",
@@ -413,6 +415,7 @@ const arInner = {
     empty: "لا إشعارات",
     viewBookings: "عرض الحجوزات",
     markRead: "تعليم كمقروء",
+    close: "إغلاق",
   },
   tour: {
     stepOf: "الخطوة {current} من {total}",

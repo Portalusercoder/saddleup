@@ -8,7 +8,9 @@ export const en = {
     signIn: "Sign in",
     signUp: "Sign up",
     goToProfile: "Go to profile",
+    profile: "Profile",
     plans: "Plans",
+    plansBilling: "Plans & Billing",
     settings: "Settings",
     signOut: "Sign out",
     menu: "Menu",
@@ -412,6 +414,7 @@ export const en = {
     empty: "No notifications",
     viewBookings: "View bookings",
     markRead: "Mark read",
+    close: "Close",
   },
   tour: {
     stepOf: "Step {current} / {total}",
