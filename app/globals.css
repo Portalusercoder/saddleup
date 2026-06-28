@@ -297,143 +297,118 @@ html.dark {
 }
 
 /*
- * Marketing / landing: always ivory paper + bordeaux ink, even when the app
- * theme is dark (dashboard uses inverted .bg-base / .text-black remaps).
+ * Marketing / landing: scoped tokens so sections follow light/dark theme.
+ * Hero stays dark via .landing-hero-* rules below.
  */
-.dark .landing-surface,
-.dark .landing-surface .bg-base {
-  background: var(--brand-ivory) !important;
-  color: var(--brand-bordeaux);
-}
-
-.dark .landing-surface .text-black,
-.dark .landing-surface .text-black\/90,
-.dark .landing-surface .text-black\/80 {
-  color: var(--brand-bordeaux) !important;
-}
-.dark .landing-surface .text-black\/75 {
-  color: rgba(83, 22, 29, 0.75) !important;
-}
-.dark .landing-surface .text-black\/70 {
-  color: rgba(83, 22, 29, 0.7) !important;
-}
-.dark .landing-surface .text-black\/65 {
-  color: rgba(83, 22, 29, 0.65) !important;
-}
-.dark .landing-surface .text-black\/60 {
-  color: rgba(83, 22, 29, 0.6) !important;
-}
-.dark .landing-surface .text-black\/55 {
-  color: rgba(83, 22, 29, 0.55) !important;
-}
-.dark .landing-surface .text-black\/50 {
-  color: rgba(83, 22, 29, 0.5) !important;
-}
-.dark .landing-surface .text-black\/45 {
-  color: rgba(83, 22, 29, 0.45) !important;
-}
-.dark .landing-surface .text-black\/40,
-.dark .landing-surface .text-black\/30 {
-  color: rgba(83, 22, 29, 0.4) !important;
-}
-.dark .landing-surface .text-black\/20 {
-  color: rgba(83, 22, 29, 0.2) !important;
-}
-.dark .landing-surface .hover\:text-black:hover,
-.dark .landing-surface .hover\:text-black\/80:hover {
-  color: var(--brand-bordeaux) !important;
-}
-
-.dark .landing-surface .border-black\/5,
-.dark .landing-surface .border-black\/10,
-.dark .landing-surface .border-black\/15,
-.dark .landing-surface .border-black\/20,
-.dark .landing-surface .border-black\/30,
-.dark .landing-surface .border-black\/\[0\.06\] {
-  border-color: rgba(83, 22, 29, 0.12) !important;
-}
-.dark .landing-surface .border-black {
-  border-color: var(--brand-bordeaux) !important;
-}
-
-.dark .landing-surface .bg-black\/5,
-.dark .landing-surface .hover\:bg-black\/5:hover {
-  background: rgba(83, 22, 29, 0.05) !important;
-}
-.dark .landing-surface .bg-black\/10,
-.dark .landing-surface .hover\:bg-black\/10:hover {
-  background: rgba(83, 22, 29, 0.08) !important;
-}
-.dark .landing-surface .bg-black\/15 {
-  background: rgba(83, 22, 29, 0.1) !important;
-}
-.dark .landing-surface .bg-black\/\[0\.02\] {
-  background: rgba(83, 22, 29, 0.02) !important;
-}
-.dark .landing-surface .bg-black\/\[0\.06\] {
-  background: rgba(83, 22, 29, 0.06) !important;
-}
-
-.dark .landing-surface .bg-accent {
-  background: var(--brand-bordeaux) !important;
-}
-.dark .landing-surface .bg-accent\/\[0\.06\] {
-  background: rgba(83, 22, 29, 0.06) !important;
-}
-.dark .landing-surface .bg-accent\/\[0\.03\] {
-  background: rgba(83, 22, 29, 0.03) !important;
-}
-.dark .landing-surface .text-accent {
-  color: var(--brand-bordeaux) !important;
-}
-.dark .landing-surface .border-accent\/20 {
-  border-color: rgba(83, 22, 29, 0.2) !important;
-}
-.dark .landing-surface .border-accent\/30 {
-  border-color: rgba(83, 22, 29, 0.3) !important;
-}
-.dark .landing-surface .ring-accent\/20 {
-  --tw-ring-color: rgba(83, 22, 29, 0.2) !important;
-}
-.dark .landing-surface .text-white {
-  color: var(--brand-ivory) !important;
-}
-
-/* Sticky marketing nav over ivory sections (home scroll, audience pages) */
-.dark .marketing-nav-light,
-.dark .marketing-nav-light.bg-base\/95 {
-  background: rgba(255, 251, 240, 0.95) !important;
-  color: var(--brand-bordeaux) !important;
-  border-color: rgba(83, 22, 29, 0.1) !important;
-}
-.dark .marketing-nav-light .text-black,
-.dark .marketing-nav-light .text-black\/90,
-.dark .marketing-nav-light .text-black\/70 {
-  color: var(--brand-bordeaux) !important;
-}
-.dark .marketing-nav-light .hover\:text-black:hover {
-  color: var(--brand-bordeaux) !important;
-}
-.dark .marketing-nav-light .border-black\/20 {
-  border-color: rgba(83, 22, 29, 0.2) !important;
-}
-.dark .marketing-nav-light .bg-accent {
-  background: var(--brand-bordeaux) !important;
-}
-.dark .marketing-nav-light .text-white {
-  color: var(--brand-ivory) !important;
-}
 
 /* ---------------- Premium landing (Apple-inspired) ---------------- */
 
-.landing-premium {
+.landing-page {
+  --landing-bg: #f5f5f7;
+  --landing-ink: #1d1d1f;
+  --landing-ink-muted: rgba(29, 29, 31, 0.55);
+  --landing-ink-subtle: rgba(29, 29, 31, 0.65);
+  --landing-ink-faint: rgba(29, 29, 31, 0.5);
+  --landing-ink-dim: rgba(29, 29, 31, 0.3);
+  --landing-card-bg: #ffffff;
+  --landing-card-bg-alt: #faf8f5;
+  --landing-card-border: rgba(0, 0, 0, 0.04);
+  --landing-pill-bg: #ffffff;
+  --landing-pill-border: rgba(0, 0, 0, 0.08);
   color-scheme: light;
-  background: #f5f5f7;
+  background: var(--landing-bg);
+  color: var(--landing-ink);
 }
 
-.dark .landing-premium {
-  background: #f5f5f7 !important;
-  color: #1d1d1f;
+.dark .landing-page {
+  --landing-bg: #0f0f0f;
+  --landing-ink: #f5f5f7;
+  --landing-ink-muted: rgba(245, 245, 247, 0.55);
+  --landing-ink-subtle: rgba(245, 245, 247, 0.65);
+  --landing-ink-faint: rgba(245, 245, 247, 0.5);
+  --landing-ink-dim: rgba(245, 245, 247, 0.3);
+  --landing-card-bg: #1a1a1a;
+  --landing-card-bg-alt: #222222;
+  --landing-card-border: rgba(255, 255, 255, 0.08);
+  --landing-pill-bg: #1a1a1a;
+  --landing-pill-border: rgba(255, 255, 255, 0.1);
+  color-scheme: dark;
+  background: var(--landing-bg);
+  color: var(--landing-ink);
+}
+
+.landing-section {
+  background: var(--landing-bg);
+}
+
+.landing-ink {
+  color: var(--landing-ink);
+}
+
+.landing-ink-muted {
+  color: var(--landing-ink-muted);
+}
+
+.landing-ink-subtle {
+  color: var(--landing-ink-subtle);
+}
+
+.landing-ink-faint {
+  color: var(--landing-ink-faint);
+}
+
+.landing-ink-dim {
+  color: var(--landing-ink-dim);
+}
+
+.landing-trust-pill {
+  background: var(--landing-pill-bg);
+  border: 1px solid var(--landing-pill-border);
+  color: var(--landing-ink-subtle);
+}
+
+.landing-toggle-active {
+  background: var(--landing-ink);
+  color: var(--landing-bg);
+}
+
+.landing-toggle-inactive {
+  color: var(--landing-ink-muted);
+}
+
+.landing-toggle-inactive:hover {
+  color: var(--landing-ink);
+}
+
+.landing-solid-btn {
+  background: var(--landing-ink);
+  color: var(--landing-bg);
+}
+
+.landing-solid-btn:hover {
+  opacity: 0.9;
+}
+
+.landing-outline-btn {
+  border: 1px solid color-mix(in srgb, var(--landing-ink) 15%, transparent);
+  color: var(--landing-ink);
+}
+
+.landing-outline-btn:hover {
+  background: color-mix(in srgb, var(--landing-ink) 5%, transparent);
+}
+
+.landing-card-featured {
+  background: linear-gradient(
+    to bottom right,
+    var(--landing-card-bg),
+    var(--landing-card-bg-alt)
+  );
+}
+
+.landing-premium {
+  background: var(--landing-bg);
+  color: var(--landing-ink);
 }
 
 .landing-glass {
@@ -441,6 +416,11 @@ html.dark {
   backdrop-filter: blur(24px) saturate(180%);
   -webkit-backdrop-filter: blur(24px) saturate(180%);
   border: 1px solid rgba(255, 255, 255, 0.35);
+}
+
+.dark .landing-page .landing-glass {
+  background: rgba(26, 26, 26, 0.75);
+  border-color: rgba(255, 255, 255, 0.1);
 }
 
 .landing-glass-dark {
@@ -451,15 +431,21 @@ html.dark {
 }
 
 .landing-card {
-  background: #ffffff;
+  background: var(--landing-card-bg);
   border-radius: 1.25rem;
   box-shadow:
     0 1px 2px rgba(0, 0, 0, 0.04),
     0 8px 32px rgba(0, 0, 0, 0.06);
-  border: 1px solid rgba(0, 0, 0, 0.04);
+  border: 1px solid var(--landing-card-border);
   transition:
     transform 0.45s cubic-bezier(0.16, 1, 0.3, 1),
     box-shadow 0.45s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.dark .landing-page .landing-card {
+  box-shadow:
+    0 1px 2px rgba(0, 0, 0, 0.25),
+    0 8px 32px rgba(0, 0, 0, 0.35);
 }
 
 .landing-card:hover {
@@ -467,6 +453,12 @@ html.dark {
   box-shadow:
     0 2px 4px rgba(0, 0, 0, 0.04),
     0 16px 48px rgba(0, 0, 0, 0.1);
+}
+
+.dark .landing-page .landing-card:hover {
+  box-shadow:
+    0 2px 4px rgba(0, 0, 0, 0.3),
+    0 16px 48px rgba(0, 0, 0, 0.45);
 }
 
 .landing-hero-mesh {
@@ -537,6 +529,10 @@ html.dark {
   letter-spacing: 0.06em;
   text-transform: uppercase;
   color: rgba(83, 22, 29, 0.55);
+}
+
+.dark .landing-page .landing-section-label {
+  color: rgba(201, 168, 124, 0.75);
 }
 
 .landing-nav-pill {
@@ -666,57 +662,14 @@ html.dark {
   color: rgba(255, 255, 255, 0.4) !important;
 }
 
-/*
- * Landing page: always light marketing theme regardless of dashboard dark mode.
- * Dashboard dark mode toggles html.dark — this scopes the public site back to light.
- */
-.landing-page {
-  color-scheme: light;
-  background: #f5f5f7;
-  color: #1d1d1f;
-}
-
-.dark .landing-page {
-  background: #f5f5f7 !important;
-  color: #1d1d1f !important;
-}
-
-.dark .landing-page .landing-premium,
-.dark .landing-page .landing-surface {
-  background: #f5f5f7 !important;
-}
-
-.dark .landing-page .landing-section-label {
-  color: rgba(83, 22, 29, 0.55) !important;
-}
-
-.dark .landing-page :not(.landing-hero) .landing-display {
-  color: inherit;
-}
-
-.dark .landing-page .landing-card {
-  background: #ffffff !important;
-  border-color: rgba(0, 0, 0, 0.06) !important;
-}
-
-.dark .landing-page .landing-cta-brand {
-  background: #53161d !important;
-  color: #fffbf0 !important;
-}
-
-.dark .landing-page .landing-cta-ghost {
+.dark .landing-page .landing-hero .landing-cta-ghost {
   background: transparent !important;
   color: #ffffff !important;
   border-color: rgba(255, 255, 255, 0.35) !important;
 }
 
-.dark .landing-page .landing-cta-primary {
-  background: #ffffff !important;
-  color: #1d1d1f !important;
-}
-
-.dark body:has(.landing-page) {
-  background: #f5f5f7 !important;
+.dark .landing-page .landing-display {
+  color: var(--landing-ink);
 }
 
 /* ---------------- Base ---------------- */

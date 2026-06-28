@@ -81,14 +81,14 @@ export default function LandingFeatures() {
   ];
 
   return (
-    <section id="features" className="py-20 sm:py-28 px-5 sm:px-6 bg-[#f5f5f7]">
+    <section id="features" className="landing-section py-20 sm:py-28 px-5 sm:px-6">
       <div className="max-w-6xl mx-auto">
         <ScrollReveal className="max-w-2xl mb-16">
           <p className="landing-section-label">{t("home.featuresTitle")}</p>
-          <h2 className="landing-display mt-3 text-3xl sm:text-4xl md:text-5xl font-semibold tracking-tight text-[#1d1d1f]">
+          <h2 className="landing-display landing-ink mt-3 text-3xl sm:text-4xl md:text-5xl font-semibold tracking-tight">
             {t("home.featuresHeadline")}
           </h2>
-          <p className="mt-4 text-[#1d1d1f]/55 text-lg leading-relaxed">{t("home.featuresSub")}</p>
+          <p className="mt-4 landing-ink-muted text-lg leading-relaxed">{t("home.featuresSub")}</p>
         </ScrollReveal>
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4 auto-rows-fr">
@@ -98,14 +98,14 @@ export default function LandingFeatures() {
               <ScrollReveal key={feat.title} delay={0.05 + i * 0.05} className={feat.span}>
                 <div
                   className={`landing-card p-7 sm:p-8 h-full flex flex-col ${
-                    i === 0 ? "min-h-[280px] md:min-h-full bg-gradient-to-br from-white to-[#faf8f5]" : ""
+                    i === 0 ? "landing-card-featured min-h-[280px] md:min-h-full" : ""
                   }`}
                 >
                   <IconBox>
                     <Icon />
                   </IconBox>
-                  <h3 className="landing-display text-lg sm:text-xl font-semibold text-[#1d1d1f]">{feat.title}</h3>
-                  <p className="mt-2 text-sm text-[#1d1d1f]/55 leading-relaxed flex-1">{feat.desc}</p>
+                  <h3 className="landing-display landing-ink text-lg sm:text-xl font-semibold">{feat.title}</h3>
+                  <p className="mt-2 text-sm landing-ink-muted leading-relaxed flex-1">{feat.desc}</p>
                 </div>
               </ScrollReveal>
             );

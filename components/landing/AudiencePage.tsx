@@ -23,27 +23,20 @@ export default function AudiencePage({
   const { t } = useLanguage();
 
   return (
-    <main className="landing-page min-h-screen landing-premium landing-surface bg-[#f5f5f7] text-[#1d1d1f] pt-20">
+    <main className="landing-page min-h-screen landing-premium pt-20">
       <section className="max-w-3xl mx-auto px-6 py-20 sm:py-28 text-center">
         <ScrollReveal>
           <p className="landing-section-label mb-4">Saddle Up</p>
-          <h1 className="landing-display text-4xl md:text-5xl font-semibold tracking-tight text-[#1d1d1f]">
+          <h1 className="landing-display landing-ink text-4xl md:text-5xl font-semibold tracking-tight">
             {t(titleKey)}
           </h1>
-          <p className="mt-5 text-lg text-[#1d1d1f]/60">{t(subtitleKey)}</p>
-          <p className="mt-6 text-[#1d1d1f]/55 leading-relaxed max-w-2xl mx-auto">{t(bodyKey)}</p>
+          <p className="mt-5 text-lg landing-ink-subtle">{t(subtitleKey)}</p>
+          <p className="mt-6 landing-ink-muted leading-relaxed max-w-2xl mx-auto">{t(bodyKey)}</p>
           <div className="mt-10 flex flex-wrap justify-center gap-3">
-            <button
-              type="button"
-              onClick={onStartFree}
-              className="landing-cta-pill bg-[#1d1d1f] text-white hover:bg-[#1d1d1f]/90"
-            >
+            <button type="button" onClick={onStartFree} className="landing-cta-pill landing-solid-btn">
               {t(ctaKey)}
             </button>
-            <Link
-              href="/#pricing"
-              className="landing-cta-pill border border-[#1d1d1f]/15 text-[#1d1d1f] hover:bg-[#1d1d1f]/5"
-            >
+            <Link href="/#pricing" className="landing-cta-pill landing-outline-btn">
               {t("nav.pricing")}
             </Link>
           </div>

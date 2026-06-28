@@ -21,7 +21,7 @@ export default function Home() {
   };
 
   return (
-    <main className="landing-page min-h-screen bg-[#f5f5f7] text-[#1d1d1f]">
+    <main className="landing-page min-h-screen">
       <AuthModal
         isOpen={authModalOpen}
         onClose={() => setAuthModalOpen(false)}
@@ -30,7 +30,7 @@ export default function Home() {
 
       <LandingHero onStartFree={() => openAuth()} />
 
-      <div className="landing-premium landing-surface bg-[#f5f5f7]">
+      <div className="landing-premium">
         <HowItWorks />
         <LandingFeatures />
         <LandingPricing onSelectPlan={openAuth} />

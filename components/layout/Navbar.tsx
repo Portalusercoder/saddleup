@@ -11,6 +11,7 @@ import { useProfile } from "@/components/providers/ProfileProvider";
 import { useLanguage } from "@/components/providers/LanguageProvider";
 import LanguageToggle from "@/components/layout/LanguageToggle";
 import ThemeToggle from "@/components/layout/ThemeToggle";
+import { useTheme } from "@/components/providers/ThemeProvider";
 import {
   flattenDashboardNav,
   getDashboardNavSections,
@@ -32,6 +33,7 @@ export default function Navbar() {
   const [marketingMobileOpen, setMarketingMobileOpen] = useState(false);
   const { profile, loading: profileLoading, userId } = useProfile();
   const { t } = useLanguage();
+  const { theme } = useTheme();
 
   const user = userId ? { id: userId, email: profile?.email } : null;
   const authChecked = !profileLoading;
@@ -94,6 +96,7 @@ export default function Navbar() {
   const isOverHero = isHome && !scrolledPastHero && !navCompact;
   const isDashboard = pathname.startsWith("/dashboard");
   const navOnDark = isOverHero;
+  const chromeVariant = navOnDark || theme === "dark" ? "light" : "dark";
 
   if (isAuthPage) return null;
 
@@ -117,7 +120,7 @@ export default function Navbar() {
             : isMarketing && navOnDark
               ? "bg-black/20 backdrop-blur-md text-white"
               : isMarketing
-                ? "bg-[#f5f5f7]/90 backdrop-blur-xl border-b border-black/[0.04] text-[#1d1d1f]"
+                ? "bg-[#f5f5f7]/90 dark:bg-[#0f0f0f]/90 backdrop-blur-xl border-b border-black/[0.04] dark:border-white/[0.08] text-[#1d1d1f] dark:text-white"
                 : "bg-base border-b border-black/10 text-black"
         }`}
       >
@@ -126,7 +129,7 @@ export default function Navbar() {
           <Link href="/" className="shrink-0 min-w-0">
             <TextLogo
               className={`text-[0.62rem] sm:text-[0.72rem] transition-colors truncate ${
-                navOnDark ? "text-white/90" : "text-[#1d1d1f]/90"
+                navOnDark ? "text-white/90" : "text-[#1d1d1f]/90 dark:text-white/90"
               }`}
             />
           </Link>
@@ -138,14 +141,16 @@ export default function Navbar() {
         {isMarketing && !user && (
           <div
             className={`hidden lg:flex items-center gap-6 xl:gap-8 text-sm font-medium flex-1 justify-center ${
-              navOnDark ? "text-white/80" : "text-[#1d1d1f]/65"
+              navOnDark ? "text-white/80" : "text-[#1d1d1f]/65 dark:text-white/70"
             }`}
           >
             {MARKETING_LINKS.map((link) => (
               <Link
                 key={link.href}
                 href={link.href}
-                className={`transition-colors duration-300 ${navOnDark ? "hover:text-white" : "hover:text-[#1d1d1f]"}`}
+                className={`transition-colors duration-300 ${
+                  navOnDark ? "hover:text-white" : "hover:text-[#1d1d1f] dark:hover:text-white"
+                }`}
               >
                 {t(link.key)}
               </Link>
@@ -168,7 +173,7 @@ export default function Navbar() {
               type="button"
               onClick={() => setMarketingMobileOpen(true)}
               className={`lg:hidden p-2 rounded-full transition-colors ${
-                navOnDark ? "text-white/85 hover:bg-white/10" : "text-[#1d1d1f]/70 hover:bg-black/5"
+                navOnDark ? "text-white/85 hover:bg-white/10" : "text-[#1d1d1f]/70 dark:text-white/85 hover:bg-black/5 dark:hover:bg-white/10"
               }`}
               aria-label={t("nav.menu")}
             >
@@ -180,9 +185,9 @@ export default function Navbar() {
 
           <div dir="ltr" className="flex items-center gap-1 sm:gap-2 shrink-0">
             {isMarketing && (
-              <ThemeToggle variant={navOnDark ? "light" : "dark"} />
+              <ThemeToggle variant={chromeVariant} />
             )}
-            <LanguageToggle variant={navOnDark ? "light" : "dark"} compact={isMarketing} />
+            <LanguageToggle variant={chromeVariant} compact={isMarketing} />
             {authChecked && user ? (
               <>
                 {!isAuthPage && !isHome && <NotificationBell />}
@@ -202,7 +207,7 @@ export default function Navbar() {
                     className={`hidden sm:inline-flex px-3 py-2 text-sm font-medium transition-colors duration-300 ${
                       navOnDark
                         ? "text-white/85 hover:text-white"
-                        : "text-[#1d1d1f]/70 hover:text-[#1d1d1f]"
+                        : "text-[#1d1d1f]/70 dark:text-white/85 hover:text-[#1d1d1f] dark:hover:text-white"
                     }`}
                   >
                     {t("nav.signIn")}
@@ -212,7 +217,7 @@ export default function Navbar() {
                     className={`px-3 sm:px-4 py-1.5 sm:py-2 rounded-full text-xs sm:text-sm font-medium transition-all duration-300 whitespace-nowrap ${
                       navOnDark
                         ? "bg-white text-[#1d1d1f] hover:bg-white/90"
-                        : "bg-[#1d1d1f] text-white hover:bg-[#1d1d1f]/90"
+                        : "bg-[#1d1d1f] text-white dark:bg-white dark:text-[#1d1d1f] hover:bg-[#1d1d1f]/90 dark:hover:bg-white/90"
                     }`}
                   >
                     {t("nav.startFree")}

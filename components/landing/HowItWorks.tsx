@@ -19,13 +19,13 @@ export default function HowItWorks() {
   ];
 
   return (
-    <section id="how-it-works" className="pt-12 sm:pt-16 pb-20 sm:pb-28 px-5 sm:px-6 bg-[#f5f5f7]">
+    <section id="how-it-works" className="landing-section pt-12 sm:pt-16 pb-20 sm:pb-28 px-5 sm:px-6">
       <div className="max-w-6xl mx-auto">
         <ScrollReveal className="flex flex-wrap justify-center gap-2 sm:gap-3 mb-12 sm:mb-16">
           {trustItems.map((item) => (
             <span
               key={item}
-              className="rounded-full border border-black/[0.08] bg-white px-3.5 py-1.5 text-[0.68rem] sm:text-xs font-medium text-[#1d1d1f]/65"
+              className="landing-trust-pill rounded-full px-3.5 py-1.5 text-[0.68rem] sm:text-xs font-medium"
             >
               {item}
             </span>
@@ -34,7 +34,7 @@ export default function HowItWorks() {
 
         <ScrollReveal className="text-center max-w-2xl mx-auto mb-10 sm:mb-14">
           <p className="landing-section-label">{t("home.howItWorksTitle")}</p>
-          <h2 className="landing-display mt-3 text-[1.75rem] sm:text-4xl md:text-[2.75rem] font-semibold tracking-tight text-[#1d1d1f]">
+          <h2 className="landing-display landing-ink mt-3 text-[1.75rem] sm:text-4xl md:text-[2.75rem] font-semibold tracking-tight">
             {t("home.howItWorksHeadline")}
           </h2>
         </ScrollReveal>
@@ -48,8 +48,8 @@ export default function HowItWorks() {
             >
               <div className="landing-card p-6 sm:p-8 h-full">
                 <span className="text-xs font-semibold text-accent/70 tracking-widest">{step.n}</span>
-                <h3 className="landing-display mt-4 text-xl font-semibold text-[#1d1d1f]">{step.title}</h3>
-                <p className="mt-3 text-[#1d1d1f]/55 text-sm leading-relaxed">{step.desc}</p>
+                <h3 className="landing-display landing-ink mt-4 text-xl font-semibold">{step.title}</h3>
+                <p className="mt-3 landing-ink-muted text-sm leading-relaxed">{step.desc}</p>
               </div>
             </ScrollReveal>
           ))}

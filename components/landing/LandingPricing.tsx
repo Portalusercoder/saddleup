@@ -51,22 +51,22 @@ export default function LandingPricing({ onSelectPlan }: LandingPricingProps) {
   ];
 
   return (
-    <section id="pricing" className="py-20 sm:py-28 px-5 sm:px-6 bg-[#f5f5f7]">
+    <section id="pricing" className="landing-section py-20 sm:py-28 px-5 sm:px-6">
       <div className="max-w-6xl mx-auto">
         <ScrollReveal className="flex flex-col lg:flex-row lg:items-end lg:justify-between gap-8 mb-14">
           <div className="max-w-xl">
             <p className="landing-section-label">{t("home.pricingTitle")}</p>
-            <h2 className="landing-display mt-3 text-3xl sm:text-4xl md:text-5xl font-semibold tracking-tight text-[#1d1d1f]">
+            <h2 className="landing-display landing-ink mt-3 text-3xl sm:text-4xl md:text-5xl font-semibold tracking-tight">
               {t("home.pricingHeadline")}
             </h2>
-            <p className="mt-4 text-[#1d1d1f]/55 text-lg">{t("home.pricingSub")}</p>
+            <p className="mt-4 landing-ink-muted text-lg">{t("home.pricingSub")}</p>
           </div>
           <div className="landing-glass rounded-full p-1 flex shrink-0 self-stretch sm:self-start lg:self-auto w-full sm:w-auto">
             <button
               type="button"
               onClick={() => setAnnual(false)}
               className={`flex-1 sm:flex-none rounded-full px-4 sm:px-5 py-2 text-xs sm:text-sm font-medium transition-all duration-300 ${
-                !annual ? "bg-[#1d1d1f] text-white shadow-sm" : "text-[#1d1d1f]/55 hover:text-[#1d1d1f]"
+                !annual ? "landing-toggle-active shadow-sm" : "landing-toggle-inactive"
               }`}
             >
               {t("home.pricingMonthly")}
@@ -75,7 +75,7 @@ export default function LandingPricing({ onSelectPlan }: LandingPricingProps) {
               type="button"
               onClick={() => setAnnual(true)}
               className={`flex-1 sm:flex-none rounded-full px-4 sm:px-5 py-2 text-xs sm:text-sm font-medium transition-all duration-300 ${
-                annual ? "bg-[#1d1d1f] text-white shadow-sm" : "text-[#1d1d1f]/55 hover:text-[#1d1d1f]"
+                annual ? "landing-toggle-active shadow-sm" : "landing-toggle-inactive"
               }`}
             >
               {t("home.pricingAnnual")}{" "}
@@ -99,11 +99,11 @@ export default function LandingPricing({ onSelectPlan }: LandingPricingProps) {
                       {t("home.pricingMostPopular")}
                     </span>
                   )}
-                  <p className="text-sm font-medium text-[#1d1d1f]/50">{t(`pricing.${id}.name`)}</p>
-                  <p className="landing-display mt-2 text-3xl font-semibold text-[#1d1d1f]">{priceFor(id)}</p>
+                  <p className="text-sm font-medium landing-ink-faint">{t(`pricing.${id}.name`)}</p>
+                  <p className="landing-display landing-ink mt-2 text-3xl font-semibold">{priceFor(id)}</p>
                   <ul className="mt-6 space-y-2.5 flex-1">
                     {highlights(id).map((item) => (
-                      <li key={item} className="flex items-start gap-2 text-sm text-[#1d1d1f]/65">
+                      <li key={item} className="flex items-start gap-2 text-sm landing-ink-subtle">
                         <span className="text-accent mt-0.5 shrink-0" aria-hidden>
                           ✓
                         </span>
@@ -114,7 +114,7 @@ export default function LandingPricing({ onSelectPlan }: LandingPricingProps) {
                   {id === "enterprise" ? (
                     <Link
                       href="/contact?type=enterprise"
-                      className="mt-6 block w-full py-3 text-center rounded-full border border-[#1d1d1f]/15 text-sm font-medium text-[#1d1d1f] hover:bg-[#1d1d1f]/5 transition"
+                      className="mt-6 block w-full py-3 text-center rounded-full landing-outline-btn text-sm font-medium transition"
                     >
                       {t("home.contactSales")}
                     </Link>
@@ -125,7 +125,7 @@ export default function LandingPricing({ onSelectPlan }: LandingPricingProps) {
                       className={`mt-6 w-full py-3 rounded-full text-sm font-medium transition ${
                         isPopular
                           ? "bg-accent text-white hover:opacity-95"
-                          : "bg-[#1d1d1f] text-white hover:bg-[#1d1d1f]/90"
+                          : "landing-solid-btn"
                       }`}
                     >
                       {t("nav.startFree")}
@@ -138,17 +138,17 @@ export default function LandingPricing({ onSelectPlan }: LandingPricingProps) {
         </div>
 
         <ScrollReveal delay={0.1} className="mt-20">
-          <h3 className="landing-display text-2xl font-semibold text-[#1d1d1f] mb-6">{t("home.pricingFaqTitle")}</h3>
+          <h3 className="landing-display landing-ink text-2xl font-semibold mb-6">{t("home.pricingFaqTitle")}</h3>
           <div className="space-y-3">
             {faqs.map((faq) => (
               <details key={faq.q} className="landing-card group overflow-hidden">
-                <summary className="cursor-pointer px-6 py-4 text-sm font-medium text-[#1d1d1f] list-none flex justify-between items-center">
+                <summary className="landing-ink cursor-pointer px-6 py-4 text-sm font-medium list-none flex justify-between items-center">
                   {faq.q}
-                  <span className="text-[#1d1d1f]/30 group-open:rotate-45 transition-transform duration-300 text-xl leading-none">
+                  <span className="landing-ink-dim group-open:rotate-45 transition-transform duration-300 text-xl leading-none">
                     +
                   </span>
                 </summary>
-                <p className="px-6 pb-5 text-sm text-[#1d1d1f]/55 leading-relaxed -mt-1">{faq.a}</p>
+                <p className="px-6 pb-5 text-sm landing-ink-muted leading-relaxed -mt-1">{faq.a}</p>
               </details>
             ))}
           </div>
