@@ -1,6 +1,7 @@
 import ProfileGuard from "@/components/dashboard/ProfileGuard";
 import CollapsibleSidebar from "@/components/dashboard/CollapsibleSidebar";
 import MobileTabBar from "@/components/dashboard/MobileTabBar";
+import PageTransition from "@/components/motion/PageTransition";
 import TrialBanner from "@/components/dashboard/TrialBanner";
 import TrialCTAModal from "@/components/dashboard/TrialCTAModal";
 import UpgradeCTAModal from "@/components/dashboard/UpgradeCTAModal";
@@ -31,7 +32,7 @@ export default function DashboardLayout({
         </div>
         <main className="pl-[max(0.75rem,env(safe-area-inset-left))] pr-[max(0.75rem,env(safe-area-inset-right))] md:pl-56 sm:px-6 md:px-12 py-6 sm:py-8 md:py-12 pb-24 md:pb-12 max-w-6xl mx-auto">
           <TrialBanner />
-          {children}
+          <PageTransition>{children}</PageTransition>
         </main>
         <MobileTabBar />
       </div>

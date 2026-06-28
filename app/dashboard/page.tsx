@@ -6,6 +6,7 @@ import Link from "next/link";
 import ShareInviteCode from "@/components/dashboard/ShareInviteCode";
 import WeekAtAGlance, { type GlanceItem } from "@/components/dashboard/WeekAtAGlance";
 import SmartQuickActions, { type QuickAction } from "@/components/dashboard/SmartQuickActions";
+import StatCard from "@/components/dashboard/StatCard";
 import { HorseAvatar } from "@/components/HorseAvatar";
 import GuidedTourOverlay, {
   type GuidedTourStep,
@@ -407,14 +408,14 @@ export default function DashboardPage() {
   if (loading) {
     return (
       <div className="space-y-4">
-        <div className="h-10 w-44 border border-black/10" />
-        <div className="h-36 border border-black/10" />
-        <div className="h-24 border border-black/10" />
+        <div className="skeleton h-10 w-44" />
+        <div className="skeleton h-36" />
+        <div className="skeleton h-24" />
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-          <div className="h-24 border border-black/10" />
-          <div className="h-24 border border-black/10" />
-          <div className="h-24 border border-black/10" />
-          <div className="h-24 border border-black/10" />
+          <div className="skeleton h-24" />
+          <div className="skeleton h-24" />
+          <div className="skeleton h-24" />
+          <div className="skeleton h-24" />
         </div>
       </div>
     );
@@ -430,7 +431,7 @@ export default function DashboardPage() {
         onSkip={finishTutorial}
       />
 
-      <h1 className="font-serif text-3xl md:text-4xl font-normal text-black">
+      <h1 className="page-title-enter font-serif text-3xl md:text-4xl font-normal text-black dark:text-white">
         {t("dashboard.pageTitle")}
       </h1>
 
@@ -547,15 +548,15 @@ export default function DashboardPage() {
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4" data-tour="stats-grid">
         {isStudent ? (
           <>
-            <StatCard title={t("dashboard.statAssignedHorses")} value={horses.length} />
-            <StatCard title={t("dashboard.statUpcomingLessons")} value={upcomingBookings.length} />
+            <StatCard title={t("dashboard.statAssignedHorses")} value={horses.length} index={0} />
+            <StatCard title={t("dashboard.statUpcomingLessons")} value={upcomingBookings.length} index={1} />
           </>
         ) : (
           <>
-            <StatCard title={t("dashboard.statTotalHorses")} value={horses.length} />
-            <StatCard title={t("dashboard.statTotalSessions")} value={totalSessions} />
-            <StatCard title={t("dashboard.statSessionsThisWeek")} value={sessionsThisWeek} />
-            <StatCard title={t("dashboard.statAvgDuration")} value={avgDuration} />
+            <StatCard title={t("dashboard.statTotalHorses")} value={horses.length} index={0} />
+            <StatCard title={t("dashboard.statTotalSessions")} value={totalSessions} index={1} />
+            <StatCard title={t("dashboard.statSessionsThisWeek")} value={sessionsThisWeek} index={2} />
+            <StatCard title={t("dashboard.statAvgDuration")} value={avgDuration} index={3} />
           </>
         )}
       </div>
@@ -619,15 +620,6 @@ export default function DashboardPage() {
           </div>
         )}
       </div>
-    </div>
-  );
-}
-
-function StatCard({ title, value }: { title: string; value: string | number }) {
-  return (
-    <div className="border border-black/10 p-6">
-      <p className="text-black/50 text-xs uppercase tracking-widest">{title}</p>
-      <p className="font-serif text-2xl text-black mt-2">{value}</p>
     </div>
   );
 }

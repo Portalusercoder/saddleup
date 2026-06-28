@@ -905,7 +905,7 @@ export default function HorsesPage() {
       )}
 
       {toast && (
-        <div className="fixed bottom-4 left-4 right-4 sm:left-auto sm:right-6 sm:bottom-6 sm:w-auto bg-base px-4 sm:px-5 py-3 border border-black/10 flex gap-4 items-center">
+        <div className="toast-enter fixed bottom-4 left-4 right-4 sm:left-auto sm:right-6 sm:bottom-6 sm:w-auto bg-base px-4 sm:px-5 py-3 border border-black/10 flex gap-4 items-center z-[80]">
           <span className="text-black text-sm">{toast}</span>
           {lastDeleted.current && (
             <button onClick={undoDelete} className="text-black text-sm uppercase tracking-wider hover:underline">

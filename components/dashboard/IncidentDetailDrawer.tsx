@@ -48,11 +48,11 @@ export default function IncidentDetailDrawer({
     <div className="fixed inset-0 z-50 flex justify-end" role="dialog" aria-modal="true">
       <button
         type="button"
-        className="absolute inset-0 bg-black/60"
+        className="drawer-backdrop absolute inset-0 bg-black/60"
         onClick={onClose}
         aria-label={labels.close}
       />
-      <aside className="relative w-full max-w-md bg-base border-l border-black/10 h-full overflow-y-auto p-6 dark:border-white/15">
+      <aside className="drawer-panel relative w-full max-w-md bg-base border-l border-black/10 h-full overflow-y-auto p-6 dark:border-white/15">
         <div className="flex items-start justify-between gap-4 mb-6">
           <h2 className="font-serif text-xl text-black dark:text-white">{labels.title}</h2>
           <button
