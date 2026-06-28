@@ -179,6 +179,9 @@ export default function Navbar() {
           )}
 
           <div dir="ltr" className="flex items-center gap-1 sm:gap-2 shrink-0">
+            {isMarketing && (
+              <ThemeToggle variant={navOnDark ? "light" : "dark"} />
+            )}
             <LanguageToggle variant={navOnDark ? "light" : "dark"} compact={isMarketing} />
             {authChecked && user ? (
               <>
@@ -280,6 +283,12 @@ export default function Navbar() {
               ))}
             </nav>
             <div className="p-5 border-t border-white/10 space-y-3 shrink-0">
+              <div className="flex items-center justify-between px-1 pb-1">
+                <span className="text-xs uppercase tracking-[0.18em] text-white/50">
+                  {t("nav.theme")}
+                </span>
+                <ThemeToggle variant="light" />
+              </div>
               <Link
                 href="/login"
                 onClick={() => setMarketingMobileOpen(false)}

@@ -575,9 +575,29 @@ html.dark {
   letter-spacing: -0.03em;
 }
 
-/* Hero: always visible (no JS animation gate), CSS-only entrance */
+/* Hero text — always light on dark background; never inherit landing-page ink */
 .landing-hero-content h1 {
-  color: #ffffff;
+  color: #ffffff !important;
+}
+
+.landing-hero-eyebrow {
+  color: rgba(255, 255, 255, 0.72) !important;
+}
+
+.landing-hero-sub {
+  color: rgba(255, 255, 255, 0.8) !important;
+}
+
+.landing-hero-note {
+  color: rgba(255, 255, 255, 0.55) !important;
+}
+
+.landing-hero-content .landing-display {
+  color: #ffffff !important;
+}
+
+.landing-hero-content .text-white\/90 {
+  color: rgba(255, 255, 255, 0.92) !important;
 }
 
 @keyframes landing-hero-in {
@@ -613,10 +633,21 @@ html.dark {
 }
 
 /* Hero text must stay light on the dark hero regardless of global dark remaps */
-.dark .landing-hero h1,
-.dark .landing-hero .landing-display,
-.dark .landing-hero-content h1 {
+.dark .landing-hero-content h1,
+.dark .landing-hero-content .landing-display {
   color: #ffffff !important;
+}
+
+.dark .landing-hero-eyebrow {
+  color: rgba(255, 255, 255, 0.72) !important;
+}
+
+.dark .landing-hero-sub {
+  color: rgba(255, 255, 255, 0.8) !important;
+}
+
+.dark .landing-hero-note {
+  color: rgba(255, 255, 255, 0.55) !important;
 }
 
 .dark .landing-hero-content .text-white\/90 {
@@ -659,7 +690,7 @@ html.dark {
   color: rgba(83, 22, 29, 0.55) !important;
 }
 
-.dark .landing-page .landing-display {
+.dark .landing-page :not(.landing-hero) .landing-display {
   color: inherit;
 }
 
