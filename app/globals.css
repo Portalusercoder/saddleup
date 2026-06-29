@@ -501,11 +501,16 @@ html.dark {
   filter: contrast(1.05);
 }
 
-.landing-session-mockup {
+.landing-session-mockup,
+.landing-wireframe-mockup {
   filter: contrast(1.05);
 }
 
-.landing-benefits-cell:nth-child(2) .landing-benefits-visual {
+.landing-benefits-cell:nth-child(2) .landing-benefits-visual,
+.landing-benefits-cell:nth-child(3) .landing-benefits-visual,
+.landing-benefits-cell:nth-child(4) .landing-benefits-visual,
+.landing-benefits-cell:nth-child(5) .landing-benefits-visual,
+.landing-benefits-cell:nth-child(6) .landing-benefits-visual {
   min-height: 11rem;
 }
 

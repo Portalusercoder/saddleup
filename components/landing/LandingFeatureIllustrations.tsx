@@ -1,13 +1,57 @@
 /** Ghost UI mockups for the landing benefits grid (EquineM-inspired). */
 
-const ghostStroke = "stroke-current text-[var(--landing-ink)] opacity-[0.22]";
-const ghostFill = "fill-current text-[var(--landing-ink)] opacity-[0.08]";
-const ghostMuted = "stroke-current text-[var(--landing-ink)] opacity-[0.14]";
+import type { ReactNode } from "react";
 
+const lineSoft = {
+  stroke: "currentColor",
+  strokeWidth: 0.75,
+  strokeOpacity: 0.28,
+  vectorEffect: "non-scaling-stroke" as const,
+};
+const lineMid = { ...lineSoft, strokeOpacity: 0.42 };
+const accentFill = { fill: "#c9a87c", fillOpacity: 0.22 };
+const accentStroke = { stroke: "#c9a87c", strokeOpacity: 0.38, strokeWidth: 0.75 };
+
+function WireframeShell({
+  children,
+  maxW = "280px",
+  className = "",
+}: {
+  children: ReactNode;
+  maxW?: string;
+  className?: string;
+}) {
+  return (
+    <div
+      className={`landing-wireframe-mockup mx-auto w-full ${className}`}
+      style={{ maxWidth: maxW }}
+      aria-hidden
+    >
+      <svg
+        viewBox="0 0 260 228"
+        className="w-full h-auto text-[var(--landing-ink)]"
+        fill="none"
+        role="img"
+        aria-label=""
+      >
+        <rect
+          x="0.5"
+          y="0.5"
+          width="259"
+          height="227"
+          rx="4"
+          style={{ fill: "color-mix(in srgb, var(--landing-ink) 3%, var(--landing-bg))" }}
+          stroke="currentColor"
+          strokeOpacity="0.22"
+          strokeWidth="1"
+        />
+        {children}
+      </svg>
+    </div>
+  );
+}
 /** Wireframe silhouette of the horse passport screen (line-art mockup). */
 export function IllustrationHorseProfile() {
-  const lineSoft = { stroke: "currentColor", strokeWidth: 0.75, strokeOpacity: 0.28, vectorEffect: "non-scaling-stroke" as const };
-  const lineMid = { ...lineSoft, strokeOpacity: 0.42 };
   const lineStrong = { ...lineSoft, strokeOpacity: 0.55 };
   const actionPill = {
     rx: 2,
@@ -212,98 +256,227 @@ export function IllustrationSessionLog() {
 }
 
 export function IllustrationWorkloadAlert() {
+  const bars = [
+    { x: 28, h: 52 },
+    { x: 68, h: 78 },
+    { x: 108, h: 108, alert: true },
+    { x: 148, h: 64 },
+    { x: 188, h: 44 },
+  ];
+
   return (
-    <div className="w-full max-w-[240px] mx-auto space-y-3" aria-hidden>
-      <div className="flex items-end gap-2 h-16">
-        {[40, 65, 88, 55].map((h, i) => (
-          <div
-            key={i}
-            className={`flex-1 rounded-t-sm ${i === 2 ? "bg-accent/25 border border-accent/30" : ghostFill}`}
-            style={{ height: `${h}%` }}
-          />
-        ))}
-      </div>
-      <div className={`flex items-center gap-2 rounded-lg border px-3 py-2 ${ghostStroke}`} style={{ borderColor: "color-mix(in srgb, var(--landing-ink) 16%, transparent)" }}>
-        <svg className={`w-3.5 h-3.5 ${ghostStroke}`} viewBox="0 0 24 24" fill="none" strokeWidth="1.5">
-          <path d="M12 9v4M12 17h.01" strokeLinecap="round" />
-          <path d="M10.29 3.86 1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z" />
-        </svg>
-        <div className={`h-1.5 flex-1 rounded ${ghostFill}`} />
-      </div>
-    </div>
+    <WireframeShell>
+      <rect x="14" y="12" width="88" height="3" rx="1" fill="currentColor" fillOpacity="0.32" />
+      <rect x="14" y="19" width="120" height="2" rx="1" fill="currentColor" fillOpacity="0.14" />
+      <line x1="14" y1="30" x2="246" y2="30" {...lineSoft} />
+
+      {/* Chart area */}
+      <line x1="24" y1="148" x2="232" y2="148" {...lineMid} />
+      {[40, 80, 120].map((y) => (
+        <line key={y} x1="24" y1={y} x2="232" y2={y} {...lineSoft} />
+      ))}
+      {bars.map((bar) => (
+        <rect
+          key={bar.x}
+          x={bar.x}
+          y={148 - bar.h}
+          width={28}
+          height={bar.h}
+          rx={1}
+          {...(bar.alert
+            ? { ...accentFill, stroke: "#c9a87c", strokeOpacity: 0.45, strokeWidth: 0.75 }
+            : { fill: "currentColor", fillOpacity: 0.1, stroke: "currentColor", strokeOpacity: 0.22, strokeWidth: 0.75 })}
+        />
+      ))}
+
+      {/* Day labels */}
+      {bars.map((bar, i) => (
+        <rect key={`lbl-${bar.x}`} x={bar.x + 6} y={154} width={16} height="1.5" rx="0.5" fill="currentColor" fillOpacity={i === 2 ? 0.28 : 0.12} />
+      ))}
+
+      {/* Warning banner */}
+      <rect
+        x="14"
+        y="172"
+        width="232"
+        height="38"
+        rx="2"
+        fill="currentColor"
+        fillOpacity="0.04"
+        stroke="currentColor"
+        strokeOpacity="0.28"
+        strokeWidth="0.75"
+      />
+      <path
+        d="M29 181l-7.5 13a1.2 1.2 0 001 1.8h15a1.2 1.2 0 001-1.8L30.5 181a1.2 1.2 0 00-2.1 0z"
+        stroke="#c9a87c"
+        strokeOpacity="0.6"
+        strokeWidth="0.75"
+        fill="#c9a87c"
+        fillOpacity="0.14"
+      />
+      <path d="M29 186v3.5M29 192h.01" stroke="#c9a87c" strokeOpacity="0.75" strokeWidth="0.9" strokeLinecap="round" />
+      <rect x="44" y="182" width="108" height="2.5" rx="1" fill="currentColor" fillOpacity="0.28" />
+      <rect x="44" y="190" width="148" height="1.5" rx="0.5" fill="currentColor" fillOpacity="0.14" />
+      <rect x="44" y="196" width="96" height="1.5" rx="0.5" fill="currentColor" fillOpacity="0.1" />
+    </WireframeShell>
   );
 }
 
 export function IllustrationRiders() {
+  const rows = [
+    { nameW: 72, subW: 48, badgeW: 28 },
+    { nameW: 84, subW: 56, badgeW: 32 },
+    { nameW: 64, subW: 44, badgeW: 24 },
+  ];
+
   return (
-    <div className="w-full max-w-[220px] mx-auto space-y-2.5" aria-hidden>
-      {[0, 1, 2].map((i) => (
-        <div key={i} className="flex items-center gap-3">
-          <div className={`h-8 w-8 shrink-0 rounded-full ${ghostFill}`} />
-          <div className="flex-1 space-y-1.5">
-            <div className={`h-1.5 rounded ${ghostFill}`} style={{ width: `${55 + i * 10}%` }} />
-            <div className={`h-1 rounded ${ghostFill} opacity-70`} style={{ width: "40%" }} />
-          </div>
-          <div className={`h-4 w-8 rounded-full ${ghostFill}`} />
-        </div>
-      ))}
-    </div>
+    <WireframeShell maxW="260px">
+      <rect x="14" y="12" width="72" height="3" rx="1" fill="currentColor" fillOpacity="0.32" />
+      <rect x="178" y="11" width="68" height="9" rx="1" stroke="currentColor" strokeOpacity="0.28" strokeWidth="0.75" fill="currentColor" fillOpacity="0.04" />
+      <rect x="188" y="14.5" width="48" height="1.5" rx="0.5" fill="currentColor" fillOpacity="0.2" />
+      <line x1="14" y1="28" x2="246" y2="28" {...lineSoft} />
+
+      {/* Table header */}
+      <rect x="14" y="34" width="36" height="1.5" rx="0.5" fill="currentColor" fillOpacity="0.16" />
+      <rect x="62" y="34" width="52" height="1.5" rx="0.5" fill="currentColor" fillOpacity="0.16" />
+      <rect x="188" y="34" width="40" height="1.5" rx="0.5" fill="currentColor" fillOpacity="0.16" />
+      <line x1="14" y1="42" x2="246" y2="42" {...lineMid} />
+
+      {rows.map((row, i) => {
+        const y = 50 + i * 54;
+        return (
+          <g key={i}>
+            <circle cx="32" cy={y + 16} r="12" {...lineMid} fill="currentColor" fillOpacity="0.06" />
+            <rect x="26" y={y + 10} width="12" height="1.5" rx="0.5" fill="currentColor" fillOpacity="0.12" />
+            <rect x="54" y={y + 8} width={row.nameW} height="2.5" rx="1" fill="currentColor" fillOpacity="0.3" />
+            <rect x="54" y={y + 16} width={row.subW} height="1.5" rx="0.5" fill="currentColor" fillOpacity="0.14" />
+            <rect x="54" y={y + 24} width={row.subW - 8} height="1.5" rx="0.5" fill="currentColor" fillOpacity="0.1" />
+            <rect
+              x="188"
+              y={y + 10}
+              width={row.badgeW}
+              height="10"
+              rx="5"
+              fill="currentColor"
+              fillOpacity="0.08"
+              stroke="currentColor"
+              strokeOpacity="0.22"
+              strokeWidth="0.75"
+            />
+            <rect x={192} y={y + 14} width={row.badgeW - 8} height="1.5" rx="0.5" fill="currentColor" fillOpacity="0.18" />
+            {i < rows.length - 1 ? <line x1="14" y1={y + 44} x2="246" y2={y + 44} {...lineSoft} /> : null}
+          </g>
+        );
+      })}
+    </WireframeShell>
   );
 }
 
 export function IllustrationHealth() {
+  const entries = [
+    { typeW: 36, descW: 88, cost: true },
+    { typeW: 44, descW: 72, cost: false },
+    { typeW: 32, descW: 96, cost: true },
+  ];
+
   return (
-    <div className="flex items-end justify-center gap-6 w-full max-w-[260px] mx-auto" aria-hidden>
-      <div className="flex gap-3 pb-1">
-        {[
-          "M12 8v8M8 12h8",
-          "M6 18V8l6-4 6 4v10",
-          "M9 14h6",
-        ].map((d, i) => (
-          <svg key={i} className={`w-7 h-7 ${ghostMuted}`} viewBox="0 0 24 24" fill="none" strokeWidth="1.25">
-            {i === 0 && <path d={d} strokeLinecap="round" />}
-            {i === 1 && (
-              <>
-                <path d="M8 4h8v16H8z" />
-                <path d="M10 8h4M10 12h4" strokeLinecap="round" />
-              </>
+    <WireframeShell>
+      <rect x="14" y="12" width="96" height="3" rx="1" fill="currentColor" fillOpacity="0.32" />
+      <rect x="168" y="10" width="78" height="11" rx="1" fill="currentColor" fillOpacity="0.12" />
+      <rect x="182" y="14.5" width="50" height="1.5" rx="0.5" fill="currentColor" fillOpacity="0.28" />
+      <line x1="14" y1="30" x2="246" y2="30" {...lineSoft} />
+
+      {entries.map((entry, i) => {
+        const y = 40 + i * 58;
+        return (
+          <g key={i}>
+            <rect
+              x="14"
+              y={y}
+              width="232"
+              height="46"
+              rx="2"
+              stroke="currentColor"
+              strokeOpacity="0.24"
+              strokeWidth="0.75"
+              fill="currentColor"
+              fillOpacity="0.03"
+            />
+            <rect x="22" y={y + 8} width={entry.typeW} height="2.5" rx="1" fill="currentColor" fillOpacity="0.32" />
+            <rect x="22" y={y + 16} width={entry.descW} height="1.5" rx="0.5" fill="currentColor" fillOpacity="0.14" />
+            <rect x="22" y={y + 22} width={entry.descW - 16} height="1.5" rx="0.5" fill="currentColor" fillOpacity="0.1" />
+            <rect x="178" y={y + 8} width="52" height="1.5" rx="0.5" fill="currentColor" fillOpacity="0.12" />
+            {entry.cost ? (
+              <rect x="196" y={y + 18} width="36" height="2" rx="1" fill="currentColor" fillOpacity="0.22" />
+            ) : (
+              <rect x="206" y={y + 18} width="24" height="1.5" rx="0.5" fill="currentColor" fillOpacity="0.1" />
             )}
-            {i === 2 && <rect x="5" y="8" width="14" height="10" rx="2" />}
-          </svg>
-        ))}
-      </div>
-      <div className="grid grid-cols-4 gap-1">
-        {Array.from({ length: 12 }).map((_, i) => (
-          <div
-            key={i}
-            className={`h-2.5 w-2.5 rounded-sm ${[2, 5, 9].includes(i) ? "bg-accent/30" : ghostFill}`}
-          />
-        ))}
-      </div>
-    </div>
+            {i === 0 ? (
+              <circle cx="28" cy={y + 34} r="3" {...accentStroke} fill="#c9a87c" fillOpacity="0.18" />
+            ) : null}
+          </g>
+        );
+      })}
+    </WireframeShell>
   );
 }
 
 export function IllustrationSchedule() {
+  const days = ["M", "T", "W", "T", "F", "S", "S"];
+  const bookings = [
+    { col: 1, row: 0, h: 2 },
+    { col: 3, row: 1, h: 1 },
+    { col: 5, row: 0, h: 3 },
+  ];
+
   return (
-    <div className="w-full max-w-[260px] mx-auto" aria-hidden>
-      <div className="flex justify-center gap-4 mb-3">
-        {[0, 1, 2].map((i) => (
-          <div key={i} className={`h-6 w-6 rounded ${ghostFill}`} />
-        ))}
-      </div>
-      <div className="grid grid-cols-4 gap-1.5 mb-3">
-        {Array.from({ length: 8 }).map((_, i) => (
-          <div
-            key={i}
-            className={`aspect-square rounded-sm ${i === 3 || i === 6 ? "bg-accent/25 border border-accent/25" : ghostFill}`}
-          />
-        ))}
-      </div>
-      <div className="flex justify-end">
-        <div className={`h-6 w-16 rounded-full border ${ghostStroke}`} style={{ borderColor: "color-mix(in srgb, var(--landing-ink) 22%, transparent)" }} />
-      </div>
-    </div>
+    <WireframeShell maxW="270px">
+      <rect x="14" y="12" width="104" height="3" rx="1" fill="currentColor" fillOpacity="0.32" />
+      <rect x="196" y="11" width="50" height="9" rx="1" stroke="currentColor" strokeOpacity="0.24" strokeWidth="0.75" fill="currentColor" fillOpacity="0.04" />
+      <line x1="14" y1="28" x2="246" y2="28" {...lineSoft} />
+
+      {/* Day headers */}
+      {days.map((_, i) => (
+        <g key={i}>
+          <rect x={18 + i * 32} y="34" width="10" height="1.5" rx="0.5" fill="currentColor" fillOpacity="0.18" />
+          <rect x={14 + i * 32} y="42" width="24" height="1" rx="0.5" fill="currentColor" fillOpacity="0.08" />
+        </g>
+      ))}
+
+      {/* Calendar grid */}
+      <rect x="14" y="50" width="224" height="132" rx="2" stroke="currentColor" strokeOpacity="0.22" strokeWidth="0.75" fill="currentColor" fillOpacity="0.02" />
+      {Array.from({ length: 6 }).map((_, row) => (
+        <line key={`row-${row}`} x1="14" y1={74 + row * 22} x2="238" y2={74 + row * 22} {...lineSoft} />
+      ))}
+      {Array.from({ length: 6 }).map((_, col) => (
+        <line key={`col-${col}`} x1={46 + col * 32} y1="50" x2={46 + col * 32} y2="182" {...lineSoft} />
+      ))}
+
+      {bookings.map((b, i) => (
+        <rect
+          key={i}
+          x={16 + b.col * 32}
+          y={52 + b.row * 22}
+          width="28"
+          height={b.h * 22 - 4}
+          rx="1"
+          {...(i === 1 ? accentFill : { fill: "currentColor", fillOpacity: 0.1 })}
+          stroke={i === 1 ? "#c9a87c" : "currentColor"}
+          strokeOpacity={i === 1 ? 0.4 : 0.2}
+          strokeWidth="0.75"
+        />
+      ))}
+      <rect x="50" y="56" width="18" height="1.5" rx="0.5" fill="currentColor" fillOpacity="0.2" />
+      <rect x="114" y="80" width="22" height="1.5" rx="0.5" fill="currentColor" fillOpacity="0.2" />
+      <rect x="178" y="56" width="20" height="1.5" rx="0.5" fill="currentColor" fillOpacity="0.2" />
+
+      {/* Legend */}
+      <rect x="14" y="192" width="12" height="12" rx="1" {...accentFill} stroke="#c9a87c" strokeOpacity="0.35" strokeWidth="0.75" />
+      <rect x="32" y="197" width="56" height="1.5" rx="0.5" fill="currentColor" fillOpacity="0.14" />
+      <rect x="110" y="192" width="12" height="12" rx="1" fill="currentColor" fillOpacity="0.1" stroke="currentColor" strokeOpacity="0.2" strokeWidth="0.75" />
+      <rect x="128" y="197" width="48" height="1.5" rx="0.5" fill="currentColor" fillOpacity="0.14" />
+    </WireframeShell>
   );
 }
 

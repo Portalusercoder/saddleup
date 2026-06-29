@@ -97,6 +97,25 @@ export async function POST(req: Request) {
       );
     }
 
+    const { data: horse, error: horseError } = await supabase
+      .from("horses")
+      .select("id")
+      .eq("id", body.horseId)
+      .eq("stable_id", profile.stable_id)
+      .maybeSingle();
+
+    if (horseError) {
+      console.error("POST health log horse lookup error:", horseError);
+      return NextResponse.json(
+        { error: "Failed to verify horse" },
+        { status: 500 }
+      );
+    }
+
+    if (!horse) {
+      return NextResponse.json({ error: "Horse not found" }, { status: 404 });
+    }
+
     const { data: log, error } = await supabase
       .from("health_logs")
       .insert({

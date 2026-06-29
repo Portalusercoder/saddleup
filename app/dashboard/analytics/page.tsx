@@ -46,6 +46,7 @@ export default function AnalyticsPage() {
   const [horseFilter, setHorseFilter] = useState<string>("all");
   const [showHealthModal, setShowHealthModal] = useState(false);
   const [horses, setHorses] = useState<{ id: string; name: string }[]>([]);
+  const [toast, setToast] = useState<string | null>(null);
   const { open: showTour, complete: completeTour } = usePageTour(
     "saddleup_tour_analytics_v1",
     !loading && !locked && Boolean(data)
@@ -197,6 +198,11 @@ export default function AnalyticsPage() {
 
   return (
     <div className="space-y-10">
+      {toast ? (
+        <div className="px-4 py-2 border border-black/10 dark:border-white/15 text-black dark:text-white text-sm">
+          {toast}
+        </div>
+      ) : null}
       <GuidedTourOverlay
         open={showTour}
         steps={tourSteps}
@@ -420,7 +426,15 @@ export default function AnalyticsPage() {
         onClose={() => setShowHealthModal(false)}
         horses={horses}
         defaultHorseId={horseFilter !== "all" ? horseFilter : undefined}
-        onSuccess={refreshAnalytics}
+        onSuccess={({ cost }) => {
+          refreshAnalytics();
+          setToast(
+            cost != null
+              ? t("dashboard.horseHealthAddSuccess")
+              : t("dashboard.horseHealthAddSuccessNoCost")
+          );
+          window.setTimeout(() => setToast(null), 4000);
+        }}
       />
     </div>
   );

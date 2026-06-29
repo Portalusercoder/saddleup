@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState, useRef } from "react";
+import { useEffect, useState, useRef, useMemo } from "react";
 import Link from "next/link";
 import { useProfile } from "@/components/providers/ProfileProvider";
 import { useParams, useSearchParams } from "next/navigation";
@@ -313,6 +313,11 @@ export default function HorseDetailPage() {
       warning,
     };
   };
+
+  const healthRecordHorses = useMemo(
+    () => (horse ? [{ id: String(horse.id), name: horse.name }] : []),
+    [horse?.id, horse?.name]
+  );
 
   if (loading) {
     return <PageLoader minHeight="min-h-[40vh]" message={t("common.loading")} />;
@@ -754,9 +759,13 @@ export default function HorseDetailPage() {
       <AddHealthRecordModal
         open={showHealthModal}
         onClose={() => setShowHealthModal(false)}
-        horses={[{ id: String(horse.id), name: horse.name }]}
+        horses={healthRecordHorses}
         defaultHorseId={String(horse.id)}
-        onSuccess={fetchHorse}
+        onSuccess={() => {
+          fetchHorse();
+          setToast(t("dashboard.horseHealthAddSuccess"));
+          window.setTimeout(() => setToast(null), 3000);
+        }}
       />
     </div>
   );

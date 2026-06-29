@@ -1195,6 +1195,11 @@ export const en = {
     horseHealthRecoveryCleared: "Cleared",
     horseHealthAdding: "Adding…",
     horseHealthAddRecord: "Add record",
+    horseHealthAddFailed: "Could not save health record",
+    horseHealthAddSuccess: "Health record saved",
+    horseHealthAddSuccessNoCost:
+      "Health record saved. Add a cost amount to include it in cost analytics.",
+    horseHealthSelectHorse: "Select a horse to continue",
     horseHealthVet: "Vet visit",
     horseHealthVaccination: "Vaccination",
     horseHealthDeworming: "Deworming",

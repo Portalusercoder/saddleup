@@ -1186,6 +1186,11 @@ const arInner = {
     horseHealthRecoveryCleared: "مخلوص",
     horseHealthAdding: "جاري الإضافة…",
     horseHealthAddRecord: "إضافة السجل",
+    horseHealthAddFailed: "تعذر حفظ السجل الصحي",
+    horseHealthAddSuccess: "تم حفظ السجل الصحي",
+    horseHealthAddSuccessNoCost:
+      "تم حفظ السجل الصحي. أضف تكلفة لإظهارها في تحليلات التكاليف.",
+    horseHealthSelectHorse: "اختر حصاناً للمتابعة",
     horseHealthVet: "زيارة بيطرية",
     horseHealthVaccination: "تطعيم",
     horseHealthDeworming: "مضاد ديدان",

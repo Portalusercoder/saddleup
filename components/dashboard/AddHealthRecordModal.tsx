@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import LoadingSpinner from "@/components/ui/LoadingSpinner";
 import ModalOverlay from "@/components/ui/ModalOverlay";
 import { useLanguage } from "@/components/providers/LanguageProvider";
@@ -12,12 +12,16 @@ export type HealthRecordHorse = {
   name: string;
 };
 
+export type HealthRecordSaveResult = {
+  cost: number | null;
+};
+
 type AddHealthRecordModalProps = {
   open: boolean;
   onClose: () => void;
   horses: HealthRecordHorse[];
   defaultHorseId?: string;
-  onSuccess?: () => void;
+  onSuccess?: (result: HealthRecordSaveResult) => void;
 };
 
 const emptyForm = () => ({
@@ -40,6 +44,8 @@ export default function AddHealthRecordModal({
   const [horseId, setHorseId] = useState("");
   const [form, setForm] = useState(emptyForm);
   const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const wasOpenRef = useRef(false);
 
   const formInput =
     "w-full px-4 py-3 bg-base border border-black/10 text-black placeholder-black/40 focus:border-black/30 focus:outline-none dark:border-white/15 dark:text-white dark:placeholder-white/40";
@@ -55,38 +61,90 @@ export default function AddHealthRecordModal({
     return map[type] ?? type;
   };
 
+  const resolveHorseId = () => {
+    if (horseId && horses.some((h) => h.id === horseId)) return horseId;
+    if (defaultHorseId && horses.some((h) => h.id === defaultHorseId)) return defaultHorseId;
+    return horses[0]?.id ?? "";
+  };
+
+  const effectiveHorseId = resolveHorseId();
+
   useEffect(() => {
-    if (!open) return;
+    if (open && !wasOpenRef.current) {
+      setForm(emptyForm());
+      setError(null);
+      const preferred =
+        defaultHorseId && horses.some((h) => h.id === defaultHorseId)
+          ? defaultHorseId
+          : horses[0]?.id ?? "";
+      setHorseId(preferred);
+    }
+    if (!open) {
+      setHorseId("");
+      setError(null);
+    }
+    wasOpenRef.current = open;
+  }, [open, defaultHorseId, horses]);
+
+  useEffect(() => {
+    if (!open || horseId) return;
     const preferred =
       defaultHorseId && horses.some((h) => h.id === defaultHorseId)
         ? defaultHorseId
         : horses[0]?.id ?? "";
-    setHorseId(preferred);
-    setForm(emptyForm());
-  }, [open, defaultHorseId, horses]);
+    if (preferred) setHorseId(preferred);
+  }, [open, horseId, defaultHorseId, horses]);
+
+  const parseCost = () => {
+    if (form.cost === "" || form.cost == null) return null;
+    const n = Number(form.cost);
+    return Number.isFinite(n) ? n : null;
+  };
 
   const submit = async () => {
-    if (!horseId) return;
+    const selectedHorseId = resolveHorseId();
+    if (!selectedHorseId) {
+      setError(t("dashboard.horseHealthSelectHorse"));
+      return;
+    }
+
     setLoading(true);
+    setError(null);
+    const cost = parseCost();
+
     try {
       const res = await fetch("/api/health", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          horseId,
+          horseId: selectedHorseId,
           type: form.type,
           date: form.date,
-          description: form.description || null,
-          cost: form.cost ? Number(form.cost) : null,
+          description: form.description.trim() || null,
+          cost,
           nextDue: form.nextDue || null,
           recoveryStatus: form.recoveryStatus || null,
         }),
       });
-      if (!res.ok) return;
+
+      const data = (await res.json().catch(() => ({}))) as {
+        error?: string;
+        issues?: { path: string; message: string }[];
+      };
+
+      if (!res.ok) {
+        const issue = data.issues?.[0];
+        setError(
+          issue ? `${issue.path}: ${issue.message}` : data.error || t("dashboard.horseHealthAddFailed")
+        );
+        return;
+      }
+
       onClose();
-      onSuccess?.();
+      onSuccess?.({ cost });
     } catch (err) {
       console.error(err);
+      setError(t("dashboard.horseHealthAddFailed"));
     } finally {
       setLoading(false);
     }
@@ -97,6 +155,11 @@ export default function AddHealthRecordModal({
       <h2 className="font-serif text-xl text-black dark:text-white mb-6">
         {t("dashboard.horseHealthModalTitle")}
       </h2>
+      {error ? (
+        <p className="mb-4 text-sm text-red-700 dark:text-red-300 border border-red-500/30 bg-red-500/10 px-3 py-2">
+          {error}
+        </p>
+      ) : null}
       <div className="space-y-4">
         {horses.length > 1 ? (
           <div>
@@ -192,7 +255,7 @@ export default function AddHealthRecordModal({
         <button
           type="button"
           onClick={submit}
-          disabled={loading || !horseId}
+          disabled={loading || !effectiveHorseId}
           className="flex-1 py-2.5 bg-accent text-white font-medium text-sm uppercase tracking-wider hover:opacity-95 transition disabled:opacity-60 disabled:cursor-not-allowed flex items-center justify-center gap-2"
         >
           {loading ? (
