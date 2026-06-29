@@ -3,7 +3,6 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useProfile } from "@/components/providers/ProfileProvider";
-import ThemeToggle from "@/components/layout/ThemeToggle";
 import { useEffect, useState } from "react";
 import { useLanguage } from "@/components/providers/LanguageProvider";
 import { getDashboardNavSections } from "@/lib/dashboard/nav-config";
@@ -103,9 +102,6 @@ export default function CollapsibleSidebar() {
           </div>
         ))}
       </nav>
-      <div className="shrink-0 px-3 py-3 border-t border-black/10 dark:border-white/10 flex items-center justify-start">
-        <ThemeToggle />
-      </div>
     </aside>
   );
 }

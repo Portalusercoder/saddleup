@@ -12,7 +12,7 @@ export default function LandingHero({ onStartFree }: LandingHeroProps) {
 
   return (
     <section className="landing-hero-club relative w-full min-h-[100dvh] flex flex-col overflow-hidden">
-      <div className="landing-hero-club-copy relative z-[1] flex-1 flex flex-col items-center justify-center text-center px-5 sm:px-8 pt-24 sm:pt-28 pb-4">
+      <div className="landing-hero-club-copy relative z-[1] flex-1 flex flex-col items-center justify-center text-center px-5 sm:px-8 pt-24 sm:pt-28 pb-4 [&>*]:relative [&>*]:z-[1]">
         <h1 className="landing-hero-in landing-hero-in-delay-1 landing-hero-script">
           {t("home.heroTitle")}
         </h1>

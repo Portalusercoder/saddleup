@@ -10,8 +10,6 @@ import TextLogo from "@/components/brand/TextLogo";
 import { useProfile } from "@/components/providers/ProfileProvider";
 import { useLanguage } from "@/components/providers/LanguageProvider";
 import LanguageToggle from "@/components/layout/LanguageToggle";
-import ThemeToggle from "@/components/layout/ThemeToggle";
-import { useTheme } from "@/components/providers/ThemeProvider";
 import {
   flattenDashboardNav,
   getDashboardNavSections,
@@ -33,7 +31,6 @@ export default function Navbar() {
   const [marketingMobileOpen, setMarketingMobileOpen] = useState(false);
   const { profile, loading: profileLoading, userId } = useProfile();
   const { t } = useLanguage();
-  const { theme } = useTheme();
 
   const user = userId ? { id: userId, email: profile?.email } : null;
   const authChecked = !profileLoading;
@@ -96,7 +93,7 @@ export default function Navbar() {
   const isClubHero = isHome && !scrolledPastHero && !user;
   const isDashboard = pathname.startsWith("/dashboard");
   const navOnDark = false;
-  const chromeVariant = isClubHero ? "dark" : theme === "dark" ? "light" : "dark";
+  const langToggleVariant = isMarketing ? "light" : "dark";
 
   if (isAuthPage) return null;
 
@@ -120,7 +117,7 @@ export default function Navbar() {
           isDashboard
             ? "bg-base border-b border-black/10 text-black"
             : isClubHero
-              ? "bg-transparent border-b border-[#3d2918]/10 text-[#3d2918] dark:border-white/10 dark:text-[var(--landing-ink)]"
+              ? "bg-transparent border-b border-white/10 text-[var(--landing-ink)]"
               : isMarketing
                 ? "bg-[#f5f5f7]/90 dark:bg-[#0f0f0f]/90 backdrop-blur-xl border-b border-black/[0.04] dark:border-white/[0.08] text-[#1d1d1f] dark:text-white"
                 : "bg-base border-b border-black/10 text-black"
@@ -153,8 +150,7 @@ export default function Navbar() {
 
             <div className="flex items-center justify-end gap-1 sm:gap-2 flex-1 min-w-0">
               <div dir="ltr" className="flex items-center gap-1 sm:gap-2 shrink-0">
-                <ThemeToggle variant={chromeVariant} />
-                <LanguageToggle variant={chromeVariant} compact />
+                <LanguageToggle variant={langToggleVariant} compact />
                 <Link href="/signup" className="landing-hero-nav-cta hidden sm:inline-flex">
                   {t("nav.startFree")}
                 </Link>
@@ -223,10 +219,7 @@ export default function Navbar() {
           )}
 
           <div dir="ltr" className="flex items-center gap-1 sm:gap-2 shrink-0">
-            {isMarketing && (
-              <ThemeToggle variant={chromeVariant} />
-            )}
-            <LanguageToggle variant={chromeVariant} compact={isMarketing} />
+            <LanguageToggle variant={langToggleVariant} compact={isMarketing} />
             {authChecked && user ? (
               <>
                 {!isAuthPage && !isHome && <NotificationBell />}
@@ -329,12 +322,6 @@ export default function Navbar() {
               ))}
             </nav>
             <div className="p-5 border-t border-white/10 space-y-3 shrink-0">
-              <div className="flex items-center justify-between px-1 pb-1">
-                <span className="text-xs uppercase tracking-[0.18em] text-white/50">
-                  {t("nav.theme")}
-                </span>
-                <ThemeToggle variant="light" />
-              </div>
               <Link
                 href="/login"
                 onClick={() => setMarketingMobileOpen(false)}
@@ -388,12 +375,6 @@ export default function Navbar() {
               ))}
 
               <div className="mt-4 border-t border-black/10 pt-4 px-1">
-                <div className="flex items-center justify-between">
-                  <span className="text-xs uppercase tracking-[0.2em] text-black/60">
-                    {t("nav.theme")}
-                  </span>
-                  <ThemeToggle />
-                </div>
                 <button
                   onClick={() => {
                     setMobileOpen(false);

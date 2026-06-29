@@ -831,14 +831,9 @@ html.dark {
     #0a0a0a;
 }
 
-/* Club-style hero — cream canvas, script title, bottom horse photo */
+/* Club-style hero — dark canvas, script title, bottom horse photo */
 .landing-hero-club {
-  background: #f7f2ea;
-  color: #3d2918;
-}
-
-.dark .landing-page .landing-hero-club {
-  background: var(--landing-bg, #141210);
+  background: var(--landing-bg, #0f0f0f);
   color: var(--landing-ink);
 }
 
@@ -848,42 +843,60 @@ html.dark {
   font-weight: 400;
   line-height: 0.95;
   letter-spacing: -0.02em;
-  color: #3d2918;
-}
-
-.dark .landing-page .landing-hero-script {
   color: var(--landing-ink);
 }
 
 .landing-hero-club-sub {
-  color: rgba(61, 41, 24, 0.72);
+  color: color-mix(in srgb, var(--landing-ink) 72%, transparent);
 }
 
-.dark .landing-page .landing-hero-club-sub {
-  color: color-mix(in srgb, var(--landing-ink) 72%, transparent);
+.landing-hero-club-copy {
+  position: relative;
+}
+
+.landing-hero-club-copy::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: -6rem;
+  height: 10rem;
+  background: linear-gradient(
+    to bottom,
+    transparent 0%,
+    color-mix(in srgb, var(--landing-bg, #0f0f0f) 35%, transparent) 45%,
+    var(--landing-bg, #0f0f0f) 100%
+  );
+  pointer-events: none;
+  z-index: 0;
 }
 
 .landing-hero-club-visual {
   position: relative;
   height: clamp(14rem, 40vh, 30rem);
-  margin-top: auto;
+  margin-top: -2.5rem;
 }
 
 .landing-hero-club-visual-fade {
   position: absolute;
-  inset: 0;
+  left: 0;
+  right: 0;
+  top: -60%;
+  bottom: 0;
   z-index: 1;
-  background: linear-gradient(to bottom, #f7f2ea 0%, rgba(247, 242, 234, 0.55) 28%, transparent 62%);
-  pointer-events: none;
-}
-
-.dark .landing-page .landing-hero-club-visual-fade {
   background: linear-gradient(
     to bottom,
-    var(--landing-bg, #141210) 0%,
-    color-mix(in srgb, var(--landing-bg, #141210) 55%, transparent) 28%,
-    transparent 62%
+    var(--landing-bg, #0f0f0f) 0%,
+    var(--landing-bg, #0f0f0f) 10%,
+    color-mix(in srgb, var(--landing-bg, #0f0f0f) 94%, transparent) 22%,
+    color-mix(in srgb, var(--landing-bg, #0f0f0f) 82%, transparent) 34%,
+    color-mix(in srgb, var(--landing-bg, #0f0f0f) 66%, transparent) 46%,
+    color-mix(in srgb, var(--landing-bg, #0f0f0f) 46%, transparent) 58%,
+    color-mix(in srgb, var(--landing-bg, #0f0f0f) 26%, transparent) 70%,
+    color-mix(in srgb, var(--landing-bg, #0f0f0f) 10%, transparent) 82%,
+    transparent 100%
   );
+  pointer-events: none;
 }
 
 .landing-hero-club-photo {

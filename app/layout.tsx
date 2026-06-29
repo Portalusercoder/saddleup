@@ -92,7 +92,7 @@ export default function RootLayout({
   return (
     <html
       lang="en"
-      className={`${playfair.variable} ${inter.variable} ${tajawal.variable} ${pinyonScript.variable}`}
+      className={`dark ${playfair.variable} ${inter.variable} ${tajawal.variable} ${pinyonScript.variable}`}
       suppressHydrationWarning
     >
       <head>
@@ -100,7 +100,7 @@ export default function RootLayout({
           <link rel="preconnect" href={supabaseOrigin} crossOrigin="anonymous" />
         ) : null}
         <Script id="theme-init" strategy="beforeInteractive">
-          {`(function(){var t=localStorage.getItem('saddleup_theme');if(t==='dark')document.documentElement.classList.add('dark');else if(t==='light')document.documentElement.classList.remove('dark');})();`}
+          {`(function(){document.documentElement.classList.add('dark');try{localStorage.setItem('saddleup_theme','dark');}catch(e){}})();`}
         </Script>
       </head>
       <body className="bg-base text-black font-sans antialiased">
