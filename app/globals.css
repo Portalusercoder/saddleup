@@ -846,14 +846,40 @@ html.dark {
 
 .landing-hero-club-photo {
   position: absolute;
-  left: 0;
-  right: 0;
-  bottom: 0;
+  inset: 0;
   width: 100%;
-  height: min(52vh, 34rem);
+  height: 100%;
   object-fit: cover;
-  object-position: center 30%;
-  filter: grayscale(100%) contrast(1.06);
+  object-position: center 72%;
+  filter: grayscale(100%) contrast(1.05);
+  -webkit-mask-image: linear-gradient(
+    to bottom,
+    transparent 0%,
+    transparent 16%,
+    rgba(0, 0, 0, 0.08) 28%,
+    rgba(0, 0, 0, 0.22) 38%,
+    rgba(0, 0, 0, 0.4) 48%,
+    rgba(0, 0, 0, 0.58) 56%,
+    rgba(0, 0, 0, 0.74) 64%,
+    rgba(0, 0, 0, 0.86) 72%,
+    rgba(0, 0, 0, 0.94) 80%,
+    black 90%,
+    black 100%
+  );
+  mask-image: linear-gradient(
+    to bottom,
+    transparent 0%,
+    transparent 16%,
+    rgba(0, 0, 0, 0.08) 28%,
+    rgba(0, 0, 0, 0.22) 38%,
+    rgba(0, 0, 0, 0.4) 48%,
+    rgba(0, 0, 0, 0.58) 56%,
+    rgba(0, 0, 0, 0.74) 64%,
+    rgba(0, 0, 0, 0.86) 72%,
+    rgba(0, 0, 0, 0.94) 80%,
+    black 90%,
+    black 100%
+  );
 }
 
 .landing-hero-club-scrim {
@@ -862,13 +888,13 @@ html.dark {
   background: linear-gradient(
     to bottom,
     var(--landing-bg, #0f0f0f) 0%,
-    var(--landing-bg, #0f0f0f) 28%,
-    rgba(15, 15, 15, 0.92) 40%,
-    rgba(15, 15, 15, 0.72) 52%,
-    rgba(15, 15, 15, 0.48) 64%,
-    rgba(15, 15, 15, 0.22) 76%,
-    rgba(15, 15, 15, 0.06) 88%,
-    transparent 100%
+    var(--landing-bg, #0f0f0f) 18%,
+    rgba(15, 15, 15, 0.82) 32%,
+    rgba(15, 15, 15, 0.52) 44%,
+    rgba(15, 15, 15, 0.26) 54%,
+    rgba(15, 15, 15, 0.1) 62%,
+    rgba(15, 15, 15, 0.03) 70%,
+    transparent 78%
   );
 }
 
