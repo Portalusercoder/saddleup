@@ -105,9 +105,7 @@ export default function Navbar() {
   return (
     <div className="relative">
       <nav
-        className={`flex items-center gap-3 fixed top-0 left-0 right-0 w-full z-50 transition-all duration-500 ease-out ${
-          isClubHero ? "relative" : ""
-        } ${
+        className={`landing-marketing-nav flex items-center gap-3 fixed top-0 left-0 right-0 w-full z-50 transition-all duration-500 ease-out ${
           isHome && navCompact ? "h-14 sm:h-16" : "h-16 sm:h-20"
         } ${
           isDashboard
@@ -129,7 +127,7 @@ export default function Navbar() {
               <button
                 type="button"
                 onClick={() => setMarketingMobileOpen(true)}
-                className="p-2 -ms-1 text-current/75 hover:text-current hover:bg-black/[0.04] dark:hover:bg-white/[0.06] transition-colors"
+                className="landing-touch-target p-2 -ms-1 text-current/75 hover:text-current hover:bg-black/[0.04] dark:hover:bg-white/[0.06] transition-colors"
                 aria-label={t("nav.menu")}
               >
                 <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden>
@@ -207,7 +205,7 @@ export default function Navbar() {
             <button
               type="button"
               onClick={() => setMarketingMobileOpen(true)}
-              className={`lg:hidden p-2 rounded-full transition-colors ${
+              className={`landing-touch-target lg:hidden p-2 rounded-full transition-colors ${
                 navOnDark ? "text-white/85 hover:bg-white/10" : "text-[#1d1d1f]/70 dark:text-white/85 hover:bg-black/5 dark:hover:bg-white/10"
               }`}
               aria-label={t("nav.menu")}
@@ -236,7 +234,7 @@ export default function Navbar() {
                 <>
                   <Link
                     href="/login"
-                    className={`hidden sm:inline-flex px-3 py-2 text-sm font-medium transition-colors duration-300 ${
+                    className={`landing-touch-target hidden sm:inline-flex px-3 py-2 text-sm font-medium transition-colors duration-300 ${
                       navOnDark
                         ? "text-white/85 hover:text-white"
                         : "text-[#1d1d1f]/70 dark:text-white/85 hover:text-[#1d1d1f] dark:hover:text-white"
@@ -246,7 +244,7 @@ export default function Navbar() {
                   </Link>
                   <Link
                     href="/signup"
-                    className={`px-3 sm:px-4 py-1.5 sm:py-2 rounded-full text-xs sm:text-sm font-medium transition-all duration-300 whitespace-nowrap ${
+                    className={`landing-touch-target px-3 sm:px-4 py-2 sm:py-2.5 rounded-full text-xs sm:text-sm font-medium transition-all duration-300 whitespace-nowrap ${
                       navOnDark
                         ? "bg-white text-[#1d1d1f] hover:bg-white/90"
                         : "bg-[#1d1d1f] text-white dark:bg-white dark:text-[#1d1d1f] hover:bg-[#1d1d1f]/90 dark:hover:bg-white/90"
@@ -291,7 +289,7 @@ export default function Navbar() {
             aria-hidden={!marketingMobileOpen}
           />
           <aside
-            className={`lg:hidden fixed top-0 right-0 h-[100dvh] w-[min(100vw,20rem)] bg-[#1d1d1f] z-[70] transition-transform duration-300 ease-out flex flex-col ${
+            className={`lg:hidden fixed top-0 right-0 h-[100dvh] w-[min(100vw,20rem)] bg-[#1d1d1f] z-[70] transition-transform duration-300 ease-out flex flex-col pb-[env(safe-area-inset-bottom)] ${
               marketingMobileOpen ? "translate-x-0" : "translate-x-full"
             }`}
             aria-hidden={!marketingMobileOpen}

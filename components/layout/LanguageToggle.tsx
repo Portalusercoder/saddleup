@@ -17,8 +17,8 @@ export default function LanguageToggle({ variant = "dark", compact = false }: La
     <button
       type="button"
       onClick={toggle}
-      className={`flex items-center gap-1 uppercase tracking-[0.14em] transition ${
-        compact ? "px-2.5 py-1.5 text-[0.65rem] rounded-full" : "px-2 py-1 text-[0.7rem] border"
+      className={`landing-touch-target flex items-center justify-center gap-1 uppercase tracking-[0.14em] transition ${
+        compact ? "min-w-[2.75rem] min-h-[2.75rem] px-2.5 py-2 text-[0.65rem] rounded-full" : "px-2 py-1 text-[0.7rem] border"
       } ${
         isLight
           ? compact

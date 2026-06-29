@@ -32,7 +32,7 @@ export default function Footer() {
 
   return (
     <footer className="bg-[#111111] text-white/70 border-t border-white/[0.06]">
-      <div className="max-w-6xl mx-auto px-6 py-16 sm:py-20">
+      <div className="max-w-6xl mx-auto px-1 sm:px-0 py-16 sm:py-20">
         <div className="flex flex-col md:flex-row md:items-start md:justify-between gap-12">
           <div>
             <TextLogo className="text-[0.85rem] text-white/90" subtitle={t("footer.subtitle")} subtitleClassName="text-white/40" />
@@ -44,7 +44,7 @@ export default function Footer() {
               <Link
                 key={link.href}
                 href={link.href}
-                className="text-white/55 hover:text-white transition-colors duration-300"
+                className="inline-flex items-center min-h-[2.75rem] py-1 text-white/55 hover:text-white transition-colors duration-300"
               >
                 {t(link.key)}
               </Link>
@@ -55,7 +55,7 @@ export default function Footer() {
         <div className="mt-14 pt-8 border-t border-white/[0.06] flex flex-col sm:flex-row sm:items-center sm:justify-between gap-6">
           <nav className="flex flex-wrap gap-x-6 gap-y-2 text-xs text-white/40" aria-label="Legal">
             {legalKeys.map((link) => (
-              <Link key={link.href} href={link.href} className="hover:text-white/70 transition-colors">
+              <Link key={link.href} href={link.href} className="inline-flex items-center min-h-[2.75rem] py-1 hover:text-white/70 transition-colors">
                 {t(link.key)}
               </Link>
             ))}
@@ -69,7 +69,7 @@ export default function Footer() {
                 target="_blank"
                 rel="noreferrer noopener"
                 aria-label={label}
-                className="text-white/35 hover:text-white/70 transition-colors"
+                className="landing-touch-target inline-flex items-center justify-center p-2.5 text-white/35 hover:text-white/70 transition-colors"
               >
                 <Icon className="w-4 h-4" />
               </a>

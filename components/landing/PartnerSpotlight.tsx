@@ -39,7 +39,7 @@ export default function PartnerSpotlight() {
   if (!partner?.active || !partner.destinationUrl) return null;
 
   return (
-    <section className="py-16 px-6">
+    <section className="landing-section">
       <ScrollReveal className="max-w-4xl mx-auto">
         <div className="landing-card overflow-hidden">
           <div

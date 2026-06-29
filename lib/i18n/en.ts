@@ -297,6 +297,7 @@ export const en = {
     pricingTitle: "Pricing",
     pricingHeadline: "Plans that scale with your stable.",
     pricingSub: "Start free, upgrade as you grow. No hidden fees.",
+    pricingScrollHint: "Swipe horizontally to compare plans",
     pricingMonthly: "Monthly",
     pricingAnnual: "Annual",
     pricingAnnualSave: "Save 20%",

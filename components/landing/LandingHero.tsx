@@ -24,7 +24,7 @@ export default function LandingHero({ onStartFree }: LandingHeroProps) {
         <div className="landing-hero-club-scrim" />
       </div>
 
-      <div className="landing-hero-club-copy relative z-[1] flex-1 flex flex-col items-center justify-center text-center px-5 sm:px-8 pt-24 sm:pt-28 pb-16 sm:pb-20">
+      <div className="landing-hero-club-copy relative z-[1] flex-1 flex flex-col items-center justify-center text-center px-4 sm:px-8 pt-20 sm:pt-24 pb-12 sm:pb-20">
         <h1 className="landing-hero-in landing-hero-in-delay-1 landing-hero-script">
           {t("home.heroTitle")}
         </h1>

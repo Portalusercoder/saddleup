@@ -78,7 +78,12 @@ export default function LandingPlansComparison({
   ];
 
   return (
-    <div className="landing-pricing-compare-scroll">
+    <div
+      className="landing-pricing-compare-scroll"
+      tabIndex={0}
+      role="region"
+      aria-label={t("home.pricingScrollHint")}
+    >
       <div className="landing-pricing-compare">
       <table className="w-full min-w-[720px] text-sm">
         <thead>

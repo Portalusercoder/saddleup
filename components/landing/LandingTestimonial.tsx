@@ -7,12 +7,12 @@ export default function LandingTestimonial() {
   const { t } = useLanguage();
 
   return (
-    <section className="py-24 sm:py-32 px-6 bg-[#1d1d1f] text-white landing-section-header--on-dark">
+    <section className="landing-section bg-[#1d1d1f] text-white landing-section-header--on-dark">
       <ScrollReveal className="max-w-4xl mx-auto text-center">
         <p className="landing-section-eyebrow text-center w-full !mb-8">
           {t("home.testimonialLabel")}
         </p>
-        <blockquote className="landing-display landing-section-title-size text-white/95">
+        <blockquote className="landing-display landing-section-title-size text-white/95 text-balance">
           &ldquo;{t("home.testimonialQuote")}&rdquo;
         </blockquote>
         <footer className="mt-10 flex flex-col items-center gap-1">

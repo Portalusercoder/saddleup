@@ -299,6 +299,7 @@ const arInner = {
     pricingTitle: "الأسعار",
     pricingHeadline: "خطط تنمو مع إسطبلك.",
     pricingSub: "ابدأ مجاناً، وطوّر مع نموك. بلا رسوم خفية.",
+    pricingScrollHint: "اسحب أفقياً لمقارنة الباقات",
     pricingMonthly: "شهري",
     pricingAnnual: "سنوي",
     pricingAnnualSave: "وفّر 20%",

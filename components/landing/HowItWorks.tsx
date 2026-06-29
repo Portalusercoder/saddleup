@@ -125,7 +125,7 @@ export default function HowItWorks() {
                         <span className="landing-hiw-pill">{stepLabel}</span>
                         <div className="landing-hiw-row-copy">
                           <h3 className="landing-heading-step">{step.title}</h3>
-                          <p>{step.desc}</p>
+                          <p className="landing-hiw-row-desc">{step.desc}</p>
                         </div>
                       </motion.button>
                     )}

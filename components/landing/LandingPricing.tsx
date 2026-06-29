@@ -29,7 +29,7 @@ export default function LandingPricing({ onSelectPlan }: LandingPricingProps) {
             <button
               type="button"
               onClick={() => setAnnual(false)}
-              className={`flex-1 sm:flex-none rounded-full px-4 sm:px-5 py-2 text-xs sm:text-sm font-medium transition-all duration-300 ${
+              className={`flex-1 sm:flex-none rounded-full px-4 sm:px-5 py-2.5 text-xs sm:text-sm font-medium transition-all duration-300 min-h-[2.75rem] ${
                 !annual ? "landing-toggle-active shadow-sm" : "landing-toggle-inactive"
               }`}
             >
@@ -38,7 +38,7 @@ export default function LandingPricing({ onSelectPlan }: LandingPricingProps) {
             <button
               type="button"
               onClick={() => setAnnual(true)}
-              className={`flex-1 sm:flex-none rounded-full px-4 sm:px-5 py-2 text-xs sm:text-sm font-medium transition-all duration-300 ${
+              className={`flex-1 sm:flex-none rounded-full px-4 sm:px-5 py-2.5 text-xs sm:text-sm font-medium transition-all duration-300 min-h-[2.75rem] ${
                 annual ? "landing-toggle-active shadow-sm" : "landing-toggle-inactive"
               }`}
             >
