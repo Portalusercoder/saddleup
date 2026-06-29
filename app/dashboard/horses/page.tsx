@@ -11,6 +11,7 @@ import LoadingSpinner from "@/components/ui/LoadingSpinner";
 import TableSkeleton from "@/components/ui/TableSkeleton";
 import HorseIdentificationFields from "@/components/ui/HorseIdentificationFields";
 import GuidedTourOverlay, { type GuidedTourStep } from "@/components/dashboard/GuidedTourOverlay";
+import ModalOverlay from "@/components/ui/ModalOverlay";
 import { usePageTour } from "@/components/dashboard/usePageTour";
 import { trackEvent } from "@/lib/analytics/mixpanel-client";
 import { useLanguage } from "@/components/providers/LanguageProvider";
@@ -662,17 +663,8 @@ export default function HorsesPage() {
         </>
       )}
 
-      {/* Add Horse Modal */}
-      {showModal && (
-        <div
-          className="fixed inset-0 bg-black/80 flex items-center justify-center p-4 z-50 modal-backdrop overflow-y-auto sm:items-center"
-          onClick={() => setShowModal(false)}
-        >
-          <div
-            className="bg-base border border-black/10 p-4 sm:p-6 w-full max-w-2xl max-h-[90vh] overflow-y-auto modal-enter my-auto"
-            onClick={(e) => e.stopPropagation()}
-          >
-            <h2 className="font-serif text-xl text-black mb-6">{t("dashboard.addHorse")}</h2>
+      <ModalOverlay open={showModal} onClose={() => setShowModal(false)} size="lg">
+            <h2 className="font-serif text-xl text-black dark:text-white mb-6">{t("dashboard.addHorse")}</h2>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <HorseIdentificationFields form={form} onChange={handleChange} formInput={formInput} />
               <p className="sm:col-span-2 text-xs uppercase tracking-widest text-black/50 mb-0">
@@ -779,29 +771,22 @@ export default function HorsesPage() {
                 )}
               </button>
             </div>
-          </div>
-        </div>
-      )}
+      </ModalOverlay>
 
-      {/* Log Session Modal */}
-      {showSessionModal && selectedHorse && (
-        <div
-          className="fixed inset-0 bg-black/80 flex items-center justify-center p-4 z-50 modal-backdrop overflow-y-auto sm:items-center"
-          onClick={() => setShowSessionModal(false)}
-        >
-          <div
-            className="bg-base border border-black/10 p-4 sm:p-6 w-full max-w-md max-h-[90vh] overflow-y-auto modal-enter my-auto"
-            onClick={(e) => e.stopPropagation()}
-          >
-            <h2 className="font-serif text-xl text-black mb-2 flex items-center gap-2">
+      <ModalOverlay
+        open={showSessionModal && !!selectedHorse}
+        onClose={() => setShowSessionModal(false)}
+        size="md"
+      >
+            <h2 className="font-serif text-xl text-black dark:text-white mb-2 flex items-center gap-2">
               <HorseAvatar
-                photoUrl={selectedHorse.photoUrl}
-                name={selectedHorse.name}
+                photoUrl={selectedHorse?.photoUrl}
+                name={selectedHorse?.name ?? ""}
                 size="sm"
               />
-              {t("dashboard.horsesLogSessionTitle")} — {selectedHorse.name}
+              {t("dashboard.horsesLogSessionTitle")} — {selectedHorse?.name}
             </h2>
-            <p className="text-sm text-black/60 mb-4">
+            <p className="text-sm text-black/60 dark:text-white/60 mb-4">
               {t("dashboard.horsesLogSessionLead")}
             </p>
             <div className="space-y-4">
@@ -921,9 +906,7 @@ export default function HorsesPage() {
                 )}
               </button>
             </div>
-          </div>
-        </div>
-      )}
+      </ModalOverlay>
 
       {toast && (
         <div className="toast-enter fixed bottom-4 left-4 right-4 sm:left-auto sm:right-6 sm:bottom-6 sm:w-auto bg-base px-4 sm:px-5 py-3 border border-black/10 flex gap-4 items-center z-[80]">

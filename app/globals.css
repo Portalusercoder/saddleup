@@ -957,6 +957,33 @@ html {
   animation: fadeInBackdrop var(--dur-normal) var(--ease-out-quart) forwards;
 }
 
+.dashboard-modal-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 100;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: max(1rem, env(safe-area-inset-top)) max(1rem, env(safe-area-inset-right))
+    max(1rem, env(safe-area-inset-bottom)) max(1rem, env(safe-area-inset-left));
+  background: rgba(0, 0, 0, 0.55);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  overflow-y: auto;
+  overscroll-behavior: contain;
+}
+
+.dark .dashboard-modal-overlay {
+  background: rgba(0, 0, 0, 0.68);
+}
+
+.dashboard-modal-panel {
+  max-height: min(92dvh, 100%);
+  overflow-y: auto;
+  margin: auto;
+  box-shadow: 0 24px 80px rgba(0, 0, 0, 0.35);
+}
+
 .modal-enter {
   animation: scaleInModal 350ms var(--ease-out-expo) forwards;
 }

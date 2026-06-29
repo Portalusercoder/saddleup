@@ -9,6 +9,7 @@ import { HorseAvatar } from "@/components/HorseAvatar";
 import LoadingSpinner from "@/components/ui/LoadingSpinner";
 import PageLoader from "@/components/ui/PageLoader";
 import HorseIdentificationFields from "@/components/ui/HorseIdentificationFields";
+import ModalOverlay from "@/components/ui/ModalOverlay";
 import { useLanguage } from "@/components/providers/LanguageProvider";
 
 interface Session {
@@ -738,17 +739,8 @@ export default function HorseDetailPage() {
         </div>
       </div>
 
-      {/* Edit Horse Modal */}
-      {showEditModal && (
-        <div
-          className="fixed inset-0 bg-black/80 flex items-center justify-center p-4 z-50 modal-backdrop overflow-y-auto sm:items-center"
-          onClick={() => setShowEditModal(false)}
-        >
-          <div
-            className="bg-base border border-black/10 p-4 sm:p-6 w-full max-w-2xl max-h-[90vh] overflow-y-auto modal-enter my-auto"
-            onClick={(e) => e.stopPropagation()}
-          >
-            <h2 className="font-serif text-xl text-black mb-6">{t("dashboard.horseModalEditTitle")}</h2>
+      <ModalOverlay open={showEditModal} onClose={() => setShowEditModal(false)} size="lg">
+            <h2 className="font-serif text-xl text-black dark:text-white mb-6">{t("dashboard.horseModalEditTitle")}</h2>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <HorseIdentificationFields form={editForm} onChange={handleEditChange} formInput={formInput} />
               <p className="sm:col-span-2 text-xs uppercase tracking-widest text-black/50 mb-0">
@@ -799,21 +791,10 @@ export default function HorseDetailPage() {
                 {t("dashboard.horseModalSaveChanges")}
               </button>
             </div>
-          </div>
-        </div>
-      )}
+      </ModalOverlay>
 
-      {/* Health Log Modal */}
-      {showHealthModal && (
-        <div
-          className="fixed inset-0 bg-black/80 flex items-center justify-center p-4 z-50 modal-backdrop overflow-y-auto sm:items-center"
-          onClick={() => setShowHealthModal(false)}
-        >
-          <div
-            className="bg-base border border-black/10 p-4 sm:p-6 w-full max-w-md max-h-[90vh] overflow-y-auto modal-enter my-auto"
-            onClick={(e) => e.stopPropagation()}
-          >
-            <h2 className="font-serif text-xl text-black mb-6">
+      <ModalOverlay open={showHealthModal} onClose={() => setShowHealthModal(false)} size="md">
+            <h2 className="font-serif text-xl text-black dark:text-white mb-6">
               {t("dashboard.horseHealthModalTitle")}
             </h2>
             <div className="space-y-4">
@@ -912,9 +893,7 @@ export default function HorseDetailPage() {
                 )}
               </button>
             </div>
-          </div>
-        </div>
-      )}
+      </ModalOverlay>
     </div>
   );
 }
