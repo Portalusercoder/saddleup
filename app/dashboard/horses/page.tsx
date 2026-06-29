@@ -2,7 +2,7 @@
 
 import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { useProfile } from "@/components/providers/ProfileProvider";
 import HorseStatusPill from "@/components/ui/HorseStatusPill";
 import { HorseAvatar } from "@/components/HorseAvatar";
@@ -98,6 +98,7 @@ export default function HorsesPage() {
   };
 
   const router = useRouter();
+  const searchParams = useSearchParams();
   const [horses, setHorses] = useState<Horse[]>([]);
   const [riders, setRiders] = useState<RiderOption[]>([]);
   const [loading, setLoading] = useState(true);
@@ -148,6 +149,7 @@ export default function HorsesPage() {
   const deleteTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
   const lastDeleted = useRef<Horse | null>(null);
   const photoInputRef = useRef<HTMLInputElement>(null);
+  const logQueryHandled = useRef<string | null>(null);
 
   const [form, setForm] = useState({
     name: "",
@@ -489,6 +491,17 @@ export default function HorsesPage() {
     setShowSessionModal(true);
   };
 
+  useEffect(() => {
+    const logId = searchParams.get("log");
+    if (!logId || loading || horses.length === 0) return;
+    if (logQueryHandled.current === logId) return;
+    const horse = horses.find((h) => String(h.id) === logId);
+    if (!horse) return;
+    logQueryHandled.current = logId;
+    openSessionModal(horse);
+    router.replace("/dashboard/horses", { scroll: false });
+  }, [horses, loading, searchParams, router]);
+
   const filteredHorses = horses.filter((horse) =>
     (horse.name ?? "").toLowerCase().includes(search.toLowerCase())
   );
@@ -610,6 +623,14 @@ export default function HorsesPage() {
                           >
                             ↗
                           </Link>
+                          <Link
+                            href={`/dashboard/horses/${horse.id}?edit=1`}
+                            className={iconBtn}
+                            title={t("dashboard.horsesActionEdit")}
+                            aria-label={t("dashboard.horsesActionEdit")}
+                          >
+                            ✎
+                          </Link>
                           <button
                             type="button"
                             onClick={() => openSessionModal(horse)}
@@ -618,7 +639,7 @@ export default function HorsesPage() {
                             title={t("dashboard.scheduleLogSession")}
                             aria-label={t("dashboard.scheduleLogSession")}
                           >
-                            ✎
+                            ＋
                           </button>
                           <button
                             type="button"

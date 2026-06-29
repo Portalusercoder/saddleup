@@ -3,7 +3,7 @@
 import { useEffect, useState, useRef } from "react";
 import Link from "next/link";
 import { useProfile } from "@/components/providers/ProfileProvider";
-import { useParams } from "next/navigation";
+import { useParams, useSearchParams } from "next/navigation";
 import { generateHorsePassportPdf } from "@/lib/generatePassportPdf";
 import { HorseAvatar } from "@/components/HorseAvatar";
 import LoadingSpinner from "@/components/ui/LoadingSpinner";
@@ -82,6 +82,7 @@ function PassportField({
 
 export default function HorseDetailPage() {
   const params = useParams();
+  const searchParams = useSearchParams();
   const id = params.id as string;
   const { t, lang } = useLanguage();
   const dateLocale = lang === "ar" ? "ar-SA" : "en-US";
@@ -208,6 +209,15 @@ export default function HorseDetailPage() {
     });
     setShowEditModal(true);
   };
+
+  const editQueryHandled = useRef(false);
+  useEffect(() => {
+    if (editQueryHandled.current) return;
+    if (searchParams.get("edit") !== "1" || !horse) return;
+    editQueryHandled.current = true;
+    openEditModal();
+    window.history.replaceState(null, "", `/dashboard/horses/${id}`);
+  }, [horse, searchParams, id]);
 
   const handleEditChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>
@@ -399,7 +409,7 @@ export default function HorseDetailPage() {
                 {t("dashboard.horseDetailEdit")}
               </button>
               <Link
-                href="/dashboard/horses"
+                href={`/dashboard/horses?log=${horse.id}`}
                 className={btnSecondary}
               >
                 {t("dashboard.scheduleLogSession")}

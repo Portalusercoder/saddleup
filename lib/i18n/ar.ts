@@ -671,6 +671,7 @@ const arInner = {
     horsesColOwner: "المالك",
     horsesColActions: "الإجراءات",
     horsesActionView: "عرض الملف",
+    horsesActionEdit: "تعديل الحصان",
     horsesOverworked: "عبء زائد",
     horsesAdded: "تمت إضافة الحصان بنجاح",
     horsesDeleted: "تم حذف الحصان",

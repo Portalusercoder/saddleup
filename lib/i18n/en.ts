@@ -674,6 +674,7 @@ export const en = {
     horsesColOwner: "Owner",
     horsesColActions: "Actions",
     horsesActionView: "View profile",
+    horsesActionEdit: "Edit horse",
     horsesOverworked: "Overworked",
     horsesAdded: "Horse added successfully",
     horsesDeleted: "Horse deleted",
