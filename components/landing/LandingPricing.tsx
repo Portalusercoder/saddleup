@@ -61,17 +61,21 @@ export default function LandingPricing({ onSelectPlan }: LandingPricingProps) {
         </ScrollReveal>
 
         <ScrollReveal delay={0.1} className="mt-20">
-          <h3 className="landing-display landing-ink text-2xl font-semibold mb-6">{t("home.pricingFaqTitle")}</h3>
-          <div className="space-y-3">
+          <p className="landing-ink-faint text-xs uppercase tracking-widest mb-4">
+            {t("home.pricingFaqTitle")}
+          </p>
+          <div className="landing-pricing-faq">
             {faqs.map((faq) => (
-              <details key={faq.q} className="landing-card group overflow-hidden">
-                <summary className="landing-ink cursor-pointer px-6 py-4 text-sm font-medium list-none flex justify-between items-center">
-                  {faq.q}
-                  <span className="landing-ink-dim group-open:rotate-45 transition-transform duration-300 text-xl leading-none">
+              <details key={faq.q} className="landing-pricing-faq-item group">
+                <summary className="landing-pricing-faq-question">
+                  <span>{faq.q}</span>
+                  <span className="landing-pricing-faq-toggle" aria-hidden>
                     +
                   </span>
                 </summary>
-                <p className="px-6 pb-5 text-sm landing-ink-muted leading-relaxed -mt-1">{faq.a}</p>
+                <div className="landing-pricing-faq-answer">
+                  <p>{faq.a}</p>
+                </div>
               </details>
             ))}
           </div>

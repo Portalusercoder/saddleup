@@ -649,6 +649,80 @@ html.dark {
   background: color-mix(in srgb, var(--landing-ink) 6%, transparent);
 }
 
+/* Pricing — FAQ accordion (matches compare table grid) */
+.landing-pricing-faq {
+  border: 1px solid var(--landing-grid-border);
+}
+
+.landing-pricing-faq-item {
+  border-bottom: 1px solid var(--landing-grid-border);
+}
+
+.landing-pricing-faq-item:last-child {
+  border-bottom: none;
+}
+
+.landing-pricing-faq-item[open] {
+  background: color-mix(in srgb, #c9a87c 4%, var(--landing-bg));
+}
+
+.landing-pricing-faq-question {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 1.1rem 1.25rem;
+  cursor: pointer;
+  list-style: none;
+  font-size: 0.9375rem;
+  font-weight: 500;
+  color: var(--landing-ink);
+  transition: background 0.2s ease;
+}
+
+.landing-pricing-faq-question::-webkit-details-marker {
+  display: none;
+}
+
+.landing-pricing-faq-question:hover {
+  background: color-mix(in srgb, var(--landing-ink) 3%, transparent);
+}
+
+.landing-pricing-faq-item[open] .landing-pricing-faq-question:hover {
+  background: transparent;
+}
+
+.landing-pricing-faq-toggle {
+  flex-shrink: 0;
+  width: 1.5rem;
+  height: 1.5rem;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.125rem;
+  line-height: 1;
+  color: var(--landing-ink-faint);
+  transition: transform 0.25s ease, color 0.2s ease;
+}
+
+.landing-pricing-faq-item[open] .landing-pricing-faq-toggle {
+  transform: rotate(45deg);
+  color: #c9a87c;
+}
+
+.landing-pricing-faq-answer {
+  padding: 0 1.25rem 1.15rem;
+  border-top: 1px solid var(--landing-grid-border);
+}
+
+.landing-pricing-faq-answer p {
+  margin: 0;
+  padding-top: 1rem;
+  font-size: 0.875rem;
+  line-height: 1.65;
+  color: var(--landing-ink-muted);
+}
+
 .landing-glass {
   background: rgba(255, 255, 255, 0.65);
   backdrop-filter: blur(24px) saturate(180%);
