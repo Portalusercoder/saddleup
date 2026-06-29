@@ -233,10 +233,11 @@ export const en = {
   },
   home: {
     heroEyebrow: "Stable management platform",
+    heroTitle: "Saddle Up",
     heroLine1: "Run your barn",
     heroLine2: "with clarity.",
     heroSub:
-      "The operating system for riding schools, trainers, and horse owners — built for the GCC.",
+      "Professional stable management for riding schools, trainers, and horse owners — rooted in tradition, guided by experience, and built for the GCC.",
     trustBuiltFor: "Schools, trainers & owners",
     trustArabic: "Arabic & English",
     trustFreeStart: "Free to start",

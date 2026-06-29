@@ -7,7 +7,7 @@ import { LanguageProvider } from "@/components/providers/LanguageProvider"
 import { ThemeProvider } from "@/components/providers/ThemeProvider"
 import AnalyticsProvider from "@/components/providers/AnalyticsProvider"
 import GoogleAnalyticsProvider from "@/components/providers/GoogleAnalyticsProvider"
-import { Playfair_Display, Inter, Tajawal } from "next/font/google"
+import { Playfair_Display, Inter, Tajawal, Pinyon_Script } from "next/font/google"
 import Script from "next/script"
 import type { Metadata } from "next"
 import { Suspense } from "react"
@@ -28,6 +28,13 @@ const tajawal = Tajawal({
   subsets: ["arabic"],
   variable: "--font-tajawal",
   weight: ["400", "500", "700"],
+  display: "swap",
+})
+
+const pinyonScript = Pinyon_Script({
+  subsets: ["latin"],
+  variable: "--font-hero-script",
+  weight: "400",
   display: "swap",
 })
 
@@ -85,7 +92,7 @@ export default function RootLayout({
   return (
     <html
       lang="en"
-      className={`${playfair.variable} ${inter.variable} ${tajawal.variable}`}
+      className={`${playfair.variable} ${inter.variable} ${tajawal.variable} ${pinyonScript.variable}`}
       suppressHydrationWarning
     >
       <head>

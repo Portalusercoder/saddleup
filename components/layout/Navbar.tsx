@@ -93,10 +93,10 @@ export default function Navbar() {
     return () => window.removeEventListener("scroll", check);
   }, [isHome]);
 
-  const isOverHero = isHome && !scrolledPastHero && !navCompact;
+  const isClubHero = isHome && !scrolledPastHero && !user;
   const isDashboard = pathname.startsWith("/dashboard");
-  const navOnDark = isOverHero;
-  const chromeVariant = navOnDark || theme === "dark" ? "light" : "dark";
+  const navOnDark = false;
+  const chromeVariant = isClubHero ? "dark" : theme === "dark" ? "light" : "dark";
 
   if (isAuthPage) return null;
 
@@ -109,6 +109,8 @@ export default function Navbar() {
     <div className="relative">
       <nav
         className={`flex items-center gap-3 fixed top-0 left-0 right-0 w-full z-50 transition-all duration-500 ease-out ${
+          isClubHero ? "relative" : ""
+        } ${
           isHome && navCompact ? "h-14 sm:h-16" : "h-16 sm:h-20"
         } ${
           isDashboard
@@ -117,13 +119,50 @@ export default function Navbar() {
         } ${
           isDashboard
             ? "bg-base border-b border-black/10 text-black"
-            : isMarketing && navOnDark
-              ? "bg-black/20 backdrop-blur-md text-white"
+            : isClubHero
+              ? "bg-transparent border-b border-[#3d2918]/10 text-[#3d2918] dark:border-white/10 dark:text-[var(--landing-ink)]"
               : isMarketing
                 ? "bg-[#f5f5f7]/90 dark:bg-[#0f0f0f]/90 backdrop-blur-xl border-b border-black/[0.04] dark:border-white/[0.08] text-[#1d1d1f] dark:text-white"
                 : "bg-base border-b border-black/10 text-black"
         }`}
       >
+        {isClubHero ? (
+          <>
+            <div className="flex items-center gap-1 flex-1 min-w-0">
+              <button
+                type="button"
+                onClick={() => setMarketingMobileOpen(true)}
+                className="p-2 -ms-1 text-current/75 hover:text-current hover:bg-black/[0.04] dark:hover:bg-white/[0.06] transition-colors"
+                aria-label={t("nav.menu")}
+              >
+                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden>
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.75} d="M4 7h16M4 12h16" />
+                </svg>
+              </button>
+            </div>
+
+            <Link
+              href="/"
+              className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 shrink-0"
+              aria-label="Saddle Up"
+            >
+              <span className="landing-hero-monogram" aria-hidden>
+                SU
+              </span>
+            </Link>
+
+            <div className="flex items-center justify-end gap-1 sm:gap-2 flex-1 min-w-0">
+              <div dir="ltr" className="flex items-center gap-1 sm:gap-2 shrink-0">
+                <ThemeToggle variant={chromeVariant} />
+                <LanguageToggle variant={chromeVariant} compact />
+                <Link href="/signup" className="landing-hero-nav-cta hidden sm:inline-flex">
+                  {t("nav.startFree")}
+                </Link>
+              </div>
+            </div>
+          </>
+        ) : (
+          <>
         {/* Logo (marketing) */}
         {isMarketing && !user ? (
           <Link href="/" className="shrink-0 min-w-0">
@@ -243,6 +282,8 @@ export default function Navbar() {
               )}
             </svg>
           </button>
+        )}
+          </>
         )}
       </nav>
 
