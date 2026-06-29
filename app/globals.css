@@ -533,8 +533,13 @@ html.dark {
 }
 
 /* Pricing — plan comparison table */
+.landing-pricing-compare-scroll {
+  overflow-x: auto;
+}
+
 .landing-pricing-compare {
   border: 1px solid var(--landing-grid-border);
+  padding-top: 0.875rem;
 }
 
 .landing-pricing-compare table {
@@ -572,8 +577,12 @@ html.dark {
 .landing-pricing-compare-plan {
   position: relative;
   text-align: left;
-  padding: 1.5rem 1.25rem 1.25rem;
+  padding: 1.25rem 1.25rem 1.25rem;
   min-width: 9.5rem;
+}
+
+.landing-pricing-compare-plan.landing-pricing-compare-popular {
+  padding-top: 1.75rem;
 }
 
 .landing-pricing-compare-cell {
@@ -589,8 +598,9 @@ html.dark {
   position: absolute;
   top: 0;
   left: 50%;
+  z-index: 1;
   transform: translate(-50%, -50%);
-  padding: 0.2rem 0.65rem;
+  padding: 0.25rem 0.7rem;
   font-size: 0.625rem;
   font-weight: 600;
   font-style: italic;
@@ -600,6 +610,7 @@ html.dark {
   background: var(--landing-bg);
   border: 1px solid color-mix(in srgb, #c9a87c 45%, transparent);
   white-space: nowrap;
+  line-height: 1.2;
 }
 
 .landing-pricing-compare-cta {

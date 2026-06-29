@@ -78,7 +78,8 @@ export default function LandingPlansComparison({
   ];
 
   return (
-    <div className="landing-pricing-compare overflow-x-auto">
+    <div className="landing-pricing-compare-scroll">
+      <div className="landing-pricing-compare">
       <table className="w-full min-w-[720px] text-sm">
         <thead>
           <tr>
@@ -158,6 +159,7 @@ export default function LandingPlansComparison({
           </tr>
         </tfoot>
       </table>
+      </div>
     </div>
   );
 }
