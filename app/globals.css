@@ -532,6 +532,112 @@ html.dark {
   color: #d4b896;
 }
 
+/* Pricing — plan comparison table */
+.landing-pricing-compare {
+  border: 1px solid var(--landing-grid-border);
+}
+
+.landing-pricing-compare table {
+  border-collapse: collapse;
+}
+
+.landing-pricing-compare th,
+.landing-pricing-compare td {
+  border-bottom: 1px solid var(--landing-grid-border);
+  border-right: 1px solid var(--landing-grid-border);
+  vertical-align: middle;
+}
+
+.landing-pricing-compare th:last-child,
+.landing-pricing-compare td:last-child {
+  border-right: none;
+}
+
+.landing-pricing-compare tbody tr:last-child td,
+.landing-pricing-compare tfoot tr td {
+  border-bottom: none;
+}
+
+.landing-pricing-compare-feature {
+  text-align: left;
+  padding: 1rem 1.25rem;
+  font-size: 0.75rem;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  width: 11rem;
+  min-width: 9rem;
+}
+
+.landing-pricing-compare-plan {
+  position: relative;
+  text-align: left;
+  padding: 1.5rem 1.25rem 1.25rem;
+  min-width: 9.5rem;
+}
+
+.landing-pricing-compare-cell {
+  text-align: center;
+  padding: 0.9rem 1rem;
+}
+
+.landing-pricing-compare-popular {
+  background: color-mix(in srgb, #c9a87c 7%, var(--landing-bg));
+}
+
+.landing-pricing-compare-badge {
+  position: absolute;
+  top: 0;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  padding: 0.2rem 0.65rem;
+  font-size: 0.625rem;
+  font-weight: 600;
+  font-style: italic;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: #c9a87c;
+  background: var(--landing-bg);
+  border: 1px solid color-mix(in srgb, #c9a87c 45%, transparent);
+  white-space: nowrap;
+}
+
+.landing-pricing-compare-cta {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  max-width: 11rem;
+  padding: 0.65rem 1rem;
+  font-size: 0.8125rem;
+  font-weight: 500;
+  border-radius: 9999px;
+  transition: opacity 0.2s ease, background 0.2s ease;
+}
+
+.landing-pricing-compare-cta:hover {
+  opacity: 0.92;
+}
+
+.landing-pricing-compare-cta-accent {
+  background: #c9a87c;
+  color: #fff;
+}
+
+.landing-pricing-compare-cta-solid {
+  background: var(--landing-ink);
+  color: var(--landing-bg);
+}
+
+.landing-pricing-compare-cta-outline {
+  border: 1px solid color-mix(in srgb, var(--landing-ink) 25%, transparent);
+  color: var(--landing-ink);
+}
+
+.landing-pricing-compare-cta-outline:hover {
+  background: color-mix(in srgb, var(--landing-ink) 6%, transparent);
+}
+
 .landing-glass {
   background: rgba(255, 255, 255, 0.65);
   backdrop-filter: blur(24px) saturate(180%);

@@ -1,14 +1,9 @@
 "use client";
 
 import { useState } from "react";
-import Link from "next/link";
 import ScrollReveal from "@/components/ui/ScrollReveal";
+import LandingPlansComparison from "@/components/landing/LandingPlansComparison";
 import { useLanguage } from "@/components/providers/LanguageProvider";
-import { SUBSCRIPTION_LIMITS, SUBSCRIPTION_PLANS } from "@/lib/constants";
-
-type PlanId = keyof typeof SUBSCRIPTION_LIMITS;
-
-const PLAN_IDS: PlanId[] = ["free", "starter", "stable", "enterprise"];
 
 type LandingPricingProps = {
   onSelectPlan: (planId?: string) => void;
@@ -17,32 +12,6 @@ type LandingPricingProps = {
 export default function LandingPricing({ onSelectPlan }: LandingPricingProps) {
   const { t } = useLanguage();
   const [annual, setAnnual] = useState(false);
-
-  const priceFor = (id: PlanId) => {
-    const plan = SUBSCRIPTION_PLANS.find((p) => p.id === id);
-    if (!plan || plan.price == null) return t("home.priceContact");
-    if (plan.price === 0) return t("home.priceFree");
-    if (annual) {
-      const yearly = Math.round(plan.price * 12 * 0.8 * 100) / 100;
-      return `$${yearly.toFixed(0)}${t("home.pricePerYr")}`;
-    }
-    return `$${plan.price.toFixed(2)}${t("home.pricePerMo")}`;
-  };
-
-  const formatLimit = (n: number) => (n >= 9999 ? t("dashboard.plansCompareUnlimited") : String(n));
-
-  const highlights = (id: PlanId): string[] => {
-    const limits = SUBSCRIPTION_LIMITS[id];
-    const items = [
-      `${formatLimit(limits.horses)} ${t("dashboard.plansCompareHorses").toLowerCase()}`,
-      `${formatLimit(limits.riders)} ${t("dashboard.plansCompareRiders").toLowerCase()}`,
-    ];
-    if (limits.analytics) items.push(t("dashboard.plansCompareAnalytics"));
-    if (limits.matching) items.push(t("dashboard.plansCompareMatching"));
-    if (id === "stable" || id === "enterprise") items.push(t("dashboard.plansComparePriority"));
-    if (id === "enterprise") items.push(t("dashboard.plansCompareDedicated"));
-    return items;
-  };
 
   const faqs = [
     { q: t("home.pricingFaq1Q"), a: t("home.pricingFaq1A") },
@@ -84,58 +53,12 @@ export default function LandingPricing({ onSelectPlan }: LandingPricingProps) {
           </div>
         </ScrollReveal>
 
-        <div className="grid sm:grid-cols-2 xl:grid-cols-4 gap-4">
-          {PLAN_IDS.map((id, i) => {
-            const isPopular = id === "starter";
-            return (
-              <ScrollReveal key={id} delay={0.05 + i * 0.06}>
-                <div
-                  className={`landing-card p-6 sm:p-7 h-full flex flex-col relative ${
-                    isPopular ? "ring-2 ring-accent/25 shadow-lg" : ""
-                  }`}
-                >
-                  {isPopular && (
-                    <span className="absolute -top-3 left-1/2 -translate-x-1/2 bg-accent text-white text-[0.65rem] font-semibold uppercase tracking-wider px-3 py-1 rounded-full">
-                      {t("home.pricingMostPopular")}
-                    </span>
-                  )}
-                  <p className="text-sm font-medium landing-ink-faint">{t(`pricing.${id}.name`)}</p>
-                  <p className="landing-display landing-ink mt-2 text-3xl font-semibold">{priceFor(id)}</p>
-                  <ul className="mt-6 space-y-2.5 flex-1">
-                    {highlights(id).map((item) => (
-                      <li key={item} className="flex items-start gap-2 text-sm landing-ink-subtle">
-                        <span className="text-accent mt-0.5 shrink-0" aria-hidden>
-                          ✓
-                        </span>
-                        {item}
-                      </li>
-                    ))}
-                  </ul>
-                  {id === "enterprise" ? (
-                    <Link
-                      href="/contact?type=enterprise"
-                      className="mt-6 block w-full py-3 text-center rounded-full landing-outline-btn text-sm font-medium transition"
-                    >
-                      {t("home.contactSales")}
-                    </Link>
-                  ) : (
-                    <button
-                      type="button"
-                      onClick={() => onSelectPlan(id === "free" ? undefined : id)}
-                      className={`mt-6 w-full py-3 rounded-full text-sm font-medium transition ${
-                        isPopular
-                          ? "bg-accent text-white hover:opacity-95"
-                          : "landing-solid-btn"
-                      }`}
-                    >
-                      {t("nav.startFree")}
-                    </button>
-                  )}
-                </div>
-              </ScrollReveal>
-            );
-          })}
-        </div>
+        <ScrollReveal delay={0.06}>
+          <p className="landing-ink-faint text-xs uppercase tracking-widest mb-4">
+            {t("dashboard.plansCompareHeading")}
+          </p>
+          <LandingPlansComparison annual={annual} t={t} onSelectPlan={onSelectPlan} />
+        </ScrollReveal>
 
         <ScrollReveal delay={0.1} className="mt-20">
           <h3 className="landing-display landing-ink text-2xl font-semibold mb-6">{t("home.pricingFaqTitle")}</h3>
