@@ -1,10 +1,15 @@
 "use client";
 
+import { useState } from "react";
+import Image from "next/image";
 import ScrollReveal from "@/components/ui/ScrollReveal";
 import { useLanguage } from "@/components/providers/LanguageProvider";
 
+const STEP_IMAGES = ["/horseback.jpg", "/hero-bg.png", "/hero-bg.jpg"] as const;
+
 export default function HowItWorks() {
   const { t } = useLanguage();
+  const [activeStep, setActiveStep] = useState(0);
 
   const steps = [
     { n: "01", title: t("home.howStep1Title"), desc: t("home.howStep1Desc") },
@@ -12,47 +17,68 @@ export default function HowItWorks() {
     { n: "03", title: t("home.howStep3Title"), desc: t("home.howStep3Desc") },
   ];
 
-  const trustItems = [
-    t("home.trustBuiltFor"),
-    t("home.trustArabic"),
-    t("home.trustFreeStart"),
-  ];
-
   return (
-    <section id="how-it-works" className="landing-section pt-12 sm:pt-16 pb-20 sm:pb-28 px-5 sm:px-6">
+    <section id="how-it-works" className="landing-section landing-hiw pt-12 sm:pt-16 pb-20 sm:pb-28 px-5 sm:px-6">
       <div className="max-w-6xl mx-auto">
-        <ScrollReveal className="flex flex-wrap justify-center gap-2 sm:gap-3 mb-12 sm:mb-16">
-          {trustItems.map((item) => (
-            <span
-              key={item}
-              className="landing-trust-pill rounded-full px-3.5 py-1.5 text-[0.68rem] sm:text-xs font-medium"
-            >
-              {item}
-            </span>
-          ))}
-        </ScrollReveal>
-
-        <ScrollReveal className="text-center max-w-2xl mx-auto mb-10 sm:mb-14">
-          <p className="landing-section-label">{t("home.howItWorksTitle")}</p>
-          <h2 className="landing-display landing-ink mt-3 text-[1.75rem] sm:text-4xl md:text-[2.75rem] font-semibold tracking-tight">
-            {t("home.howItWorksHeadline")}
+        <ScrollReveal>
+          <h2 className="landing-hiw-headline landing-display">
+            <span className="landing-hiw-headline-muted">/</span>
+            <span className="landing-hiw-headline-muted">{t("home.howItWorksHeadlineMuted")}</span>
+            <span className="landing-hiw-headline-strong">{t("home.howItWorksHeadlineStrong")}</span>
           </h2>
         </ScrollReveal>
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-5">
-          {steps.map((step, i) => (
-            <ScrollReveal
-              key={step.n}
-              delay={i * 0.08}
-              className={i === 2 ? "sm:col-span-2 lg:col-span-1 sm:max-w-md sm:mx-auto lg:max-w-none lg:mx-0 w-full" : ""}
-            >
-              <div className="landing-card p-6 sm:p-8 h-full">
-                <span className="text-xs font-semibold text-accent/70 tracking-widest">{step.n}</span>
-                <h3 className="landing-display landing-ink mt-4 text-xl font-semibold">{step.title}</h3>
-                <p className="mt-3 landing-ink-muted text-sm leading-relaxed">{step.desc}</p>
-              </div>
-            </ScrollReveal>
-          ))}
+        <div className="landing-hiw-steps">
+          {steps.map((step, i) => {
+            const isActive = activeStep === i;
+            const stepLabel = `${t("home.howItWorksStepLabel")} ${step.n}`;
+
+            if (isActive) {
+              return (
+                <ScrollReveal key={step.n} delay={i * 0.04}>
+                  <article className="landing-hiw-panel" aria-current="step">
+                    <div className="landing-hiw-panel-media" aria-hidden>
+                      <Image
+                        src={STEP_IMAGES[i]}
+                        alt=""
+                        fill
+                        sizes="(max-width: 768px) 100vw, 1152px"
+                        className="landing-hiw-panel-photo"
+                      />
+                      <div className="landing-hiw-panel-scrim" />
+                    </div>
+
+                    <div className="landing-hiw-panel-inner">
+                      <div className="landing-hiw-panel-header">
+                        <span className="landing-hiw-pill landing-hiw-pill--inverse">{stepLabel}</span>
+                        <div className="landing-hiw-panel-copy">
+                          <h3>{step.title}</h3>
+                          <p>{step.desc}</p>
+                        </div>
+                      </div>
+                    </div>
+                  </article>
+                </ScrollReveal>
+              );
+            }
+
+            return (
+              <ScrollReveal key={step.n} delay={i * 0.04}>
+                <button
+                  type="button"
+                  className="landing-hiw-row"
+                  onClick={() => setActiveStep(i)}
+                  aria-expanded={false}
+                >
+                  <span className="landing-hiw-pill">{stepLabel}</span>
+                  <div className="landing-hiw-row-copy">
+                    <h3>{step.title}</h3>
+                    <p>{step.desc}</p>
+                  </div>
+                </button>
+              </ScrollReveal>
+            );
+          })}
         </div>
       </div>
     </section>

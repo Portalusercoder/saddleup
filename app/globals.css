@@ -363,12 +363,6 @@ html.dark {
   color: var(--landing-ink-dim);
 }
 
-.landing-trust-pill {
-  background: var(--landing-pill-bg);
-  border: 1px solid var(--landing-pill-border);
-  color: var(--landing-ink-subtle);
-}
-
 .landing-toggle-active {
   background: var(--landing-ink);
   color: var(--landing-bg);
@@ -940,6 +934,202 @@ html.dark {
 
 .landing-hero-nav-cta:hover {
   background: color-mix(in srgb, currentColor 6%, transparent);
+}
+
+/* How it works — accordion steps with featured panel */
+.landing-hiw-headline {
+  font-size: clamp(2rem, 5.5vw, 3.35rem);
+  font-weight: 600;
+  letter-spacing: -0.03em;
+  line-height: 1.08;
+  margin-bottom: 2.25rem;
+  text-align: start;
+}
+
+.landing-hiw-headline-muted {
+  color: var(--landing-ink-muted);
+}
+
+.landing-hiw-headline-strong {
+  color: var(--landing-ink);
+}
+
+.landing-hiw-steps {
+  display: flex;
+  flex-direction: column;
+}
+
+.landing-hiw-panel {
+  position: relative;
+  min-height: clamp(18rem, 44vw, 27rem);
+  margin-bottom: 0.25rem;
+  background: #0a0a0a;
+  border: 1px solid color-mix(in srgb, var(--landing-ink) 10%, transparent);
+  overflow: hidden;
+}
+
+.landing-hiw-panel-media {
+  position: absolute;
+  inset: 0;
+}
+
+.landing-hiw-panel-photo {
+  object-fit: cover;
+  object-position: center;
+  filter: grayscale(100%) contrast(1.08);
+  opacity: 0.62;
+}
+
+.landing-hiw-panel-scrim {
+  position: absolute;
+  inset: 0;
+  background:
+    linear-gradient(180deg, rgba(10, 10, 10, 0.88) 0%, rgba(10, 10, 10, 0.42) 42%, rgba(10, 10, 10, 0.72) 100%),
+    radial-gradient(ellipse 70% 80% at 50% 58%, transparent 0%, rgba(10, 10, 10, 0.55) 100%);
+}
+
+.landing-hiw-panel-inner {
+  position: relative;
+  z-index: 1;
+  min-height: inherit;
+  display: flex;
+  flex-direction: column;
+  padding: 1.25rem 1.25rem 1.5rem;
+}
+
+@media (min-width: 640px) {
+  .landing-hiw-panel-inner {
+    padding: 1.5rem 1.75rem 1.75rem;
+  }
+}
+
+.landing-hiw-panel-header {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 1.25rem;
+}
+
+@media (min-width: 768px) {
+  .landing-hiw-panel-header {
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 2rem;
+  }
+}
+
+.landing-hiw-panel-copy {
+  max-width: 22rem;
+  text-align: start;
+}
+
+@media (min-width: 768px) {
+  .landing-hiw-panel-copy {
+    text-align: end;
+    margin-inline-start: auto;
+  }
+}
+
+.landing-hiw-panel-copy h3 {
+  font-size: 1.125rem;
+  font-weight: 600;
+  letter-spacing: -0.02em;
+  color: #fff;
+}
+
+@media (min-width: 640px) {
+  .landing-hiw-panel-copy h3 {
+    font-size: 1.25rem;
+  }
+}
+
+.landing-hiw-panel-copy p {
+  margin-top: 0.5rem;
+  font-size: 0.875rem;
+  line-height: 1.6;
+  color: rgba(255, 255, 255, 0.72);
+}
+
+.landing-hiw-pill {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.4rem 0.95rem;
+  border-radius: 9999px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: 0.01em;
+  background: var(--landing-ink);
+  color: var(--landing-bg);
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+.landing-hiw-pill--inverse {
+  background: #fff;
+  color: #0a0a0a;
+}
+
+.landing-hiw-row {
+  width: 100%;
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  gap: 1.25rem 1.75rem;
+  align-items: start;
+  padding: 1.5rem 0;
+  border: 0;
+  border-bottom: 1px solid var(--landing-card-border);
+  background: transparent;
+  text-align: start;
+  cursor: pointer;
+  transition: opacity 0.2s ease;
+}
+
+.landing-hiw-row:hover {
+  opacity: 0.82;
+}
+
+.landing-hiw-row-copy h3 {
+  font-size: 1rem;
+  font-weight: 600;
+  letter-spacing: -0.02em;
+  color: var(--landing-ink);
+}
+
+@media (min-width: 640px) {
+  .landing-hiw-row-copy h3 {
+    font-size: 1.0625rem;
+  }
+}
+
+.landing-hiw-row-copy p {
+  margin-top: 0.35rem;
+  max-width: 34rem;
+  font-size: 0.875rem;
+  line-height: 1.55;
+  color: var(--landing-ink-muted);
+}
+
+@media (min-width: 768px) {
+  .landing-hiw-row {
+    grid-template-columns: auto minmax(0, 1fr);
+    gap: 2rem 3rem;
+    padding: 1.75rem 0;
+  }
+
+  .landing-hiw-row-copy {
+    justify-self: end;
+    max-width: 22rem;
+    text-align: end;
+  }
+
+  [dir="rtl"] .landing-hiw-panel-copy,
+  [dir="rtl"] .landing-hiw-row-copy {
+    margin-inline-start: 0;
+    margin-inline-end: auto;
+    text-align: start;
+  }
 }
 
 .landing-cta-pill {
