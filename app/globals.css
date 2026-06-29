@@ -493,6 +493,14 @@ html.dark {
   min-height: 7.5rem;
 }
 
+.landing-benefits-cell:first-child .landing-benefits-visual {
+  min-height: 11rem;
+}
+
+.landing-passport-mockup {
+  filter: contrast(1.05);
+}
+
 .landing-benefits-cta {
   display: inline-flex;
   align-items: center;

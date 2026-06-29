@@ -4,24 +4,100 @@ const ghostStroke = "stroke-current text-[var(--landing-ink)] opacity-[0.22]";
 const ghostFill = "fill-current text-[var(--landing-ink)] opacity-[0.08]";
 const ghostMuted = "stroke-current text-[var(--landing-ink)] opacity-[0.14]";
 
+/** Wireframe silhouette of the horse passport screen (line-art mockup). */
 export function IllustrationHorseProfile() {
+  const lineSoft = { stroke: "currentColor", strokeWidth: 0.75, strokeOpacity: 0.28, vectorEffect: "non-scaling-stroke" as const };
+  const lineMid = { ...lineSoft, strokeOpacity: 0.42 };
+  const lineStrong = { ...lineSoft, strokeOpacity: 0.55 };
+
   return (
-    <div className="mx-auto w-full max-w-[168px]" aria-hidden>
-      <div
-        className="rounded-[1.25rem] border p-2"
-        style={{ borderColor: "color-mix(in srgb, var(--landing-ink) 18%, transparent)" }}
+    <div className="landing-passport-mockup mx-auto w-full max-w-[300px]" aria-hidden>
+      <svg
+        viewBox="0 0 300 210"
+        className="w-full h-auto text-[var(--landing-ink)]"
+        fill="none"
+        role="img"
+        aria-label=""
       >
-        <div className="rounded-xl border p-3" style={{ borderColor: "color-mix(in srgb, var(--landing-ink) 12%, transparent)" }}>
-          <div className={`h-8 w-8 rounded-full ${ghostFill} mb-3`} />
-          <div className={`h-1.5 w-16 rounded ${ghostFill} mb-4`} />
-          {["General", "Health", "Files"].map((_, i) => (
-            <div key={i} className="flex items-center gap-2 mb-2">
-              <div className={`h-3 w-3 rounded ${ghostFill}`} />
-              <div className={`h-1.5 rounded ${ghostFill}`} style={{ width: `${52 + i * 8}%` }} />
-            </div>
-          ))}
-        </div>
-      </div>
+        {/* Device / document frame */}
+        <rect
+          x="0.5"
+          y="0.5"
+          width="299"
+          height="209"
+          rx="5"
+          style={{ fill: "color-mix(in srgb, var(--landing-ink) 3%, var(--landing-bg))" }}
+          stroke="currentColor"
+          strokeOpacity="0.22"
+          strokeWidth="1"
+        />
+
+        {/* Passport header band */}
+        <rect x="0.5" y="0.5" width="299" height="34" rx="5" fill="currentColor" fillOpacity="0.1" />
+        <line x1="0.5" y1="34.5" x2="299.5" y2="34.5" {...lineMid} />
+        <rect x="14" y="11" width="88" height="5" rx="1" fill="currentColor" fillOpacity="0.38" />
+        <rect x="14" y="20" width="118" height="2.5" rx="1" fill="currentColor" fillOpacity="0.18" />
+        <rect x="214" y="12" width="72" height="2.5" rx="1" fill="currentColor" fillOpacity="0.16" />
+        <rect x="232" y="19" width="54" height="2.5" rx="1" fill="currentColor" fillOpacity="0.12" />
+
+        {/* Section I title */}
+        <rect x="14" y="44" width="156" height="3" rx="1" fill="currentColor" fillOpacity="0.3" />
+        <line x1="14" y1="54" x2="286" y2="54" {...lineSoft} />
+
+        {/* Photo column */}
+        <rect x="14" y="62" width="62" height="82" {...lineMid} />
+        <rect x="18" y="66" width="54" height="74" {...lineSoft} />
+        {/* Horse head silhouette */}
+        <path
+          d="M36 118c2-14 10-24 22-26 8-1 14 2 18 8 5-3 12-2 16 3 5 6 3 14-3 18 3 7-1 14-8 16-4 10-13 17-24 17-14 0-25-11-25-25 0-4 1-8 4-11z"
+          fill="currentColor"
+          fillOpacity="0.07"
+          stroke="currentColor"
+          strokeOpacity="0.35"
+          strokeWidth="0.85"
+        />
+        <path
+          d="M58 86c3 4 4 9 2 13M44 92c-2 3-2 7 0 10"
+          stroke="currentColor"
+          strokeOpacity="0.28"
+          strokeWidth="0.75"
+          strokeLinecap="round"
+        />
+        <rect x="22" y="148" width="46" height="2" rx="1" fill="currentColor" fillOpacity="0.14" />
+
+        {/* Identification rows */}
+        {[0, 1, 2, 3, 4, 5, 6, 7].map((row) => {
+          const y = 64 + row * 11.5;
+          return (
+            <g key={row}>
+              <rect x="86" y={y} width={58 + (row % 3) * 8} height="2" rx="1" fill="currentColor" fillOpacity="0.22" />
+              <rect x="198" y={y} width={72 - (row % 4) * 6} height="2" rx="1" fill="currentColor" fillOpacity="0.12" />
+              <line x1="86" y1={y + 7.5} x2="286" y2={y + 7.5} {...lineSoft} />
+            </g>
+          );
+        })}
+
+        {/* Owner block + workload stat */}
+        <line x1="14" y1="156" x2="286" y2="156" {...lineSoft} />
+        <rect x="14" y="164" width="92" height="3" rx="1" fill="currentColor" fillOpacity="0.26" />
+        {[0, 1, 2].map((row) => (
+          <g key={`owner-${row}`}>
+            <rect x="14" y={174 + row * 9} width={48 + row * 6} height="2" rx="1" fill="currentColor" fillOpacity="0.16" />
+            <rect x="118" y={174 + row * 9} width={52 - row * 4} height="2" rx="1" fill="currentColor" fillOpacity="0.1" />
+          </g>
+        ))}
+
+        <rect x="198" y="164" width="88" height="38" {...lineMid} />
+        <rect x="206" y="172" width="52" height="2.5" rx="1" fill="currentColor" fillOpacity="0.18" />
+        <rect x="206" y="182" width="34" height="6" rx="1" fill="currentColor" fillOpacity="0.1" />
+        <rect x="244" y="182" width="34" height="6" rx="1" fill="currentColor" fillOpacity="0.1" />
+
+        {/* Tabs */}
+        <line x1="14" y1="206" x2="286" y2="206" {...lineStrong} />
+        <rect x="14" y="198" width="78" height="2.5" rx="1" fill="currentColor" fillOpacity="0.34" />
+        <line x1="14" y1="206" x2="92" y2="206" stroke="currentColor" strokeOpacity="0.55" strokeWidth="1.25" />
+        <rect x="108" y="198" width="64" height="2.5" rx="1" fill="currentColor" fillOpacity="0.14" />
+      </svg>
     </div>
   );
 }
