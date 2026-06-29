@@ -1184,6 +1184,7 @@ export const en = {
     horseModalPhotoUrlPlaceholder: "Or paste image URL",
     horseModalSaveChanges: "Save changes",
     horseHealthModalTitle: "Add health record",
+    horseHealthHorseLabel: "Horse",
     horseHealthTypeLabel: "Type",
     horseHealthDescriptionPlaceholder: "Description",
     horseHealthCostPlaceholder: "Cost ($)",

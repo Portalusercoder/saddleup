@@ -501,6 +501,14 @@ html.dark {
   filter: contrast(1.05);
 }
 
+.landing-session-mockup {
+  filter: contrast(1.05);
+}
+
+.landing-benefits-cell:nth-child(2) .landing-benefits-visual {
+  min-height: 11rem;
+}
+
 .landing-benefits-cta {
   display: inline-flex;
   align-items: center;

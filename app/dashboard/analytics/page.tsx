@@ -8,6 +8,7 @@ import { useTheme } from "@/components/providers/ThemeProvider";
 import TableSkeleton from "@/components/ui/TableSkeleton";
 import DashboardEmptyState from "@/components/ui/DashboardEmptyState";
 import GuidedTourOverlay, { type GuidedTourStep } from "@/components/dashboard/GuidedTourOverlay";
+import AddHealthRecordModal from "@/components/dashboard/AddHealthRecordModal";
 import { usePageTour } from "@/components/dashboard/usePageTour";
 import { useLanguage } from "@/components/providers/LanguageProvider";
 import {
@@ -43,6 +44,8 @@ export default function AnalyticsPage() {
   const [loading, setLoading] = useState(true);
   const [locked, setLocked] = useState(false);
   const [horseFilter, setHorseFilter] = useState<string>("all");
+  const [showHealthModal, setShowHealthModal] = useState(false);
+  const [horses, setHorses] = useState<{ id: string; name: string }[]>([]);
   const { open: showTour, complete: completeTour } = usePageTour(
     "saddleup_tour_analytics_v1",
     !loading && !locked && Boolean(data)
@@ -80,7 +83,30 @@ export default function AnalyticsPage() {
       })
       .catch(() => setData(null))
       .finally(() => setLoading(false));
+
+    fetch("/api/horses")
+      .then((r) => r.json())
+      .then((list) => {
+        if (Array.isArray(list)) {
+          setHorses(list.map((h: { id: string | number; name: string }) => ({
+            id: String(h.id),
+            name: h.name,
+          })));
+        }
+      })
+      .catch(() => setHorses([]));
   }, [profile, router]);
+
+  const refreshAnalytics = () => {
+    fetch("/api/analytics")
+      .then((r) => r.json())
+      .then((res) => {
+        if (!res.error && res.code !== "ANALYTICS_LOCKED") {
+          setData(res);
+        }
+      })
+      .catch(() => {});
+  };
 
   if (profile?.role === "student") return null;
 
@@ -352,7 +378,9 @@ export default function AnalyticsPage() {
             title={t("dashboard.analyticsEmptyCostsTitle")}
             description={t("dashboard.analyticsEmptyCostsBody")}
             actionLabel={t("dashboard.analyticsEmptyCostsCta")}
-            actionHref="/dashboard/horses"
+            {...(horses.length > 0
+              ? { onAction: () => setShowHealthModal(true) }
+              : { actionHref: "/dashboard/horses" })}
           />
         ) : (
           <div className="h-48 sm:h-64 min-h-[12rem]">
@@ -386,6 +414,14 @@ export default function AnalyticsPage() {
           </div>
         )}
       </div>
+
+      <AddHealthRecordModal
+        open={showHealthModal}
+        onClose={() => setShowHealthModal(false)}
+        horses={horses}
+        defaultHorseId={horseFilter !== "all" ? horseFilter : undefined}
+        onSuccess={refreshAnalytics}
+      />
     </div>
   );
 }

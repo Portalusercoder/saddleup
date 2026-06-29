@@ -108,22 +108,105 @@ export function IllustrationHorseProfile() {
 }
 
 export function IllustrationSessionLog() {
+  const lineSoft = { stroke: "currentColor", strokeWidth: 0.75, strokeOpacity: 0.28, vectorEffect: "non-scaling-stroke" as const };
+  const lineMid = { ...lineSoft, strokeOpacity: 0.42 };
+  const fieldBox = {
+    x: 14,
+    width: 232,
+    height: 11,
+    rx: 1,
+    stroke: "currentColor",
+    strokeWidth: 0.75,
+    strokeOpacity: 0.3,
+    fill: "currentColor",
+    fillOpacity: 0.04,
+  };
+
+  const Field = ({ y, labelW = 52, valueW = 68 }: { y: number; labelW?: number; valueW?: number }) => (
+    <g>
+      <rect x={14} y={y} width={labelW} height="1.5" rx="0.5" fill="currentColor" fillOpacity="0.22" />
+      <rect y={y + 5} {...fieldBox} />
+      <rect x={22} y={y + 9} width={valueW} height="1.5" rx="0.5" fill="currentColor" fillOpacity="0.16" />
+      <path
+        d={`M${14 + fieldBox.width - 10} ${y + 9.5}l3 3 3-3`}
+        stroke="currentColor"
+        strokeOpacity="0.22"
+        strokeWidth="0.75"
+        fill="none"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+    </g>
+  );
+
   return (
-    <div className="w-full max-w-[280px] mx-auto" aria-hidden>
-      <div className="grid grid-cols-3 gap-2 mb-2">
-        {["Mon", "Tue", "Wed"].map((d) => (
-          <div key={d} className="text-[0.55rem] uppercase tracking-wider landing-ink-dim text-center">{d}</div>
-        ))}
-      </div>
-      <div className="grid grid-cols-3 gap-2">
-        {[0, 1, 2].map((col) => (
-          <div key={col} className="space-y-1.5">
-            <div className={`h-7 rounded-md ${ghostFill}`} />
-            <div className={`h-5 rounded-md ${ghostFill} opacity-60`} />
-            {col === 1 && <div className={`h-6 rounded-md border ${ghostStroke}`} style={{ borderColor: "color-mix(in srgb, var(--landing-ink) 20%, transparent)" }} />}
-          </div>
-        ))}
-      </div>
+    <div className="landing-session-mockup mx-auto w-full max-w-[280px]" aria-hidden>
+      <svg
+        viewBox="0 0 260 228"
+        className="w-full h-auto text-[var(--landing-ink)]"
+        fill="none"
+        role="img"
+        aria-label=""
+      >
+        <rect
+          x="0.5"
+          y="0.5"
+          width="259"
+          height="227"
+          rx="4"
+          style={{ fill: "color-mix(in srgb, var(--landing-ink) 3%, var(--landing-bg))" }}
+          stroke="currentColor"
+          strokeOpacity="0.22"
+          strokeWidth="1"
+        />
+
+        {/* Header: avatar + title */}
+        <circle cx="24" cy="18" r="7" {...lineMid} fill="currentColor" fillOpacity="0.06" />
+        <rect x="36" y="12" width="96" height="3" rx="1" fill="currentColor" fillOpacity="0.34" />
+        <rect x="36" y="19" width="132" height="2" rx="1" fill="currentColor" fillOpacity="0.14" />
+        <line x1="14" y1="32" x2="246" y2="32" {...lineSoft} />
+
+        <Field y={38} labelW={48} valueW={56} />
+        <Field y={58} labelW={44} valueW={20} />
+        <Field y={78} labelW={40} valueW={48} />
+        <Field y={98} labelW={46} valueW={52} />
+        <Field y={118} labelW={56} valueW={44} />
+
+        {/* Notes */}
+        <rect x={14} y={138} width={40} height="1.5" rx="0.5" fill="currentColor" fillOpacity="0.18" />
+        <rect
+          x={14}
+          y={143}
+          width={232}
+          height={22}
+          rx={1}
+          stroke="currentColor"
+          strokeWidth="0.75"
+          strokeOpacity="0.3"
+          fill="currentColor"
+          fillOpacity="0.04"
+        />
+        <rect x={22} y={150} width={120} height="1.5" rx="0.5" fill="currentColor" fillOpacity="0.1" />
+        <rect x={22} y={156} width={88} height="1.5" rx="0.5" fill="currentColor" fillOpacity="0.08" />
+
+        {/* Actions */}
+        <rect
+          x={14}
+          y={198}
+          width={108}
+          height={16}
+          rx={1}
+          stroke="currentColor"
+          strokeWidth="0.75"
+          strokeOpacity="0.32"
+          fill="currentColor"
+          fillOpacity="0.03"
+        />
+        <rect x={38} y={205} width={40} height="1.5" rx="0.5" fill="currentColor" fillOpacity="0.2" />
+
+        <rect x={138} y={198} width={108} height={16} rx={1} fill="currentColor" fillOpacity="0.14" />
+        <rect x={156} y={205} width={72} height="1.5" rx="0.5" fill="currentColor" fillOpacity="0.32" />
+      </svg>
     </div>
   );
 }

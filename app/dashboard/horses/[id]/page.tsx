@@ -10,6 +10,7 @@ import LoadingSpinner from "@/components/ui/LoadingSpinner";
 import PageLoader from "@/components/ui/PageLoader";
 import HorseIdentificationFields from "@/components/ui/HorseIdentificationFields";
 import ModalOverlay from "@/components/ui/ModalOverlay";
+import AddHealthRecordModal from "@/components/dashboard/AddHealthRecordModal";
 import { useLanguage } from "@/components/providers/LanguageProvider";
 
 interface Session {
@@ -97,7 +98,6 @@ export default function HorseDetailPage() {
   const [toast, setToast] = useState<string | null>(null);
   const [aiSuggestions, setAiSuggestions] = useState<string | null>(null);
   const [aiLoading, setAiLoading] = useState(false);
-  const [healthLogLoading, setHealthLogLoading] = useState(false);
   const photoInputRef = useRef<HTMLInputElement>(null);
   const [editForm, setEditForm] = useState({
     name: "",
@@ -124,14 +124,6 @@ export default function HorseDetailPage() {
     skillLevel: "intermediate",
     trainingStatus: "schooling",
     ridingSuitability: "adults",
-  });
-  const [healthForm, setHealthForm] = useState({
-    type: "vet",
-    date: new Date().toISOString().slice(0, 10),
-    description: "",
-    cost: "",
-    nextDue: "",
-    recoveryStatus: "",
   });
 
   const punchLabel = (punchType: string) => {
@@ -294,40 +286,6 @@ export default function HorseDetailPage() {
       console.error(err);
       setToast(t("dashboard.horseToastUpdateFailed"));
       setTimeout(() => setToast(null), 3000);
-    }
-  };
-
-  const addHealthLog = async () => {
-    if (!horse) return;
-    setHealthLogLoading(true);
-    try {
-      await fetch("/api/health", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          horseId: horse.id,
-          type: healthForm.type,
-          date: healthForm.date,
-          description: healthForm.description || null,
-          cost: healthForm.cost ? Number(healthForm.cost) : null,
-          nextDue: healthForm.nextDue || null,
-          recoveryStatus: healthForm.recoveryStatus || null,
-        }),
-      });
-      setShowHealthModal(false);
-      setHealthForm({
-        type: "vet",
-        date: new Date().toISOString().slice(0, 10),
-        description: "",
-        cost: "",
-        nextDue: "",
-        recoveryStatus: "",
-      });
-      fetchHorse();
-    } catch (err) {
-      console.error(err);
-    } finally {
-      setHealthLogLoading(false);
     }
   };
 
@@ -793,107 +751,13 @@ export default function HorseDetailPage() {
             </div>
       </ModalOverlay>
 
-      <ModalOverlay open={showHealthModal} onClose={() => setShowHealthModal(false)} size="md">
-            <h2 className="font-serif text-xl text-black dark:text-white mb-6">
-              {t("dashboard.horseHealthModalTitle")}
-            </h2>
-            <div className="space-y-4">
-              <div>
-                <label className="text-xs text-black/50 uppercase tracking-widest block mb-2">{t("dashboard.horseHealthTypeLabel")}</label>
-                <select
-                  value={healthForm.type}
-                  onChange={(e) =>
-                    setHealthForm({ ...healthForm, type: e.target.value })
-                  }
-                  className="w-full px-4 py-3 bg-base border border-black/10 text-black focus:border-black/30 focus:outline-none"
-                >
-                  {(["vet", "vaccination", "deworming", "farrier", "injury"] as const).map((v) => (
-                    <option key={v} value={v}>
-                      {healthLabel(v)}
-                    </option>
-                  ))}
-                </select>
-              </div>
-              <div>
-                <label className="text-xs text-black/50 uppercase tracking-widest block mb-2">{t("dashboard.bookingsLabelDate")}</label>
-                <input
-                  type="date"
-                  value={healthForm.date}
-                  onChange={(e) =>
-                    setHealthForm({ ...healthForm, date: e.target.value })
-                  }
-                  className="w-full px-4 py-3 bg-base border border-black/10 text-black focus:border-black/30 focus:outline-none"
-                />
-              </div>
-              <textarea
-                placeholder={t("dashboard.horseHealthDescriptionPlaceholder")}
-                value={healthForm.description}
-                onChange={(e) =>
-                  setHealthForm({ ...healthForm, description: e.target.value })
-                }
-                rows={2}
-                className="w-full px-4 py-3 bg-base border border-black/10 text-black placeholder-black/40 focus:border-black/30 focus:outline-none resize-none"
-              />
-              <input
-                type="number"
-                placeholder={t("dashboard.horseHealthCostPlaceholder")}
-                value={healthForm.cost}
-                onChange={(e) =>
-                  setHealthForm({ ...healthForm, cost: e.target.value })
-                }
-                className="w-full px-4 py-3 bg-base border border-black/10 text-black placeholder-black/40 focus:border-black/30 focus:outline-none"
-              />
-              <div>
-                <label className="text-xs text-black/50 uppercase tracking-widest block mb-2">
-                  {t("dashboard.horseHealthNextDueLabel")}
-                </label>
-                <input
-                  type="date"
-                  value={healthForm.nextDue}
-                  onChange={(e) =>
-                    setHealthForm({ ...healthForm, nextDue: e.target.value })
-                  }
-                  className="w-full px-4 py-3 bg-base border border-black/10 text-black focus:border-black/30 focus:outline-none"
-                />
-              </div>
-              {healthForm.type === "injury" && (
-                <select
-                  value={healthForm.recoveryStatus}
-                  onChange={(e) =>
-                    setHealthForm({ ...healthForm, recoveryStatus: e.target.value })
-                  }
-                  className="w-full px-4 py-3 bg-base border border-black/10 text-black focus:border-black/30 focus:outline-none"
-                >
-                  <option value="">{t("dashboard.horseHealthRecoveryPlaceholder")}</option>
-                  <option value="active">{t("dashboard.horseHealthRecoveryActive")}</option>
-                  <option value="recovering">{t("dashboard.horseHealthRecoveryRecovering")}</option>
-                  <option value="cleared">{t("dashboard.horseHealthRecoveryCleared")}</option>
-                </select>
-              )}
-            </div>
-            <div className="flex gap-3 mt-6">
-              <button
-                onClick={() => setShowHealthModal(false)}
-                className="flex-1 py-2.5 border border-black/10 text-black text-sm uppercase tracking-wider hover:border-black/30 transition"
-              >
-                {t("dashboard.bookingsCancel")}
-              </button>
-              <button
-                onClick={addHealthLog}
-                disabled={healthLogLoading}
-                className="flex-1 py-2.5 bg-accent text-white font-medium text-sm uppercase tracking-wider hover:opacity-95 transition disabled:opacity-60 disabled:cursor-not-allowed flex items-center justify-center gap-2"
-              >
-                {healthLogLoading ? (
-                  <>
-                    <LoadingSpinner size={16} className="text-black" />
-                    {t("dashboard.horseHealthAdding")}
-                  </>
-                ) : (
-                  t("dashboard.horseHealthAddRecord")
-                )}
-              </button>
-            </div>
-      </ModalOverlay>
+      <AddHealthRecordModal
+        open={showHealthModal}
+        onClose={() => setShowHealthModal(false)}
+        horses={[{ id: String(horse.id), name: horse.name }]}
+        defaultHorseId={String(horse.id)}
+        onSuccess={fetchHorse}
+      />
     </div>
   );
 }

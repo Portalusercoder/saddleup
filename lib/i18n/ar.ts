@@ -1175,6 +1175,7 @@ const arInner = {
     horseModalPhotoUrlPlaceholder: "أو الصق رابط الصورة",
     horseModalSaveChanges: "حفظ التغييرات",
     horseHealthModalTitle: "إضافة سجل صحي",
+    horseHealthHorseLabel: "الحصان",
     horseHealthTypeLabel: "النوع",
     horseHealthDescriptionPlaceholder: "الوصف",
     horseHealthCostPlaceholder: "التكلفة ($)",
