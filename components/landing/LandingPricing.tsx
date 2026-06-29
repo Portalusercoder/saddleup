@@ -3,6 +3,7 @@
 import { useState } from "react";
 import ScrollReveal from "@/components/ui/ScrollReveal";
 import LandingPlansComparison from "@/components/landing/LandingPlansComparison";
+import LandingPricingFaq from "@/components/landing/LandingPricingFaq";
 import { useLanguage } from "@/components/providers/LanguageProvider";
 
 type LandingPricingProps = {
@@ -12,12 +13,6 @@ type LandingPricingProps = {
 export default function LandingPricing({ onSelectPlan }: LandingPricingProps) {
   const { t } = useLanguage();
   const [annual, setAnnual] = useState(false);
-
-  const faqs = [
-    { q: t("home.pricingFaq1Q"), a: t("home.pricingFaq1A") },
-    { q: t("home.pricingFaq2Q"), a: t("home.pricingFaq2A") },
-    { q: t("home.pricingFaq3Q"), a: t("home.pricingFaq3A") },
-  ];
 
   return (
     <section id="pricing" className="landing-section py-20 sm:py-28 px-5 sm:px-6">
@@ -60,26 +55,7 @@ export default function LandingPricing({ onSelectPlan }: LandingPricingProps) {
           <LandingPlansComparison annual={annual} t={t} onSelectPlan={onSelectPlan} />
         </ScrollReveal>
 
-        <ScrollReveal delay={0.1} className="mt-20">
-          <p className="landing-ink-faint text-xs uppercase tracking-widest mb-4">
-            {t("home.pricingFaqTitle")}
-          </p>
-          <div className="landing-pricing-faq">
-            {faqs.map((faq) => (
-              <details key={faq.q} className="landing-pricing-faq-item group">
-                <summary className="landing-pricing-faq-question">
-                  <span>{faq.q}</span>
-                  <span className="landing-pricing-faq-toggle" aria-hidden>
-                    +
-                  </span>
-                </summary>
-                <div className="landing-pricing-faq-answer">
-                  <p>{faq.a}</p>
-                </div>
-              </details>
-            ))}
-          </div>
-        </ScrollReveal>
+        <LandingPricingFaq />
       </div>
     </section>
   );
