@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import ScrollReveal from "@/components/ui/ScrollReveal";
+import LandingSectionHeader from "@/components/landing/LandingSectionHeader";
 import LandingPlansComparison from "@/components/landing/LandingPlansComparison";
 import LandingPricingFaq from "@/components/landing/LandingPricingFaq";
 import { useLanguage } from "@/components/providers/LanguageProvider";
@@ -15,16 +16,15 @@ export default function LandingPricing({ onSelectPlan }: LandingPricingProps) {
   const [annual, setAnnual] = useState(false);
 
   return (
-    <section id="pricing" className="landing-section py-20 sm:py-28 px-5 sm:px-6">
+    <section id="pricing" className="landing-section">
       <div className="max-w-6xl mx-auto">
-        <ScrollReveal className="flex flex-col lg:flex-row lg:items-end lg:justify-between gap-8 mb-14">
-          <div className="max-w-xl">
-            <p className="landing-section-label">{t("home.pricingTitle")}</p>
-            <h2 className="landing-display landing-ink mt-3 text-3xl sm:text-4xl md:text-5xl font-semibold tracking-tight">
-              {t("home.pricingHeadline")}
-            </h2>
-            <p className="mt-4 landing-ink-muted text-lg">{t("home.pricingSub")}</p>
-          </div>
+        <ScrollReveal className="flex flex-col lg:flex-row lg:items-end lg:justify-between gap-8 landing-section-header">
+          <LandingSectionHeader
+            eyebrow={t("home.pricingTitle")}
+            title={t("home.pricingHeadline")}
+            description={t("home.pricingSub")}
+            className="!mb-0 max-w-xl"
+          />
           <div className="landing-glass rounded-full p-1 flex shrink-0 self-stretch sm:self-start lg:self-auto w-full sm:w-auto">
             <button
               type="button"

@@ -341,6 +341,42 @@ html.dark {
 
 .landing-section {
   background: var(--landing-bg);
+  padding: 5rem 1.25rem;
+}
+
+@media (min-width: 640px) {
+  .landing-section {
+    padding: 7rem 1.5rem;
+  }
+}
+
+.landing-heading-card {
+  font-family: var(--font-inter), system-ui, sans-serif;
+  font-size: 1.0625rem;
+  font-weight: 600;
+  letter-spacing: -0.02em;
+  line-height: 1.35;
+  color: var(--landing-ink);
+}
+
+@media (min-width: 640px) {
+  .landing-heading-card {
+    font-size: 1.1875rem;
+  }
+}
+
+.landing-heading-step {
+  font-family: var(--font-inter), system-ui, sans-serif;
+  font-size: 1rem;
+  font-weight: 600;
+  letter-spacing: -0.02em;
+  line-height: 1.35;
+}
+
+@media (min-width: 640px) {
+  .landing-heading-step {
+    font-size: 1.0625rem;
+  }
 }
 
 .landing-ink {
@@ -408,14 +444,6 @@ html.dark {
 }
 
 /* Benefits grid — bordered cells with ghost UI illustrations */
-.landing-benefits-eyebrow {
-  font-size: 0.6875rem;
-  font-weight: 600;
-  letter-spacing: 0.14em;
-  text-transform: uppercase;
-  color: var(--landing-ink-faint);
-}
-
 .landing-benefits-grid {
   display: grid;
   grid-template-columns: 1fr;
@@ -645,8 +673,19 @@ html.dark {
 
 /* Pricing — categorized FAQ (reference-style accordion cards) */
 .landing-faq-header {
-  text-align: center;
   margin-bottom: 2.5rem;
+}
+
+.landing-faq-header .landing-section-eyebrow {
+  display: inline-flex;
+  align-items: center;
+  width: fit-content;
+  padding: 0.35rem 0.85rem;
+  margin-bottom: 1.25rem;
+  letter-spacing: 0.12em;
+  color: #c9a87c;
+  background: color-mix(in srgb, #c9a87c 12%, var(--landing-bg));
+  border: 1px solid color-mix(in srgb, #c9a87c 35%, transparent);
 }
 
 .landing-faq-badge {
@@ -936,27 +975,126 @@ html.dark {
   background: color-mix(in srgb, currentColor 6%, transparent);
 }
 
-/* How it works — accordion steps with featured panel */
-.landing-hiw-headline {
+/* Landing section headers — shared title scale, slash, and gradient */
+.landing-section-header {
+  display: flex;
+  flex-direction: column;
+  margin-bottom: 2.5rem;
+}
+
+@media (min-width: 640px) {
+  .landing-section-header {
+    margin-bottom: 3rem;
+  }
+}
+
+.landing-section-header--start {
+  align-items: flex-start;
+  text-align: start;
+}
+
+.landing-section-header--center {
+  align-items: center;
+  text-align: center;
+}
+
+.landing-section-header--center .landing-section-subtitle {
+  margin-inline: auto;
+}
+
+.landing-section-eyebrow {
+  font-size: 0.6875rem;
+  font-weight: 600;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--landing-ink-faint);
+  margin-bottom: 1rem;
+}
+
+.landing-section-title {
   font-size: clamp(2rem, 5.5vw, 3.35rem);
   font-weight: 600;
   letter-spacing: -0.03em;
   line-height: 1.08;
-  margin-bottom: 2.25rem;
-  text-align: start;
 }
 
-.landing-hiw-headline-muted {
+.landing-section-title-size {
+  font-size: clamp(2rem, 5.5vw, 3.35rem);
+  font-weight: 600;
+  letter-spacing: -0.03em;
+  line-height: 1.12;
+}
+
+.landing-section-title-slash {
   color: var(--landing-ink-muted);
 }
 
-.landing-hiw-headline-strong {
+.landing-section-title-muted {
+  color: var(--landing-ink-muted);
+}
+
+.landing-section-title-strong {
   color: var(--landing-ink);
 }
 
+.landing-section-title-text {
+  background: linear-gradient(
+    90deg,
+    var(--landing-ink-muted) 0%,
+    color-mix(in srgb, var(--landing-ink-muted) 65%, var(--landing-ink)) 42%,
+    var(--landing-ink) 100%
+  );
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+.landing-section-subtitle {
+  margin-top: 1rem;
+  max-width: 36rem;
+  font-size: 1rem;
+  line-height: 1.6;
+  color: var(--landing-ink-muted);
+}
+
+@media (min-width: 640px) {
+  .landing-section-subtitle {
+    font-size: 1.125rem;
+  }
+}
+
+.landing-section-header--on-dark .landing-section-eyebrow {
+  color: rgba(255, 255, 255, 0.45);
+}
+
+.landing-section-header--on-dark .landing-section-title-slash,
+.landing-section-header--on-dark .landing-section-title-muted {
+  color: rgba(255, 255, 255, 0.55);
+}
+
+.landing-section-header--on-dark .landing-section-title-strong {
+  color: #fff;
+}
+
+.landing-section-header--on-dark .landing-section-title-text {
+  background: linear-gradient(90deg, rgba(255, 255, 255, 0.55) 0%, #ffffff 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+.landing-section-header--on-dark .landing-section-subtitle {
+  color: rgba(255, 255, 255, 0.55);
+}
+
+/* How it works — accordion steps with featured panel */
 .landing-hiw-steps {
   display: flex;
   flex-direction: column;
+}
+
+.landing-hiw-step {
+  position: relative;
 }
 
 .landing-hiw-panel {
@@ -969,6 +1107,12 @@ html.dark {
 }
 
 .landing-hiw-panel-media {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+}
+
+.landing-hiw-panel-media-inner {
   position: absolute;
   inset: 0;
 }
@@ -1031,17 +1175,9 @@ html.dark {
   }
 }
 
-.landing-hiw-panel-copy h3 {
-  font-size: 1.125rem;
-  font-weight: 600;
-  letter-spacing: -0.02em;
+.landing-hiw-panel-copy h3,
+.landing-hiw-panel-copy .landing-heading-step {
   color: #fff;
-}
-
-@media (min-width: 640px) {
-  .landing-hiw-panel-copy h3 {
-    font-size: 1.25rem;
-  }
 }
 
 .landing-hiw-panel-copy p {
@@ -1090,17 +1226,9 @@ html.dark {
   opacity: 0.82;
 }
 
-.landing-hiw-row-copy h3 {
-  font-size: 1rem;
-  font-weight: 600;
-  letter-spacing: -0.02em;
+.landing-hiw-row-copy h3,
+.landing-hiw-row-copy .landing-heading-step {
   color: var(--landing-ink);
-}
-
-@media (min-width: 640px) {
-  .landing-hiw-row-copy h3 {
-    font-size: 1.0625rem;
-  }
 }
 
 .landing-hiw-row-copy p {

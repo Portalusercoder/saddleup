@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import ScrollReveal from "@/components/ui/ScrollReveal";
+import LandingSectionHeader from "@/components/landing/LandingSectionHeader";
 import { useLanguage } from "@/components/providers/LanguageProvider";
 import { FEATURE_ILLUSTRATIONS } from "@/components/landing/LandingFeatureIllustrations";
 
@@ -18,16 +19,14 @@ export default function LandingFeatures() {
   ];
 
   return (
-    <section id="features" className="landing-section py-20 sm:py-28 px-5 sm:px-6">
+    <section id="features" className="landing-section">
       <div className="max-w-6xl mx-auto">
-        <ScrollReveal className="mb-10 sm:mb-12">
-          <p className="landing-benefits-eyebrow">{t("home.featuresEyebrow")}</p>
-          <h2 className="landing-display landing-ink mt-4 text-3xl sm:text-4xl md:text-[2.75rem] font-semibold tracking-tight max-w-3xl">
-            {t("home.featuresHeadline")}
-          </h2>
-          <p className="mt-4 landing-ink-muted text-base sm:text-lg leading-relaxed max-w-2xl">
-            {t("home.featuresSub")}
-          </p>
+        <ScrollReveal>
+          <LandingSectionHeader
+            eyebrow={t("home.featuresEyebrow")}
+            title={t("home.featuresHeadline")}
+            description={t("home.featuresSub")}
+          />
         </ScrollReveal>
 
         <ScrollReveal delay={0.06}>
@@ -39,9 +38,7 @@ export default function LandingFeatures() {
                   {feat.badge ? (
                     <span className="landing-benefits-badge">{feat.badge}</span>
                   ) : null}
-                  <h3 className="landing-display landing-ink text-lg sm:text-xl font-semibold leading-snug pr-2">
-                    {feat.title}
-                  </h3>
+                  <h3 className="landing-heading-card">{feat.title}</h3>
                   <p className="mt-3 text-sm sm:text-[0.9375rem] landing-ink-muted leading-relaxed max-w-md">
                     {feat.desc}
                   </p>

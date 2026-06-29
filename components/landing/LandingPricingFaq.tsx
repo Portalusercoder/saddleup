@@ -1,6 +1,7 @@
 "use client";
 
 import ScrollReveal from "@/components/ui/ScrollReveal";
+import LandingSectionHeader from "@/components/landing/LandingSectionHeader";
 import { useLanguage } from "@/components/providers/LanguageProvider";
 
 export default function LandingPricingFaq() {
@@ -29,23 +30,18 @@ export default function LandingPricingFaq() {
 
   return (
     <ScrollReveal delay={0.1} className="mt-20 sm:mt-24">
-      <div className="landing-faq-header">
-        <span className="landing-faq-badge">{t("home.pricingFaqBadge")}</span>
-        <h2 className="landing-display landing-ink text-3xl sm:text-4xl font-semibold tracking-tight mt-5">
-          {t("home.pricingFaqHeadline")}
-        </h2>
-        <p className="landing-ink-muted text-base sm:text-lg mt-3 max-w-2xl mx-auto leading-relaxed">
-          {t("home.pricingFaqSub")}
-        </p>
-      </div>
+      <LandingSectionHeader
+        eyebrow={t("home.pricingFaqBadge")}
+        title={t("home.pricingFaqHeadline")}
+        description={t("home.pricingFaqSub")}
+        className="landing-faq-header"
+      />
 
       <div className="landing-faq-categories">
         {categories.map((category) => (
           <article key={category.title} className="landing-faq-category">
             <div className="landing-faq-category-aside">
-              <h3 className="landing-display landing-ink text-xl sm:text-2xl font-semibold leading-snug">
-                {category.title}
-              </h3>
+              <h3 className="landing-heading-card sm:text-2xl">{category.title}</h3>
               <p className="landing-ink-muted text-sm sm:text-[0.9375rem] mt-3 leading-relaxed">
                 {category.description}
               </p>

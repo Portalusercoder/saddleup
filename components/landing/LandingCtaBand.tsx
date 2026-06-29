@@ -1,6 +1,7 @@
 "use client";
 
 import ScrollReveal from "@/components/ui/ScrollReveal";
+import LandingSectionHeader from "@/components/landing/LandingSectionHeader";
 import { useLanguage } from "@/components/providers/LanguageProvider";
 
 type LandingCtaBandProps = {
@@ -19,11 +20,13 @@ export default function LandingCtaBand({ onStartFree }: LandingCtaBandProps) {
             "radial-gradient(ellipse 70% 80% at 50% 120%, rgba(83,22,29,0.5), transparent 60%)",
         }}
       />
-      <ScrollReveal className="relative max-w-3xl mx-auto text-center">
-        <h2 className="landing-display text-3xl sm:text-4xl md:text-5xl font-semibold tracking-tight leading-tight">
-          {t("footer.ctaTitle")}
-        </h2>
-        <p className="mt-4 text-base sm:text-lg text-white/55 max-w-xl mx-auto">{t("home.ctaBandSub")}</p>
+      <ScrollReveal className="relative max-w-3xl mx-auto">
+        <LandingSectionHeader
+          title={t("footer.ctaTitle")}
+          description={t("home.ctaBandSub")}
+          onDark
+          className="mb-0"
+        />
         <button
           type="button"
           onClick={onStartFree}
