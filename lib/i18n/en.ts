@@ -238,6 +238,7 @@ export const en = {
     heroLine2: "with clarity.",
     heroSub:
       "Professional stable management for riding schools, trainers, and horse owners — rooted in tradition, guided by experience, and built for the GCC.",
+    heroMockupAlt: "Saddle Up dashboard preview on a laptop",
     trustBuiltFor: "Schools, trainers & owners",
     trustArabic: "Arabic & English",
     trustFreeStart: "Free to start",

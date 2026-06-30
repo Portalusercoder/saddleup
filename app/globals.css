@@ -1000,6 +1000,35 @@ html.dark {
   color: color-mix(in srgb, var(--landing-ink) 72%, transparent);
 }
 
+.landing-hero-club-shell {
+  width: 100%;
+}
+
+.landing-hero-club-mockup {
+  display: flex;
+  justify-content: center;
+  align-items: flex-end;
+  max-width: 72rem;
+  margin-inline: auto;
+}
+
+.landing-hero-club-mockup-img {
+  width: min(100%, 58rem);
+  height: auto;
+  margin-inline: auto;
+  object-fit: contain;
+  filter: drop-shadow(0 28px 70px rgba(0, 0, 0, 0.55));
+  -webkit-mask-image: linear-gradient(to bottom, black 0%, black 78%, transparent 100%);
+  mask-image: linear-gradient(to bottom, black 0%, black 78%, transparent 100%);
+}
+
+@media (max-width: 639px) {
+  .landing-hero-club-mockup-img {
+    width: min(108%, 28rem);
+    margin-inline: -4%;
+  }
+}
+
 .landing-hero-monogram {
   display: inline-flex;
   align-items: center;
