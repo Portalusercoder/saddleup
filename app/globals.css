@@ -929,12 +929,19 @@ html.dark {
   inset: 0;
   z-index: 0;
   pointer-events: none;
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
   background: var(--landing-bg, #0f0f0f);
 }
 
 .landing-hero-club-mockup-full {
-  object-fit: cover;
-  object-position: center;
+  width: auto;
+  height: auto;
+  max-width: min(1024px, 92vw);
+  max-height: min(576px, 78dvh);
+  object-fit: contain;
+  object-position: right center;
 }
 
 .landing-hero-script {
