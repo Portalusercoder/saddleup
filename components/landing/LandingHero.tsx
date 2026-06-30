@@ -16,15 +16,14 @@ export default function LandingHero({ onStartFree }: LandingHeroProps) {
         <Image
           src="/hero-dashboard-mockup.png"
           alt=""
-          width={1024}
-          height={641}
+          width={240}
+          height={150}
           priority
-          fill
           unoptimized
+          fill
           sizes="100vw"
           className="landing-hero-club-mockup-full"
         />
-        <div className="landing-hero-club-scrim" />
       </div>
 
       <div className="landing-hero-club-shell relative z-[1] flex min-h-[100dvh] flex-col">
