@@ -7,6 +7,7 @@ import { LanguageProvider } from "@/components/providers/LanguageProvider"
 import { ThemeProvider } from "@/components/providers/ThemeProvider"
 import AnalyticsProvider from "@/components/providers/AnalyticsProvider"
 import GoogleAnalyticsProvider from "@/components/providers/GoogleAnalyticsProvider"
+import { SpeedInsights } from "@vercel/speed-insights/next"
 import { Fraunces, Outfit, Tajawal } from "next/font/google"
 import Script from "next/script"
 import type { Metadata } from "next"
@@ -107,6 +108,7 @@ export default function RootLayout({
               <Navbar />
               <PagePadding>{children}</PagePadding>
               <TreatsConsent />
+              <SpeedInsights />
             </ProfileProvider>
           </LanguageProvider>
         </ThemeProvider>
