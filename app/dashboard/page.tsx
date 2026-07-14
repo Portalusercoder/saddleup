@@ -8,9 +8,7 @@ import WeekAtAGlance, { type GlanceItem } from "@/components/dashboard/WeekAtAGl
 import SmartQuickActions, { type QuickAction } from "@/components/dashboard/SmartQuickActions";
 import StatCard from "@/components/dashboard/StatCard";
 import { HorseAvatar } from "@/components/HorseAvatar";
-import GuidedTourOverlay, {
-  type GuidedTourStep,
-} from "@/components/dashboard/GuidedTourOverlay";
+import OnboardingChecklist from "@/components/dashboard/OnboardingChecklist";
 import { useLanguage } from "@/components/providers/LanguageProvider";
 
 interface Horse {
@@ -78,7 +76,7 @@ export default function DashboardPage() {
   const [careReminders, setCareReminders] = useState<
     { id: string; typeLabel: string; nextDue: string; horseName: string; horseId: string; overdue: boolean }[]
   >([]);
-  const [showTutorial, setShowTutorial] = useState(false);
+  const [showOnboarding, setShowOnboarding] = useState(false);
   const [savingTutorial, setSavingTutorial] = useState(false);
   const { profile, refetch: refetchProfile } = useProfile();
 
@@ -91,7 +89,7 @@ export default function DashboardPage() {
     if (loading) return;
     if (profile.onboardingCompleted) return;
     if (profile.role === "guardian") return;
-    setShowTutorial(true);
+    setShowOnboarding(true);
   }, [profile, loading]);
 
   const finishTutorial = async () => {
@@ -104,7 +102,7 @@ export default function DashboardPage() {
         body: JSON.stringify({ onboardingCompleted: true }),
       });
       if (!res.ok) return;
-      setShowTutorial(false);
+      setShowOnboarding(false);
       await refetchProfile();
     } finally {
       setSavingTutorial(false);
@@ -308,81 +306,7 @@ export default function DashboardPage() {
     },
   ];
 
-  const tourSteps: GuidedTourStep[] = isStudent
-    ? [
-        {
-          id: "notif",
-          title: t("tour.student.notifTitle"),
-          description: t("tour.student.notifDesc"),
-          selector: '[data-tour="notification-bell"]',
-        },
-        {
-          id: "upcoming",
-          title: t("tour.student.upcomingTitle"),
-          description: t("tour.student.upcomingDesc"),
-          selector: '[data-tour="upcoming-lessons"]',
-        },
-        {
-          id: "stats",
-          title: t("tour.student.statsTitle"),
-          description: t("tour.student.statsDesc"),
-          selector: '[data-tour="stats-grid"]',
-        },
-        {
-          id: "recent",
-          title: t("tour.student.recentTitle"),
-          description: t("tour.student.recentDesc"),
-          selector: '[data-tour="recent-sessions"]',
-        },
-        {
-          id: "links",
-          title: t("tour.student.linksTitle"),
-          description: t("tour.student.linksDesc"),
-          selector: '[data-tour="quick-links"]',
-        },
-      ]
-    : [
-        {
-          id: "notif",
-          title: t("tour.staff.notifTitle"),
-          description: t("tour.staff.notifDesc"),
-          selector: '[data-tour="notification-bell"]',
-        },
-        ...(isOwner
-          ? [
-              {
-                id: "invite",
-                title: t("tour.staff.inviteTitle"),
-                description: t("tour.staff.inviteDesc"),
-                selector: '[data-tour="invite-code"]',
-              } as GuidedTourStep,
-            ]
-          : []),
-        {
-          id: "care",
-          title: t("tour.staff.careTitle"),
-          description: t("tour.staff.careDesc"),
-          selector: '[data-tour="care-reminders"]',
-        },
-        {
-          id: "stats",
-          title: t("tour.staff.statsTitle"),
-          description: t("tour.staff.statsDesc"),
-          selector: '[data-tour="stats-grid"]',
-        },
-        {
-          id: "recent",
-          title: t("tour.staff.recentTitle"),
-          description: t("tour.staff.recentDesc"),
-          selector: '[data-tour="recent-sessions"]',
-        },
-        {
-          id: "actions",
-          title: t("tour.staff.actionsTitle"),
-          description: t("tour.staff.actionsDesc"),
-          selector: '[data-tour="quick-actions"]',
-        },
-      ];
+  const isFirstRun = showOnboarding && !profile?.onboardingCompleted;
 
   if (isGuardian) {
     return (
@@ -422,26 +346,36 @@ export default function DashboardPage() {
   }
 
   return (
-    <div className="space-y-10">
-      <GuidedTourOverlay
-        open={showTutorial}
-        steps={tourSteps}
-        saving={savingTutorial}
-        onComplete={finishTutorial}
-        onSkip={finishTutorial}
-      />
+    <div className="space-y-10 md:space-y-12">
+      <header className="su-hairline-b pb-6">
+        <p className="text-[0.65rem] uppercase tracking-[0.2em] text-black/40 dark:text-white/40 mb-2">
+          {inviteStable?.name || t("dashboard.pageTitle")}
+        </p>
+        <h1 className="page-title-enter font-serif text-3xl md:text-[2.75rem] font-medium tracking-tight text-black dark:text-white leading-none">
+          {t("dashboard.pageTitle")}
+        </h1>
+      </header>
 
-      <h1 className="page-title-enter font-serif text-3xl md:text-4xl font-medium text-black dark:text-white">
-        {t("dashboard.pageTitle")}
-      </h1>
+      {showOnboarding && (
+        <OnboardingChecklist
+          role={profile?.role}
+          horseCount={horses.length}
+          joinCode={inviteStable?.joinCode}
+          saving={savingTutorial}
+          onComplete={finishTutorial}
+          onDismiss={finishTutorial}
+        />
+      )}
 
-      {isOwner && <ShareInviteCode stable={inviteStable} />}
+      {isOwner && !isFirstRun && <ShareInviteCode stable={inviteStable} />}
 
-      <WeekAtAGlance title={t("dashboard.weekAtAGlance")} items={glanceItems} />
+      {!isFirstRun && (
+        <WeekAtAGlance title={t("dashboard.weekAtAGlance")} items={glanceItems} />
+      )}
 
       {/* Student: Upcoming lessons */}
-      {isStudent && upcomingBookingsPreview.length > 0 && (
-        <div className="card border border-black/15 p-6 rounded-control dark:border-white/20" data-tour="upcoming-lessons">
+      {!isFirstRun && isStudent && upcomingBookingsPreview.length > 0 && (
+        <div className="su-dash-panel dark:border-white/10" data-tour="upcoming-lessons">
           <h2 className="font-serif text-lg text-black dark:text-white mb-2">{t("dashboard.upcomingLessons")}</h2>
           <div className="space-y-2">
             {upcomingBookingsPreview.map((b) => (
@@ -475,10 +409,10 @@ export default function DashboardPage() {
       )}
 
       {/* Upcoming Care Reminders - trainers/owners only */}
-      {!isStudent && careReminders.length > 0 && (
-        <div className="card border border-black/15 p-6 rounded-control" data-tour="care-reminders">
-          <h2 className="font-serif text-lg text-black mb-2 flex items-center gap-2">
-            <span>📋</span> {t("dashboard.careRemindersTitle")}
+      {!isFirstRun && !isStudent && careReminders.length > 0 && (
+        <div className="su-dash-panel" data-tour="care-reminders">
+          <h2 className="font-serif text-lg text-black mb-2">
+            {t("dashboard.careRemindersTitle")}
           </h2>
           <p className="text-sm text-black/60 mb-4">
             {t("dashboard.careRemindersSub")}
@@ -513,10 +447,10 @@ export default function DashboardPage() {
       )}
 
       {/* Workload Alerts - trainers/owners only */}
-      {!isStudent && overworkedHorses.length > 0 && (
-        <div className="card border border-black/15 p-6 rounded-control">
-          <h2 className="font-serif text-lg text-black mb-2 flex items-center gap-2">
-            <span>⚠</span> {t("dashboard.workloadAlertsTitle")}
+      {!isFirstRun && !isStudent && overworkedHorses.length > 0 && (
+        <div className="su-dash-panel">
+          <h2 className="font-serif text-lg text-black mb-2">
+            {t("dashboard.workloadAlertsTitle")}
           </h2>
           <p className="text-sm text-black/60 mb-4">
             {t("dashboard.workloadAlertsSub")}
@@ -545,6 +479,8 @@ export default function DashboardPage() {
         </div>
       )}
 
+      {!isFirstRun && (
+      <>
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4" data-tour="stats-grid">
         {isStudent ? (
           <>
@@ -562,7 +498,7 @@ export default function DashboardPage() {
       </div>
 
       <div className="grid md:grid-cols-2 gap-6">
-        <div className="card border border-black/10 p-6 rounded-control" data-tour="recent-sessions">
+        <div className="su-dash-panel" data-tour="recent-sessions">
           <h2 className="font-serif text-lg text-black mb-4">
             {isStudent ? t("dashboard.recentMySessions") : t("dashboard.recentSessions")}
           </h2>
@@ -570,7 +506,7 @@ export default function DashboardPage() {
             {sessions.slice(0, 5).map((session) => (
               <div
                 key={session.id}
-                className="flex justify-between items-center border border-black/10 px-4 py-3 rounded-control"
+                className="flex justify-between items-center py-3 su-hairline-b last:border-0"
               >
                 <div>
                   <span className="font-medium text-black">{session.horse?.name}</span>
@@ -595,24 +531,24 @@ export default function DashboardPage() {
           <SmartQuickActions title={t("dashboard.quickActions")} actions={staffQuickActions} />
         )}
         {isStudent && (
-          <div className="card border border-black/10 p-6 rounded-control" data-tour="quick-links">
+          <div className="su-dash-panel" data-tour="quick-links">
             <h2 className="font-serif text-lg text-black mb-4">{t("dashboard.quickLinks")}</h2>
-            <div className="space-y-3">
+            <div className="space-y-2">
               <Link
                 href="/dashboard/my-horses"
-                className="block w-full px-4 py-3 border border-black/10 text-black font-medium text-center text-sm uppercase tracking-wider hover:border-black/30 transition rounded-control"
+                className="block w-full min-h-[44px] px-4 py-3 text-black font-medium text-sm uppercase tracking-wider hover:bg-black/[0.03] transition rounded-control su-focus-ring dark:text-white dark:hover:bg-white/[0.04]"
               >
                 {t("navRole.myHorses")}
               </Link>
               <Link
                 href="/dashboard/bookings"
-                className="block w-full px-4 py-3 border border-black/10 text-black font-medium text-center text-sm uppercase tracking-wider hover:border-black/30 transition rounded-control"
+                className="block w-full min-h-[44px] px-4 py-3 text-black font-medium text-sm uppercase tracking-wider hover:bg-black/[0.03] transition rounded-control su-focus-ring dark:text-white dark:hover:bg-white/[0.04]"
               >
                 {t("navRole.myBookings")}
               </Link>
               <Link
                 href="/dashboard/competitions"
-                className="block w-full px-4 py-3 border border-black/10 text-black font-medium text-center text-sm uppercase tracking-wider hover:border-black/30 transition rounded-control"
+                className="block w-full min-h-[44px] px-4 py-3 text-black font-medium text-sm uppercase tracking-wider hover:bg-black/[0.03] transition rounded-control su-focus-ring dark:text-white dark:hover:bg-white/[0.04]"
               >
                 {t("navRole.competitions")}
               </Link>
@@ -620,6 +556,8 @@ export default function DashboardPage() {
           </div>
         )}
       </div>
+      </>
+      )}
     </div>
   );
 }

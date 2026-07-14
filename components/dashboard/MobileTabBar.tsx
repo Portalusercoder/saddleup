@@ -45,7 +45,7 @@ export default function MobileTabBar() {
               <Link
                 href={item.href}
                 data-nav-active={active ? "true" : undefined}
-                className={`flex flex-col items-center justify-center gap-0.5 py-2.5 px-1 text-[0.65rem] uppercase tracking-wider transition ${
+                className={`flex flex-col items-center justify-center gap-0.5 min-h-[52px] py-2.5 px-1 text-[0.65rem] uppercase tracking-wider transition su-focus-ring ${
                   active
                     ? "text-accent"
                     : "text-black/50 hover:text-black dark:text-white/50 dark:hover:text-white"

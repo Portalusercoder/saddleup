@@ -16,12 +16,12 @@ export default function DashboardEmptyState({
   onAction,
 }: DashboardEmptyStateProps) {
   const actionClass =
-    "empty-state-cta-once motion-interactive inline-flex items-center justify-center px-4 py-2.5 bg-accent text-white text-sm font-medium uppercase tracking-wider hover:opacity-95 rounded-control";
+    "su-btn-primary empty-state-cta-once motion-interactive mt-5";
 
   return (
-    <div className="border border-dashed border-black/15 rounded-control px-6 py-10 text-center dark:border-white/15 bg-[var(--bg-card)]">
+    <div className="su-hairline-b px-1 py-10 text-center">
       <div
-        className="empty-state-icon mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-full bg-[#1f4d3a]/15 text-[#8fae98] text-2xl"
+        className="empty-state-icon mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-control border border-[var(--border-subtle)] text-paddock text-lg font-serif"
         aria-hidden
       >
         ◇
@@ -31,12 +31,12 @@ export default function DashboardEmptyState({
         {description}
       </p>
       {actionLabel && actionHref ? (
-        <Link href={actionHref} className={`mt-5 ${actionClass}`}>
+        <Link href={actionHref} className={`inline-flex ${actionClass}`}>
           {actionLabel}
         </Link>
       ) : null}
       {actionLabel && onAction && !actionHref ? (
-        <button type="button" onClick={onAction} className={`mt-5 ${actionClass}`}>
+        <button type="button" onClick={onAction} className={`inline-flex ${actionClass}`}>
           {actionLabel}
         </button>
       ) : null}

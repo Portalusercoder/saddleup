@@ -11,7 +11,6 @@ type AudiencePageProps = {
   subtitleKey: "forSchools.subtitle" | "forTrainers.subtitle";
   bodyKey: "forSchools.body" | "forTrainers.body";
   ctaKey: "forSchools.cta" | "forTrainers.cta";
-  onStartFree: () => void;
 };
 
 export default function AudiencePage({
@@ -19,7 +18,6 @@ export default function AudiencePage({
   subtitleKey,
   bodyKey,
   ctaKey,
-  onStartFree,
 }: AudiencePageProps) {
   const { t } = useLanguage();
 
@@ -50,6 +48,17 @@ export default function AudiencePage({
               {t(titleKey)}
             </h1>
             <p className="mt-5 text-lg text-white/75 max-w-xl">{t(subtitleKey)}</p>
+            <div className="mt-8 flex flex-wrap gap-3">
+              <Link href="/signup" className="su-btn-primary !bg-mist !text-forest">
+                {t(ctaKey)}
+              </Link>
+              <Link
+                href="/#pricing"
+                className="inline-flex min-h-[44px] items-center justify-center px-5 py-2.5 rounded-control border border-white/30 text-white/90 text-sm font-medium uppercase tracking-wider hover:bg-white/10 transition su-focus-ring"
+              >
+                {t("nav.pricing")}
+              </Link>
+            </div>
           </ScrollReveal>
         </div>
       </section>
@@ -57,14 +66,6 @@ export default function AudiencePage({
       <section className="landing-premium max-w-3xl mx-auto px-6 py-16 sm:py-20">
         <ScrollReveal>
           <p className="landing-ink-muted leading-relaxed text-lg">{t(bodyKey)}</p>
-          <div className="mt-10 flex flex-wrap gap-3">
-            <button type="button" onClick={onStartFree} className="landing-cta-pill landing-solid-btn">
-              {t(ctaKey)}
-            </button>
-            <Link href="/#pricing" className="landing-cta-pill landing-outline-btn">
-              {t("nav.pricing")}
-            </Link>
-          </div>
         </ScrollReveal>
       </section>
       <Footer />

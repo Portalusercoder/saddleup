@@ -2,21 +2,11 @@
 
 import { useState } from "react";
 import Image from "next/image";
-import { AnimatePresence, LayoutGroup, motion, useReducedMotion } from "framer-motion";
+import { motion, useReducedMotion } from "framer-motion";
 import ScrollReveal from "@/components/ui/ScrollReveal";
-import LandingSectionHeader from "@/components/landing/LandingSectionHeader";
 import { useLanguage } from "@/components/providers/LanguageProvider";
 
-const STEP_IMAGES = ["/horseback.jpg", "/hero-bg.png", "/hero-bg.jpg"] as const;
-
-const liquidEase = [0.22, 1, 0.36, 1] as const;
-
-const panelSpring = {
-  type: "spring" as const,
-  stiffness: 320,
-  damping: 34,
-  mass: 0.92,
-};
+const STEP_IMAGES = ["/horseback.jpg", "/hero-bg.jpg", "/hero-bg.png"] as const;
 
 export default function HowItWorks() {
   const { t } = useLanguage();
@@ -30,111 +20,62 @@ export default function HowItWorks() {
   ];
 
   return (
-    <section id="how-it-works" className="landing-section landing-hiw">
+    <section id="how-it-works" className="landing-section landing-hiw-v2">
       <div className="max-w-6xl mx-auto">
         <ScrollReveal>
-          <LandingSectionHeader
-            title={{
-              slash: true,
-              muted: t("home.howItWorksHeadlineMuted"),
-              strong: t("home.howItWorksHeadlineStrong"),
-            }}
-            description={t("home.howItWorksHeadline")}
-          />
+          <header className="landing-section-header landing-section-header--start mb-10 sm:mb-14">
+            <p className="landing-section-eyebrow">{t("home.howItWorksTitle")}</p>
+            <h2 className="landing-section-title landing-display">
+              <span className="landing-section-title-strong">
+                {t("home.howItWorksHeadline")}
+              </span>
+            </h2>
+          </header>
         </ScrollReveal>
 
-        <LayoutGroup>
-          <div className="landing-hiw-steps">
+        <div className="landing-hiw-v2-grid">
+          <div className="landing-hiw-v2-steps" role="tablist" aria-label={t("home.howItWorksTitle")}>
             {steps.map((step, i) => {
-              const isActive = activeStep === i;
-              const stepLabel = `${t("home.howItWorksStepLabel")} ${step.n}`;
-
+              const active = activeStep === i;
               return (
-                <motion.div key={step.n} layout="position" className="landing-hiw-step">
-                  <AnimatePresence mode="popLayout" initial={false}>
-                    {isActive ? (
-                      <motion.article
-                        key={`panel-${step.n}`}
-                        layout
-                        className="landing-hiw-panel"
-                        aria-current="step"
-                        initial={reduceMotion ? false : { opacity: 0, y: 14, scale: 0.985 }}
-                        animate={{ opacity: 1, y: 0, scale: 1 }}
-                        exit={reduceMotion ? undefined : { opacity: 0, y: -10, scale: 0.99 }}
-                        transition={{
-                          layout: panelSpring,
-                          opacity: { duration: 0.38, ease: liquidEase },
-                          y: { duration: 0.48, ease: liquidEase },
-                          scale: { duration: 0.48, ease: liquidEase },
-                        }}
-                      >
-                        <div className="landing-hiw-panel-media" aria-hidden>
-                          <AnimatePresence mode="wait" initial={false}>
-                            <motion.div
-                              key={STEP_IMAGES[i]}
-                              className="landing-hiw-panel-media-inner"
-                              initial={reduceMotion ? false : { opacity: 0, scale: 1.04 }}
-                              animate={{ opacity: 1, scale: 1 }}
-                              exit={reduceMotion ? undefined : { opacity: 0, scale: 1.02 }}
-                              transition={{ duration: 0.5, ease: liquidEase }}
-                            >
-                              <Image
-                                src={STEP_IMAGES[i]}
-                                alt=""
-                                fill
-                                sizes="(max-width: 768px) 100vw, 1152px"
-                                className="landing-hiw-panel-photo"
-                              />
-                            </motion.div>
-                          </AnimatePresence>
-                          <div className="landing-hiw-panel-scrim" />
-                        </div>
-
-                        <motion.div
-                          className="landing-hiw-panel-inner"
-                          initial={reduceMotion ? false : { opacity: 0, y: 8 }}
-                          animate={{ opacity: 1, y: 0 }}
-                          transition={{ duration: 0.42, delay: 0.06, ease: liquidEase }}
-                        >
-                          <div className="landing-hiw-panel-header">
-                            <span className="landing-hiw-pill landing-hiw-pill--inverse">{stepLabel}</span>
-                            <div className="landing-hiw-panel-copy">
-                              <h3 className="landing-heading-step">{step.title}</h3>
-                              <p>{step.desc}</p>
-                            </div>
-                          </div>
-                        </motion.div>
-                      </motion.article>
-                    ) : (
-                      <motion.button
-                        key={`row-${step.n}`}
-                        type="button"
-                        layout
-                        className="landing-hiw-row"
-                        onClick={() => setActiveStep(i)}
-                        aria-expanded={false}
-                        initial={reduceMotion ? false : { opacity: 0, y: 6 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        exit={reduceMotion ? undefined : { opacity: 0, y: -4 }}
-                        transition={{
-                          layout: panelSpring,
-                          opacity: { duration: 0.32, ease: liquidEase },
-                          y: { duration: 0.38, ease: liquidEase },
-                        }}
-                      >
-                        <span className="landing-hiw-pill">{stepLabel}</span>
-                        <div className="landing-hiw-row-copy">
-                          <h3 className="landing-heading-step">{step.title}</h3>
-                          <p className="landing-hiw-row-desc">{step.desc}</p>
-                        </div>
-                      </motion.button>
-                    )}
-                  </AnimatePresence>
-                </motion.div>
+                <button
+                  key={step.n}
+                  type="button"
+                  role="tab"
+                  aria-selected={active}
+                  className={`landing-hiw-v2-step su-focus-ring ${active ? "is-active" : ""}`}
+                  onClick={() => setActiveStep(i)}
+                >
+                  <span className="landing-hiw-v2-num" aria-hidden>
+                    {step.n}
+                  </span>
+                  <span className="landing-hiw-v2-copy">
+                    <span className="landing-hiw-v2-title">{step.title}</span>
+                    <span className="landing-hiw-v2-desc">{step.desc}</span>
+                  </span>
+                </button>
               );
             })}
           </div>
-        </LayoutGroup>
+
+          <div className="landing-hiw-v2-media" aria-hidden>
+            <motion.div
+              key={STEP_IMAGES[activeStep]}
+              className="landing-hiw-v2-media-inner"
+              initial={reduceMotion ? false : { opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ duration: 0.45, ease: [0.22, 1, 0.36, 1] }}
+            >
+              <Image
+                src={STEP_IMAGES[activeStep]}
+                alt=""
+                fill
+                sizes="(max-width: 1024px) 100vw, 55vw"
+                className="object-cover object-center"
+              />
+            </motion.div>
+          </div>
+        </div>
       </div>
     </section>
   );

@@ -4,7 +4,6 @@ import Link from "next/link";
 import ScrollReveal from "@/components/ui/ScrollReveal";
 import LandingSectionHeader from "@/components/landing/LandingSectionHeader";
 import { useLanguage } from "@/components/providers/LanguageProvider";
-import { FEATURE_ILLUSTRATIONS } from "@/components/landing/LandingFeatureIllustrations";
 
 export default function LandingFeatures() {
   const { t } = useLanguage();
@@ -18,40 +17,46 @@ export default function LandingFeatures() {
     { title: t("home.feat6Title"), desc: t("home.feat6Desc") },
   ];
 
+  const [featured, ...rest] = features;
+
   return (
-    <section id="features" className="landing-section">
+    <section id="features" className="landing-section landing-features-v2">
       <div className="max-w-6xl mx-auto">
-        <ScrollReveal>
+        <ScrollReveal className="max-w-2xl">
           <LandingSectionHeader
-            eyebrow={t("home.featuresEyebrow")}
+            eyebrow={t("home.featuresTitle")}
             title={t("home.featuresHeadline")}
             description={t("home.featuresSub")}
           />
         </ScrollReveal>
 
         <ScrollReveal delay={0.06}>
-          <div className="landing-benefits-grid">
-            {features.map((feat, i) => {
-              const Illustration = FEATURE_ILLUSTRATIONS[i];
-              return (
-                <article key={feat.title} className="landing-benefits-cell">
-                  {feat.badge ? (
-                    <span className="landing-benefits-badge">{feat.badge}</span>
-                  ) : null}
-                  <h3 className="landing-heading-card">{feat.title}</h3>
-                  <p className="mt-3 text-sm sm:text-[0.9375rem] landing-ink-muted leading-relaxed max-w-md">
-                    {feat.desc}
-                  </p>
-                  <div className="landing-benefits-visual mt-auto pt-8 sm:pt-10">
-                    <Illustration />
-                  </div>
-                </article>
-              );
-            })}
-          </div>
+          <article className="landing-feature-spotlight">
+            {featured.badge ? (
+              <p className="landing-feature-lead-badge">{featured.badge}</p>
+            ) : null}
+            <h3 className="landing-feature-spotlight-title">{featured.title}</h3>
+            <p className="landing-feature-spotlight-desc">{featured.desc}</p>
+          </article>
         </ScrollReveal>
 
-        <ScrollReveal delay={0.12} className="mt-10 sm:mt-12">
+        <ScrollReveal delay={0.1}>
+          <ol className="landing-feature-rail">
+            {rest.map((feat, i) => (
+              <li key={feat.title} className="landing-feature-rail-item">
+                <span className="landing-feature-rail-num" aria-hidden>
+                  {String(i + 2).padStart(2, "0")}
+                </span>
+                <div>
+                  <h3 className="landing-feature-rail-title">{feat.title}</h3>
+                  <p className="landing-feature-rail-desc">{feat.desc}</p>
+                </div>
+              </li>
+            ))}
+          </ol>
+        </ScrollReveal>
+
+        <ScrollReveal delay={0.12} className="mt-12">
           <Link href="#pricing" className="landing-benefits-cta">
             {t("home.featuresCta")}
           </Link>

@@ -11,7 +11,6 @@ const PLAN_IDS: PlanId[] = ["free", "starter", "stable", "enterprise"];
 type LandingPlansComparisonProps = {
   annual: boolean;
   t: (key: string, params?: Record<string, string>) => string;
-  onSelectPlan: (planId?: string) => void;
 };
 
 function formatLimit(n: number, unlimitedLabel: string) {
@@ -21,7 +20,6 @@ function formatLimit(n: number, unlimitedLabel: string) {
 export default function LandingPlansComparison({
   annual,
   t,
-  onSelectPlan,
 }: LandingPlansComparisonProps) {
   const unlimited = t("dashboard.plansCompareUnlimited");
 
@@ -147,9 +145,8 @@ export default function LandingPlansComparison({
                     {t("home.contactSales")}
                   </Link>
                 ) : (
-                  <button
-                    type="button"
-                    onClick={() => onSelectPlan(id === "free" ? undefined : id)}
+                  <Link
+                    href={id === "free" ? "/signup" : `/signup?plan=${id}`}
                     className={`landing-pricing-compare-cta ${
                       id === "starter"
                         ? "landing-pricing-compare-cta-accent"
@@ -157,7 +154,7 @@ export default function LandingPlansComparison({
                     }`}
                   >
                     {t("nav.startFree")}
-                  </button>
+                  </Link>
                 )}
               </td>
             ))}

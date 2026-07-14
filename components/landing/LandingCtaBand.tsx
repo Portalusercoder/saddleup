@@ -1,19 +1,16 @@
 "use client";
 
 import Image from "next/image";
+import Link from "next/link";
 import ScrollReveal from "@/components/ui/ScrollReveal";
 import LandingSectionHeader from "@/components/landing/LandingSectionHeader";
 import { useLanguage } from "@/components/providers/LanguageProvider";
 
-type LandingCtaBandProps = {
-  onStartFree: () => void;
-};
-
-export default function LandingCtaBand({ onStartFree }: LandingCtaBandProps) {
+export default function LandingCtaBand() {
   const { t } = useLanguage();
 
   return (
-    <section className="landing-cta-band relative overflow-hidden bg-[#0c100e] text-white">
+    <section className="landing-cta-band relative overflow-hidden bg-base text-white">
       <div className="landing-cta-band-bg" aria-hidden>
         <Image
           src="/horseback.jpg"
@@ -33,13 +30,9 @@ export default function LandingCtaBand({ onStartFree }: LandingCtaBandProps) {
             onDark
             className="mb-0"
           />
-          <button
-            type="button"
-            onClick={onStartFree}
-            className="mt-8 landing-cta-pill landing-cta-primary"
-          >
+          <Link href="/signup" className="mt-8 su-btn-primary !bg-mist !text-forest inline-flex">
             {t("footer.getStarted")}
-          </button>
+          </Link>
         </ScrollReveal>
       </div>
     </section>

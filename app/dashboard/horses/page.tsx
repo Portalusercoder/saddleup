@@ -12,6 +12,7 @@ import TableSkeleton from "@/components/ui/TableSkeleton";
 import HorseIdentificationFields from "@/components/ui/HorseIdentificationFields";
 import GuidedTourOverlay, { type GuidedTourStep } from "@/components/dashboard/GuidedTourOverlay";
 import ModalOverlay from "@/components/ui/ModalOverlay";
+import DashboardEmptyState from "@/components/ui/DashboardEmptyState";
 import { usePageTour } from "@/components/dashboard/usePageTour";
 import { trackEvent } from "@/lib/analytics/mixpanel-client";
 import { useLanguage } from "@/components/providers/LanguageProvider";
@@ -548,6 +549,47 @@ export default function HorsesPage() {
 
       {loading ? (
         <TableSkeleton rows={6} cols={5} />
+      ) : filteredHorses.length === 0 ? (
+        <>
+          {search.trim() ? (
+            <input
+              placeholder={t("dashboard.horsesSearchPlaceholder")}
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
+              data-tour="horses-search"
+              className="w-full px-4 py-3 mb-4 bg-base border border-black/10 text-black placeholder-black/40 focus:border-black/30 focus:outline-none"
+            />
+          ) : null}
+          <DashboardEmptyState
+            title={
+              search.trim()
+                ? t("dashboard.horsesEmptySearchTitle")
+                : t("dashboard.horsesEmptyTitle")
+            }
+            description={
+              search.trim()
+                ? t("dashboard.horsesEmptySearchDesc")
+                : t("dashboard.horsesEmptyDesc")
+            }
+            actionLabel={
+              !search.trim() && role !== "student"
+                ? t("dashboard.horsesEmptyCta")
+                : undefined
+            }
+            onAction={
+              !search.trim() && role !== "student"
+                ? () => {
+                    trackEvent("horses_empty_add_clicked");
+                    if (subscription && !subscription.canAddHorse) {
+                      setShowUpgradeModal(true);
+                    } else {
+                      setShowModal(true);
+                    }
+                  }
+                : undefined
+            }
+          />
+        </>
       ) : (
         <>
       <input

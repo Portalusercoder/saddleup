@@ -71,7 +71,11 @@ export default function Navbar() {
     );
   };
 
-  const isAuthPage = pathname === "/login" || pathname === "/signup";
+  const isAuthPage =
+    pathname === "/login" ||
+    pathname === "/signup" ||
+    pathname === "/forgot-password" ||
+    pathname === "/confirm-email";
   const isHome = pathname === "/";
   const isMarketing =
     isHome || pathname === "/for-schools" || pathname === "/for-trainers";
@@ -98,8 +102,8 @@ export default function Navbar() {
   if (isAuthPage) return null;
 
   const marketingLinkClass = (onForest: boolean) =>
-    `block px-4 py-3.5 text-base font-medium transition-colors ${
-      onForest ? "text-white/85 hover:text-white" : "text-[#0e1512]/80 hover:text-[#0e1512]"
+    `block px-4 py-3.5 text-base font-medium transition-colors su-focus-ring rounded-control ${
+      onForest ? "text-white/85 hover:text-white" : "text-forest/80 hover:text-forest"
     }`;
 
   return (
@@ -115,9 +119,9 @@ export default function Navbar() {
           isDashboard
             ? "bg-base border-b border-black/10 text-black"
             : isClubHero
-              ? "bg-transparent border-b border-white/10 text-[#f4f6f3]"
+              ? "bg-transparent border-b border-white/10 text-mist"
               : isMarketing
-                ? "bg-[#e8ece7]/90 backdrop-blur-xl border-b border-[#0e1512]/[0.06] text-[#0e1512]"
+                ? "bg-mist/90 backdrop-blur-xl border-b border-forest/[0.06] text-forest"
                 : "bg-base border-b border-black/10 text-black"
         }`}
       >
@@ -160,7 +164,7 @@ export default function Navbar() {
                 <LanguageToggle variant={langToggleVariant} compact />
                 <Link
                   href="/signup"
-                  className="hidden sm:inline-flex items-center justify-center min-h-[2.75rem] px-4 py-2 text-xs sm:text-sm font-medium rounded-control bg-[#f4f6f3] text-[#0e1512] hover:bg-white transition-colors"
+                  className="hidden sm:inline-flex items-center justify-center min-h-[44px] px-4 py-2 text-xs sm:text-sm font-medium rounded-control bg-mist text-forest hover:bg-white transition-colors su-focus-ring"
                 >
                   {t("nav.startFree")}
                 </Link>
@@ -170,20 +174,20 @@ export default function Navbar() {
         ) : (
           <>
             {isMarketing && !user ? (
-              <Link href="/" className="shrink-0 min-w-0">
-                <TextLogo className="text-[0.62rem] sm:text-[0.72rem] transition-colors truncate text-[#0e1512]/90" />
+              <Link href="/" className="shrink-0 min-w-0 su-focus-ring rounded-control">
+                <TextLogo className="text-[0.62rem] sm:text-[0.72rem] transition-colors truncate text-forest/90" />
               </Link>
             ) : (
               <div className="flex-1 min-w-0 hidden md:block" />
             )}
 
             {isMarketing && !user && (
-              <div className="hidden lg:flex items-center gap-6 xl:gap-8 text-sm font-medium flex-1 justify-center text-[#0e1512]/65">
+              <div className="hidden lg:flex items-center gap-6 xl:gap-8 text-sm font-medium flex-1 justify-center text-forest/65">
                 {MARKETING_LINKS.map((link) => (
                   <Link
                     key={link.href}
                     href={link.href}
-                    className="transition-colors duration-300 hover:text-[#0e1512]"
+                    className="transition-colors duration-300 hover:text-forest su-focus-ring rounded-sm"
                   >
                     {t(link.key)}
                   </Link>
@@ -202,7 +206,7 @@ export default function Navbar() {
                 <button
                   type="button"
                   onClick={() => setMarketingMobileOpen(true)}
-                  className="landing-touch-target lg:hidden p-2 rounded-full transition-colors text-[#0e1512]/70 hover:bg-[#0e1512]/5"
+                  className="landing-touch-target lg:hidden p-2 rounded-control transition-colors text-forest/70 hover:bg-forest/5 su-focus-ring"
                   aria-label={t("nav.menu")}
                 >
                   <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden>
@@ -229,13 +233,13 @@ export default function Navbar() {
                     <>
                       <Link
                         href="/login"
-                        className="landing-touch-target hidden sm:inline-flex px-3 py-2 text-sm font-medium transition-colors duration-300 text-[#0e1512]/70 hover:text-[#0e1512]"
+                        className="landing-touch-target hidden sm:inline-flex px-3 py-2 text-sm font-medium transition-colors duration-300 text-forest/70 hover:text-forest su-focus-ring rounded-control"
                       >
                         {t("nav.signIn")}
                       </Link>
                       <Link
                         href="/signup"
-                        className="landing-touch-target px-3 sm:px-4 py-2 sm:py-2.5 rounded-control text-xs sm:text-sm font-medium transition-all duration-300 whitespace-nowrap bg-[#1f4d3a] text-[#f4f6f3] hover:bg-[#16382b]"
+                        className="landing-touch-target min-h-[44px] inline-flex items-center px-3 sm:px-4 py-2 sm:py-2.5 rounded-control text-xs sm:text-sm font-medium transition-all duration-300 whitespace-nowrap bg-accent text-mist hover:opacity-95 su-focus-ring"
                       >
                         {t("nav.startFree")}
                       </Link>
@@ -274,7 +278,7 @@ export default function Navbar() {
             aria-hidden={!marketingMobileOpen}
           />
           <aside
-            className={`lg:hidden fixed top-0 right-0 h-[100dvh] w-[min(100vw,20rem)] bg-[#0c100e] z-[70] transition-transform duration-300 ease-out flex flex-col pb-[env(safe-area-inset-bottom)] ${
+            className={`lg:hidden fixed top-0 right-0 h-[100dvh] w-[min(100vw,20rem)] bg-base z-[70] transition-transform duration-300 ease-out flex flex-col pb-[env(safe-area-inset-bottom)] ${
               marketingMobileOpen ? "translate-x-0" : "translate-x-full"
             }`}
             aria-hidden={!marketingMobileOpen}
@@ -315,7 +319,7 @@ export default function Navbar() {
               <Link
                 href="/signup"
                 onClick={() => setMarketingMobileOpen(false)}
-                className="block w-full py-3 text-center text-sm font-medium bg-[#8fae98] text-[#0c100e] rounded-control hover:bg-[#9fbbA6] transition"
+                className="block w-full min-h-[44px] py-3 text-center text-sm font-medium bg-paddock text-base rounded-control hover:opacity-95 transition su-focus-ring"
               >
                 {t("nav.startFree")}
               </Link>

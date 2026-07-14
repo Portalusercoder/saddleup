@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, Suspense, useRef } from "react";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
@@ -8,6 +8,7 @@ import { trackEvent } from "@/lib/analytics/mixpanel-client";
 import TurnstileWidget from "@/components/security/TurnstileWidget";
 import { hasTurnstileToken } from "@/lib/security/turnstile-client";
 import { useLanguage } from "@/components/providers/LanguageProvider";
+import LoadingScreen from "@/components/ui/LoadingScreen";
 import AuthShell, {
   authBtnPrimary as btnPrimary,
   authFormClass as formClass,
@@ -18,18 +19,33 @@ type Role = "owner" | "trainer" | "student" | "guardian";
 
 type Step = "form" | "code" | "confirm_join";
 
-export default function SignupPage() {
+type PaidPlan = "starter" | "stable";
+
+function parsePaidPlan(raw: string | null): PaidPlan | null {
+  if (raw === "starter" || raw === "stable") return raw;
+  return null;
+}
+
+function SignupLoading() {
+  const { t } = useLanguage();
+  return <LoadingScreen fullPage message={t("common.loading")} />;
+}
+
+function SignupForm() {
   const { t } = useLanguage();
   const router = useRouter();
   const searchParams = useSearchParams();
   const [step, setStep] = useState<Step>("form");
-  const [role, setRole] = useState<Role>("student");
+  const [role, setRole] = useState<Role>("owner");
   const [fullName, setFullName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [stableName, setStableName] = useState("");
   const [enterpriseInviteCode, setEnterpriseInviteCode] = useState("");
   const [joinCode, setJoinCode] = useState("");
+  const [selectedPlan, setSelectedPlan] = useState<PaidPlan | null>(null);
+  const planTracked = useRef(false);
+  const formHeadingRef = useRef<HTMLHeadingElement>(null);
 
   useEffect(() => {
     const code = searchParams.get("code");
@@ -37,7 +53,17 @@ export default function SignupPage() {
       setEnterpriseInviteCode(code.trim().toUpperCase().replace(/\s/g, ""));
       setRole("owner");
     }
+    const plan = parsePaidPlan(searchParams.get("plan"));
+    setSelectedPlan(plan);
+    if (plan && !planTracked.current) {
+      planTracked.current = true;
+      trackEvent("signup_plan_intent", { plan_id: plan });
+    }
   }, [searchParams]);
+
+  useEffect(() => {
+    formHeadingRef.current?.focus();
+  }, [step]);
 
   const errParam = searchParams.get("error");
   useEffect(() => {
@@ -323,8 +349,15 @@ export default function SignupPage() {
           );
           return;
         }
-        router.push("/dashboard");
-        trackEvent("signup_completed_client", { role });
+        const dest =
+          selectedPlan != null
+            ? `/dashboard/plans?checkout=${selectedPlan}`
+            : "/dashboard";
+        router.push(dest);
+        trackEvent("signup_completed_client", {
+          role,
+          plan_intent: selectedPlan ?? "none",
+        });
         router.refresh();
         return;
       }
@@ -420,12 +453,28 @@ export default function SignupPage() {
     router.refresh();
   };
 
+  const stepIndex = step === "form" ? 1 : step === "code" ? 2 : 3;
+  const stepTotal = role === "owner" ? 2 : 3;
+
+  const stepProgress = (
+    <p className="text-white/40 text-xs uppercase tracking-widest mb-4" aria-live="polite">
+      {t("auth.signup.stepProgress", {
+        current: String(Math.min(stepIndex, stepTotal)),
+        total: String(stepTotal),
+      })}
+    </p>
+  );
+
   if (step === "confirm_join" && stablePreview) {
     return (
-      <div className="min-h-screen bg-[#0c100e] flex text-[#e8ebe6] items-center justify-center p-4 sm:p-6">
-        <div className="w-full max-w-md">
-          <div className="border border-white/10 bg-[#151a17] rounded-control p-6 sm:p-8 md:p-10 text-center">
-            <h1 className="font-serif text-2xl md:text-3xl font-medium text-[#e8ebe6] mb-2">
+      <AuthShell>
+        {stepProgress}
+        <div className="text-center">
+            <h1
+              ref={formHeadingRef}
+              tabIndex={-1}
+              className="font-serif text-2xl md:text-3xl font-medium text-mist mb-2 outline-none"
+            >
               {t("auth.signup.confirmJoinTitle")}
             </h1>
             <p className="text-white/50 text-sm mb-6">
@@ -443,9 +492,9 @@ export default function SignupPage() {
                   <span className="text-white/40 text-2xl font-serif">{stablePreview.name.charAt(0)}</span>
                 </div>
               )}
-              <p className="font-medium text-[#e8ebe6] text-lg">{stablePreview.name}</p>
+              <p className="font-medium text-mist text-lg">{stablePreview.name}</p>
             </div>
-            {error && <p className="text-red-400 text-sm mb-4">{error}</p>}
+            {error && <p className="text-red-400 text-sm mb-4" role="alert">{error}</p>}
             <div className="flex flex-col gap-3">
               <button
                 type="button"
@@ -464,23 +513,20 @@ export default function SignupPage() {
                 {t("auth.signup.noBack")}
               </button>
             </div>
-          </div>
-          <p className="mt-6 text-center">
-            <Link href="/" className="text-white/40 hover:text-white/65 text-xs uppercase tracking-wider">
-              {t("auth.signup.backHome")}
-            </Link>
-          </p>
         </div>
-      </div>
+      </AuthShell>
     );
   }
 
   if (step === "code") {
     return (
-      <div className="min-h-screen bg-[#0c100e] flex text-[#e8ebe6] items-center justify-center p-4 sm:p-6">
-        <div className="w-full max-w-md">
-          <div className="border border-white/10 bg-[#151a17] rounded-control p-6 sm:p-8 md:p-10">
-            <h1 className="font-serif text-2xl md:text-3xl font-medium text-[#e8ebe6] mb-2">
+      <AuthShell>
+        {stepProgress}
+            <h1
+              ref={formHeadingRef}
+              tabIndex={-1}
+              className="font-serif text-2xl md:text-3xl font-medium text-mist mb-2 outline-none"
+            >
               {t("auth.signup.checkEmailTitle")}
             </h1>
             <p className="text-white/50 text-sm mb-6">
@@ -503,13 +549,15 @@ export default function SignupPage() {
                   className={`${formClass} text-center text-lg tracking-[0.4em]`}
                 />
               </div>
-              {error && <p className="text-red-400 text-sm">{error}</p>}
+              {error && <p className="text-red-400 text-sm" role="alert">{error}</p>}
               <button
                 type="submit"
                 disabled={loading || code.trim().length !== 8}
                 className={`${btnPrimary} disabled:opacity-50`}
               >
-                {loading ? t("auth.signup.verifying") : t("auth.signup.verifyAndCreate")}
+                {loading
+                  ? t("auth.signup.verifying")
+                  : t("auth.signup.verifyAndContinue")}
               </button>
               <button
                 type="button"
@@ -551,27 +599,39 @@ export default function SignupPage() {
               )}
               </div>
             </div>
-          </div>
-          <p className="mt-6 text-center">
-            <Link href="/" className="text-white/40 hover:text-white/65 text-xs uppercase tracking-wider">
-              {t("auth.signup.backHome")}
-            </Link>
-          </p>
-        </div>
-      </div>
+      </AuthShell>
     );
   }
 
   return (
-    <div className="min-h-screen bg-[#0c100e] flex text-[#e8ebe6] items-center justify-center p-4 sm:p-6">
-      <div className="w-full max-w-md">
-        <div className="border border-white/10 bg-[#151a17] rounded-control p-6 sm:p-8 md:p-10">
-          <h1 className="font-serif text-2xl md:text-3xl font-medium text-[#e8ebe6] mb-2">
+    <AuthShell
+      footer={
+        <p className="mt-6 text-center text-white/50 text-sm">
+          {t("auth.signup.alreadyHave")}{" "}
+          <Link href="/login" className="text-paddock font-medium hover:underline">
+            {t("auth.signup.signIn")}
+          </Link>
+        </p>
+      }
+    >
+      {stepProgress}
+          <h1
+            ref={formHeadingRef}
+            tabIndex={-1}
+            className="font-serif text-2xl md:text-3xl font-medium text-mist mb-2 outline-none"
+          >
             {t("auth.signup.title")}
           </h1>
-          <p className="text-white/50 text-sm mb-8">
+          <p className="text-white/50 text-sm mb-4">
             {t("auth.signup.subtitle")}
           </p>
+          {selectedPlan && role === "owner" && (
+            <p className="text-brass/90 text-sm mb-6 border border-brass/25 rounded-control px-3 py-2">
+              {t("auth.signup.planIntent", {
+                plan: t(`pricing.${selectedPlan}.name`),
+              })}
+            </p>
+          )}
 
           <form onSubmit={sendCode} className="space-y-5">
             <div>
@@ -585,7 +645,7 @@ export default function SignupPage() {
                     className={`min-h-[44px] flex items-center justify-center p-4 px-6 text-sm font-medium uppercase tracking-wider transition ${
                       role === r
                         ? "bg-accent text-white rounded-control"
-                        : "bg-[#0c100e] text-white/50 hover:text-white border border-white/10 rounded-control"
+                        : "bg-base text-white/50 hover:text-white border border-white/10 rounded-control"
                     }`}
                   >
                     {t(`auth.signup.roles.${r}`)}
@@ -706,7 +766,7 @@ export default function SignupPage() {
                 />
                 <p className="text-white/40 text-xs mt-2 uppercase tracking-wider">
                   {t("auth.signup.joinCodeHelpBefore")}{" "}
-                  <Link href={t("auth.signup.joinCodeHelpLink")} className="text-[#8fae98] font-medium hover:underline">
+                  <Link href={t("auth.signup.joinCodeHelpLink")} className="text-paddock font-medium hover:underline">
                     {t("auth.signup.joinCodeHelpLink")}
                   </Link>{" "}
                   {t("auth.signup.joinCodeHelpAfter")}
@@ -715,7 +775,7 @@ export default function SignupPage() {
             )}
 
             {error && (
-              <p className="text-red-400 text-sm">{error}</p>
+              <p className="text-red-400 text-sm" role="alert">{error}</p>
             )}
 
             <button
@@ -726,21 +786,14 @@ export default function SignupPage() {
               {loading ? t("auth.signup.sendingCode") : t("auth.signup.sendVerificationCode")}
             </button>
           </form>
+    </AuthShell>
+  );
+}
 
-          <p className="mt-8 text-center text-white/50 text-sm">
-            {t("auth.signup.alreadyHave")}{" "}
-            <Link href="/login" className="text-[#8fae98] font-medium hover:underline">
-              {t("auth.signup.signIn")}
-            </Link>
-          </p>
-        </div>
-
-        <p className="mt-6 text-center">
-          <Link href="/" className="text-white/40 hover:text-white/65 text-xs uppercase tracking-wider">
-            {t("auth.signup.backHome")}
-          </Link>
-        </p>
-      </div>
-    </div>
+export default function SignupPage() {
+  return (
+    <Suspense fallback={<SignupLoading />}>
+      <SignupForm />
+    </Suspense>
   );
 }

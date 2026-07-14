@@ -410,8 +410,13 @@ export default function BookingsPage() {
                       ? t("dashboard.bookingsEmptyUpcomingStudent")
                       : t("dashboard.bookingsEmptyUpcomingStaff")
                   }
-                  actionLabel={isStudent ? t("dashboard.bookingsNewBooking") : undefined}
+                  actionLabel={
+                    isStudent
+                      ? t("dashboard.bookingsNewBooking")
+                      : t("dashboard.bookingsViewSchedule")
+                  }
                   onAction={isStudent ? () => setShowCreate(true) : undefined}
+                  actionHref={!isStudent ? "/dashboard/schedule" : undefined}
                 />
               ) : (
                 upcomingList.map((b) => (

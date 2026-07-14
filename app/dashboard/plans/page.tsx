@@ -1,6 +1,7 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef, Suspense } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
 import { useProfile } from "@/components/providers/ProfileProvider";
 import PlansComparisonTable from "@/components/dashboard/PlansComparisonTable";
 import PageLoader from "@/components/ui/PageLoader";
@@ -22,9 +23,11 @@ interface SubscriptionData {
   hasStripeCustomer: boolean;
 }
 
-export default function PlansPage() {
+function PlansPageInner() {
   const { profile, loading: profileLoading } = useProfile();
   const { t } = useLanguage();
+  const router = useRouter();
+  const searchParams = useSearchParams();
   const [data, setData] = useState<SubscriptionData | null>(null);
   const [loading, setLoading] = useState(true);
   const [checkoutLoading, setCheckoutLoading] = useState<string | null>(null);
@@ -32,6 +35,7 @@ export default function PlansPage() {
   const [cancelLoading, setCancelLoading] = useState(false);
   const [portalLoading, setPortalLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const autoCheckoutDone = useRef(false);
 
   useEffect(() => {
     fetch("/api/subscription")
@@ -69,6 +73,22 @@ export default function PlansPage() {
       setCheckoutLoading(null);
     }
   };
+
+  useEffect(() => {
+    if (autoCheckoutDone.current) return;
+    if (profileLoading || loading || !isOwner || !data) return;
+    const plan = searchParams.get("checkout");
+    if (plan !== "starter" && plan !== "stable") return;
+    if (data.tier === plan) {
+      autoCheckoutDone.current = true;
+      router.replace("/dashboard/plans");
+      return;
+    }
+    autoCheckoutDone.current = true;
+    router.replace("/dashboard/plans");
+    void handleCheckout(plan);
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- one-shot checkout from signup intent
+  }, [profileLoading, loading, isOwner, data, searchParams, router]);
 
   const handlePortal = async () => {
     setPortalLoading(true);
@@ -288,5 +308,13 @@ export default function PlansPage() {
         />
       </div>
     </div>
+  );
+}
+
+export default function PlansPage() {
+  return (
+    <Suspense fallback={<PageLoader />}>
+      <PlansPageInner />
+    </Suspense>
   );
 }

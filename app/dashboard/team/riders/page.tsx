@@ -9,6 +9,7 @@ import TeamMemberAvatar from "@/components/ui/TeamMemberAvatar";
 import HorseStatusPill from "@/components/ui/HorseStatusPill";
 import LoadingSpinner from "@/components/ui/LoadingSpinner";
 import TableSkeleton from "@/components/ui/TableSkeleton";
+import DashboardEmptyState from "@/components/ui/DashboardEmptyState";
 import GuidedTourOverlay, { type GuidedTourStep } from "@/components/dashboard/GuidedTourOverlay";
 import { usePageTour } from "@/components/dashboard/usePageTour";
 import { useLanguage } from "@/components/providers/LanguageProvider";
@@ -247,9 +248,20 @@ export default function TeamRidersPage() {
       {loading ? (
         <TableSkeleton rows={6} cols={3} />
       ) : filtered.length === 0 ? (
-        <p className="text-black/50 dark:text-white/50">
-          {search ? t("dashboard.teamRidersEmptySearch") : t("dashboard.teamRidersEmpty")}
-        </p>
+        <DashboardEmptyState
+          title={
+            search
+              ? t("dashboard.teamRidersEmptySearch")
+              : t("dashboard.teamRidersEmptyTitle")
+          }
+          description={
+            search
+              ? t("dashboard.teamRidersEmptySearchDesc")
+              : t("dashboard.teamRidersEmpty")
+          }
+          actionLabel={!search ? t("dashboard.teamRidersEmptyCta") : undefined}
+          onAction={!search ? openAdd : undefined}
+        />
       ) : (
         <div className="border border-black/10 overflow-hidden dark:border-white/10" data-tour="team-riders-table">
           <table className="w-full text-left text-sm">

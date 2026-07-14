@@ -41,28 +41,35 @@ export default function PartnerSpotlight() {
   return (
     <section className="landing-section">
       <ScrollReveal className="max-w-4xl mx-auto">
-        <div className="landing-card overflow-hidden">
+        <div className="relative overflow-hidden rounded-control">
           <div
             className="relative p-8 sm:p-10 bg-cover bg-center"
-            style={{ backgroundImage: "linear-gradient(rgba(12,16,14,0.88), rgba(12,16,14,0.92)), url('/horseback.jpg')" }}
+            style={{
+              backgroundImage:
+                "linear-gradient(160deg, rgba(12,16,14,0.9) 0%, rgba(12,16,14,0.82) 100%), url('/horseback.jpg')",
+            }}
           >
-            <p className="text-xs font-semibold uppercase tracking-widest text-white/45">
+            <p className="text-xs font-medium uppercase tracking-[0.18em] text-white/45">
               {t("home.partnerSpotlightLabel")}
             </p>
-            <h3 className="landing-display mt-3 text-2xl sm:text-3xl font-semibold text-white font-serif">{partner.name}</h3>
-            <p className="text-white/65 mt-3 max-w-xl leading-relaxed">{t("home.partnerSpotlightDesc")}</p>
+            <h3 className="landing-display mt-3 text-2xl sm:text-3xl font-medium text-white font-serif text-balance">
+              {partner.name}
+            </h3>
+            <p className="text-white/65 mt-3 max-w-xl leading-relaxed">
+              {t("home.partnerSpotlightDesc")}
+            </p>
             {partner.promoCode ? (
               <p className="mt-4 text-sm text-white/80">
                 {t("home.partnerPromoPrefix")}{" "}
-                <span className="font-semibold text-white">{partner.promoCode}</span>{" "}
+                <span className="font-medium text-brass">{partner.promoCode}</span>{" "}
                 {t("home.partnerPromoSuffix")}
               </p>
             ) : null}
             <a
               href={partner.destinationUrl}
               target="_blank"
-              rel="noopener noreferrer sponsored"
-              className="inline-flex mt-6 landing-cta-pill landing-cta-primary text-[#0e1512]"
+              rel="noreferrer noopener"
+              className="su-btn-primary su-focus-ring mt-8 !bg-mist !text-forest inline-flex"
             >
               {partner.ctaText || t("home.partnerCtaDefault")}
             </a>

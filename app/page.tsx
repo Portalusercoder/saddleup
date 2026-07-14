@@ -1,7 +1,3 @@
-"use client";
-
-import { useState } from "react";
-import AuthModal from "@/components/landing/AuthModal";
 import Footer from "@/components/landing/Footer";
 import PartnerSpotlight from "@/components/landing/PartnerSpotlight";
 import LandingFeatures from "@/components/landing/LandingFeatures";
@@ -12,33 +8,19 @@ import LandingHero from "@/components/landing/LandingHero";
 import LandingCtaBand from "@/components/landing/LandingCtaBand";
 
 export default function Home() {
-  const [authModalOpen, setAuthModalOpen] = useState(false);
-  const [selectedPlan, setSelectedPlan] = useState<string | undefined>();
-
-  const openAuth = (planId?: string) => {
-    setSelectedPlan(planId);
-    setAuthModalOpen(true);
-  };
-
   return (
     <main className="landing-page min-h-screen">
-      <AuthModal
-        isOpen={authModalOpen}
-        onClose={() => setAuthModalOpen(false)}
-        planId={selectedPlan}
-      />
-
-      <LandingHero onStartFree={() => openAuth()} />
+      <LandingHero />
 
       <div className="landing-premium">
         <HowItWorks />
         <LandingFeatures />
-        <LandingPricing onSelectPlan={openAuth} />
+        <LandingPricing />
         <LandingTestimonial />
         <PartnerSpotlight />
       </div>
 
-      <LandingCtaBand onStartFree={() => openAuth()} />
+      <LandingCtaBand />
       <Footer />
     </main>
   );

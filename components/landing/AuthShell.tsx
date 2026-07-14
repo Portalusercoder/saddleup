@@ -11,61 +11,58 @@ type AuthShellProps = {
 };
 
 export const authFormClass =
-  "w-full px-4 py-3 bg-[#151a17] border border-white/10 text-[#e8ebe6] placeholder:text-white/35 focus:border-[#b8a07a]/65 focus:outline-none rounded-control";
+  "w-full px-4 py-3.5 bg-transparent border-b border-white/15 text-mist placeholder:text-white/35 focus:border-brass/70 focus:outline-none rounded-none transition-colors";
 export const authLabelClass =
-  "block text-xs uppercase tracking-widest text-white/50 mb-2";
+  "block text-[0.65rem] uppercase tracking-[0.2em] text-white/45 mb-3";
 export const authBtnPrimary =
-  "w-full py-3 bg-accent text-white font-medium uppercase tracking-wider text-sm hover:opacity-95 transition rounded-control";
+  "w-full py-3.5 min-h-[48px] mt-2 bg-paddock text-base font-medium uppercase tracking-[0.12em] text-sm hover:opacity-95 transition rounded-control su-focus-ring disabled:opacity-50";
 
 export default function AuthShell({ children, footer }: AuthShellProps) {
   const { t } = useLanguage();
 
   return (
-    <div className="min-h-screen bg-[#0c100e] text-[#e8ebe6] flex">
-      <aside className="relative hidden lg:block lg:w-[46%] xl:w-[48%] overflow-hidden">
+    <div className="min-h-screen bg-base text-mist flex">
+      <aside className="relative hidden lg:block lg:w-[52%] overflow-hidden">
         <Image
           src="/horseback.jpg"
           alt=""
           fill
           priority
-          sizes="50vw"
-          className="object-cover object-center"
+          sizes="52vw"
+          className="object-cover object-[center_35%]"
         />
         <div
           className="absolute inset-0"
           style={{
             background:
-              "linear-gradient(160deg, rgba(12,16,14,0.55) 0%, rgba(12,16,14,0.75) 100%)",
+              "linear-gradient(105deg, rgba(12,16,14,0.72) 0%, rgba(12,16,14,0.35) 55%, rgba(12,16,14,0.15) 100%)",
           }}
         />
-        <div className="absolute inset-0 flex flex-col justify-between p-10 xl:p-14">
-          <Link href="/" className="relative z-[1]">
-            <TextLogo className="text-[0.8rem] text-white/95" />
+        <div className="absolute inset-0 flex flex-col justify-between p-12 xl:p-16">
+          <Link href="/" className="relative z-[1] su-focus-ring rounded-control w-fit">
+            <TextLogo className="text-[0.85rem] text-white/95" />
           </Link>
-          <div className="relative z-[1] max-w-sm">
-            <p className="font-serif text-3xl xl:text-4xl text-white/95 leading-tight text-balance">
-              {t("home.heroLine1")} {t("home.heroLine2")}
-            </p>
-            <p className="mt-4 text-sm text-white/55 leading-relaxed">
-              {t("home.heroSub")}
+          <div className="relative z-[1] max-w-md">
+            <p className="font-serif text-4xl xl:text-5xl text-white leading-[1.05] text-balance tracking-tight">
+              {t("home.heroLine1")}
+              <br />
+              {t("home.heroLine2")}
             </p>
           </div>
         </div>
       </aside>
 
-      <div className="flex-1 flex flex-col items-center justify-center p-5 sm:p-8 md:p-12">
-        <div className="w-full max-w-md">
-          <Link href="/" className="inline-block lg:hidden mb-8">
+      <div className="flex-1 flex flex-col items-center justify-center p-6 sm:p-10 md:p-14">
+        <div className="w-full max-w-[22rem]">
+          <Link href="/" className="inline-block lg:hidden mb-10 su-focus-ring rounded-control">
             <TextLogo className="text-[0.72rem] text-white/90" />
           </Link>
-          <div className="border border-white/10 bg-[#151a17] rounded-control p-7 sm:p-9 md:p-10">
-            {children}
-          </div>
+          <div className="space-y-1">{children}</div>
           {footer}
-          <p className="mt-6 text-center">
+          <p className="mt-10 text-center">
             <Link
               href="/"
-              className="text-white/40 hover:text-white/65 text-xs uppercase tracking-wider transition-colors"
+              className="text-white/35 hover:text-white/60 text-[0.65rem] uppercase tracking-[0.18em] transition-colors su-focus-ring rounded-sm"
             >
               {t("auth.signup.backHome")}
             </Link>

@@ -15,7 +15,7 @@ export default function StatCard({ title, value, index = 0 }: StatCardProps) {
 
   return (
     <div
-      className="stat-card stat-card-enter card border border-black/10 p-6 rounded-control dark:border-white/10"
+      className="stat-card stat-card-enter py-4 pe-4 su-hairline-b"
       style={{ animationDelay: `${index * 80}ms` }}
     >
       <p className="text-black/50 text-xs uppercase tracking-widest dark:text-white/50">{title}</p>

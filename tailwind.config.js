@@ -13,6 +13,9 @@ export default {
         paddock: "#8FAE98",
         mist: "#E8ECE7",
         brass: "#B8A07A",
+        forest: "#0E1512",
+        card: "#151A17",
+        elevated: "#1C221E",
       },
       fontFamily: {
         serif: ["var(--font-fraunces)", "Georgia", "serif"],

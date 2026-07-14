@@ -25,7 +25,7 @@ export default function CollapsibleSidebar() {
   const sections = getDashboardNavSections(profile?.role);
 
   return (
-    <aside className="h-full w-56 bg-[#0c100e] border-e border-white/10 flex flex-col overflow-hidden">
+    <aside className="h-full w-56 bg-base border-e border-white/10 flex flex-col overflow-hidden">
       {stable && (
         <div className="shrink-0 h-20 px-4 border-b border-white/10 flex items-center gap-3">
           {stable.logoUrl ? (
@@ -35,13 +35,13 @@ export default function CollapsibleSidebar() {
               className="sidebar-logo w-10 h-10 rounded-control object-cover border border-white/15 shrink-0"
             />
           ) : (
-            <div className="sidebar-logo w-10 h-10 rounded-control bg-[#1f4d3a]/25 border border-white/15 flex items-center justify-center shrink-0">
-              <span className="text-[#8fae98] text-sm font-serif">
+            <div className="sidebar-logo w-10 h-10 rounded-control bg-accent/25 border border-white/15 flex items-center justify-center shrink-0">
+              <span className="text-paddock text-sm font-serif">
                 {stable.name.charAt(0)}
               </span>
             </div>
           )}
-          <span className="text-sm font-medium text-[#e8ebe6] truncate">
+          <span className="text-sm font-medium text-mist truncate">
             {stable.name}
           </span>
         </div>
@@ -81,10 +81,10 @@ export default function CollapsibleSidebar() {
                     <Link
                       href={item.href}
                       data-nav-active={isActive ? "true" : undefined}
-                      className={`nav-link group flex items-center gap-3 rounded-control ps-3 pe-3 py-2.5 text-sm font-medium transition-colors ${
+                      className={`nav-link group flex items-center gap-3 rounded-control ps-3 pe-3 py-2.5 text-sm font-medium transition-colors min-h-[44px] su-focus-ring ${
                         isActive
-                          ? "nav-link-active-glow bg-[#8fae98]/15 text-[#e8ebe6]"
-                          : "text-white/55 hover:bg-white/[0.04] hover:text-[#e8ebe6]"
+                          ? "nav-link-active-glow bg-paddock/15 text-mist"
+                          : "text-white/55 hover:bg-white/[0.04] hover:text-mist"
                       }`}
                     >
                       <span
