@@ -8,14 +8,14 @@ import { trackEvent } from "@/lib/analytics/mixpanel-client";
 import TurnstileWidget from "@/components/security/TurnstileWidget";
 import { hasTurnstileToken } from "@/lib/security/turnstile-client";
 import { useLanguage } from "@/components/providers/LanguageProvider";
+import AuthShell, {
+  authBtnPrimary as btnPrimary,
+  authFormClass as formClass,
+  authLabelClass as labelClass,
+} from "@/components/landing/AuthShell";
 
-const MIN_PASSWORD_LENGTH = 8;
-
-const formClass =
-  "w-full px-4 py-3 bg-base border border-black/10 text-black placeholder-black/40 focus:border-black/30 focus:outline-none";
-const labelClass = "block text-xs uppercase tracking-widest text-black/60 mb-2";
-const btnPrimary =
-  "w-full py-3 bg-accent text-white font-medium uppercase tracking-wider text-sm hover:opacity-95 transition";
+const MIN_PASSWORD_LENGTH = 10;
+const RESET_CODE_LENGTH = 8;
 
 type Step = "email" | "reset" | "done";
 
@@ -131,8 +131,8 @@ function ForgotPasswordForm() {
       return;
     }
     const digits = code.replace(/\D/g, "");
-    if (digits.length !== 4) {
-      setError(t("auth.forgot.enterCode4"));
+    if (digits.length !== RESET_CODE_LENGTH) {
+      setError(t("auth.forgot.enterCode8"));
       return;
     }
     setLoading(true);
@@ -169,162 +169,148 @@ function ForgotPasswordForm() {
   };
 
   return (
-    <div className="min-h-screen bg-base flex items-center justify-center p-4 sm:p-6 text-black">
-      <div className="w-full max-w-md">
-        <div className="border border-black/10 p-8 md:p-10">
-          <h1 className="font-serif text-2xl md:text-3xl font-normal text-black mb-2">
-            {t("auth.forgot.title")}
-          </h1>
-          <p className="text-black/60 text-sm mb-8">
-            {t("auth.forgot.subtitle")}
-          </p>
+    <AuthShell>
+      <h1 className="font-serif text-2xl md:text-3xl font-medium text-[#e8ebe6] mb-2">
+        {t("auth.forgot.title")}
+      </h1>
+      <p className="text-white/50 text-sm mb-8">{t("auth.forgot.subtitle")}</p>
 
-          {info && step !== "done" && (
-            <p className="text-sm text-black/70 mb-4 border border-black/10 px-3 py-2 bg-black/[0.02]">
-              {info}
-            </p>
-          )}
-
-          {step === "done" ? (
-            <div className="space-y-5">
-              <p className="text-black/80 text-sm">
-                {t("auth.forgot.passwordUpdated")}
-              </p>
-              <Link
-                href="/login"
-                className={`${btnPrimary} inline-flex w-full items-center justify-center no-underline`}
-              >
-                {t("auth.forgot.signIn")}
-              </Link>
-            </div>
-          ) : step === "email" ? (
-            <form onSubmit={sendCode} className="space-y-5">
-              <div>
-                <TurnstileWidget onTokenChange={setTurnstileToken} theme="light" />
-              </div>
-              <div>
-                <label htmlFor="email" className={labelClass}>
-                  {t("common.email")}
-                </label>
-                <input
-                  id="email"
-                  type="email"
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  required
-                  autoComplete="email"
-                  className={formClass}
-                  placeholder={t("common.placeholderEmail")}
-                />
-              </div>
-              {error && <p className="text-red-600 text-sm">{error}</p>}
-              <button type="submit" disabled={loading} className={`${btnPrimary} disabled:opacity-50`}>
-                {loading ? t("auth.forgot.sending") : t("auth.forgot.sendCode")}
-              </button>
-            </form>
-          ) : (
-            <form onSubmit={confirmReset} className="space-y-5">
-              <p className="text-sm text-black/60">
-                {t("auth.forgot.codeSentTo", { email })}
-              </p>
-              <div>
-                <label htmlFor="code" className={labelClass}>
-                  {t("auth.forgot.code4Label")}
-                </label>
-                <input
-                  id="code"
-                  type="text"
-                  inputMode="numeric"
-                  maxLength={8}
-                  value={code}
-                  onChange={(e) => setCode(e.target.value.replace(/\D/g, "").slice(0, 4))}
-                  required
-                  className={formClass}
-                  placeholder="0000"
-                  autoComplete="one-time-code"
-                />
-              </div>
-              <div>
-                <label htmlFor="newPassword" className={labelClass}>
-                  {t("auth.forgot.newPassword")}
-                </label>
-                <input
-                  id="newPassword"
-                  type="password"
-                  value={newPassword}
-                  onChange={(e) => setNewPassword(e.target.value)}
-                  required
-                  minLength={MIN_PASSWORD_LENGTH}
-                  className={formClass}
-                  placeholder="••••••••"
-                  autoComplete="new-password"
-                />
-              </div>
-              <div>
-                <label htmlFor="confirmPassword" className={labelClass}>
-                  {t("auth.forgot.confirmNewPassword")}
-                </label>
-                <input
-                  id="confirmPassword"
-                  type="password"
-                  value={confirmPassword}
-                  onChange={(e) => setConfirmPassword(e.target.value)}
-                  required
-                  minLength={MIN_PASSWORD_LENGTH}
-                  className={formClass}
-                  placeholder="••••••••"
-                  autoComplete="new-password"
-                />
-              </div>
-              {error && <p className="text-red-600 text-sm">{error}</p>}
-              <button type="submit" disabled={loading} className={`${btnPrimary} disabled:opacity-50`}>
-                {loading ? t("auth.forgot.updating") : t("auth.forgot.updatePassword")}
-              </button>
-              <div className="flex flex-wrap items-center gap-2 text-sm text-black/60">
-                <TurnstileWidget onTokenChange={setTurnstileToken} theme="light" className="w-full" />
-                <button
-                  type="button"
-                  onClick={() => {
-                    setStep("email");
-                    setError(null);
-                    setInfo(null);
-                    setCode("");
-                  }}
-                  className="text-black underline hover:no-underline"
-                >
-                  {t("auth.forgot.useDifferentEmail")}
-                </button>
-                <span className="text-black/40">·</span>
-                {resendCooldownSec > 0 ? (
-                  <span>{t("auth.forgot.resendIn", { seconds: String(resendCooldownSec) })}</span>
-                ) : (
-                  <button
-                    type="button"
-                    onClick={resendCode}
-                    disabled={resendLoading}
-                    className="text-black underline hover:no-underline disabled:opacity-50"
-                  >
-                    {resendLoading ? t("auth.forgot.sending") : t("auth.forgot.resendCode")}
-                  </button>
-                )}
-              </div>
-            </form>
-          )}
-
-          <p className="mt-8 text-center text-black/60 text-sm">
-            <Link href="/login" className="text-black font-medium hover:underline">
-              {t("auth.forgot.backToSignIn")}
-            </Link>
-          </p>
-        </div>
-
-        <p className="mt-6 text-center">
-          <Link href="/" className="text-black/50 hover:text-black/70 text-xs uppercase tracking-wider">
-            {t("auth.forgot.backHome")}
-          </Link>
+      {info && step !== "done" && (
+        <p className="text-sm text-white/70 mb-4 border border-white/10 px-3 py-2 bg-white/[0.04] rounded-control">
+          {info}
         </p>
-      </div>
-    </div>
+      )}
+
+      {step === "done" ? (
+        <div className="space-y-5">
+          <p className="text-white/80 text-sm">{t("auth.forgot.passwordUpdated")}</p>
+          <Link
+            href="/login"
+            className={`${btnPrimary} inline-flex w-full items-center justify-center no-underline`}
+          >
+            {t("auth.forgot.signIn")}
+          </Link>
+        </div>
+      ) : step === "email" ? (
+        <form onSubmit={sendCode} className="space-y-5">
+          <div>
+            <TurnstileWidget onTokenChange={setTurnstileToken} theme="dark" />
+          </div>
+          <div>
+            <label htmlFor="email" className={labelClass}>
+              {t("common.email")}
+            </label>
+            <input
+              id="email"
+              type="email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              required
+              autoComplete="email"
+              className={formClass}
+              placeholder={t("common.placeholderEmail")}
+            />
+          </div>
+          {error && <p className="text-red-400 text-sm">{error}</p>}
+          <button type="submit" disabled={loading} className={`${btnPrimary} disabled:opacity-50`}>
+            {loading ? t("auth.forgot.sending") : t("auth.forgot.sendCode")}
+          </button>
+        </form>
+      ) : (
+        <form onSubmit={confirmReset} className="space-y-5">
+          <p className="text-sm text-white/50">{t("auth.forgot.codeSentTo", { email })}</p>
+          <div>
+            <label htmlFor="code" className={labelClass}>
+              {t("auth.forgot.code8Label")}
+            </label>
+            <input
+              id="code"
+              type="text"
+              inputMode="numeric"
+              maxLength={RESET_CODE_LENGTH}
+              value={code}
+              onChange={(e) =>
+                setCode(e.target.value.replace(/\D/g, "").slice(0, RESET_CODE_LENGTH))
+              }
+              required
+              className={formClass}
+              placeholder="00000000"
+              autoComplete="one-time-code"
+            />
+          </div>
+          <div>
+            <label htmlFor="newPassword" className={labelClass}>
+              {t("auth.forgot.newPassword")}
+            </label>
+            <input
+              id="newPassword"
+              type="password"
+              value={newPassword}
+              onChange={(e) => setNewPassword(e.target.value)}
+              required
+              minLength={MIN_PASSWORD_LENGTH}
+              className={formClass}
+              placeholder="••••••••"
+              autoComplete="new-password"
+            />
+          </div>
+          <div>
+            <label htmlFor="confirmPassword" className={labelClass}>
+              {t("auth.forgot.confirmNewPassword")}
+            </label>
+            <input
+              id="confirmPassword"
+              type="password"
+              value={confirmPassword}
+              onChange={(e) => setConfirmPassword(e.target.value)}
+              required
+              minLength={MIN_PASSWORD_LENGTH}
+              className={formClass}
+              placeholder="••••••••"
+              autoComplete="new-password"
+            />
+          </div>
+          {error && <p className="text-red-400 text-sm">{error}</p>}
+          <button type="submit" disabled={loading} className={`${btnPrimary} disabled:opacity-50`}>
+            {loading ? t("auth.forgot.updating") : t("auth.forgot.updatePassword")}
+          </button>
+          <div className="flex flex-wrap items-center gap-2 text-sm text-white/50">
+            <TurnstileWidget onTokenChange={setTurnstileToken} theme="dark" className="w-full" />
+            <button
+              type="button"
+              onClick={() => {
+                setStep("email");
+                setError(null);
+                setInfo(null);
+                setCode("");
+              }}
+              className="text-[#8fae98] underline hover:no-underline"
+            >
+              {t("auth.forgot.useDifferentEmail")}
+            </button>
+            <span className="text-white/30">·</span>
+            {resendCooldownSec > 0 ? (
+              <span>{t("auth.forgot.resendIn", { seconds: String(resendCooldownSec) })}</span>
+            ) : (
+              <button
+                type="button"
+                onClick={resendCode}
+                disabled={resendLoading}
+                className="text-[#8fae98] underline hover:no-underline disabled:opacity-50"
+              >
+                {resendLoading ? t("auth.forgot.sending") : t("auth.forgot.resendCode")}
+              </button>
+            )}
+          </div>
+        </form>
+      )}
+
+      <p className="mt-8 text-center text-white/50 text-sm">
+        <Link href="/login" className="text-[#8fae98] font-medium hover:underline">
+          {t("auth.forgot.backToSignIn")}
+        </Link>
+      </p>
+    </AuthShell>
   );
 }
 

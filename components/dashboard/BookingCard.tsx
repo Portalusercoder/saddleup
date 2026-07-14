@@ -46,7 +46,7 @@ export default function BookingCard({
   })();
 
   return (
-    <article className="border border-black/10 px-4 py-3 dark:border-white/10">
+    <article className="card border border-black/10 px-4 py-3 rounded-control dark:border-white/10">
       <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-3">
         <div className="flex items-start gap-4 min-w-0">
           <HorseAvatar

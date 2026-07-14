@@ -1,17 +1,13 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64">
-  <defs>
-    <style>
-      @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&amp;display=swap');
-      .bg { fill: #0f0f0f; }
-      .mark {
-        fill: #fffbf0;
-        font-family: 'Playfair Display', Georgia, serif;
-        font-size: 31px;
-        font-weight: 700;
-        letter-spacing: 1px;
-      }
-    </style>
-  </defs>
-  <rect class="bg" x="0" y="0" width="64" height="64" rx="8" ry="8" />
-  <text class="mark" x="32" y="43" text-anchor="middle">SU</text>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" fill="none">
+  <rect width="32" height="32" rx="6" fill="#0C100E"/>
+  <text
+    x="16"
+    y="21"
+    text-anchor="middle"
+    font-family="Georgia, serif"
+    font-size="11"
+    font-weight="600"
+    letter-spacing="0.06em"
+    fill="#8FAE98"
+  >SU</text>
 </svg>

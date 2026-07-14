@@ -387,16 +387,16 @@ export default function DashboardPage() {
   if (isGuardian) {
     return (
       <div className="space-y-10">
-        <h1 className="font-serif text-3xl md:text-4xl font-normal text-black">
+        <h1 className="font-serif text-3xl md:text-4xl font-medium text-black">
           {t("dashboard.pageTitle")}
         </h1>
-        <div className="border border-black/20 p-6">
+        <div className="card border border-black/15 p-6 rounded-control">
           <p className="text-black/80 mb-4">
             {t("dashboard.guardianLead")}
           </p>
           <Link
             href="/dashboard/guardian"
-            className="inline-block px-4 py-2.5 bg-accent text-white font-medium text-sm uppercase tracking-wider hover:opacity-95 transition"
+            className="inline-block px-4 py-2.5 bg-accent text-white font-medium text-sm uppercase tracking-wider hover:opacity-95 transition rounded-control"
           >
             {t("dashboard.guardianOpenPortal")}
           </Link>
@@ -431,7 +431,7 @@ export default function DashboardPage() {
         onSkip={finishTutorial}
       />
 
-      <h1 className="page-title-enter font-serif text-3xl md:text-4xl font-normal text-black dark:text-white">
+      <h1 className="page-title-enter font-serif text-3xl md:text-4xl font-medium text-black dark:text-white">
         {t("dashboard.pageTitle")}
       </h1>
 
@@ -441,14 +441,14 @@ export default function DashboardPage() {
 
       {/* Student: Upcoming lessons */}
       {isStudent && upcomingBookingsPreview.length > 0 && (
-        <div className="border border-black/20 p-6 dark:border-white/20" data-tour="upcoming-lessons">
+        <div className="card border border-black/15 p-6 rounded-control dark:border-white/20" data-tour="upcoming-lessons">
           <h2 className="font-serif text-lg text-black dark:text-white mb-2">{t("dashboard.upcomingLessons")}</h2>
           <div className="space-y-2">
             {upcomingBookingsPreview.map((b) => (
               <Link
                 key={b.id}
                 href="/dashboard/bookings"
-                className="flex items-center gap-3 border border-black/10 px-4 py-3 hover:border-black/20 transition"
+                className="flex items-center gap-3 border border-black/10 px-4 py-3 rounded-control hover:border-black/20 transition"
               >
                 {b.horse && (
                   <HorseAvatar
@@ -476,7 +476,7 @@ export default function DashboardPage() {
 
       {/* Upcoming Care Reminders - trainers/owners only */}
       {!isStudent && careReminders.length > 0 && (
-        <div className="border border-black/20 p-6" data-tour="care-reminders">
+        <div className="card border border-black/15 p-6 rounded-control" data-tour="care-reminders">
           <h2 className="font-serif text-lg text-black mb-2 flex items-center gap-2">
             <span>📋</span> {t("dashboard.careRemindersTitle")}
           </h2>
@@ -514,7 +514,7 @@ export default function DashboardPage() {
 
       {/* Workload Alerts - trainers/owners only */}
       {!isStudent && overworkedHorses.length > 0 && (
-        <div className="border border-black/20 p-6">
+        <div className="card border border-black/15 p-6 rounded-control">
           <h2 className="font-serif text-lg text-black mb-2 flex items-center gap-2">
             <span>⚠</span> {t("dashboard.workloadAlertsTitle")}
           </h2>
@@ -562,7 +562,7 @@ export default function DashboardPage() {
       </div>
 
       <div className="grid md:grid-cols-2 gap-6">
-        <div className="border border-black/10 p-6" data-tour="recent-sessions">
+        <div className="card border border-black/10 p-6 rounded-control" data-tour="recent-sessions">
           <h2 className="font-serif text-lg text-black mb-4">
             {isStudent ? t("dashboard.recentMySessions") : t("dashboard.recentSessions")}
           </h2>
@@ -570,7 +570,7 @@ export default function DashboardPage() {
             {sessions.slice(0, 5).map((session) => (
               <div
                 key={session.id}
-                className="flex justify-between items-center border border-black/10 px-4 py-3"
+                className="flex justify-between items-center border border-black/10 px-4 py-3 rounded-control"
               >
                 <div>
                   <span className="font-medium text-black">{session.horse?.name}</span>
@@ -595,24 +595,24 @@ export default function DashboardPage() {
           <SmartQuickActions title={t("dashboard.quickActions")} actions={staffQuickActions} />
         )}
         {isStudent && (
-          <div className="border border-black/10 p-6" data-tour="quick-links">
+          <div className="card border border-black/10 p-6 rounded-control" data-tour="quick-links">
             <h2 className="font-serif text-lg text-black mb-4">{t("dashboard.quickLinks")}</h2>
             <div className="space-y-3">
               <Link
                 href="/dashboard/my-horses"
-                className="block w-full px-4 py-3 border border-black/10 text-black font-medium text-center text-sm uppercase tracking-wider hover:border-black/30 transition"
+                className="block w-full px-4 py-3 border border-black/10 text-black font-medium text-center text-sm uppercase tracking-wider hover:border-black/30 transition rounded-control"
               >
                 {t("navRole.myHorses")}
               </Link>
               <Link
                 href="/dashboard/bookings"
-                className="block w-full px-4 py-3 border border-black/10 text-black font-medium text-center text-sm uppercase tracking-wider hover:border-black/30 transition"
+                className="block w-full px-4 py-3 border border-black/10 text-black font-medium text-center text-sm uppercase tracking-wider hover:border-black/30 transition rounded-control"
               >
                 {t("navRole.myBookings")}
               </Link>
               <Link
                 href="/dashboard/competitions"
-                className="block w-full px-4 py-3 border border-black/10 text-black font-medium text-center text-sm uppercase tracking-wider hover:border-black/30 transition"
+                className="block w-full px-4 py-3 border border-black/10 text-black font-medium text-center text-sm uppercase tracking-wider hover:border-black/30 transition rounded-control"
               >
                 {t("navRole.competitions")}
               </Link>

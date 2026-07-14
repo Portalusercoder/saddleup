@@ -11,11 +11,11 @@ export default function TextLogo({
 }: TextLogoProps) {
   return (
     <div className={className}>
-      <p className="font-serif uppercase tracking-[0.28em] leading-none text-current">
+      <p className="font-serif uppercase tracking-[0.22em] leading-none text-current">
         Saddle Up
       </p>
       {subtitle ? (
-        <p className={`mt-2 text-[0.62rem] uppercase tracking-[0.22em] ${subtitleClassName}`}>
+        <p className={`mt-2 text-[0.62rem] uppercase tracking-[0.18em] ${subtitleClassName}`}>
           {subtitle}
         </p>
       ) : null}

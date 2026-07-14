@@ -7,10 +7,12 @@ import { createClient } from "@/lib/supabase/client";
 import LoadingScreen from "@/components/ui/LoadingScreen";
 import { trackEvent } from "@/lib/analytics/mixpanel-client";
 import { useLanguage } from "@/components/providers/LanguageProvider";
-
-const formClass = "w-full px-4 py-3 bg-base border border-black/10 text-black placeholder-black/40 focus:border-black/30 focus:outline-none";
-const labelClass = "block text-xs uppercase tracking-widest text-black/60 mb-2";
-const btnPrimary = "w-full py-3 bg-accent text-white font-medium uppercase tracking-wider text-sm hover:opacity-95 transition";
+import AuthShell, {
+  authBtnPrimary,
+  authFormClass,
+  authLabelClass,
+} from "@/components/landing/AuthShell";
+import { safeInternalPath } from "@/lib/security/safe-redirect";
 
 function LoginLoading() {
   const { t } = useLanguage();
@@ -21,11 +23,7 @@ function LoginForm() {
   const { t } = useLanguage();
   const router = useRouter();
   const searchParams = useSearchParams();
-  const rawRedirect = searchParams.get("redirect") || "/dashboard";
-  const redirect =
-    rawRedirect.startsWith("/") && !rawRedirect.startsWith("//")
-      ? rawRedirect
-      : "/dashboard";
+  const redirect = safeInternalPath(searchParams.get("redirect"), "/dashboard");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState<string | null>(null);
@@ -52,7 +50,6 @@ function LoginForm() {
         return;
       }
       trackEvent("login_succeeded");
-      // Use a full navigation to avoid occasional client-router stalls right after auth.
       window.location.assign(redirect);
       return;
     } catch {
@@ -63,89 +60,71 @@ function LoginForm() {
   };
 
   return (
-    <div className="min-h-screen bg-base flex items-center justify-center p-4 sm:p-6 text-black">
-      <div className="w-full max-w-md">
-        <div className="border border-black/10 p-8 md:p-10">
-          <h1 className="font-serif text-2xl md:text-3xl font-normal text-black mb-2">
-            {t("auth.login.title")}
-          </h1>
-          <p className="text-black/60 text-sm mb-8">
-            {t("auth.login.subtitle")}
-          </p>
+    <AuthShell>
+      <h1 className="font-serif text-2xl md:text-3xl font-medium text-[#e8ebe6] mb-2">
+        {t("auth.login.title")}
+      </h1>
+      <p className="text-white/50 text-sm mb-8">{t("auth.login.subtitle")}</p>
 
-          <form onSubmit={handleSubmit} className="space-y-5">
-            <div>
-              <label htmlFor="email" className={labelClass}>
-                {t("common.email")}
-              </label>
-              <input
-                id="email"
-                type="email"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                required
-                className={formClass}
-                placeholder={t("common.placeholderEmail")}
-              />
-            </div>
-
-            <div>
-              <div className="flex items-center justify-between gap-2 mb-2">
-                <label htmlFor="password" className="block text-xs uppercase tracking-widest text-black/60">
-                  {t("common.password")}
-                </label>
-                <Link
-                  href="/forgot-password"
-                  className="text-xs uppercase tracking-wider text-black/60 hover:text-black font-medium shrink-0"
-                >
-                  {t("auth.login.forgotPassword")}
-                </Link>
-              </div>
-              <input
-                id="password"
-                type="password"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                required
-                className={formClass}
-                placeholder="••••••••"
-              />
-            </div>
-
-            {error && (
-              <p className="text-red-600 text-sm">{error}</p>
-            )}
-
-            <button
-              type="submit"
-              disabled={loading}
-              className={`${btnPrimary} disabled:opacity-50`}
-            >
-              {loading ? t("auth.login.signingIn") : t("auth.login.submit")}
-            </button>
-          </form>
-
-          <p className="mt-8 text-center text-black/60 text-sm">
-            {t("auth.login.noAccount")}{" "}
-            <Link href="/signup" className="text-black font-medium hover:underline">
-              {t("auth.login.signUpLink")}
-            </Link>
-          </p>
-          <p className="mt-3 text-center text-black/50 text-xs">
-            {t("auth.login.joinCodeDidntWork")}{" "}
-            <Link href="/get-my-id" className="text-black/70 hover:text-black font-medium">
-              {t("auth.login.getPersonalId")}
-            </Link>
-          </p>
+      <form onSubmit={handleSubmit} className="space-y-5">
+        <div>
+          <label htmlFor="email" className={authLabelClass}>
+            {t("common.email")}
+          </label>
+          <input
+            id="email"
+            type="email"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            required
+            className={authFormClass}
+            placeholder={t("common.placeholderEmail")}
+          />
         </div>
 
-        <p className="mt-6 text-center">
-          <Link href="/" className="text-black/50 hover:text-black/70 text-xs uppercase tracking-wider">
-            {t("auth.signup.backHome")}
-          </Link>
-        </p>
-      </div>
-    </div>
+        <div>
+          <div className="flex items-center justify-between gap-2 mb-2">
+            <label htmlFor="password" className="block text-xs uppercase tracking-widest text-white/50">
+              {t("common.password")}
+            </label>
+            <Link
+              href="/forgot-password"
+              className="text-xs uppercase tracking-wider text-white/50 hover:text-white/80 font-medium shrink-0"
+            >
+              {t("auth.login.forgotPassword")}
+            </Link>
+          </div>
+          <input
+            id="password"
+            type="password"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            required
+            className={authFormClass}
+            placeholder="••••••••"
+          />
+        </div>
+
+        {error && <p className="text-red-400 text-sm">{error}</p>}
+
+        <button type="submit" disabled={loading} className={`${authBtnPrimary} disabled:opacity-50`}>
+          {loading ? t("auth.login.signingIn") : t("auth.login.submit")}
+        </button>
+      </form>
+
+      <p className="mt-8 text-center text-white/50 text-sm">
+        {t("auth.login.noAccount")}{" "}
+        <Link href="/signup" className="text-[#8fae98] font-medium hover:underline">
+          {t("auth.login.signUpLink")}
+        </Link>
+      </p>
+      <p className="mt-3 text-center text-white/40 text-xs">
+        {t("auth.login.joinCodeDidntWork")}{" "}
+        <Link href="/get-my-id" className="text-white/60 hover:text-white/80 font-medium">
+          {t("auth.login.getPersonalId")}
+        </Link>
+      </p>
+    </AuthShell>
   );
 }
 

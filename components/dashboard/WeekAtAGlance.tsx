@@ -14,7 +14,7 @@ type WeekAtAGlanceProps = {
 
 export default function WeekAtAGlance({ title, items }: WeekAtAGlanceProps) {
   return (
-    <section className="border border-black/10 p-6 dark:border-white/10" data-tour="week-at-a-glance">
+    <section className="card border border-black/10 p-6 rounded-control dark:border-white/10" data-tour="week-at-a-glance">
       <h2 className="font-serif text-lg text-black dark:text-white mb-4">{title}</h2>
       <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3">
         {items.map((item) => {
@@ -40,7 +40,7 @@ export default function WeekAtAGlance({ title, items }: WeekAtAGlanceProps) {
               <Link
                 key={item.label}
                 href={item.href}
-                className="border border-black/10 px-4 py-3 hover:border-accent/40 hover:bg-accent/5 transition dark:border-white/10"
+                className="border border-black/10 px-4 py-3 rounded-control hover:border-[#8fae98]/40 hover:bg-[#8fae98]/5 transition dark:border-white/10"
               >
                 {inner}
               </Link>
@@ -50,7 +50,7 @@ export default function WeekAtAGlance({ title, items }: WeekAtAGlanceProps) {
           return (
             <div
               key={item.label}
-              className="border border-black/10 px-4 py-3 dark:border-white/10"
+              className="border border-black/10 px-4 py-3 rounded-control dark:border-white/10"
             >
               {inner}
             </div>

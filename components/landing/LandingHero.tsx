@@ -1,6 +1,7 @@
 "use client";
 
 import Image from "next/image";
+import Link from "next/link";
 import { useLanguage } from "@/components/providers/LanguageProvider";
 
 type LandingHeroProps = {
@@ -14,31 +15,35 @@ export default function LandingHero({ onStartFree }: LandingHeroProps) {
     <section className="landing-hero-club relative w-full min-h-[100dvh] flex flex-col overflow-hidden">
       <div className="landing-hero-club-bg" aria-hidden>
         <Image
-          src="/hero-dashboard-mockup.png"
+          src="/horseback.jpg"
           alt=""
-          width={1024}
-          height={576}
+          fill
           priority
-          unoptimized
-          className="landing-hero-club-mockup-full"
+          sizes="100vw"
+          className="landing-hero-club-photo"
         />
+        <div className="landing-hero-club-scrim" />
       </div>
 
-      <div className="landing-hero-club-shell relative z-[1] flex min-h-[100dvh] flex-col">
-        <div className="landing-hero-club-copy flex flex-col items-center md:items-start text-center md:text-left px-4 sm:px-8 md:px-12 lg:px-16 pt-20 sm:pt-24 pb-8 max-w-xl md:max-w-lg lg:max-w-xl">
-          <h1 className="landing-hero-in landing-hero-in-delay-1 landing-hero-script">
+      <div className="landing-hero-club-shell relative z-[1] flex min-h-[100dvh] flex-col justify-end md:justify-center">
+        <div className="flex flex-col items-start text-left px-5 sm:px-8 md:px-12 lg:px-16 pb-16 sm:pb-20 md:pb-0 pt-28 max-w-xl md:max-w-2xl">
+          <h1 className="landing-hero-in landing-hero-in-delay-1 landing-hero-brand">
             {t("home.heroTitle")}
           </h1>
-          <p className="landing-hero-in landing-hero-in-delay-2 landing-hero-club-sub mt-5 sm:mt-6 max-w-xl md:max-w-none mx-auto md:mx-0 text-[0.9375rem] sm:text-base leading-relaxed">
+          <p className="landing-hero-in landing-hero-in-delay-2 landing-hero-line mt-5 sm:mt-6">
+            {t("home.heroLine1")} {t("home.heroLine2")}
+          </p>
+          <p className="landing-hero-in landing-hero-in-delay-3 landing-hero-club-sub mt-4 text-[0.9375rem] sm:text-base leading-relaxed">
             {t("home.heroSub")}
           </p>
-          <button
-            type="button"
-            onClick={onStartFree}
-            className="landing-hero-in landing-hero-in-delay-3 landing-hero-nav-cta mt-6 sm:mt-8 sm:hidden"
-          >
-            {t("nav.startFree")}
-          </button>
+          <div className="landing-hero-in landing-hero-in-delay-4 landing-hero-cta-row mt-8 sm:mt-10">
+            <button type="button" onClick={onStartFree} className="landing-hero-cta-primary">
+              {t("nav.startFree")}
+            </button>
+            <Link href="/login" className="landing-hero-cta-ghost">
+              {t("nav.signIn")}
+            </Link>
+          </div>
         </div>
       </div>
     </section>

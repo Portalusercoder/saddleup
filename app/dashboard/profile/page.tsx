@@ -19,7 +19,7 @@ export default function ProfilePage() {
   const { t } = useLanguage();
   const { profile, loading: profileLoading, refetch } = useProfile();
   const [inviteCode, setInviteCode] = useState<string | null>(null);
-  const [riderIdCard, setRiderIdCard] = useState<string | null>(null);
+  const [riderIdCard, setRiderIdCard] = useState<{ id: string; hasCard: boolean } | null>(null);
   const [saving, setSaving] = useState(false);
   const [emailSubmitting, setEmailSubmitting] = useState(false);
   const [password, setPassword] = useState("");
@@ -40,7 +40,13 @@ export default function ProfilePage() {
   useEffect(() => {
     fetch("/api/me/rider")
       .then((r) => r.json())
-      .then((d) => setRiderIdCard(d?.id_card_url ?? null))
+      .then((d) => {
+        if (d?.id && d?.has_id_card) {
+          setRiderIdCard({ id: d.id, hasCard: true });
+        } else {
+          setRiderIdCard(null);
+        }
+      })
       .catch(() => setRiderIdCard(null));
   }, []);
 
@@ -56,7 +62,11 @@ export default function ProfilePage() {
       .catch(() => setInviteCode(null));
   }, [profile]);
 
-  const idCardUrl = riderIdCard ?? profile?.id_card_url ?? null;
+  const idCardHref = riderIdCard?.hasCard
+    ? `/api/riders/${riderIdCard.id}/id-card`
+    : profile?.id_card_url
+      ? `/api/members/${profile.id}/id-card`
+      : null;
   const loading = profileLoading;
   const { open: showTour, complete: completeTour } = usePageTour(
     "saddleup_tour_profile_v1",
@@ -152,7 +162,7 @@ export default function ProfilePage() {
   };
 
   const handlePasswordUpdate = async () => {
-    if (!password || password.length < 8) {
+    if (!password || password.length < 10) {
       setToast(t("profile.passwordTooShort"));
       setTimeout(() => setToast(null), 4000);
       return;
@@ -291,11 +301,11 @@ export default function ProfilePage() {
                   : profile.role}
               </p>
             </div>
-            {idCardUrl && (
+            {idCardHref && (
               <div>
                 <label className={labelClass}>{t("profile.idCard")}</label>
                 <a
-                  href={idCardUrl}
+                  href={idCardHref}
                   target="_blank"
                   rel="noopener noreferrer"
                   className="text-black hover:underline text-sm uppercase tracking-wider"

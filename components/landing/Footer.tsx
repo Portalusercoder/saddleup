@@ -31,8 +31,8 @@ export default function Footer() {
   const year = new Date().getFullYear();
 
   return (
-    <footer className="bg-[#111111] text-white/70 border-t border-white/[0.06]">
-      <div className="max-w-6xl mx-auto px-1 sm:px-0 py-16 sm:py-20">
+    <footer className="bg-[#0c100e] text-white/70 border-t border-white/[0.06]">
+      <div className="max-w-6xl mx-auto px-5 sm:px-6 py-16 sm:py-20">
         <div className="flex flex-col md:flex-row md:items-start md:justify-between gap-12">
           <div>
             <TextLogo className="text-[0.85rem] text-white/90" subtitle={t("footer.subtitle")} subtitleClassName="text-white/40" />

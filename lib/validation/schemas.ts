@@ -30,6 +30,7 @@ export const completeSignupBodySchema = z
       .transform((s) => s.toLowerCase()),
     stableName: optStr(200),
     joinCode: optStr(64),
+    /** @deprecated Ignored — complete-signup requires an authenticated session. */
     userId: z.string().uuid().optional(),
   })
   .strip();

@@ -60,7 +60,7 @@ export async function GET() {
       email: profile.email ?? user.email,
       avatarUrl: profile.avatar_url,
       role: profile.role,
-      id_card_url: profile.id_card_url,
+      id_card_url: profile.id_card_url ? "present" : null,
       myRiderId,
       onboardingCompleted: Boolean(profile.onboarding_completed),
     });

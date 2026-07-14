@@ -25,16 +25,16 @@ export default function LanguageToggle({ variant = "dark", compact = false }: La
             ? "text-white/90 hover:text-white bg-white/10 hover:bg-white/15"
             : "border-white/50 text-white/90 hover:text-white hover:border-white/70"
           : compact
-            ? "text-[#1d1d1f]/70 hover:text-[#1d1d1f] bg-black/[0.04] hover:bg-black/[0.07]"
+            ? "text-[#0e1512]/70 hover:text-[#0e1512] bg-black/[0.04] hover:bg-black/[0.07]"
             : "border-black/20 text-black/70 hover:text-black hover:border-black/40"
       }`}
       aria-label={lang === "en" ? t("languageToggle.toArabic") : t("languageToggle.toEnglish")}
     >
-      <span className={lang === "en" ? "font-semibold text-current" : isLight ? "text-white/55" : "text-[#1d1d1f]/45"}>
+      <span className={lang === "en" ? "font-semibold text-current" : isLight ? "text-white/55" : "text-[#0e1512]/45"}>
         EN
       </span>
-      <span className={isLight ? "text-white/40" : "text-[#1d1d1f]/30"}>/</span>
-      <span className={lang === "ar" ? "font-semibold text-current" : isLight ? "text-white/55" : "text-[#1d1d1f]/45"}>
+      <span className={isLight ? "text-white/40" : "text-[#0e1512]/30"}>/</span>
+      <span className={lang === "ar" ? "font-semibold text-current" : isLight ? "text-white/55" : "text-[#0e1512]/45"}>
         AR
       </span>
     </button>

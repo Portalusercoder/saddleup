@@ -60,7 +60,7 @@ export default function Navbar() {
       <Link
         href={item.href}
         onClick={() => setMobileOpen(false)}
-        className={`block px-4 py-3 text-sm font-medium transition uppercase tracking-wider ${
+        className={`block px-4 py-3 text-sm font-medium transition uppercase tracking-wider rounded-control ${
           isActive
             ? "bg-black/10 text-black"
             : "text-black/60 hover:text-black hover:bg-black/5"
@@ -75,31 +75,31 @@ export default function Navbar() {
   const isHome = pathname === "/";
   const isMarketing =
     isHome || pathname === "/for-schools" || pathname === "/for-trainers";
+  const isPhotoHeroPage = isHome || pathname === "/for-schools" || pathname === "/for-trainers";
 
   const [scrolledPastHero, setScrolledPastHero] = useState(false);
   const [navCompact, setNavCompact] = useState(false);
   useEffect(() => {
-    if (!isHome) return;
+    if (!isPhotoHeroPage) return;
     const check = () => {
-      const threshold = window.innerHeight * HERO_SCROLL_THRESHOLD;
+      const threshold = window.innerHeight * (isHome ? HERO_SCROLL_THRESHOLD : 0.45);
       setScrolledPastHero(window.scrollY > threshold);
       setNavCompact(window.scrollY > 60);
     };
     check();
     window.addEventListener("scroll", check, { passive: true });
     return () => window.removeEventListener("scroll", check);
-  }, [isHome]);
+  }, [isPhotoHeroPage, isHome]);
 
-  const isClubHero = isHome && !scrolledPastHero && !user;
+  const isClubHero = isPhotoHeroPage && !scrolledPastHero && !user;
   const isDashboard = pathname.startsWith("/dashboard");
-  const navOnDark = false;
-  const langToggleVariant = isMarketing ? "light" : "dark";
+  const langToggleVariant = isClubHero ? "light" : isMarketing ? "dark" : "light";
 
   if (isAuthPage) return null;
 
-  const marketingLinkClass = (dark: boolean) =>
+  const marketingLinkClass = (onForest: boolean) =>
     `block px-4 py-3.5 text-base font-medium transition-colors ${
-      dark ? "text-white/85 hover:text-white" : "text-[#1d1d1f]/80 hover:text-[#1d1d1f]"
+      onForest ? "text-white/85 hover:text-white" : "text-[#0e1512]/80 hover:text-[#0e1512]"
     }`;
 
   return (
@@ -115,9 +115,9 @@ export default function Navbar() {
           isDashboard
             ? "bg-base border-b border-black/10 text-black"
             : isClubHero
-              ? "bg-transparent border-b border-white/10 text-[var(--landing-ink)]"
+              ? "bg-transparent border-b border-white/10 text-[#f4f6f3]"
               : isMarketing
-                ? "bg-[#f5f5f7]/90 dark:bg-[#0f0f0f]/90 backdrop-blur-xl border-b border-black/[0.04] dark:border-white/[0.08] text-[#1d1d1f] dark:text-white"
+                ? "bg-[#e8ece7]/90 backdrop-blur-xl border-b border-[#0e1512]/[0.06] text-[#0e1512]"
                 : "bg-base border-b border-black/10 text-black"
         }`}
       >
@@ -127,13 +127,24 @@ export default function Navbar() {
               <button
                 type="button"
                 onClick={() => setMarketingMobileOpen(true)}
-                className="landing-touch-target p-2 -ms-1 text-current/75 hover:text-current hover:bg-black/[0.04] dark:hover:bg-white/[0.06] transition-colors"
+                className="landing-touch-target p-2 -ms-1 text-white/80 hover:text-white hover:bg-white/[0.08] transition-colors rounded-control"
                 aria-label={t("nav.menu")}
               >
                 <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden>
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.75} d="M4 7h16M4 12h16" />
                 </svg>
               </button>
+              <div className="hidden lg:flex items-center gap-6 xl:gap-8 text-sm font-medium ms-2 text-white/75">
+                {MARKETING_LINKS.map((link) => (
+                  <Link
+                    key={link.href}
+                    href={link.href}
+                    className="transition-colors duration-300 hover:text-white"
+                  >
+                    {t(link.key)}
+                  </Link>
+                ))}
+              </div>
             </div>
 
             <Link
@@ -141,15 +152,16 @@ export default function Navbar() {
               className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 shrink-0"
               aria-label="Saddle Up"
             >
-              <span className="landing-hero-monogram" aria-hidden>
-                SU
-              </span>
+              <TextLogo className="text-[0.68rem] sm:text-[0.78rem] text-white/95" />
             </Link>
 
             <div className="flex items-center justify-end gap-1 sm:gap-2 flex-1 min-w-0">
               <div dir="ltr" className="flex items-center gap-1 sm:gap-2 shrink-0">
                 <LanguageToggle variant={langToggleVariant} compact />
-                <Link href="/signup" className="landing-hero-nav-cta hidden sm:inline-flex">
+                <Link
+                  href="/signup"
+                  className="hidden sm:inline-flex items-center justify-center min-h-[2.75rem] px-4 py-2 text-xs sm:text-sm font-medium rounded-control bg-[#f4f6f3] text-[#0e1512] hover:bg-white transition-colors"
+                >
                   {t("nav.startFree")}
                 </Link>
               </div>
@@ -157,128 +169,101 @@ export default function Navbar() {
           </>
         ) : (
           <>
-        {/* Logo (marketing) */}
-        {isMarketing && !user ? (
-          <Link href="/" className="shrink-0 min-w-0">
-            <TextLogo
-              className={`text-[0.62rem] sm:text-[0.72rem] transition-colors truncate ${
-                navOnDark ? "text-white/90" : "text-[#1d1d1f]/90 dark:text-white/90"
-              }`}
-            />
-          </Link>
-        ) : (
-          <div className="flex-1 min-w-0 hidden md:block" />
-        )}
-
-        {/* Desktop nav links */}
-        {isMarketing && !user && (
-          <div
-            className={`hidden lg:flex items-center gap-6 xl:gap-8 text-sm font-medium flex-1 justify-center ${
-              navOnDark ? "text-white/80" : "text-[#1d1d1f]/65 dark:text-white/70"
-            }`}
-          >
-            {MARKETING_LINKS.map((link) => (
-              <Link
-                key={link.href}
-                href={link.href}
-                className={`transition-colors duration-300 ${
-                  navOnDark ? "hover:text-white" : "hover:text-[#1d1d1f] dark:hover:text-white"
-                }`}
-              >
-                {t(link.key)}
+            {isMarketing && !user ? (
+              <Link href="/" className="shrink-0 min-w-0">
+                <TextLogo className="text-[0.62rem] sm:text-[0.72rem] transition-colors truncate text-[#0e1512]/90" />
               </Link>
-            ))}
-          </div>
-        )}
-
-        {/* Spacer pushes actions right on mobile marketing */}
-        {isMarketing && !user && <div className="flex-1 lg:hidden min-w-0" aria-hidden />}
-
-        {/* Top-right chrome */}
-        <div
-          className={`flex items-center justify-end gap-1.5 sm:gap-2 shrink-0 ${
-            isMarketing && !user ? "" : "flex-1 max-lg:flex-none"
-          }`}
-        >
-          {/* Marketing mobile menu */}
-          {isMarketing && !user && (
-            <button
-              type="button"
-              onClick={() => setMarketingMobileOpen(true)}
-              className={`landing-touch-target lg:hidden p-2 rounded-full transition-colors ${
-                navOnDark ? "text-white/85 hover:bg-white/10" : "text-[#1d1d1f]/70 dark:text-white/85 hover:bg-black/5 dark:hover:bg-white/10"
-              }`}
-              aria-label={t("nav.menu")}
-            >
-              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden>
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.75} d="M4 7h16M4 12h16M4 17h16" />
-              </svg>
-            </button>
-          )}
-
-          <div dir="ltr" className="flex items-center gap-1 sm:gap-2 shrink-0">
-            <LanguageToggle variant={langToggleVariant} compact={isMarketing} />
-            {authChecked && user ? (
-              <>
-                {!isAuthPage && !isHome && <NotificationBell />}
-                <UserMenuDropdown
-                  fullName={profile?.fullName}
-                  email={profile?.email ?? user.email}
-                  avatarUrl={profile?.avatarUrl}
-                  isOwner={profile?.role === "owner"}
-                  onSignOut={handleSignOut}
-                />
-              </>
             ) : (
-              !isAuthPage && (
-                <>
-                  <Link
-                    href="/login"
-                    className={`landing-touch-target hidden sm:inline-flex px-3 py-2 text-sm font-medium transition-colors duration-300 ${
-                      navOnDark
-                        ? "text-white/85 hover:text-white"
-                        : "text-[#1d1d1f]/70 dark:text-white/85 hover:text-[#1d1d1f] dark:hover:text-white"
-                    }`}
-                  >
-                    {t("nav.signIn")}
-                  </Link>
-                  <Link
-                    href="/signup"
-                    className={`landing-touch-target px-3 sm:px-4 py-2 sm:py-2.5 rounded-full text-xs sm:text-sm font-medium transition-all duration-300 whitespace-nowrap ${
-                      navOnDark
-                        ? "bg-white text-[#1d1d1f] hover:bg-white/90"
-                        : "bg-[#1d1d1f] text-white dark:bg-white dark:text-[#1d1d1f] hover:bg-[#1d1d1f]/90 dark:hover:bg-white/90"
-                    }`}
-                  >
-                    {t("nav.startFree")}
-                  </Link>
-                </>
-              )
+              <div className="flex-1 min-w-0 hidden md:block" />
             )}
-          </div>
-        </div>
 
-        {/* Dashboard mobile menu button */}
-        {user && !isAuthPage && (
-          <button
-            onClick={() => setMobileOpen(!mobileOpen)}
-            className={`md:hidden p-2 rounded-lg ${navOnDark ? "hover:bg-white/10" : "hover:bg-black/10"}`}
-            aria-label={t("nav.menu")}
-          >
-            <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              {mobileOpen ? (
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-              ) : (
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
+            {isMarketing && !user && (
+              <div className="hidden lg:flex items-center gap-6 xl:gap-8 text-sm font-medium flex-1 justify-center text-[#0e1512]/65">
+                {MARKETING_LINKS.map((link) => (
+                  <Link
+                    key={link.href}
+                    href={link.href}
+                    className="transition-colors duration-300 hover:text-[#0e1512]"
+                  >
+                    {t(link.key)}
+                  </Link>
+                ))}
+              </div>
+            )}
+
+            {isMarketing && !user && <div className="flex-1 lg:hidden min-w-0" aria-hidden />}
+
+            <div
+              className={`flex items-center justify-end gap-1.5 sm:gap-2 shrink-0 ${
+                isMarketing && !user ? "" : "flex-1 max-lg:flex-none"
+              }`}
+            >
+              {isMarketing && !user && (
+                <button
+                  type="button"
+                  onClick={() => setMarketingMobileOpen(true)}
+                  className="landing-touch-target lg:hidden p-2 rounded-full transition-colors text-[#0e1512]/70 hover:bg-[#0e1512]/5"
+                  aria-label={t("nav.menu")}
+                >
+                  <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden>
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.75} d="M4 7h16M4 12h16M4 17h16" />
+                  </svg>
+                </button>
               )}
-            </svg>
-          </button>
-        )}
+
+              <div dir="ltr" className="flex items-center gap-1 sm:gap-2 shrink-0">
+                <LanguageToggle variant={langToggleVariant} compact={isMarketing} />
+                {authChecked && user ? (
+                  <>
+                    {!isAuthPage && !isHome && <NotificationBell />}
+                    <UserMenuDropdown
+                      fullName={profile?.fullName}
+                      email={profile?.email ?? user.email}
+                      avatarUrl={profile?.avatarUrl}
+                      isOwner={profile?.role === "owner"}
+                      onSignOut={handleSignOut}
+                    />
+                  </>
+                ) : (
+                  !isAuthPage && (
+                    <>
+                      <Link
+                        href="/login"
+                        className="landing-touch-target hidden sm:inline-flex px-3 py-2 text-sm font-medium transition-colors duration-300 text-[#0e1512]/70 hover:text-[#0e1512]"
+                      >
+                        {t("nav.signIn")}
+                      </Link>
+                      <Link
+                        href="/signup"
+                        className="landing-touch-target px-3 sm:px-4 py-2 sm:py-2.5 rounded-control text-xs sm:text-sm font-medium transition-all duration-300 whitespace-nowrap bg-[#1f4d3a] text-[#f4f6f3] hover:bg-[#16382b]"
+                      >
+                        {t("nav.startFree")}
+                      </Link>
+                    </>
+                  )
+                )}
+              </div>
+            </div>
+
+            {user && !isAuthPage && (
+              <button
+                onClick={() => setMobileOpen(!mobileOpen)}
+                className="md:hidden p-2 rounded-control hover:bg-black/10"
+                aria-label={t("nav.menu")}
+              >
+                <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  {mobileOpen ? (
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                  ) : (
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
+                  )}
+                </svg>
+              </button>
+            )}
           </>
         )}
       </nav>
 
-      {/* Marketing mobile drawer */}
       {isMarketing && !user && (
         <>
           <div
@@ -289,7 +274,7 @@ export default function Navbar() {
             aria-hidden={!marketingMobileOpen}
           />
           <aside
-            className={`lg:hidden fixed top-0 right-0 h-[100dvh] w-[min(100vw,20rem)] bg-[#1d1d1f] z-[70] transition-transform duration-300 ease-out flex flex-col pb-[env(safe-area-inset-bottom)] ${
+            className={`lg:hidden fixed top-0 right-0 h-[100dvh] w-[min(100vw,20rem)] bg-[#0c100e] z-[70] transition-transform duration-300 ease-out flex flex-col pb-[env(safe-area-inset-bottom)] ${
               marketingMobileOpen ? "translate-x-0" : "translate-x-full"
             }`}
             aria-hidden={!marketingMobileOpen}
@@ -323,14 +308,14 @@ export default function Navbar() {
               <Link
                 href="/login"
                 onClick={() => setMarketingMobileOpen(false)}
-                className="block w-full py-3 text-center text-sm font-medium text-white/80 border border-white/20 rounded-full hover:bg-white/10 transition"
+                className="block w-full py-3 text-center text-sm font-medium text-white/80 border border-white/20 rounded-control hover:bg-white/10 transition"
               >
                 {t("nav.signIn")}
               </Link>
               <Link
                 href="/signup"
                 onClick={() => setMarketingMobileOpen(false)}
-                className="block w-full py-3 text-center text-sm font-medium bg-white text-[#1d1d1f] rounded-full hover:bg-white/90 transition"
+                className="block w-full py-3 text-center text-sm font-medium bg-[#8fae98] text-[#0c100e] rounded-control hover:bg-[#9fbbA6] transition"
               >
                 {t("nav.startFree")}
               </Link>
@@ -358,7 +343,7 @@ export default function Navbar() {
               <p className="text-xs uppercase tracking-[0.22em] text-black/60">{t("nav.menu")}</p>
               <button
                 onClick={() => setMobileOpen(false)}
-                className="p-2 hover:bg-black/10 transition"
+                className="p-2 hover:bg-black/10 transition rounded-control"
                 aria-label={t("nav.closeMenu")}
               >
                 <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -378,7 +363,7 @@ export default function Navbar() {
                     setMobileOpen(false);
                     handleSignOut();
                   }}
-                  className="mt-4 block w-full text-left px-4 py-3 text-sm border border-black/15 text-black/80 hover:bg-black/5 transition uppercase tracking-wider"
+                  className="mt-4 block w-full text-left px-4 py-3 text-sm border border-black/15 text-black/80 hover:bg-black/5 transition uppercase tracking-wider rounded-control"
                 >
                   {t("nav.signOut")}
                 </button>

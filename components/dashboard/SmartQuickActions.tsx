@@ -15,14 +15,14 @@ type SmartQuickActionsProps = {
 
 export default function SmartQuickActions({ title, actions }: SmartQuickActionsProps) {
   return (
-    <div className="border border-black/10 p-6 dark:border-white/10" data-tour="quick-actions">
+    <div className="card border border-black/10 p-6 rounded-control dark:border-white/10" data-tour="quick-actions">
       <h2 className="font-serif text-lg text-black dark:text-white mb-4">{title}</h2>
       <div className="space-y-3">
         {actions.map((action) => (
           <Link
             key={action.href + action.label}
             href={action.href}
-            className={`flex items-center justify-between gap-3 w-full px-4 py-3 text-sm font-medium uppercase tracking-wider transition ${
+            className={`flex items-center justify-between gap-3 w-full px-4 py-3 text-sm font-medium uppercase tracking-wider transition rounded-control ${
               action.variant === "primary"
                 ? "bg-accent text-white hover:opacity-95"
                 : "border border-black/10 text-black hover:border-black/30 dark:border-white/15 dark:text-white dark:hover:border-white/30"

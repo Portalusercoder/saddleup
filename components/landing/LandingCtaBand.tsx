@@ -13,16 +13,7 @@ export default function LandingCtaBand({ onStartFree }: LandingCtaBandProps) {
   const { t } = useLanguage();
 
   return (
-    <section className="landing-cta-band relative overflow-hidden bg-[#1d1d1f] text-white">
-      <div
-        className="absolute inset-0 pointer-events-none opacity-50"
-        style={{
-          background:
-            "radial-gradient(ellipse 70% 80% at 50% 120%, rgba(83,22,29,0.5), transparent 60%)",
-        }}
-        aria-hidden
-      />
-
+    <section className="landing-cta-band relative overflow-hidden bg-[#0c100e] text-white">
       <div className="landing-cta-band-bg" aria-hidden>
         <Image
           src="/horseback.jpg"

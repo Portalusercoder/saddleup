@@ -7,17 +7,17 @@ export default function LandingTestimonial() {
   const { t } = useLanguage();
 
   return (
-    <section className="landing-section bg-[#1d1d1f] text-white landing-section-header--on-dark">
+    <section className="landing-section bg-[#0c100e] text-white landing-section-header--on-dark">
       <ScrollReveal className="max-w-4xl mx-auto text-center">
         <p className="landing-section-eyebrow text-center w-full !mb-8">
           {t("home.testimonialLabel")}
         </p>
-        <blockquote className="landing-display landing-section-title-size text-white/95 text-balance">
+        <blockquote className="landing-display landing-section-title-size text-white/95 text-balance font-serif">
           &ldquo;{t("home.testimonialQuote")}&rdquo;
         </blockquote>
         <footer className="mt-10 flex flex-col items-center gap-1">
           <div
-            className="h-11 w-11 rounded-full bg-white/10 flex items-center justify-center text-white/50 text-sm font-medium"
+            className="h-11 w-11 rounded-full bg-[#1f4d3a]/40 flex items-center justify-center text-[#8fae98] text-sm font-medium"
             aria-hidden
           >
             {t("home.testimonialName").charAt(0)}

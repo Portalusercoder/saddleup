@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
 import { STORAGE_BUCKETS } from "@/lib/constants";
+import { createIdCardSignedUrl } from "@/lib/storage/id-cards";
 
 const ALLOWED_TYPES = ["image/jpeg", "image/png", "image/webp", "application/pdf"];
 const MAX_SIZE = 5 * 1024 * 1024; // 5MB
@@ -76,22 +77,20 @@ export async function POST(
 
     if (uploadError) {
       console.error("Upload error:", uploadError);
-      return NextResponse.json({ error: uploadError.message || "Upload failed" }, { status: 500 });
+      return NextResponse.json({ error: "Upload failed" }, { status: 500 });
     }
-
-    const { data: { publicUrl } } = supabase.storage
-      .from(STORAGE_BUCKETS.ID_CARDS)
-      .getPublicUrl(path);
-
-    const url = `${publicUrl}?t=${Date.now()}`;
 
     await supabase
       .from("profiles")
-      .update({ id_card_url: url })
+      .update({ id_card_url: path })
       .eq("id", memberId)
       .eq("stable_id", profile.stable_id);
 
-    return NextResponse.json({ url });
+    const signed = await createIdCardSignedUrl(supabase, path);
+    return NextResponse.json({
+      path,
+      url: signed ?? `/api/members/${memberId}/id-card`,
+    });
   } catch (err) {
     console.error("Upload ID card error:", err);
     return NextResponse.json({ error: "Upload failed" }, { status: 500 });

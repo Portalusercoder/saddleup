@@ -44,12 +44,12 @@ export default function PartnerSpotlight() {
         <div className="landing-card overflow-hidden">
           <div
             className="relative p-8 sm:p-10 bg-cover bg-center"
-            style={{ backgroundImage: "linear-gradient(rgba(29,29,31,0.88), rgba(29,29,31,0.92)), url('/horseback.jpg')" }}
+            style={{ backgroundImage: "linear-gradient(rgba(12,16,14,0.88), rgba(12,16,14,0.92)), url('/horseback.jpg')" }}
           >
             <p className="text-xs font-semibold uppercase tracking-widest text-white/45">
               {t("home.partnerSpotlightLabel")}
             </p>
-            <h3 className="landing-display mt-3 text-2xl sm:text-3xl font-semibold text-white">{partner.name}</h3>
+            <h3 className="landing-display mt-3 text-2xl sm:text-3xl font-semibold text-white font-serif">{partner.name}</h3>
             <p className="text-white/65 mt-3 max-w-xl leading-relaxed">{t("home.partnerSpotlightDesc")}</p>
             {partner.promoCode ? (
               <p className="mt-4 text-sm text-white/80">
@@ -62,7 +62,7 @@ export default function PartnerSpotlight() {
               href={partner.destinationUrl}
               target="_blank"
               rel="noopener noreferrer sponsored"
-              className="inline-flex mt-6 landing-cta-pill landing-cta-primary text-[#1d1d1f]"
+              className="inline-flex mt-6 landing-cta-pill landing-cta-primary text-[#0e1512]"
             >
               {partner.ctaText || t("home.partnerCtaDefault")}
             </a>

@@ -291,11 +291,11 @@ export default function SchedulePage() {
   };
 
   const formInput =
-    "w-full px-4 py-3 bg-base border border-black/10 text-black placeholder-black/40 focus:border-black/30 focus:outline-none";
+    "w-full px-4 py-3 bg-base border border-black/10 text-black placeholder-black/40 focus:border-black/30 focus:outline-none rounded-control";
   const btnPrimary =
-    "px-4 py-2.5 bg-accent text-white font-medium text-sm uppercase tracking-wider hover:opacity-95 transition";
+    "px-4 py-2.5 bg-accent text-white font-medium text-sm uppercase tracking-wider hover:opacity-95 transition rounded-control";
   const btnSecondary =
-    "px-4 py-2.5 border border-black/10 text-black text-sm uppercase tracking-wider hover:border-black/30 transition";
+    "px-4 py-2.5 border border-black/10 text-black text-sm uppercase tracking-wider hover:border-black/30 transition rounded-control";
 
   const byDate = sessions.reduce<Record<string, Session[]>>((acc, s) => {
     const d = new Date(s.createdAt).toDateString();
@@ -318,7 +318,7 @@ export default function SchedulePage() {
         onComplete={completeTour}
       />
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-        <h1 className="font-serif text-3xl md:text-4xl font-normal text-black">
+        <h1 className="font-serif text-3xl md:text-4xl font-medium text-black">
           {t("dashboard.schedulePageTitle")}
         </h1>
         <div className="flex flex-wrap items-center gap-2" data-tour="schedule-week-nav">
@@ -337,7 +337,7 @@ export default function SchedulePage() {
         </div>
       </div>
 
-      <div className="border border-black/10 p-4 overflow-x-auto" data-tour="schedule-grid">
+      <div className="card border border-black/10 p-4 overflow-x-auto rounded-control" data-tour="schedule-grid">
         <p className="text-black/50 text-sm mb-4">
           {formatDate(weekStartStr)} – {formatDate(weekEndStr)}
         </p>
@@ -426,7 +426,7 @@ export default function SchedulePage() {
         )}
       </div>
 
-      <div className="border border-black/10 p-6 dark:border-white/10" data-tour="schedule-recent">
+      <div className="card border border-black/10 p-6 rounded-control dark:border-white/10" data-tour="schedule-recent">
         <h2 className="font-serif text-lg text-black dark:text-white mb-4">{t("dashboard.scheduleRecentActivity")}</h2>
         <div className="space-y-6">
           {recentDates.map((dateStr) => (
@@ -438,7 +438,7 @@ export default function SchedulePage() {
                 {byDate[dateStr].map((s) => (
                   <div
                     key={s.id}
-                    className="flex justify-between items-center gap-3 border border-black/10 px-4 py-3 dark:border-white/10"
+                    className="flex justify-between items-center gap-3 border border-black/10 px-4 py-3 rounded-control dark:border-white/10"
                   >
                     <div className="flex items-center gap-2">
                       <HorseAvatar
@@ -466,7 +466,7 @@ export default function SchedulePage() {
         </div>
       </div>
 
-      <div className="border border-black/10 p-6 dark:border-white/10">
+      <div className="card border border-black/10 p-6 rounded-control dark:border-white/10">
         <h2 className="font-serif text-lg text-black dark:text-white mb-2">{t("dashboard.scheduleWorkloadHeading")}</h2>
         <p className="text-sm text-black/60 mb-4">
           {t("dashboard.scheduleWorkloadLead")}

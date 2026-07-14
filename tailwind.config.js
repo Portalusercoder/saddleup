@@ -8,12 +8,15 @@ export default {
   theme: {
     extend: {
       colors: {
-        base: "#FFFBF0",
-        accent: "#53161D",
+        base: "#0C100E",
+        accent: "#1F4D3A",
+        paddock: "#8FAE98",
+        mist: "#E8ECE7",
+        brass: "#B8A07A",
       },
       fontFamily: {
-        serif: ["var(--font-playfair)", "Georgia", "serif"],
-        sans: ["var(--font-inter)", "system-ui", "sans-serif"],
+        serif: ["var(--font-fraunces)", "Georgia", "serif"],
+        sans: ["var(--font-outfit)", "system-ui", "sans-serif"],
       },
       transitionTimingFunction: {
         "out-expo": "var(--ease-out-expo)",
@@ -27,6 +30,9 @@ export default {
         normal: "var(--dur-normal)",
         slow: "var(--dur-slow)",
         xslow: "var(--dur-xslow)",
+      },
+      borderRadius: {
+        control: "8px",
       },
     },
   },

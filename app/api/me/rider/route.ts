@@ -17,9 +17,18 @@ export async function GET() {
       .from("riders")
       .select("id, name, id_card_url")
       .eq("profile_id", user.id)
-      .single();
+      .maybeSingle();
 
-    return NextResponse.json(rider || null);
+    if (!rider) {
+      return NextResponse.json(null);
+    }
+
+    return NextResponse.json({
+      id: rider.id,
+      name: rider.name,
+      id_card_url: rider.id_card_url ? true : null,
+      has_id_card: Boolean(rider.id_card_url),
+    });
   } catch (err) {
     console.error("GET me/rider error:", err);
     return NextResponse.json({ error: "Failed to fetch rider" }, { status: 500 });

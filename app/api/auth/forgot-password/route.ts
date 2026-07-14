@@ -2,10 +2,11 @@ import { NextResponse } from "next/server";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { checkRateLimit, getClientIp } from "@/lib/rate-limit";
 import {
-  generateFourDigitCode,
+  generateResetCode,
   hashResetCode,
   normalizeResetEmail,
   PASSWORD_RESET_TTL_MS,
+  RESET_CODE_LENGTH,
 } from "@/lib/password-reset";
 import { sendPasswordResetCodeEmail } from "@/lib/send-password-reset-email";
 import { parseJsonBody } from "@/lib/validation/parse-json";
@@ -15,8 +16,7 @@ import {
   verifyTurnstileToken,
 } from "@/lib/security/turnstile";
 
-const PUBLIC_OK =
-  "If an account exists for that email, you’ll receive a 4-digit code shortly.";
+const PUBLIC_OK = `If an account exists for that email, you’ll receive a ${RESET_CODE_LENGTH}-digit code shortly.`;
 
 export async function POST(req: Request) {
   const ip = getClientIp(req);
@@ -74,8 +74,15 @@ export async function POST(req: Request) {
     return NextResponse.json({ ok: true, message: PUBLIC_OK });
   }
 
-  const code = generateFourDigitCode();
-  const codeHash = hashResetCode(email, code);
+  let code: string;
+  let codeHash: string;
+  try {
+    code = generateResetCode();
+    codeHash = hashResetCode(email, code);
+  } catch (e) {
+    console.error("password-reset secret:", e);
+    return NextResponse.json({ error: "Server configuration error." }, { status: 503 });
+  }
   const expiresAt = new Date(Date.now() + PASSWORD_RESET_TTL_MS).toISOString();
 
   await admin

@@ -9,38 +9,18 @@ export async function POST(req: Request) {
   try {
     const parsed = await parseJsonBody(req, completeSignupBodySchema);
     if (!parsed.ok) return parsed.response;
-    const { role, fullName, email, stableName, joinCode, userId } = parsed.data;
+    const { role, fullName, email, stableName, joinCode } = parsed.data;
 
     const supabase = await createClient();
     const {
-      data: { user: sessionUser },
+      data: { user },
     } = await supabase.auth.getUser();
-
-    let user = sessionUser;
-
-    if (!user && userId) {
-      const admin = createAdminClient();
-      const { data: authUser, error: adminError } = await admin.auth.admin.getUserById(
-        userId
-      );
-      if (adminError) {
-        console.error("Complete-signup admin getUserById error:", adminError.message);
-      }
-      if (authUser?.user) {
-        const created = new Date(authUser.user.created_at).getTime();
-        const now = Date.now();
-        if (now - created < 900000) {
-          user = authUser.user;
-        }
-      }
-    }
 
     if (!user) {
       return NextResponse.json(
         {
-          error: userId
-            ? "We couldn't verify your sign-up. Please confirm your email using the link we sent, then try logging in and complete setup from the dashboard."
-            : "Unauthorized. Please sign up first, then confirm your email if required.",
+          error:
+            "Unauthorized. Please sign up first, then confirm your email if required.",
         },
         { status: 401 }
       );

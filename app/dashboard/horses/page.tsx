@@ -83,7 +83,7 @@ export default function HorsesPage() {
   };
 
   const iconBtn =
-    "inline-flex h-9 w-9 items-center justify-center border border-black/15 text-black/70 hover:bg-black/[0.04] hover:text-black dark:border-white/20 dark:text-white/70 dark:hover:bg-white/5 dark:hover:text-white";
+    "inline-flex h-9 w-9 items-center justify-center border border-black/15 rounded-control text-black/70 hover:bg-black/[0.04] hover:text-black dark:border-white/20 dark:text-white/70 dark:hover:bg-white/5 dark:hover:text-white";
 
   const punchLabel = (type?: string | null) => {
     const map: Record<string, string> = {
@@ -507,9 +507,9 @@ export default function HorsesPage() {
     (horse.name ?? "").toLowerCase().includes(search.toLowerCase())
   );
 
-  const formInput = "w-full px-4 py-3 bg-base border border-black/10 text-black placeholder-black/40 focus:border-black/30 focus:outline-none";
-  const btnPrimary = "px-4 py-2.5 bg-accent text-white font-medium text-sm uppercase tracking-wider hover:opacity-95 transition";
-  const btnSecondary = "px-4 py-2.5 border border-black/10 text-black text-sm uppercase tracking-wider hover:border-black/30 transition";
+  const formInput = "w-full px-4 py-3 bg-base border border-black/10 text-black placeholder-black/40 focus:border-black/30 focus:outline-none rounded-control";
+  const btnPrimary = "px-4 py-2.5 bg-accent text-white font-medium text-sm uppercase tracking-wider hover:opacity-95 transition rounded-control";
+  const btnSecondary = "px-4 py-2.5 border border-black/10 text-black text-sm uppercase tracking-wider hover:border-black/30 transition rounded-control";
 
   return (
     <div className="space-y-6">
@@ -520,7 +520,7 @@ export default function HorsesPage() {
         onComplete={completeTour}
       />
       <div className="flex items-center justify-between flex-wrap gap-2">
-        <h1 className="font-serif text-2xl md:text-3xl font-normal text-black">{t("dashboard.horsesTitle")}</h1>
+        <h1 className="font-serif text-2xl md:text-3xl font-medium text-black">{t("dashboard.horsesTitle")}</h1>
         <div className="flex items-center gap-2">
           {subscription && !subscription.canAddHorse && (
             <Link
@@ -558,7 +558,7 @@ export default function HorsesPage() {
         className="w-full px-4 py-3 bg-base border border-black/10 text-black placeholder-black/40 focus:border-black/30 focus:outline-none"
       />
 
-      <div className="border border-black/10 overflow-hidden" data-tour="horses-table">
+      <div className="card border border-black/10 overflow-hidden rounded-control" data-tour="horses-table">
         <div className="overflow-x-auto">
           <table className="w-full text-sm">
             <thead className="border-b border-black/10 text-black/50 text-xs uppercase tracking-widest">

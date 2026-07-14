@@ -5,10 +5,12 @@ import { runCompleteSignup } from "@/lib/auth/completeSignup";
 import { buildCompleteSignupInputFromUser } from "@/lib/auth/signupFromMetadata";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { cleanupIncompleteSignupSession } from "@/lib/auth/cleanupIncompleteSignup";
+import { safeInternalPath } from "@/lib/security/safe-redirect";
 
 function redirectUrl(request: NextRequest, path: string) {
   const origin = request.nextUrl.origin;
-  return `${origin}${path.startsWith("/") ? path : `/${path}`}`;
+  const safe = safeInternalPath(path, "/dashboard");
+  return `${origin}${safe}`;
 }
 
 /**
@@ -47,7 +49,7 @@ export async function GET(request: NextRequest) {
   const code = searchParams.get("code");
   const token_hash = searchParams.get("token_hash");
   const type = searchParams.get("type") as EmailOtpType | null;
-  const next = searchParams.get("next") || "/dashboard";
+  const next = safeInternalPath(searchParams.get("next"), "/dashboard");
 
   const supabase = await createClient();
 

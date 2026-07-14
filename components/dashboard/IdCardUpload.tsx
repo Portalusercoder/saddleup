@@ -2,6 +2,7 @@
 
 import { useState, useRef, useEffect } from "react";
 import { useLanguage } from "@/components/providers/LanguageProvider";
+import { idCardViewHref } from "@/lib/storage/id-cards";
 
 type Props =
   | { type: "rider"; id: string; idCardUrl?: string | null; onSuccess?: () => void; canUpload?: boolean; iconOnly?: boolean }
@@ -11,17 +12,22 @@ export function IdCardUpload(props: Props) {
   const { t } = useLanguage();
   const [uploading, setUploading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [url, setUrl] = useState<string | null>(props.idCardUrl ?? null);
+  const [hasCard, setHasCard] = useState(Boolean(props.idCardUrl));
   const inputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
-    setUrl(props.idCardUrl ?? null);
+    setHasCard(Boolean(props.idCardUrl));
   }, [props.idCardUrl]);
 
   const endpoint =
     props.type === "rider"
       ? `/api/riders/${props.id}/upload-id-card`
       : `/api/members/${props.id}/upload-id-card`;
+
+  const viewHref = idCardViewHref(
+    props.type === "rider" ? "rider" : "member",
+    props.id
+  );
 
   const handleUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -37,7 +43,7 @@ export function IdCardUpload(props: Props) {
         setError(data.error || t("dashboard.horseToastUploadFailed"));
         return;
       }
-      setUrl(data.url ?? null);
+      setHasCard(true);
       props.onSuccess?.();
     } catch {
       setError(t("dashboard.horseToastUploadFailed"));
@@ -47,11 +53,10 @@ export function IdCardUpload(props: Props) {
     e.target.value = "";
   };
 
-  const displayUrl = url ?? props.idCardUrl;
   const iconBtn =
     "inline-flex h-9 w-9 items-center justify-center border border-black/15 text-black/70 hover:bg-black/[0.04] dark:border-white/20 dark:text-white/70";
 
-  if (!displayUrl && !props.canUpload) return null;
+  if (!hasCard && !props.canUpload) return null;
 
   if (props.iconOnly) {
     return (
@@ -63,9 +68,9 @@ export function IdCardUpload(props: Props) {
           onChange={handleUpload}
           className="hidden"
         />
-        {displayUrl ? (
+        {hasCard ? (
           <a
-            href={displayUrl}
+            href={viewHref}
             target="_blank"
             rel="noopener noreferrer"
             className={iconBtn}
@@ -100,10 +105,10 @@ export function IdCardUpload(props: Props) {
         onChange={handleUpload}
         className="hidden"
       />
-      {displayUrl ? (
+      {hasCard ? (
         <div className="flex items-center gap-3">
           <a
-            href={displayUrl}
+            href={viewHref}
             target="_blank"
             rel="noopener noreferrer"
             className="text-black hover:underline text-sm uppercase tracking-wider"

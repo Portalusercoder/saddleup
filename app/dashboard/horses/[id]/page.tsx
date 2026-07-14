@@ -496,13 +496,13 @@ export default function HorseDetailPage() {
                 <div className="bg-black/5 border border-black/20 p-4">
                   <p className="text-3xl font-medium text-black">
                     {workload.sessionsCount}
-                    <span className="text-lg font-normal text-black/70 ml-1">
+                    <span className="text-lg font-medium text-black/70 ml-1">
                       {t("dashboard.horsePassportSessionsWord")}
                     </span>
                   </p>
                   <p className="text-2xl font-medium text-black mt-1">
                     {workload.totalMinutes}
-                    <span className="text-sm font-normal text-black/60 ml-1">
+                    <span className="text-sm font-medium text-black/60 ml-1">
                       {t("dashboard.horsePassportMinutesWord")}
                     </span>
                   </p>

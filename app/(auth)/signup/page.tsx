@@ -8,12 +8,13 @@ import { trackEvent } from "@/lib/analytics/mixpanel-client";
 import TurnstileWidget from "@/components/security/TurnstileWidget";
 import { hasTurnstileToken } from "@/lib/security/turnstile-client";
 import { useLanguage } from "@/components/providers/LanguageProvider";
+import AuthShell, {
+  authBtnPrimary as btnPrimary,
+  authFormClass as formClass,
+  authLabelClass as labelClass,
+} from "@/components/landing/AuthShell";
 
 type Role = "owner" | "trainer" | "student" | "guardian";
-
-const formClass = "w-full px-4 py-3 bg-base border border-black/10 text-black placeholder-black/40 focus:border-black/30 focus:outline-none";
-const labelClass = "block text-xs uppercase tracking-widest text-black/60 mb-2";
-const btnPrimary = "w-full py-3 bg-accent text-white font-medium uppercase tracking-wider text-sm hover:opacity-95 transition";
 
 type Step = "form" | "code" | "confirm_join";
 
@@ -421,13 +422,13 @@ export default function SignupPage() {
 
   if (step === "confirm_join" && stablePreview) {
     return (
-      <div className="min-h-screen bg-base flex text-black items-center justify-center p-4 sm:p-6">
+      <div className="min-h-screen bg-[#0c100e] flex text-[#e8ebe6] items-center justify-center p-4 sm:p-6">
         <div className="w-full max-w-md">
-          <div className="border border-black/10 p-6 sm:p-8 md:p-10 text-center">
-            <h1 className="font-serif text-2xl md:text-3xl font-normal text-black mb-2">
+          <div className="border border-white/10 bg-[#151a17] rounded-control p-6 sm:p-8 md:p-10 text-center">
+            <h1 className="font-serif text-2xl md:text-3xl font-medium text-[#e8ebe6] mb-2">
               {t("auth.signup.confirmJoinTitle")}
             </h1>
-            <p className="text-black/60 text-sm mb-6">
+            <p className="text-white/50 text-sm mb-6">
               {t("auth.signup.confirmJoinSubtitle")}
             </p>
             <div className="mb-6 flex flex-col items-center gap-4">
@@ -438,13 +439,13 @@ export default function SignupPage() {
                   className="w-24 h-24 rounded-lg object-cover border border-black/10"
                 />
               ) : (
-                <div className="w-24 h-24 rounded-lg bg-black/5 border border-black/10 flex items-center justify-center">
-                  <span className="text-black/40 text-2xl font-serif">{stablePreview.name.charAt(0)}</span>
+                <div className="w-24 h-24 rounded-lg bg-white/5 border border-white/10 flex items-center justify-center">
+                  <span className="text-white/40 text-2xl font-serif">{stablePreview.name.charAt(0)}</span>
                 </div>
               )}
-              <p className="font-medium text-black text-lg">{stablePreview.name}</p>
+              <p className="font-medium text-[#e8ebe6] text-lg">{stablePreview.name}</p>
             </div>
-            {error && <p className="text-red-600 text-sm mb-4">{error}</p>}
+            {error && <p className="text-red-400 text-sm mb-4">{error}</p>}
             <div className="flex flex-col gap-3">
               <button
                 type="button"
@@ -458,14 +459,14 @@ export default function SignupPage() {
                 type="button"
                 onClick={declineJoinStable}
                 disabled={loading}
-                className="w-full py-3 border border-black/20 text-red-600 text-sm hover:bg-black/5 transition"
+                className="w-full py-3 border border-white/20 text-red-400 rounded-control text-sm hover:bg-black/5 transition"
               >
                 {t("auth.signup.noBack")}
               </button>
             </div>
           </div>
           <p className="mt-6 text-center">
-            <Link href="/" className="text-black/50 hover:text-black/70 text-xs uppercase tracking-wider">
+            <Link href="/" className="text-white/40 hover:text-white/65 text-xs uppercase tracking-wider">
               {t("auth.signup.backHome")}
             </Link>
           </p>
@@ -476,13 +477,13 @@ export default function SignupPage() {
 
   if (step === "code") {
     return (
-      <div className="min-h-screen bg-base flex text-black items-center justify-center p-4 sm:p-6">
+      <div className="min-h-screen bg-[#0c100e] flex text-[#e8ebe6] items-center justify-center p-4 sm:p-6">
         <div className="w-full max-w-md">
-          <div className="border border-black/10 p-6 sm:p-8 md:p-10">
-            <h1 className="font-serif text-2xl md:text-3xl font-normal text-black mb-2">
+          <div className="border border-white/10 bg-[#151a17] rounded-control p-6 sm:p-8 md:p-10">
+            <h1 className="font-serif text-2xl md:text-3xl font-medium text-[#e8ebe6] mb-2">
               {t("auth.signup.checkEmailTitle")}
             </h1>
-            <p className="text-black/60 text-sm mb-6">
+            <p className="text-white/50 text-sm mb-6">
               {t("auth.signup.checkEmailBody", { email })}
             </p>
             <form onSubmit={verifyAndComplete} className="space-y-5">
@@ -502,7 +503,7 @@ export default function SignupPage() {
                   className={`${formClass} text-center text-lg tracking-[0.4em]`}
                 />
               </div>
-              {error && <p className="text-red-600 text-sm">{error}</p>}
+              {error && <p className="text-red-400 text-sm">{error}</p>}
               <button
                 type="submit"
                 disabled={loading || code.trim().length !== 8}
@@ -519,7 +520,7 @@ export default function SignupPage() {
                   setResendCooldownSec(0);
                   setResendHint(null);
                 }}
-                className="w-full py-3 border border-black/20 text-red-600 text-sm hover:bg-black/5 transition"
+                className="w-full py-3 border border-white/20 text-red-400 rounded-control text-sm hover:bg-black/5 transition"
               >
                 {t("auth.signup.useDifferentEmail")}
               </button>
@@ -552,7 +553,7 @@ export default function SignupPage() {
             </div>
           </div>
           <p className="mt-6 text-center">
-            <Link href="/" className="text-black/50 hover:text-black/70 text-xs uppercase tracking-wider">
+            <Link href="/" className="text-white/40 hover:text-white/65 text-xs uppercase tracking-wider">
               {t("auth.signup.backHome")}
             </Link>
           </p>
@@ -562,13 +563,13 @@ export default function SignupPage() {
   }
 
   return (
-    <div className="min-h-screen bg-base flex text-black items-center justify-center p-4 sm:p-6">
+    <div className="min-h-screen bg-[#0c100e] flex text-[#e8ebe6] items-center justify-center p-4 sm:p-6">
       <div className="w-full max-w-md">
-        <div className="border border-black/10 p-6 sm:p-8 md:p-10">
-          <h1 className="font-serif text-2xl md:text-3xl font-normal text-black mb-2">
+        <div className="border border-white/10 bg-[#151a17] rounded-control p-6 sm:p-8 md:p-10">
+          <h1 className="font-serif text-2xl md:text-3xl font-medium text-[#e8ebe6] mb-2">
             {t("auth.signup.title")}
           </h1>
-          <p className="text-black/60 text-sm mb-8">
+          <p className="text-white/50 text-sm mb-8">
             {t("auth.signup.subtitle")}
           </p>
 
@@ -583,15 +584,15 @@ export default function SignupPage() {
                     onClick={() => setRole(r)}
                     className={`min-h-[44px] flex items-center justify-center p-4 px-6 text-sm font-medium uppercase tracking-wider transition ${
                       role === r
-                        ? "bg-accent text-white"
-                        : "bg-base text-black/60 hover:text-black border border-black/10"
+                        ? "bg-accent text-white rounded-control"
+                        : "bg-[#0c100e] text-white/50 hover:text-white border border-white/10 rounded-control"
                     }`}
                   >
                     {t(`auth.signup.roles.${r}`)}
                   </button>
                 ))}
               </div>
-              <p className="text-black/40 text-xs mt-2 uppercase tracking-wider">
+              <p className="text-white/40 text-xs mt-2 uppercase tracking-wider">
                 {role === "owner" && t("auth.signup.roleHelpOwner")}
                 {role === "trainer" && t("auth.signup.roleHelpTrainer")}
                 {role === "student" && t("auth.signup.roleHelpStudent")}
@@ -661,7 +662,7 @@ export default function SignupPage() {
                     className={formClass}
                     placeholder={t("auth.signup.enterprisePlaceholder")}
                   />
-                  <p className="text-black/40 text-xs mt-2 uppercase tracking-wider">
+                  <p className="text-white/40 text-xs mt-2 uppercase tracking-wider">
                     {t("auth.signup.enterpriseHint")}
                   </p>
                 </div>
@@ -681,7 +682,7 @@ export default function SignupPage() {
                     placeholder={t("auth.signup.stablePlaceholder")}
                   />
                   {!enterpriseInviteCode.trim() && (
-                    <p className="text-black/40 text-xs mt-2 uppercase tracking-wider">
+                    <p className="text-white/40 text-xs mt-2 uppercase tracking-wider">
                       {t("auth.signup.stableHint")}
                     </p>
                   )}
@@ -703,9 +704,9 @@ export default function SignupPage() {
                   className={formClass}
                   placeholder={t("auth.signup.joinCodePlaceholder")}
                 />
-                <p className="text-black/40 text-xs mt-2 uppercase tracking-wider">
+                <p className="text-white/40 text-xs mt-2 uppercase tracking-wider">
                   {t("auth.signup.joinCodeHelpBefore")}{" "}
-                  <Link href={t("auth.signup.joinCodeHelpLink")} className="text-black font-medium hover:underline">
+                  <Link href={t("auth.signup.joinCodeHelpLink")} className="text-[#8fae98] font-medium hover:underline">
                     {t("auth.signup.joinCodeHelpLink")}
                   </Link>{" "}
                   {t("auth.signup.joinCodeHelpAfter")}
@@ -714,7 +715,7 @@ export default function SignupPage() {
             )}
 
             {error && (
-              <p className="text-red-600 text-sm">{error}</p>
+              <p className="text-red-400 text-sm">{error}</p>
             )}
 
             <button
@@ -726,16 +727,16 @@ export default function SignupPage() {
             </button>
           </form>
 
-          <p className="mt-8 text-center text-black/60 text-sm">
+          <p className="mt-8 text-center text-white/50 text-sm">
             {t("auth.signup.alreadyHave")}{" "}
-            <Link href="/login" className="text-black font-medium hover:underline">
+            <Link href="/login" className="text-[#8fae98] font-medium hover:underline">
               {t("auth.signup.signIn")}
             </Link>
           </p>
         </div>
 
         <p className="mt-6 text-center">
-          <Link href="/" className="text-black/50 hover:text-black/70 text-xs uppercase tracking-wider">
+          <Link href="/" className="text-white/40 hover:text-white/65 text-xs uppercase tracking-wider">
             {t("auth.signup.backHome")}
           </Link>
         </p>

@@ -4,6 +4,7 @@ import { checkRateLimit, getClientIp } from "@/lib/rate-limit";
 import {
   MIN_PASSWORD_LENGTH,
   normalizeResetEmail,
+  RESET_CODE_LENGTH,
   verifyResetCode,
 } from "@/lib/password-reset";
 import { parseJsonBody } from "@/lib/validation/parse-json";
@@ -11,7 +12,7 @@ import { forgotPasswordConfirmSchema } from "@/lib/validation/schemas";
 
 export async function POST(req: Request) {
   const ip = getClientIp(req);
-  const ipLimit = await checkRateLimit(`forgot-pw-confirm-ip:${ip}`, 30, 60_000);
+  const ipLimit = await checkRateLimit(`forgot-pw-confirm-ip:${ip}`, 20, 60_000);
   if (!ipLimit.allowed) {
     return NextResponse.json(
       { error: "Too many attempts. Try again in a minute." },
@@ -27,8 +28,11 @@ export async function POST(req: Request) {
   const codeRaw = parsed.data.code;
   const newPassword = parsed.data.newPassword;
 
-  if (codeRaw.length !== 4) {
-    return NextResponse.json({ error: "Enter the 4-digit code from your email." }, { status: 400 });
+  if (codeRaw.length !== RESET_CODE_LENGTH) {
+    return NextResponse.json(
+      { error: `Enter the ${RESET_CODE_LENGTH}-digit code from your email.` },
+      { status: 400 }
+    );
   }
 
   if (newPassword.length < MIN_PASSWORD_LENGTH) {
@@ -40,7 +44,7 @@ export async function POST(req: Request) {
 
   const email = normalizeResetEmail(emailRaw);
 
-  const emailLimit = await checkRateLimit(`forgot-pw-confirm-email:${email}`, 10, 15 * 60_000);
+  const emailLimit = await checkRateLimit(`forgot-pw-confirm-email:${email}`, 8, 15 * 60_000);
   if (!emailLimit.allowed) {
     return NextResponse.json(
       { error: "Too many attempts for this email. Try again later." },
@@ -78,7 +82,14 @@ export async function POST(req: Request) {
   }
 
   const row = rows[0];
-  if (!verifyResetCode(email, codeRaw, row.code_hash)) {
+  let codeOk = false;
+  try {
+    codeOk = verifyResetCode(email, codeRaw, row.code_hash);
+  } catch (e) {
+    console.error("forgot-password confirm verify:", e);
+    return NextResponse.json({ error: "Server configuration error." }, { status: 503 });
+  }
+  if (!codeOk) {
     return NextResponse.json({ error: "Invalid or expired code." }, { status: 400 });
   }
 
@@ -89,7 +100,7 @@ export async function POST(req: Request) {
   if (updateAuthError) {
     console.error("updateUserById password reset:", updateAuthError);
     return NextResponse.json(
-      { error: updateAuthError.message || "Could not update password." },
+      { error: "Could not update password. Check length and try again." },
       { status: 400 }
     );
   }

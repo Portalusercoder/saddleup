@@ -256,7 +256,7 @@ export default function BookingsPage() {
           <button
             type="button"
             onClick={() => handleApprove(b)}
-            className="px-3 py-1.5 bg-accent text-white text-xs font-medium uppercase tracking-wider hover:opacity-95"
+            className="px-3 py-1.5 bg-accent text-white text-xs font-medium uppercase tracking-wider hover:opacity-95 rounded-control"
           >
             {t("dashboard.bookingsApprove")}
           </button>
@@ -266,7 +266,7 @@ export default function BookingsPage() {
               setShowDeclineModal(b);
               setDeclineNotes("");
             }}
-            className="px-3 py-1.5 border border-black/30 text-black/80 text-xs uppercase tracking-wider hover:border-black/50 dark:border-white/30 dark:text-white/80"
+            className="px-3 py-1.5 border border-black/30 rounded-control text-black/80 text-xs uppercase tracking-wider hover:border-black/50 dark:border-white/30 dark:text-white/80"
           >
             {t("dashboard.bookingsDecline")}
           </button>
@@ -288,11 +288,11 @@ export default function BookingsPage() {
   };
 
   const formInput =
-    "w-full px-4 py-3 bg-base border border-black/10 text-black placeholder-black/40 focus:border-black/30 focus:outline-none";
+    "w-full px-4 py-3 bg-base border border-black/10 text-black placeholder-black/40 focus:border-black/30 focus:outline-none rounded-control";
   const btnPrimary =
-    "px-4 py-2.5 bg-accent text-white font-medium text-sm uppercase tracking-wider hover:opacity-95 transition";
+    "px-4 py-2.5 bg-accent text-white font-medium text-sm uppercase tracking-wider hover:opacity-95 transition rounded-control";
   const btnSecondary =
-    "px-4 py-2.5 border border-black/10 text-black text-sm uppercase tracking-wider hover:border-black/30 transition";
+    "px-4 py-2.5 border border-black/10 text-black text-sm uppercase tracking-wider hover:border-black/30 transition rounded-control";
 
   const tourSteps: GuidedTourStep[] = [
     {
@@ -324,7 +324,7 @@ export default function BookingsPage() {
         onComplete={completeTour}
       />
       <div className="flex items-center justify-between flex-wrap gap-4">
-        <h1 className="font-serif text-3xl md:text-4xl font-normal text-black dark:text-white">
+        <h1 className="font-serif text-3xl md:text-4xl font-medium text-black dark:text-white">
           {isStudent ? t("dashboard.bookingsTitleStudent") : t("dashboard.bookingsTitleStaff")}
         </h1>
         {isStudent ? (
@@ -352,7 +352,7 @@ export default function BookingsPage() {
       ) : (
         <>
           {isTrainerOrOwner && pending.length > 0 && (
-            <div className="border border-black/20 p-6 dark:border-white/20" data-tour="bookings-pending">
+            <div className="card border border-black/15 p-6 rounded-control dark:border-white/20" data-tour="bookings-pending">
               <h2 className="font-serif text-lg text-black dark:text-white mb-2">
                 {t("dashboard.bookingsPendingTitle")}
               </h2>
@@ -500,7 +500,7 @@ export default function BookingsPage() {
           onClick={() => setShowCreate(false)}
         >
           <div
-            className="bg-base border border-black/10 p-4 sm:p-6 w-full max-w-md max-h-[90vh] overflow-y-auto my-auto"
+            className="bg-[#151a17] border border-white/10 rounded-control p-4 sm:p-6 w-full max-w-md max-h-[90vh] overflow-y-auto my-auto"
             onClick={(e) => e.stopPropagation()}
           >
             <h2 className="font-serif text-xl text-black mb-4">
@@ -613,7 +613,7 @@ export default function BookingsPage() {
           onClick={() => setShowDeclineModal(null)}
         >
           <div
-            className="bg-base border border-black/10 p-4 sm:p-6 w-full max-w-md max-h-[90vh] overflow-y-auto my-auto"
+            className="bg-[#151a17] border border-white/10 rounded-control p-4 sm:p-6 w-full max-w-md max-h-[90vh] overflow-y-auto my-auto"
             onClick={(e) => e.stopPropagation()}
           >
             <h2 className="font-serif text-xl text-black mb-2">
