@@ -53,7 +53,7 @@ export default function ModalOverlay({
   return createPortal(
     <div className="dashboard-modal-overlay modal-backdrop" onClick={onClose} role="presentation">
       <div
-        className={`dashboard-modal-panel modal-enter bg-[#151a17] border border-white/10 rounded-control p-4 sm:p-6 w-full ${SIZE_CLASS[size]}`}
+        className={`dashboard-modal-panel modal-enter bg-card border border-white/10 rounded-control p-4 sm:p-6 w-full ${SIZE_CLASS[size]}`}
         role="dialog"
         aria-modal="true"
         onClick={(e) => e.stopPropagation()}

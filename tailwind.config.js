@@ -8,14 +8,16 @@ export default {
   theme: {
     extend: {
       colors: {
-        base: "#0C100E",
-        accent: "#1F4D3A",
-        paddock: "#8FAE98",
-        mist: "#E8ECE7",
-        brass: "#B8A07A",
+        /* Two-color system: ink + mist (aliases kept for existing class names) */
+        base: "#0E1512",
+        ink: "#0E1512",
         forest: "#0E1512",
-        card: "#151A17",
-        elevated: "#1C221E",
+        mist: "#E8ECE7",
+        accent: "#0E1512",
+        paddock: "#0E1512",
+        brass: "#0E1512",
+        card: "#161B18",
+        elevated: "#1A201C",
       },
       fontFamily: {
         serif: ["var(--font-fraunces)", "Georgia", "serif"],

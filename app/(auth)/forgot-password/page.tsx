@@ -170,7 +170,7 @@ function ForgotPasswordForm() {
 
   return (
     <AuthShell>
-      <h1 className="font-serif text-2xl md:text-3xl font-medium text-[#e8ebe6] mb-2">
+      <h1 className="font-serif text-2xl md:text-3xl font-medium text-[#e8ece7] mb-2">
         {t("auth.forgot.title")}
       </h1>
       <p className="text-white/50 text-sm mb-8">{t("auth.forgot.subtitle")}</p>
@@ -284,7 +284,7 @@ function ForgotPasswordForm() {
                 setInfo(null);
                 setCode("");
               }}
-              className="text-[#8fae98] underline hover:no-underline"
+              className="text-[#0e1512] underline hover:no-underline"
             >
               {t("auth.forgot.useDifferentEmail")}
             </button>
@@ -296,7 +296,7 @@ function ForgotPasswordForm() {
                 type="button"
                 onClick={resendCode}
                 disabled={resendLoading}
-                className="text-[#8fae98] underline hover:no-underline disabled:opacity-50"
+                className="text-[#0e1512] underline hover:no-underline disabled:opacity-50"
               >
                 {resendLoading ? t("auth.forgot.sending") : t("auth.forgot.resendCode")}
               </button>
@@ -306,7 +306,7 @@ function ForgotPasswordForm() {
       )}
 
       <p className="mt-8 text-center text-white/50 text-sm">
-        <Link href="/login" className="text-[#8fae98] font-medium hover:underline">
+        <Link href="/login" className="text-[#0e1512] font-medium hover:underline">
           {t("auth.forgot.backToSignIn")}
         </Link>
       </p>

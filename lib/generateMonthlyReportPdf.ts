@@ -91,12 +91,12 @@ const SEVERITY_LABELS: Record<string, string> = {
 
 const REPORT = {
   forest: [14, 21, 18] as const,
-  base: [12, 16, 14] as const,
+  base: [14, 21, 18] as const,
   mist: [232, 236, 231] as const,
-  paper: [244, 246, 243] as const,
-  racing: [31, 77, 58] as const,
-  brass: [184, 160, 122] as const,
-  muted: [110, 118, 112] as const,
+  paper: [232, 236, 231] as const,
+  racing: [14, 21, 18] as const,
+  brass: [14, 21, 18] as const,
+  muted: [110, 118, 112] as const, // ink/mist mid mix for secondary type
 };
 
 function formatDate(d: string) {

@@ -34,7 +34,7 @@ function MenuAvatar({
 
   return (
     <div
-      className={`${dim} shrink-0 rounded-full overflow-hidden flex items-center justify-center font-medium bg-[#2a2a2a] text-[#c9a87c]`}
+      className={`${dim} shrink-0 rounded-full overflow-hidden flex items-center justify-center font-medium bg-elevated text-mist`}
       aria-hidden
     >
       {avatarUrl ? (

@@ -505,7 +505,7 @@ export default function BookingsPage() {
           onClick={() => setShowCreate(false)}
         >
           <div
-            className="bg-[#151a17] border border-white/10 rounded-control p-4 sm:p-6 w-full max-w-md max-h-[90vh] overflow-y-auto my-auto"
+            className="bg-[#161b18] border border-white/10 rounded-control p-4 sm:p-6 w-full max-w-md max-h-[90vh] overflow-y-auto my-auto"
             onClick={(e) => e.stopPropagation()}
           >
             <h2 className="font-serif text-xl text-black mb-4">
@@ -618,7 +618,7 @@ export default function BookingsPage() {
           onClick={() => setShowDeclineModal(null)}
         >
           <div
-            className="bg-[#151a17] border border-white/10 rounded-control p-4 sm:p-6 w-full max-w-md max-h-[90vh] overflow-y-auto my-auto"
+            className="bg-[#161b18] border border-white/10 rounded-control p-4 sm:p-6 w-full max-w-md max-h-[90vh] overflow-y-auto my-auto"
             onClick={(e) => e.stopPropagation()}
           >
             <h2 className="font-serif text-xl text-black mb-2">

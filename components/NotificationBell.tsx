@@ -125,7 +125,7 @@ export default function NotificationBell() {
             aria-label={t("notifications.close")}
           />
           <aside
-            className={`notification-drawer relative flex h-full w-full max-w-sm flex-col border-l border-white/10 bg-[#1a1a1a]/95 backdrop-blur-[20px] ${closing ? "notification-drawer-exit" : "notification-drawer-enter"}`}
+            className={`notification-drawer relative flex h-full w-full max-w-sm flex-col border-l border-white/10 bg-elevated/95 backdrop-blur-[20px] ${closing ? "notification-drawer-exit" : "notification-drawer-enter"}`}
           >
             <div className="flex items-center justify-between border-b border-white/10 px-5 py-4">
               <h3 className="text-[15px] font-medium text-white">{t("notifications.title")}</h3>
@@ -161,7 +161,7 @@ export default function NotificationBell() {
                               markRead(n.id);
                               closeDrawer();
                             }}
-                            className="text-xs text-[#c9a87c] hover:text-[#dbc49a]"
+                            className="text-xs text-mist hover:text-mist/80"
                           >
                             {t("notifications.viewBookings")}
                           </Link>

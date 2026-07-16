@@ -9,8 +9,8 @@ const lineSoft = {
   vectorEffect: "non-scaling-stroke" as const,
 };
 const lineMid = { ...lineSoft, strokeOpacity: 0.42 };
-const accentFill = { fill: "#c9a87c", fillOpacity: 0.22 };
-const accentStroke = { stroke: "#c9a87c", strokeOpacity: 0.38, strokeWidth: 0.75 };
+const accentFill = { fill: "#0e1512", fillOpacity: 0.22 };
+const accentStroke = { stroke: "#0e1512", strokeOpacity: 0.38, strokeWidth: 0.75 };
 
 function WireframeShell({
   children,
@@ -284,7 +284,7 @@ export function IllustrationWorkloadAlert() {
           height={bar.h}
           rx={1}
           {...(bar.alert
-            ? { ...accentFill, stroke: "#c9a87c", strokeOpacity: 0.45, strokeWidth: 0.75 }
+            ? { ...accentFill, stroke: "#0e1512", strokeOpacity: 0.45, strokeWidth: 0.75 }
             : { fill: "currentColor", fillOpacity: 0.1, stroke: "currentColor", strokeOpacity: 0.22, strokeWidth: 0.75 })}
         />
       ))}
@@ -309,13 +309,13 @@ export function IllustrationWorkloadAlert() {
       />
       <path
         d="M29 181l-7.5 13a1.2 1.2 0 001 1.8h15a1.2 1.2 0 001-1.8L30.5 181a1.2 1.2 0 00-2.1 0z"
-        stroke="#c9a87c"
+        stroke="#0e1512"
         strokeOpacity="0.6"
         strokeWidth="0.75"
-        fill="#c9a87c"
+        fill="#0e1512"
         fillOpacity="0.14"
       />
-      <path d="M29 186v3.5M29 192h.01" stroke="#c9a87c" strokeOpacity="0.75" strokeWidth="0.9" strokeLinecap="round" />
+      <path d="M29 186v3.5M29 192h.01" stroke="#0e1512" strokeOpacity="0.75" strokeWidth="0.9" strokeLinecap="round" />
       <rect x="44" y="182" width="108" height="2.5" rx="1" fill="currentColor" fillOpacity="0.28" />
       <rect x="44" y="190" width="148" height="1.5" rx="0.5" fill="currentColor" fillOpacity="0.14" />
       <rect x="44" y="196" width="96" height="1.5" rx="0.5" fill="currentColor" fillOpacity="0.1" />
@@ -413,7 +413,7 @@ export function IllustrationHealth() {
               <rect x="206" y={y + 18} width="24" height="1.5" rx="0.5" fill="currentColor" fillOpacity="0.1" />
             )}
             {i === 0 ? (
-              <circle cx="28" cy={y + 34} r="3" {...accentStroke} fill="#c9a87c" fillOpacity="0.18" />
+              <circle cx="28" cy={y + 34} r="3" {...accentStroke} fill="#0e1512" fillOpacity="0.18" />
             ) : null}
           </g>
         );
@@ -462,7 +462,7 @@ export function IllustrationSchedule() {
           height={b.h * 22 - 4}
           rx="1"
           {...(i === 1 ? accentFill : { fill: "currentColor", fillOpacity: 0.1 })}
-          stroke={i === 1 ? "#c9a87c" : "currentColor"}
+          stroke={i === 1 ? "#0e1512" : "currentColor"}
           strokeOpacity={i === 1 ? 0.4 : 0.2}
           strokeWidth="0.75"
         />
@@ -472,7 +472,7 @@ export function IllustrationSchedule() {
       <rect x="178" y="56" width="20" height="1.5" rx="0.5" fill="currentColor" fillOpacity="0.2" />
 
       {/* Legend */}
-      <rect x="14" y="192" width="12" height="12" rx="1" {...accentFill} stroke="#c9a87c" strokeOpacity="0.35" strokeWidth="0.75" />
+      <rect x="14" y="192" width="12" height="12" rx="1" {...accentFill} stroke="#0e1512" strokeOpacity="0.35" strokeWidth="0.75" />
       <rect x="32" y="197" width="56" height="1.5" rx="0.5" fill="currentColor" fillOpacity="0.14" />
       <rect x="110" y="192" width="12" height="12" rx="1" fill="currentColor" fillOpacity="0.1" stroke="currentColor" strokeOpacity="0.2" strokeWidth="0.75" />
       <rect x="128" y="197" width="48" height="1.5" rx="0.5" fill="currentColor" fillOpacity="0.14" />

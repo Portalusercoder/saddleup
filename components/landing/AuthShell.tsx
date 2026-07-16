@@ -15,7 +15,7 @@ export const authFormClass =
 export const authLabelClass =
   "block text-[0.65rem] uppercase tracking-[0.2em] text-white/45 mb-3";
 export const authBtnPrimary =
-  "w-full py-3.5 min-h-[48px] mt-2 bg-paddock text-base font-medium uppercase tracking-[0.12em] text-sm hover:opacity-95 transition rounded-control su-focus-ring disabled:opacity-50";
+  "w-full py-3.5 min-h-[48px] mt-2 bg-paddock text-mist font-medium uppercase tracking-[0.12em] text-sm hover:opacity-95 transition rounded-control su-focus-ring disabled:opacity-50";
 
 export default function AuthShell({ children, footer }: AuthShellProps) {
   const { t } = useLanguage();
@@ -35,7 +35,7 @@ export default function AuthShell({ children, footer }: AuthShellProps) {
           className="absolute inset-0"
           style={{
             background:
-              "linear-gradient(105deg, rgba(12,16,14,0.72) 0%, rgba(12,16,14,0.35) 55%, rgba(12,16,14,0.15) 100%)",
+              "linear-gradient(105deg, rgba(14,21,18,0.72) 0%, rgba(14,21,18,0.35) 55%, rgba(14,21,18,0.15) 100%)",
           }}
         />
         <div className="absolute inset-0 flex flex-col justify-between p-12 xl:p-16">

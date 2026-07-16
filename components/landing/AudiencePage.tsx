@@ -37,7 +37,7 @@ export default function AudiencePage({
             className="absolute inset-0"
             style={{
               background:
-                "linear-gradient(105deg, rgba(12,16,14,0.82) 0%, rgba(12,16,14,0.5) 55%, rgba(12,16,14,0.25) 100%)",
+                "linear-gradient(105deg, rgba(14,21,18,0.82) 0%, rgba(14,21,18,0.5) 55%, rgba(14,21,18,0.25) 100%)",
             }}
           />
         </div>

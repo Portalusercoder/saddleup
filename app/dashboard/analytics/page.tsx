@@ -56,7 +56,7 @@ export default function AnalyticsPage() {
     grid: isDark ? "rgba(255,255,255,0.1)" : "rgba(0,0,0,0.1)",
     axis: isDark ? "rgba(255,255,255,0.5)" : "rgba(0,0,0,0.5)",
     tick: isDark ? "rgba(255,255,255,0.6)" : "rgba(0,0,0,0.7)",
-    tooltipBg: isDark ? "#151a17" : "#E8ECE7",
+    tooltipBg: isDark ? "#161b18" : "#E8ECE7",
     tooltipBorder: isDark ? "rgba(255,255,255,0.1)" : "rgba(0,0,0,0.15)",
     tooltipText: isDark ? "#fff" : "#000",
     line: isDark ? "rgba(255,255,255,0.9)" : "rgba(0,0,0,0.85)",
