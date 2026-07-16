@@ -28,11 +28,11 @@ Produce documents operators trust: scannable, metric-first, brand-aligned, never
 4. **Empty is calm** — “No incidents this month.” never looks like an error.
 5. **Period honesty** — Always show stable name, period label, timezone/date of generation.
 6. **Confidential footer** — Every page or last page: product · report type · stable · period · Confidential.
-7. **Brand tokens** — Saddle Up palette (not gray SaaS, not cream+terracotta cliché):
-   - Forest `#0e1512` / base `#0c100e`
-   - Mist `#e8ece7` / paper `#f4f6f3`
-   - Racing `#1f4d3a` / paddock `#8fae98`
-   - Brass `#b8a07a` (rules, accents only)
+7. **Brand tokens** — Saddle Up two-color system (ink + mist only):
+   - Black `#000000` — headers, rules, primary type on light paper
+   - White `#ffffff` — reversed type on black bands, paper background
+   - Muted secondary: ink at ~45–65% opacity or mid mix `[110, 118, 112]`
+   - Legacy names (`forest`, `brass`, `paddock`, `racing`) resolve to ink — do not reintroduce green/brass accents
 
 ## Document spine (every analytics PDF)
 
@@ -77,9 +77,9 @@ Reorder only if the audience is different (e.g. trainer digest → training firs
 ## Visual craft (jsPDF)
 
 - **Page:** A4 portrait, margin ≥14mm, max content width consistent.
-- **Header band:** Forest fill, mist title; stable + period on band; generation date muted.
-- **KPI cards:** 2×2 or 4-across light panels on paper; brass hairline or racing accent bar—not heavy cages.
-- **Tables:** Bold column headers once; brass rule under header; 6–7mm row pitch; truncate long cells with ellipsis; wrap description fields.
+- **Header band:** Ink fill, mist title; stable + period on band; generation date muted.
+- **KPI cards:** 2×2 or 4-across light panels on mist paper; ink hairline under headers—not heavy cages.
+- **Tables:** Bold column headers once; ink rule under header; 6–7mm row pitch; truncate long cells with ellipsis; wrap description fields.
 - **Pagination:** Never orphan a section title alone at page bottom; reserve ~20mm footer.
 - **Type:** Helvetica/default OK in jsPDF (no web fonts unless embedded). Title 16–18pt, section 11–12pt bold, body 9pt, muted 8pt.
 - **No emoji** as section icons.

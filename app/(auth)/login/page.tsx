@@ -61,7 +61,7 @@ function LoginForm() {
 
   return (
     <AuthShell>
-      <h1 className="font-serif text-2xl md:text-3xl font-medium text-[#e8ece7] mb-2">
+      <h1 className="font-serif text-2xl md:text-3xl font-medium text-white mb-2">
         {t("auth.login.title")}
       </h1>
       <p className="text-white/50 text-sm mb-8">{t("auth.login.subtitle")}</p>
@@ -114,7 +114,7 @@ function LoginForm() {
 
       <p className="mt-8 text-center text-white/50 text-sm">
         {t("auth.login.noAccount")}{" "}
-        <Link href="/signup" className="text-[#0e1512] font-medium hover:underline">
+        <Link href="/signup" className="text-black font-medium hover:underline">
           {t("auth.login.signUpLink")}
         </Link>
       </p>

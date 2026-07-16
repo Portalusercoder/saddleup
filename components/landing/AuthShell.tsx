@@ -35,7 +35,7 @@ export default function AuthShell({ children, footer }: AuthShellProps) {
           className="absolute inset-0"
           style={{
             background:
-              "linear-gradient(105deg, rgba(14,21,18,0.72) 0%, rgba(14,21,18,0.35) 55%, rgba(14,21,18,0.15) 100%)",
+              "linear-gradient(105deg, rgba(0,0,0,0.72) 0%, rgba(0,0,0,0.35) 55%, rgba(0,0,0,0.15) 100%)",
           }}
         />
         <div className="absolute inset-0 flex flex-col justify-between p-12 xl:p-16">

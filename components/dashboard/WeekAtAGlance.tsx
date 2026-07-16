@@ -40,7 +40,7 @@ export default function WeekAtAGlance({ title, items }: WeekAtAGlanceProps) {
               <Link
                 key={item.label}
                 href={item.href}
-                className="border border-black/10 px-4 py-3 rounded-control hover:border-[#0e1512]/40 hover:bg-[#0e1512]/5 transition dark:border-white/10"
+                className="border border-black/10 px-4 py-3 rounded-control hover:border-black/40 hover:bg-black/5 transition dark:border-white/10"
               >
                 {inner}
               </Link>

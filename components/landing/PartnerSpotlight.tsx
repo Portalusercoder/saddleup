@@ -46,7 +46,7 @@ export default function PartnerSpotlight() {
             className="relative p-8 sm:p-10 bg-cover bg-center"
             style={{
               backgroundImage:
-                "linear-gradient(160deg, rgba(14,21,18,0.9) 0%, rgba(14,21,18,0.82) 100%), url('/horseback.jpg')",
+                "linear-gradient(160deg, rgba(0,0,0,0.9) 0%, rgba(0,0,0,0.82) 100%), url('/horseback.jpg')",
             }}
           >
             <p className="text-xs font-medium uppercase tracking-[0.18em] text-white/45">
