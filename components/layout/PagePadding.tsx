@@ -17,13 +17,23 @@ export default function PagePadding({
   const isMarketingSubpage =
     pathname === "/for-schools" || pathname === "/for-trainers";
 
+  // Offset = navbar height + optional trial bar (CSS var set by TrialBanner)
+  const withNavOffset = (extra = "") =>
+    `pt-[calc(5rem+var(--su-trial-bar-h,0px))] ${extra}`.trim();
+
   if (isAuthPage || isHome || isMarketingSubpage) {
+    // Home/marketing use their own hero layout; still push content when trial bar shows on logged-in home
+    if ((isHome || isMarketingSubpage) && !isAuthPage) {
+      return (
+        <div style={{ paddingTop: "var(--su-trial-bar-h, 0px)" }}>{children}</div>
+      );
+    }
     return <>{children}</>;
   }
 
   if (isDashboard) {
-    return <div className="pt-20">{children}</div>;
+    return <div className={withNavOffset()}>{children}</div>;
   }
 
-  return <div className="pt-20 px-4 sm:px-6 md:px-10">{children}</div>;
+  return <div className={withNavOffset("px-4 sm:px-6 md:px-10")}>{children}</div>;
 }

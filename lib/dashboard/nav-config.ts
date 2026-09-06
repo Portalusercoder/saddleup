@@ -153,7 +153,7 @@ export function flattenDashboardNav(sections: NavSectionDef[]): NavItemDef[] {
   return sections.flatMap((s) => s.items);
 }
 
-/** Primary tabs for mobile bottom bar (max 5). */
+/** Primary tabs for floating mobile pill (max 4). */
 export function getMobileTabBarItems(role: string | undefined): NavItemDef[] {
   const pick = (paths: string[]): NavItemDef[] => {
     const flat = flattenDashboardNav(getDashboardNavSections(role));
@@ -168,7 +168,6 @@ export function getMobileTabBarItems(role: string | undefined): NavItemDef[] {
         "/dashboard",
         "/dashboard/my-horses",
         "/dashboard/bookings",
-        "/dashboard/training-history",
         "/dashboard/profile",
       ]);
     case "trainer":
@@ -176,7 +175,6 @@ export function getMobileTabBarItems(role: string | undefined): NavItemDef[] {
         "/dashboard",
         "/dashboard/horses",
         "/dashboard/bookings",
-        "/dashboard/team",
         "/dashboard/profile",
       ]);
     case "guardian":
@@ -186,8 +184,55 @@ export function getMobileTabBarItems(role: string | undefined): NavItemDef[] {
         "/dashboard",
         "/dashboard/horses",
         "/dashboard/bookings",
+        "/dashboard/profile",
+      ]);
+  }
+}
+
+/** Quick actions for the mobile + sheet. */
+export function getMobileFabActions(role: string | undefined): NavItemDef[] {
+  const pick = (paths: string[]): NavItemDef[] => {
+    const flat = flattenDashboardNav(getDashboardNavSections(role));
+    return paths
+      .map((href) => flat.find((i) => i.href === href))
+      .filter((i): i is NavItemDef => Boolean(i));
+  };
+
+  switch (role) {
+    case "student":
+      return pick([
+        "/dashboard/bookings",
+        "/dashboard/my-horses",
+        "/dashboard/training-history",
+        "/dashboard/competitions",
+        "/dashboard/profile",
+      ]);
+    case "trainer":
+      return pick([
+        "/dashboard/horses",
+        "/dashboard/bookings",
+        "/dashboard/schedule",
         "/dashboard/team",
+        "/dashboard/matching",
+        "/dashboard/incidents",
+        "/dashboard/activity",
+        "/dashboard/profile",
+      ]);
+    case "guardian":
+      return pick(["/dashboard/guardian", "/dashboard/profile"]);
+    default:
+      return pick([
+        "/dashboard/horses",
+        "/dashboard/bookings",
+        "/dashboard/schedule",
+        "/dashboard/team",
+        "/dashboard/matching",
+        "/dashboard/analytics",
+        "/dashboard/incidents",
+        "/dashboard/activity",
+        "/dashboard/notices",
         "/dashboard/settings",
+        "/dashboard/plans",
       ]);
   }
 }

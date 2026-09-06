@@ -109,11 +109,11 @@ export default function Navbar() {
   return (
     <div className="relative">
       <nav
-        className={`landing-marketing-nav flex items-center gap-3 fixed top-0 left-0 right-0 w-full z-50 transition-all duration-500 ease-out ${
+        className={`landing-marketing-nav flex items-center gap-3 fixed left-0 right-0 w-full z-50 transition-all duration-500 ease-out top-[var(--su-trial-bar-h,0px)] ${
           isHome && navCompact ? "h-14 sm:h-16" : "h-16 sm:h-20"
         } ${
           isDashboard
-            ? "px-4 sm:px-6 md:ps-56 md:pe-12 lg:pe-16 xl:pe-20"
+            ? "px-4 sm:px-6 md:ps-[var(--su-sidebar-w,15rem)] md:pe-12 lg:pe-16 xl:pe-20 transition-[padding] duration-300"
             : "px-4 sm:px-6 lg:px-10 xl:px-14"
         } ${
           isDashboard
